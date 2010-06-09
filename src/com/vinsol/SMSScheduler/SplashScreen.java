@@ -1,8 +1,12 @@
 package com.vinsol.SMSScheduler;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 public class SplashScreen extends Activity {
     /**================================================================
@@ -14,9 +18,77 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
         
-        Intent intent = new Intent(this, ScheduleSMS.class);
-        finish();
-        startActivity(intent);
+        //Log.v("in splashScreen -> in onCreate", "before creating DB");
+        //new SMSSchedulerDBHelper(this);
+        //Log.v("in splashScreen -> in onCreate", "after creating DB");
         
+        //Intent intent = new Intent(this, ScheduleSMS.class);
+        //finish();
+        //startActivity(intent);
+        
+        new AsyncTaskSubClass(this).execute(null);
     }//end method onCreate
-}
+    
+    
+    /**================================================================
+     *  Inner Class AsyncTaskSubClass 
+     * =============================================================== */
+    public class AsyncTaskSubClass extends AsyncTask<Void, Void, Boolean > {
+        
+    	Context ctx;
+    	ProgressDialog splashScreenProgressDialog;
+    	
+    	/**====================================================================================   
+		  * Constructor   
+		  * ====================================================================================*/  
+		AsyncTaskSubClass(Context ctx) {
+			this.ctx = ctx;
+		}//end constructor
+		
+    	
+		 /**====================================================================================   
+		  * method onPreExecute   
+		  * ====================================================================================*/  
+		 @Override
+		 protected void onPreExecute() {
+			 String shownOnProgressDialog = ctx.getString(R.string.progress_dialog_message_splash_screen); 
+			 splashScreenProgressDialog = new ProgressDialog(ctx);
+			 splashScreenProgressDialog.setMessage(shownOnProgressDialog);	
+			 splashScreenProgressDialog.show();
+		 }//end method onPreExecute
+	
+		 /**====================================================================================   
+		  * method doInBackground   
+		  * ====================================================================================*/   
+		 @Override   
+		 protected Boolean doInBackground(Void... v) {   
+		   
+		     boolean isDBExist = new SMSSchedulerDBHelper(ctx).checkOrCreateDB();
+			 return isDBExist;  
+		  
+		 }//end method doInBackground()
+	
+			
+		 /**====================================================================================   
+		  * method onPostExecute   
+		  * ====================================================================================*/  
+		 @Override
+		 protected void onPostExecute(Boolean isDBExist){
+			 splashScreenProgressDialog.dismiss();
+			 
+			 if(isDBExist) {
+				 Intent intent = new Intent(ctx, ScheduleSMS.class);
+				 ((Activity)ctx).finish();
+				 ctx.startActivity(intent);
+			 } else{
+				 String alertDialogHeading = ctx.getString(R.string.alert_dialog_heading_db_not_exist);
+				 String alertDialogMessage = ctx.getString(R.string.alert_dialog_message_db_not_exist);
+				 
+				 new ShowAlertDialog(ctx, alertDialogHeading, alertDialogMessage, true).showDialog();
+			 }
+			 				
+		 }//end method onPostExecute
+
+    }//end inner class AsyncTaskSubClass
+    
+}//end class SplashScreen

@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, SplashScreen!</string>
     <string name="app_name">SMSScheduler</string>
+	
+	<!-- ======================================================
+	     String shown on progress dialog 
+	========================================================== -->
+	<string name="progress_dialog_message_splash_screen">"Loading SMSScheduler ..."</string>
+
+	<!-- ======================================================
+	     String shown on Alert dialog 
+	========================================================== -->
+	<string name="alert_dialog_heading_db_not_exist">"Database"</string>
+	<string name="alert_dialog_message_db_not_exist">"Problem in opening Database. Please try again."</string>
+	    
+
 </resources>

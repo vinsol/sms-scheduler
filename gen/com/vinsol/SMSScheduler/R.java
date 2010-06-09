@@ -24,7 +24,17 @@ public final class R {
         public static final int splash_screen=0x7f030001;
     }
     public static final class string {
-        public static final int app_name=0x7f040001;
-        public static final int hello=0x7f040000;
+        /**  ======================================================
+	     String shown on Alert dialog 
+	========================================================== 
+         */
+        public static final int alert_dialog_heading_db_not_exist=0x7f040002;
+        public static final int alert_dialog_message_db_not_exist=0x7f040003;
+        public static final int app_name=0x7f040000;
+        /**  ======================================================
+	     String shown on progress dialog 
+	========================================================== 
+         */
+        public static final int progress_dialog_message_splash_screen=0x7f040001;
     }
 }

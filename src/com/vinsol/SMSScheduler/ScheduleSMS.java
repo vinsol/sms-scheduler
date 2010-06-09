@@ -20,8 +20,7 @@ public class ScheduleSMS extends Activity {
  
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) 
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.schedule_sms);        
  
@@ -29,10 +28,8 @@ public class ScheduleSMS extends Activity {
         txtPhoneNo = (EditText) findViewById(R.id.txtPhoneNo);
         txtMessage = (EditText) findViewById(R.id.txtMessage);
  
-        btnSendSMS.setOnClickListener(new View.OnClickListener() 
-        {
-            public void onClick(View v) 
-            {                
+        btnSendSMS.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {                
                 String phoneNo = txtPhoneNo.getText().toString();
                 String message = txtMessage.getText().toString();                 
                 if (phoneNo.length()>0 && message.length()>0)                
@@ -46,8 +43,7 @@ public class ScheduleSMS extends Activity {
     }//end method onCreate
     
     //---sends an SMS message to another device---
-    private void sendSMS(String phoneNumber, String message)
-    {        
+    private void sendSMS(String phoneNumber, String message) {        
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
  
@@ -61,8 +57,7 @@ public class ScheduleSMS extends Activity {
         registerReceiver(new BroadcastReceiver(){
             @Override
             public void onReceive(Context arg0, Intent arg1) {
-                switch (getResultCode())
-                {
+                switch (getResultCode()) {
                     case Activity.RESULT_OK:
                         Toast.makeText(getBaseContext(), "SMS sent", 
                                 Toast.LENGTH_SHORT).show();
