@@ -1,0 +1,5 @@
+*.class
+bin/*.ap?
+bin/classes.dex
+.classpath
+.project
