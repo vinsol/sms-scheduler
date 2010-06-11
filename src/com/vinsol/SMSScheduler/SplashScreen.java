@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 
 public class SplashScreen extends Activity {
     /**================================================================
@@ -18,15 +17,7 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
         
-        //Log.v("in splashScreen -> in onCreate", "before creating DB");
-        //new SMSSchedulerDBHelper(this);
-        //Log.v("in splashScreen -> in onCreate", "after creating DB");
-        
-        //Intent intent = new Intent(this, ScheduleSMS.class);
-        //finish();
-        //startActivity(intent);
-        
-        new AsyncTaskSubClass(this).execute(null);
+        new AsyncTaskSubClass(this).execute((Void[])null);
     }//end method onCreate
     
     

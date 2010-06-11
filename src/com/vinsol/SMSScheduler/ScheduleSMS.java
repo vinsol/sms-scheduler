@@ -24,9 +24,9 @@ public class ScheduleSMS extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.schedule_sms);        
  
-        btnSendSMS = (Button) findViewById(R.id.btnSendSMS);
-        txtPhoneNo = (EditText) findViewById(R.id.txtPhoneNo);
-        txtMessage = (EditText) findViewById(R.id.txtMessage);
+        btnSendSMS = (Button) findViewById(R.id.schedule_sms_done_button);
+        txtPhoneNo = (EditText) findViewById(R.id.schedule_sms_contact_number_edit_text);
+        txtMessage = (EditText) findViewById(R.id.schedule_sms_message_edit_text);
  
         btnSendSMS.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {                

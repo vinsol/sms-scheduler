@@ -1,35 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/background_lining"
+    android:padding="10dip"
     >
+    
+    <!-- =========================================
+    	TextView TO:
+    ============================================== -->
     <TextView  
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
-        android:text="Enter the phone number of recipient"
-        />     
-    <EditText 
-        android:id="@+id/txtPhoneNo"  
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"        
-        />
-    <TextView  
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"         
-        android:text="Message"
-        />     
-    <EditText 
-        android:id="@+id/txtMessage"  
-        android:layout_width="fill_parent" 
-        android:layout_height="150px"
-        android:gravity="top"         
-        />          
-    <Button 
-        android:id="@+id/btnSendSMS"  
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
-        android:text="Send SMS"
-        />    
+        android:text="To:"
+        android:textColor="@color/black"
+        android:textSize="18dip"
+        android:textStyle="bold"
+        >
+    </TextView>     
+    
+    <!-- =========================================
+    	LinearLayout add contact number
+    ============================================== -->
+    <LinearLayout 
+    	android:orientation="horizontal"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	>
+	    <EditText 
+        	android:id="@+id/schedule_sms_contact_number_edit_text"  
+	        android:layout_width="180dip" 
+	        android:layout_height="wrap_content"        
+	        >
+	    </EditText>
+	    
+	    <Button
+	    	android:id="@+id/schedule_sms_add_number_button"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:text="Add"
+	    	>
+	    </Button>
+	    
+	    <Button
+	    	android:id="@+id/schedule_sms_add_from_contact_button"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:text="Contact"
+	    	>
+	    </Button>
+	</LinearLayout>
+    
+    <!-- =========================================
+    	ListView of contact List
+    ============================================== -->
+    <ListView 
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:layout_height="120dip"
+    	>
+    </ListView>
+    
+    <!-- =========================================
+    	LinearLayout message
+    ============================================== -->
+    <LinearLayout
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:layout_height="110dip"
+    	android:background="@color/gray"
+    	>
+	    <EditText 
+        	android:id="@+id/schedule_sms_message_edit_text"  
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dip"
+	        android:layout_marginBottom="5dip"
+	        android:hint="Message"
+	        >
+        </EditText>
+        <Button 
+        	android:id="@+id/schedule_sms_message_from_template_button"  
+        	android:layout_width="fill_parent" 
+        	android:layout_height="wrap_content"
+        	android:text="Choose Message From Template"
+        	>
+       	</Button>
+    </LinearLayout>          
+    
+    <!-- =========================================
+    	LinearLayout date and Time
+    ============================================== -->
+    <LinearLayout
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:layout_marginTop="10dip"
+    	>
+	    <EditText 
+        	android:id="@+id/schedule_sms_date_edit_text"  
+	        android:layout_width="140dip" 
+	        android:layout_height="wrap_content"
+	        android:hint="Date"
+	        android:layout_marginRight="20dip"
+	        >
+        </EditText>
+        <EditText 
+        	android:id="@+id/schedule_sms_time_edit_text"  
+	        android:layout_width="140dip" 
+	        android:layout_height="wrap_content"
+	        android:hint="Time"
+	        >
+        </EditText>
+    </LinearLayout> 
+    
+    <!-- =========================================
+    	LinearLayout Schedule SMS Button
+    ============================================== -->
+    <LinearLayout
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:background="@color/gray"
+    	android:gravity="right"
+    	android:paddingTop="5dip"
+        android:paddingBottom="5dip"
+        >         
+	   	<Button 
+	        android:id="@+id/schedule_sms_done_button"  
+	        android:layout_width="wrap_content" 
+	        android:layout_height="wrap_content"
+	        android:text="Schedule SMS"
+	        >
+	    </Button>    
+	</LinearLayout>
 </LinearLayout>
