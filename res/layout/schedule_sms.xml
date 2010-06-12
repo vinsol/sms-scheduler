@@ -33,6 +33,8 @@
         	android:id="@+id/schedule_sms_contact_number_edit_text"  
 	        android:layout_width="180dip" 
 	        android:layout_height="wrap_content"        
+	        android:singleLine="true"
+	        android:inputType="phone"
 	        >
 	    </EditText>
 	    
@@ -79,6 +81,7 @@
 	        android:layout_marginTop="5dip"
 	        android:layout_marginBottom="5dip"
 	        android:hint="Message"
+	        android:singleLine="true"
 	        >
         </EditText>
         <Button 
@@ -100,18 +103,20 @@
     	android:layout_marginTop="10dip"
     	>
 	    <EditText 
-        	android:id="@+id/schedule_sms_date_edit_text"  
+        	android:id="@+id/schedule_sms_send_date_edit_text"  
 	        android:layout_width="140dip" 
 	        android:layout_height="wrap_content"
 	        android:hint="Date"
 	        android:layout_marginRight="20dip"
+	        android:singleLine="true"
 	        >
         </EditText>
         <EditText 
-        	android:id="@+id/schedule_sms_time_edit_text"  
+        	android:id="@+id/schedule_sms_send_time_edit_text"  
 	        android:layout_width="140dip" 
 	        android:layout_height="wrap_content"
 	        android:hint="Time"
+	        android:singleLine="true"
 	        >
         </EditText>
     </LinearLayout> 
