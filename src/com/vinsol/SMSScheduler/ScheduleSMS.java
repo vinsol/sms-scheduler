@@ -2,31 +2,56 @@ package com.vinsol.SMSScheduler;
  
 import java.util.Calendar;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ListActivity;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TimePicker;
+
+import com.vinsol.SMSScheduler.ContactAppManager.ContactAccessor;
+import com.vinsol.SMSScheduler.ContactAppManager.ContactInfo;
  
-public class ScheduleSMS extends Activity implements OnClickListener {
+public class ScheduleSMS extends ListActivity implements OnClickListener {
     final int DATE_DIALOG_ID = 1;
     final int TIME_DIALOG_ID = 2;
 	
+    EditText contactNumberEditText;
+    
     EditText sendDateEditText, sendTimeEditText;
 	
 	Calendar currentTimeCalendar, scheduledTimeCalendar;
 	
 	int currentDate, currentMonth, currentYear;
 	int currentHour, currentMinute;
+	
+	ListView receiverDetailListView;
+	
+	ArrayAdapter<String> receiverDetailAdapter;
+	
+	
+	//An SDK-specific instance of {@link ContactAccessor}.  The activity does not need
+	//to know what SDK it is running in: all idiosyncrasies of different SDKs are
+	//encapsulated in the implementations of the ContactAccessor class.
+    private final ContactAccessor mContactAccessor = ContactAccessor.getInstance();
+    
+    // Request code for the contact picker activity
+    private static final int PICK_CONTACT_REQUEST = 1;
+
+
     
     /**=========================================================== 
      * method onCreate()
@@ -51,6 +76,36 @@ public class ScheduleSMS extends Activity implements OnClickListener {
     	
     	scheduledTimeCalendar = Calendar.getInstance();
         
+    	//========================== Add phone Number Edit Text ============================//
+        contactNumberEditText = (EditText)findViewById(R.id.schedule_sms_contact_number_edit_text);
+        
+        //========================== Add phone Number Button ============================//
+        Button addPhoneNumberButton = (Button)findViewById(R.id.schedule_sms_add_number_button);
+        addPhoneNumberButton.setOnClickListener(this);
+        
+        //========================== Add from Contact Button ==========================//
+        Button addFromContactButton = (Button)findViewById(R.id.schedule_sms_add_from_contact_button);
+        addFromContactButton.setOnClickListener(this);
+        
+        //========================== receiver Detail List View ==========================//
+        receiverDetailListView = this.getListView();
+        receiverDetailListView.setDivider(getResources().getDrawable(R.drawable.divider));
+        //receiverDetailListView.setOnItemSelectedListener(this);
+        
+        //ArrayList<String> mylist = new ArrayList<String>();
+        
+        receiverDetailAdapter = new ArrayAdapter<String>(this, R.layout.schedule_sms_one_receiver_view);
+        
+        if(receiverDetailAdapter == null){
+			Log.v("In SMSScheduler -> in ScheduleSMS -> in OnCreate","receiverDetailAdapter" );
+		}else{
+			setListAdapter(receiverDetailAdapter);
+		}
+        //========================== Choose Message From Template Button ==========================//
+        Button chooseMessageFromTemplateButton = (Button)findViewById(R.id.schedule_sms_message_from_template_button);
+        chooseMessageFromTemplateButton.setOnClickListener(this);
+        
+        
         //======================== Send Date EditText ===============================//
         sendDateEditText = (EditText)findViewById(R.id.schedule_sms_send_date_edit_text);
         sendDateEditText.setInputType(InputType.TYPE_NULL);
@@ -61,18 +116,7 @@ public class ScheduleSMS extends Activity implements OnClickListener {
         sendTimeEditText.setInputType(InputType.TYPE_NULL);
         sendTimeEditText.setOnClickListener(this);
         
-        //========================== Add phone Number Button ============================//
-        Button addPhoneNumberButton = (Button)findViewById(R.id.schedule_sms_add_number_button);
-        addPhoneNumberButton.setOnClickListener(this);
-        
-        //========================== Add from Contact Button ==========================//
-        Button addFromContactButton = (Button)findViewById(R.id.schedule_sms_add_from_contact_button);
-        addFromContactButton.setOnClickListener(this);
-        
-        //========================== Choose Message From Template Button ==========================//
-        Button chooseMessageFromTemplateButton = (Button)findViewById(R.id.schedule_sms_message_from_template_button);
-        chooseMessageFromTemplateButton.setOnClickListener(this);
-        
+      
         //========================== Schedule SMS Button ==========================//
         Button scheduleSMSButton = (Button) findViewById(R.id.schedule_sms_done_button);
         scheduleSMSButton.setOnClickListener(this);
@@ -89,9 +133,13 @@ public class ScheduleSMS extends Activity implements OnClickListener {
     	
     	switch(idOfClickedView){
     		case R.id.schedule_sms_add_number_button: {
+    			String contactNumber = contactNumberEditText.getEditableText().toString();
+    			receiverDetailAdapter.add(contactNumber);
+    			contactNumberEditText.setText("");
     			break;
     		}
     		case R.id.schedule_sms_add_from_contact_button: {
+    			startActivityForResult(mContactAccessor.getPickContactIntent(), PICK_CONTACT_REQUEST);
     			break;
     		}
     		case R.id.schedule_sms_message_from_template_button: {
@@ -112,6 +160,45 @@ public class ScheduleSMS extends Activity implements OnClickListener {
     	
     }//end method onClick
     
+    /**=========================================================================================
+     * method onActivityResult
+     * Invoked when the contact picker activity is finished. The {@code contactUri} parameter
+     * will contain a reference to the contact selected by the user. We will treat it as
+     * an opaque URI and allow the SDK-specific ContactAccessor to handle the URI accordingly.
+     *==========================================================================================*/
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_CONTACT_REQUEST && resultCode == RESULT_OK) {
+            getContactInfoFromContentProvider(data.getData());
+        }
+    }//end method onActivityResult
+
+    /**=================================================================================
+     * Load contact information on a background thread.
+     *==================================================================================*/
+    private void getContactInfoFromContentProvider(Uri contactUri) {
+
+    	//We should always run database queries on a background thread. The database may be
+        //locked by some process for a long time.  If we locked up the UI thread while waiting
+        //for the query to come back, we might get an "Application Not Responding" dialog.
+        AsyncTask<Uri, Void, ContactInfo> task = new AsyncTask<Uri, Void, ContactInfo>() {
+
+            @Override
+            protected ContactInfo doInBackground(Uri... uris) {
+                return mContactAccessor.loadContact(getContentResolver(), uris[0]);
+            }
+
+            @Override
+            protected void onPostExecute(ContactInfo contactInfoObject) {
+                String contactName = contactInfoObject.getDisplayName();
+                receiverDetailAdapter.add(contactName);   
+            }
+        };
+
+        task.execute(contactUri);
+    }//end method getContactInfoFromContentProvider
+
+  
     /**================================================================
      * method onCreateDialog
      *================================================================*/

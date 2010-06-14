@@ -17,7 +17,8 @@ public final class R {
     }
     public static final class drawable {
         public static final int background_lining=0x7f020000;
-        public static final int icon=0x7f020001;
+        public static final int divider=0x7f020001;
+        public static final int icon=0x7f020002;
     }
     public static final class id {
         public static final int schedule_sms_add_from_contact_button=0x7f060002;
@@ -26,12 +27,14 @@ public final class R {
         public static final int schedule_sms_done_button=0x7f060007;
         public static final int schedule_sms_message_edit_text=0x7f060003;
         public static final int schedule_sms_message_from_template_button=0x7f060004;
+        public static final int schedule_sms_one_reciever_view_contact_detail=0x7f060008;
         public static final int schedule_sms_send_date_edit_text=0x7f060005;
         public static final int schedule_sms_send_time_edit_text=0x7f060006;
     }
     public static final class layout {
         public static final int schedule_sms=0x7f030000;
-        public static final int splash_screen=0x7f030001;
+        public static final int schedule_sms_one_receiver_view=0x7f030001;
+        public static final int splash_screen=0x7f030002;
     }
     public static final class string {
         /**  ======================================================

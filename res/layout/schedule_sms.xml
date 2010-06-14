@@ -58,10 +58,18 @@
     <!-- =========================================
     	ListView of contact List
     ============================================== -->
-    <ListView 
-    	android:orientation="vertical"
+    <ListView
+    	android:id="@android:id/list" 
     	android:layout_width="fill_parent"
     	android:layout_height="120dip"
+    	android:choiceMode="singleChoice"
+    	android:layout_marginLeft="2dip"
+        android:layout_marginRight="2dip"
+        android:layout_marginTop="5dip"
+        android:layout_marginBottom="5dip"
+        android:background="@color/white"
+        android:scrollbars="none"
+        android:fadingEdge="none"
     	>
     </ListView>
     
