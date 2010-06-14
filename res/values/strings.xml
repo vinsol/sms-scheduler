@@ -13,5 +13,10 @@
 	<string name="alert_dialog_heading_db_not_exist">"Database"</string>
 	<string name="alert_dialog_message_db_not_exist">"Problem in opening Database. Please try again."</string>
 	    
+	<!-- ======================================================
+	     String shown on Toast 
+	========================================================== -->
+	<string name="toast_message_schedule_sms_done_no_contact_number">"Please add a contact number"</string>
+	<string name="toast_message_schedule_sms_done_blank_message">"Message can not be blank"</string>    
 
 </resources>

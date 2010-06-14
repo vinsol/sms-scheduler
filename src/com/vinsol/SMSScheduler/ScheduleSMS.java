@@ -1,5 +1,6 @@
 package com.vinsol.SMSScheduler;
  
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.app.DatePickerDialog;
@@ -21,6 +22,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.vinsol.SMSScheduler.ContactAppManager.ContactAccessor;
 import com.vinsol.SMSScheduler.ContactAppManager.ContactInfo;
@@ -50,6 +52,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     
     // Request code for the contact picker activity
     private static final int PICK_CONTACT_REQUEST = 1;
+    
+    ArrayList<ContactInfo> listOfReceivers = new ArrayList<ContactInfo>();
 
 
     
@@ -132,10 +136,11 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	int idOfClickedView = clickedView.getId();
     	
     	switch(idOfClickedView){
-    		case R.id.schedule_sms_add_number_button: {
-    			String contactNumber = contactNumberEditText.getEditableText().toString();
+			case R.id.schedule_sms_add_number_button: {
+    			String contactNumber = contactNumberEditText.getText().toString();
     			receiverDetailAdapter.add(contactNumber);
     			contactNumberEditText.setText("");
+    			addToReceiverList("Unknown Name", contactNumber);
     			break;
     		}
     		case R.id.schedule_sms_add_from_contact_button: {
@@ -143,9 +148,11 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			break;
     		}
     		case R.id.schedule_sms_message_from_template_button: {
+    			new SMSSchedulerDBHelper(this).deleteSMS("7");
     			break;
     		}
     		case R.id.schedule_sms_done_button: {
+    			doneButtonHandler();
     			break;
     		}
     		case R.id.schedule_sms_send_date_edit_text: {
@@ -191,12 +198,52 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             @Override
             protected void onPostExecute(ContactInfo contactInfoObject) {
                 String contactName = contactInfoObject.getDisplayName();
-                receiverDetailAdapter.add(contactName);   
+                String contactNumber = contactInfoObject.getPhoneNumber();
+                receiverDetailAdapter.add(contactName);  
+                addToReceiverList(contactName, contactNumber);
             }
         };
 
         task.execute(contactUri);
     }//end method getContactInfoFromContentProvider
+    
+    /**=====================================================================
+     * method addToReceiverList
+     * ====================================================================*/
+    void addToReceiverList(String contactName, String contactNumber) {
+    	ContactInfo ci = new ContactInfo();
+    	ci.setDisplayName(contactName);
+    	ci.setPhoneNumber(contactNumber);
+    	
+    	listOfReceivers.add(ci);
+    }//end method addToReceiverList
+    
+    
+    /**=====================================================================
+     * method doneButtonHandler 
+     * ====================================================================*/
+    void doneButtonHandler(){
+    	if((listOfReceivers.size()) <= 0) {
+    		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_no_contact_number), Toast.LENGTH_LONG).show();
+    	} else {
+    		EditText messageEditText = (EditText)findViewById(R.id.schedule_sms_message_edit_text);
+        	String message = messageEditText.getText().toString();
+        	
+        	if(message == null || message.equalsIgnoreCase("")){
+        		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_blank_message), Toast.LENGTH_LONG).show();
+        	} else {
+        		String scheduledTime = "" + scheduledTimeCalendar.getTimeInMillis();
+            	
+        		long messageID = new SMSSchedulerDBHelper(this).addSMS(message, scheduledTime);
+            	if(messageID != -1){
+            		new SMSSchedulerDBHelper(this).addContacts(messageID, listOfReceivers);
+            		
+            	}else {
+            		Toast.makeText(this, "message not added ", Toast.LENGTH_SHORT).show();
+            	}
+        	}
+    	}
+    }//end Method doneButtonHandler
 
   
     /**================================================================
@@ -261,7 +308,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             	Log.v("Current Time hour = "  + currentTimeCalendar.get(Calendar.HOUR_OF_DAY) , "Scheduled Time hour = "  + scheduledTimeCalendar.get(Calendar.HOUR_OF_DAY));
             	Log.v("Current Time minute = "  + currentTimeCalendar.get(Calendar.MINUTE) , "Scheduled Time minute = "  + scheduledTimeCalendar.get(Calendar.MINUTE));
             	
-            	String amORpm;
+            	//String amORpm;
             	//int amORpm1 = scheduledTimeCalendar.get(Calendar.AM_PM);
             	//Log.v("amOrPm = ", "" + amORpm1);
             	

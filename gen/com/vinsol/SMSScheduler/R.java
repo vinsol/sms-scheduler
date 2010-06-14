@@ -49,5 +49,11 @@ public final class R {
 	========================================================== 
          */
         public static final int progress_dialog_message_splash_screen=0x7f050001;
+        public static final int toast_message_schedule_sms_done_blank_message=0x7f050005;
+        /**  ======================================================
+	     String shown on Toast 
+	========================================================== 
+         */
+        public static final int toast_message_schedule_sms_done_no_contact_number=0x7f050004;
     }
 }
