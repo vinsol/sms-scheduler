@@ -1,0 +1,7 @@
+<resources>
+	<item name="OPTION_MENU_SCHEDULE_SMS" type="id"></item>
+	<item name="OPTION_MENU_SMS_LISTING" type="id"></item>
+	<item name="OPTION_MENU_ABOUT" type="id"></item>
+	<item name="OPTION_MENU_HELP" type="id"></item>
+	<item name="OPTION_MENU_SETTINGS" type="id"></item>
+</resources>

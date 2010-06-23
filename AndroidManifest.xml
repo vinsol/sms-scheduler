@@ -25,6 +25,12 @@
             >
         </activity>
         
+        <activity 
+        	android:name=".SMSListing"
+        	android:screenOrientation="portrait"
+            >
+        </activity>
+        
         <service 
         	android:name=".SendSMSService">
         </service>

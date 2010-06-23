@@ -13,6 +13,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -234,7 +236,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         	} else {
         		String scheduledTime = "" + scheduledTimeCalendar.getTimeInMillis();
             	
-        		long messageID = new SMSSchedulerDBHelper(this).addSMS(message, scheduledTime);
+        		long messageID = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
             	if(messageID != -1){
             		new SMSSchedulerDBHelper(this).addContacts(messageID, listOfReceivers);
             		
@@ -332,6 +334,17 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 	        return String.valueOf(c);
 	    else
 	        return "0" + String.valueOf(c);
+	}
+	
+	/* Creates the menu items */
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    new OptionMenuHelper().createOptionMenu(menu);
+	    return true;
+	}
+
+	/* Handles item selections */
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    return new OptionMenuHelper().onOptionsItemSelected(this, item);
 	}
     
 }//end class scheduleSMS
