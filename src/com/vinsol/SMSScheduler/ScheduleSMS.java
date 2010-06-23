@@ -98,7 +98,6 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         receiverDetailListView.setDivider(getResources().getDrawable(R.drawable.divider));
         //receiverDetailListView.setOnItemSelectedListener(this);
         
-        //ArrayList<String> mylist = new ArrayList<String>();
         
         receiverDetailAdapter = new ArrayAdapter<String>(this, R.layout.schedule_sms_one_receiver_view);
         
@@ -231,7 +230,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     		EditText messageEditText = (EditText)findViewById(R.id.schedule_sms_message_edit_text);
         	String message = messageEditText.getText().toString();
         	
-        	if(message == null || message.equalsIgnoreCase("")){
+        	if(message == null || message.equalsIgnoreCase("")) {
         		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_blank_message), Toast.LENGTH_LONG).show();
         	} else {
         		String scheduledTime = "" + scheduledTimeCalendar.getTimeInMillis();
@@ -239,6 +238,10 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         		long messageID = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
             	if(messageID != -1){
             		new SMSSchedulerDBHelper(this).addContacts(messageID, listOfReceivers);
+            		
+            		Intent intent = new Intent(this, SMSListing.class);
+            		finish();
+            		startActivity(intent);
             		
             	}else {
             		Toast.makeText(this, "message not added ", Toast.LENGTH_SHORT).show();
@@ -274,10 +277,10 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 //================== setting calendar date ======================//
             	scheduledTimeCalendar.set(Calendar.YEAR, year);
-            	scheduledTimeCalendar.set(Calendar.MONTH, monthOfYear + 1);
+            	scheduledTimeCalendar.set(Calendar.MONTH, monthOfYear);
             	scheduledTimeCalendar.set(Calendar.DATE, dayOfMonth);
             		
-            	sendDateEditText.setText("" + scheduledTimeCalendar.get(Calendar.MONTH)
+            	sendDateEditText.setText("" + scheduledTimeCalendar.get(Calendar.MONTH + 1)
             							+ "/" + scheduledTimeCalendar.get(Calendar.DATE)
             							+ "/" + scheduledTimeCalendar.get(Calendar.YEAR));
             }
