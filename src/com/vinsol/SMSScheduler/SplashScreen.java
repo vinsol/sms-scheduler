@@ -3,7 +3,6 @@ package com.vinsol.SMSScheduler;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Window;
@@ -70,9 +69,7 @@ public class SplashScreen extends Activity {
 			 splashScreenProgressDialog.dismiss();
 			 
 			 if(isDBExist) {
-				 Intent intent = new Intent(ctx, ScheduleSMS.class);
-				 ((Activity)ctx).finish();
-				 ctx.startActivity(intent);
+				 new IntentHandler().gotoScheduleSMSPage(ctx);
 			 } else{
 				 String alertDialogHeading = ctx.getString(R.string.alert_dialog_heading_db_not_exist);
 				 String alertDialogMessage = ctx.getString(R.string.alert_dialog_message_db_not_exist);

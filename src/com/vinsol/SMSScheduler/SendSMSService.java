@@ -36,7 +36,7 @@ public class SendSMSService extends Service {
 	}
 	
 	//---sends an SMS message to another device---
-    private void sendSMS(String phoneNumber, String message) {        
+    void sendSMS(String phoneNumber, String message) {        
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
  

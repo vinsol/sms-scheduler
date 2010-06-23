@@ -12,6 +12,14 @@ public class Constant {
 	public static final String STATUS_SEND_STRING = "SEND";
 	
 	/**============================================
+	 * Schedule SMS Page Type
+	 *=============================================*/
+	public static final String TYPE_OF_SCHEDULE_SMS_PAGE = "pageType";
+	
+	public static final int PAGE_TYPE_ADD = 1;
+	public static final int PAGE_TYPE_EDIT = 2;
+	
+	/**============================================
 	 * Strings for HashMap for message listing
 	 *=============================================*/
 	public static final String MESSAGE_BODY = "body";

@@ -216,19 +216,17 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     	  
     	SMSSchedulerDBObject = getReadableDatabase();
 
-		Cursor receiversCursor = SMSSchedulerDBObject.query(RECEIVER_TABLE_NAME, null, "RECEIVER_TABLE_MESSAGE_ID=" + messageId, null, null, null, null);
+		Cursor receiversCursor = SMSSchedulerDBObject.query(RECEIVER_TABLE_NAME, null, RECEIVER_TABLE_MESSAGE_ID + "=" + messageId, null, null, null, null);
        	
 		ArrayList<Receiver> receiversList = new ArrayList<Receiver>();
 		
 		if (receiversCursor.moveToFirst()) {
 			do {
 				Receiver receiverObject = new Receiver();
-				//receiverObject. = messagesCursor.getInt(0);
-				//receiverObject.scheduledTimeInMilliSecond = messagesCursor.getLong(1);
-				//messageObject.messageBody = messagesCursor.getString(2);
-				//messageObject.status = messagesCursor.getInt(3);
+				receiverObject.setPhoneNumber(receiversCursor.getString(1));
+				receiverObject.setDisplayName(receiversCursor.getString(2));
 				
-				//messagesList.add(messageObject);
+				receiversList.add(receiverObject);
 			} while (receiversCursor.moveToNext());
 		}else {
 			receiversList = null;
@@ -236,7 +234,6 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 		if (receiversCursor != null && !receiversCursor.isClosed()) {
 			receiversCursor.close();
 		}
-		
 		SMSSchedulerDBObject.close();
 		
 		return receiversList;

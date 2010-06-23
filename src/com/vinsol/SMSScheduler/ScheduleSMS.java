@@ -237,9 +237,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             	if(messageID != -1){
             		new SMSSchedulerDBHelper(this).addReceivers(messageID, listOfReceivers);
             		
-            		Intent intent = new Intent(this, SMSListing.class);
-            		finish();
-            		startActivity(intent);
+            		new IntentHandler().gotoSMSListingPage(this);
             		
             	}else {
             		Toast.makeText(this, "message not added ", Toast.LENGTH_SHORT).show();

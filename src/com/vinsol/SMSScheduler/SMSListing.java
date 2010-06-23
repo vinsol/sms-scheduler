@@ -63,7 +63,14 @@ public class SMSListing extends ListActivity {
 		   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			   int idOfClickedMessage = messagesList.get(position).id;
 			   
-			   //sfdasfsdgfdg
+			   ArrayList<Receiver> receiversArrayList = new SMSSchedulerDBHelper(SMSListing.this).retrieveReceivers(idOfClickedMessage);
+			   
+			   MessageAndReceivers.message = messagesList.get(position);
+			   MessageAndReceivers.receivers = receiversArrayList;
+			  
+			  new IntentHandler().gotoScheduleSMSEditPage(SMSListing.this);
+			   
+			  //fdsfsdfgsd
 		   }
 	   });
 	    

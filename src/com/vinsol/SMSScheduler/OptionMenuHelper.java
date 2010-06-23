@@ -1,8 +1,6 @@
 package com.vinsol.SMSScheduler;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -19,30 +17,26 @@ public class OptionMenuHelper {
 	}
 	
 	/* Handles item selections */
-	public boolean onOptionsItemSelected(Context ctx, MenuItem item) {
+	public boolean onOptionsItemSelected(Context context, MenuItem item) {
 	    switch (item.getItemId()) {
 		    case R.id.OPTION_MENU_SCHEDULE_SMS: {
-		    	Intent i = new Intent(ctx, ScheduleSMS.class);
-		    	((Activity) ctx).finish();
-		    	ctx.startActivity(i);
+		    	new IntentHandler().gotoScheduleSMSPage(context);
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_SMS_LISTING: {
-		    	Intent i = new Intent(ctx, SMSListing.class);
-		    	((Activity) ctx).finish();
-		    	ctx.startActivity(i);
+		    	new IntentHandler().gotoSMSListingPage(context);
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_ABOUT: {
-		    	Toast.makeText(ctx, "Under Development :)", Toast.LENGTH_SHORT).show();
+		    	Toast.makeText(context, "Under Development :)", Toast.LENGTH_SHORT).show();
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_HELP: {
-		    	Toast.makeText(ctx, "Under Development :)", Toast.LENGTH_SHORT).show();
+		    	Toast.makeText(context, "Under Development :)", Toast.LENGTH_SHORT).show();
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_SETTINGS: {
-		    	Toast.makeText(ctx, "Under Development :)", Toast.LENGTH_SHORT).show();
+		    	Toast.makeText(context, "Under Development :)", Toast.LENGTH_SHORT).show();
 		    	return true;
 		    }
 		        

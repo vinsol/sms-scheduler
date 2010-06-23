@@ -23,4 +23,4 @@ public class Receiver {
     public String getPhoneNumber() {
         return phoneNumber;
     }
-}//end class ContactInfo
+}//end class Receiver
