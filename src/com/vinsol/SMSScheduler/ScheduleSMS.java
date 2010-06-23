@@ -336,15 +336,21 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 	        return "0" + String.valueOf(c);
 	}
 	
-	/* Creates the menu items */
+	/**==================================================================
+	 * method onCreateOptionsMenu(Menu menu)
+	 * create optionMenu
+	 *===================================================================*/
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    new OptionMenuHelper().createOptionMenu(menu);
 	    return true;
-	}
+	}//end method onCreateOptionsMenu
 
-	/* Handles item selections */
+	/**==================================================================
+	 * method onOptionsItemSelected(MenuItem item)
+	 * called when an option item is being clicked
+	 *===================================================================*/
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    return new OptionMenuHelper().onOptionsItemSelected(this, item);
-	}
+	}//end method onOptionsItemSelected
     
 }//end class scheduleSMS

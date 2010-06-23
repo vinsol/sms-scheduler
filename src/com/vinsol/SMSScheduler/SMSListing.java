@@ -6,9 +6,12 @@ import java.util.HashMap;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 public class SMSListing extends ListActivity {
 	
@@ -25,6 +28,12 @@ public class SMSListing extends ListActivity {
     	ArrayList<HashMap<String, String>> listViewData = new ArrayList<HashMap<String, String>>();
     	
     	ArrayList<Message> messagesList = new SMSSchedulerDBHelper(this).retrieveMessages();
+    	
+    	if(messagesList == null || messagesList.isEmpty()) {
+    		Toast.makeText(this, getString(R.string.toast_message_sms_listing_no_sms_to_show), Toast.LENGTH_SHORT).show();
+    		return;
+    	}
+    	
     	int sizeOfMessagesList = messagesList.size();
     	
 		for(int i=0; i<sizeOfMessagesList; i++){
@@ -61,6 +70,23 @@ public class SMSListing extends ListActivity {
 		}else{
 			setListAdapter(mSchedule);
 		}
-	 }//end method onCreate
+	}//end method onCreate
+	
+	/**==================================================================
+	 * method onCreateOptionsMenu(Menu menu)
+	 * create optionMenu
+	 *===================================================================*/
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    new OptionMenuHelper().createOptionMenu(menu);
+	    return true;
+	}//end method onCreateOptionsMenu
+
+	/**==================================================================
+	 * method onOptionsItemSelected(MenuItem item)
+	 * called when an option item is being clicked
+	 *===================================================================*/
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    return new OptionMenuHelper().onOptionsItemSelected(this, item);
+	}//end method onOptionsItemSelected
 	
 }//end class MessageListing

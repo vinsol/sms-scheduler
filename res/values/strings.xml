@@ -17,6 +17,7 @@
 	     String shown on Toast 
 	========================================================== -->
 	<string name="toast_message_schedule_sms_done_no_contact_number">"Please add a contact number"</string>
-	<string name="toast_message_schedule_sms_done_blank_message">"Message can not be blank"</string>    
+	<string name="toast_message_schedule_sms_done_blank_message">"Message can not be blank"</string> 
+	<string name="toast_message_sms_listing_no_sms_to_show">"No SMS To Show"</string>    
 
 </resources>

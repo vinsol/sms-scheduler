@@ -66,5 +66,6 @@ public final class R {
 	========================================================== 
          */
         public static final int toast_message_schedule_sms_done_no_contact_number=0x7f060004;
+        public static final int toast_message_sms_listing_no_sms_to_show=0x7f060006;
     }
 }
