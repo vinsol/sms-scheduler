@@ -8,6 +8,9 @@ public class Constant {
 	public static final int STATUS_SCHEDULED = 1;
 	public static final int STATUS_SEND = 2;
 	
+	public static final String STATUS_SCHEDULED_STRING = "SCHEDULED";
+	public static final String STATUS_SEND_STRING = "SEND";
+	
 	/**============================================
 	 * Strings for HashMap for message listing
 	 *=============================================*/

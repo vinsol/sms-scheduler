@@ -38,12 +38,11 @@ public class SMSListing extends ListActivity {
     	
 		for(int i=0; i<sizeOfMessagesList; i++){
 			HashMap<String, String> map = new HashMap<String, String>();
-			long timeInMilliSecond = messagesList.get(i).scheduledTimeInMilliSecond;
 			
 			map.put(Constant.MESSAGE_BODY, messagesList.get(i).messageBody);
-			map.put(Constant.SCHEDULED_DATE, new DateTimeConverter().getDateString(timeInMilliSecond));
-			map.put(Constant.SCHEDULED_TIME, new DateTimeConverter().getTimeString(timeInMilliSecond));
-			map.put(Constant.STATUS, "" + messagesList.get(i).status);
+			map.put(Constant.SCHEDULED_DATE, messagesList.get(i).getDateString());
+			map.put(Constant.SCHEDULED_TIME, messagesList.get(i).getTimeString());
+			map.put(Constant.STATUS, messagesList.get(i).getStatusInString());
 			
 			listViewData.add(map);
 		}
