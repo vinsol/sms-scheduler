@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.provider.Contacts.People;
 import android.provider.Contacts.People.Phones;
 
+import com.vinsol.SMSScheduler.Receiver;
+
 /**=========================================================================================
  * An implementation of {@link ContactAccessor} that uses legacy Contacts API.
  * These APIs are deprecated and should not be used unless we are running on a
@@ -29,8 +31,8 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
      * Retrieves the contact information.
      *====================================================================================*/
     @Override
-    public ContactInfo loadContact(ContentResolver contentResolver, Uri contactUri) {
-        ContactInfo contactInfo = new ContactInfo();
+    public Receiver loadContact(ContentResolver contentResolver, Uri contactUri) {
+        Receiver contactInfo = new Receiver();
         Cursor cursor = contentResolver.query(contactUri,
                 new String[]{People.DISPLAY_NAME}, null, null, null);
         try {

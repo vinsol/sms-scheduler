@@ -1,9 +1,9 @@
-package com.vinsol.SMSScheduler.ContactAppManager;
+package com.vinsol.SMSScheduler;
 
 /**=========================================================
  * A model object containing contact data.
  *==========================================================*/
-public class ContactInfo {
+public class Receiver {
 
     private String displayName;
     private String phoneNumber;

@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 
+import com.vinsol.SMSScheduler.Receiver;
+
 /**==============================================================================================
  * An implementation of {@link ContactAccessor} that uses current Contacts API.
  * This class should be used on Eclair or beyond, but would not work on any earlier
@@ -28,8 +30,8 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * Retrieves the contact information.
      *================================================================================*/
     @Override
-    public ContactInfo loadContact(ContentResolver contentResolver, Uri contactUri) {
-        ContactInfo contactInfo = new ContactInfo();
+    public Receiver loadContact(ContentResolver contentResolver, Uri contactUri) {
+        Receiver contactInfo = new Receiver();
         long contactId = -1;
 
         // Load the display name for the specified person

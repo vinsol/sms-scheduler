@@ -27,7 +27,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.vinsol.SMSScheduler.ContactAppManager.ContactAccessor;
-import com.vinsol.SMSScheduler.ContactAppManager.ContactInfo;
  
 public class ScheduleSMS extends ListActivity implements OnClickListener {
     final int DATE_DIALOG_ID = 1;
@@ -55,7 +54,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     // Request code for the contact picker activity
     private static final int PICK_CONTACT_REQUEST = 1;
     
-    ArrayList<ContactInfo> listOfReceivers = new ArrayList<ContactInfo>();
+    ArrayList<Receiver> listOfReceivers = new ArrayList<Receiver>();
 
 
     
@@ -149,7 +148,6 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			break;
     		}
     		case R.id.schedule_sms_message_from_template_button: {
-    			new SMSSchedulerDBHelper(this).deleteSMS("7");
     			break;
     		}
     		case R.id.schedule_sms_done_button: {
@@ -189,15 +187,15 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	//We should always run database queries on a background thread. The database may be
         //locked by some process for a long time.  If we locked up the UI thread while waiting
         //for the query to come back, we might get an "Application Not Responding" dialog.
-        AsyncTask<Uri, Void, ContactInfo> task = new AsyncTask<Uri, Void, ContactInfo>() {
+        AsyncTask<Uri, Void, Receiver> task = new AsyncTask<Uri, Void, Receiver>() {
 
             @Override
-            protected ContactInfo doInBackground(Uri... uris) {
+            protected Receiver doInBackground(Uri... uris) {
                 return mContactAccessor.loadContact(getContentResolver(), uris[0]);
             }
 
             @Override
-            protected void onPostExecute(ContactInfo contactInfoObject) {
+            protected void onPostExecute(Receiver contactInfoObject) {
                 String contactName = contactInfoObject.getDisplayName();
                 String contactNumber = contactInfoObject.getPhoneNumber();
                 receiverDetailAdapter.add(contactName);  
@@ -212,7 +210,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
      * method addToReceiverList
      * ====================================================================*/
     void addToReceiverList(String contactName, String contactNumber) {
-    	ContactInfo ci = new ContactInfo();
+    	Receiver ci = new Receiver();
     	ci.setDisplayName(contactName);
     	ci.setPhoneNumber(contactNumber);
     	
@@ -237,7 +235,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             	
         		long messageID = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
             	if(messageID != -1){
-            		new SMSSchedulerDBHelper(this).addContacts(messageID, listOfReceivers);
+            		new SMSSchedulerDBHelper(this).addReceivers(messageID, listOfReceivers);
             		
             		Intent intent = new Intent(this, SMSListing.class);
             		finish();

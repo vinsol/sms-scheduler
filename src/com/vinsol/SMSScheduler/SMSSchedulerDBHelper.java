@@ -11,8 +11,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.vinsol.SMSScheduler.ContactAppManager.ContactInfo;
-
 public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 
 	//database details
@@ -21,7 +19,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     
 	//table name
 	private static final String MESSAGE_TABLE_NAME = "message";
-    private static final String CONTACT_TABLE_NAME = "Contact";
+    private static final String RECEIVER_TABLE_NAME = "receiver";
  
     //MESSAGE_TABLE columns name
     private static final String MESSAGE_TABLE_COLUMN_ID = "_id";
@@ -30,10 +28,10 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     private static final String MESSAGE_TABLE_COLUMN_STATUS = "status";
     
     //CONTACT_TABLE columns name
-    private static final String CONTACT_TABLE_COLUMN_ID = "_id";
-    private static final String CONTACT_TABLE_MESSAGE_ID = "message_id";
-    private static final String CONTACT_TABLE_COLUMN_CONTACT_NUMBER = "contact_number";
-    private static final String CONTACT_TABLE_COLUMN_CONTACT_NAME = "name";
+    private static final String RECEIVER_TABLE_COLUMN_ID = "_id";
+    private static final String RECEIVER_TABLE_MESSAGE_ID = "message_id";
+    private static final String RECEIVER_TABLE_COLUMN_CONTACT_NUMBER = "contact_number";
+    private static final String RECEIVER_TABLE_COLUMN_RECEIVER_NAME = "name";
     
     
     //create SMS table String
@@ -47,11 +45,11 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     
     //create contact table string
     private static final String CREATE_CONTACT_TABLE =
-		        "CREATE TABLE " + CONTACT_TABLE_NAME + " (" 
-		        + CONTACT_TABLE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-		        + CONTACT_TABLE_MESSAGE_ID + " TEXT, "
-		        + CONTACT_TABLE_COLUMN_CONTACT_NUMBER + " TEXT, " 
-		        + CONTACT_TABLE_COLUMN_CONTACT_NAME + " TEXT" 
+		        "CREATE TABLE " + RECEIVER_TABLE_NAME + " (" 
+		        + RECEIVER_TABLE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+		        + RECEIVER_TABLE_MESSAGE_ID + " TEXT, "
+		        + RECEIVER_TABLE_COLUMN_CONTACT_NUMBER + " TEXT, " 
+		        + RECEIVER_TABLE_COLUMN_RECEIVER_NAME + " TEXT" 
 		        + ");";
     
     SQLiteDatabase SMSSchedulerDBObject;
@@ -97,7 +95,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     }//end method checkOrCreateDB
     
     /**=====================================================================
-     * method add message
+     * method addMessage
      *======================================================================*/
     public long addMessage(String message, String scheduledTime) {
     	  
@@ -118,7 +116,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
         	SMSSchedulerDBObject.close();
         }
     	return resultRow;
-    }//end method addSMS
+    }//end method addMessage
     
     /**=====================================================================
      * method retrieveMessages
@@ -158,7 +156,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     /**=====================================================================
      * method delete message
      *======================================================================*/
-    public boolean deleteSMS(String idOfMessage) {
+    public boolean deleteMessage(String idOfMessage) {
     	  
     	SMSSchedulerDBObject = getWritableDatabase();
     	
@@ -178,12 +176,12 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
         }else{
         	return true;
         }
-    }//end method deleteSMS
+    }//end method deleteMessage
     
     /**=====================================================================
-     * method add contacts
+     * method add Receivers
      *======================================================================*/
-    public void addContacts(long messageID, ArrayList<ContactInfo> contactInfoList) {
+    public void addReceivers(long messageID, ArrayList<Receiver> contactInfoList) {
     	  
     	SMSSchedulerDBObject = getWritableDatabase();
     
@@ -195,12 +193,12 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     		ContentValues contactValues = new ContentValues();
             
     		
-    		contactValues.put(CONTACT_TABLE_MESSAGE_ID, messageID);
-            contactValues.put(CONTACT_TABLE_COLUMN_CONTACT_NUMBER, contactNumber);
-            contactValues.put(CONTACT_TABLE_COLUMN_CONTACT_NAME, displayName);
+    		contactValues.put(RECEIVER_TABLE_MESSAGE_ID, messageID);
+            contactValues.put(RECEIVER_TABLE_COLUMN_CONTACT_NUMBER, contactNumber);
+            contactValues.put(RECEIVER_TABLE_COLUMN_RECEIVER_NAME, displayName);
             
             try {
-            	SMSSchedulerDBObject.insertOrThrow(CONTACT_TABLE_NAME, null, contactValues);
+            	SMSSchedulerDBObject.insertOrThrow(RECEIVER_TABLE_NAME, null, contactValues);
             }catch(SQLException sqle) {
             	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> addContacts -> in catch", "SQLException has occurred" + sqle);
             }
@@ -208,7 +206,42 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     	
     	SMSSchedulerDBObject.close();
     	
-    }//end method addContacts
+    }//end method addReceivers
+    
+    
+    /**=====================================================================
+     * method retrieveContacts
+     *======================================================================*/
+    public ArrayList<Receiver> retrieveReceivers(int messageId) {
+    	  
+    	SMSSchedulerDBObject = getReadableDatabase();
+
+		Cursor receiversCursor = SMSSchedulerDBObject.query(RECEIVER_TABLE_NAME, null, "RECEIVER_TABLE_MESSAGE_ID=" + messageId, null, null, null, null);
+       	
+		ArrayList<Receiver> receiversList = new ArrayList<Receiver>();
+		
+		if (receiversCursor.moveToFirst()) {
+			do {
+				Receiver receiverObject = new Receiver();
+				//receiverObject. = messagesCursor.getInt(0);
+				//receiverObject.scheduledTimeInMilliSecond = messagesCursor.getLong(1);
+				//messageObject.messageBody = messagesCursor.getString(2);
+				//messageObject.status = messagesCursor.getInt(3);
+				
+				//messagesList.add(messageObject);
+			} while (receiversCursor.moveToNext());
+		}else {
+			receiversList = null;
+		}
+		if (receiversCursor != null && !receiversCursor.isClosed()) {
+			receiversCursor.close();
+		}
+		
+		SMSSchedulerDBObject.close();
+		
+		return receiversList;
+
+    }//end method retrieveReceivers
     
 }//end class SMSSchedulerDBHelper
 

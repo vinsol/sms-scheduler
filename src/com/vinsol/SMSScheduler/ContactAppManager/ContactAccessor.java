@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 
+import com.vinsol.SMSScheduler.Receiver;
+
 /**===================================================================================
  * This abstract class defines SDK-independent API for communication with
  * Contacts Provider. The actual implementation used by the application depends
@@ -36,7 +38,6 @@ public abstract class ContactAccessor {
              * resolve references to all other classes it uses. Since the pre-Eclair
              * does not have those classes, the loading of ContactAccessorSdk5 would fail.
              *=================================================================================*/
-            @SuppressWarnings("deprecation")
             int sdkVersion = Integer.parseInt(Build.VERSION.SDK);       // Cupcake style
             if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
                 className = "com.vinsol.SMSScheduler.ContactAppManager.ContactAccessorSdk3_4";
@@ -70,5 +71,5 @@ public abstract class ContactAccessor {
      * used, but the result is the same: the {@link #mDisplayName} and {@link #mPhoneNumber}
      * fields are populated with correct data.
      *================================================================================================*/
-    public abstract ContactInfo loadContact(ContentResolver contentResolver, Uri contactUri);
+    public abstract Receiver loadContact(ContentResolver contentResolver, Uri contactUri);
 }//end class ContactAccessor

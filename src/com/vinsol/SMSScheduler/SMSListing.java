@@ -8,15 +8,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class SMSListing extends ListActivity {
 	
 	ListView lv;
 	
+	ArrayList<Message> messagesList;
+	
+	/**==========================================================================
+	 * method onCreate()
+	 *===========================================================================*/
 	@Override
     public void onCreate(Bundle onSavedInstanceState) {
 	    	
@@ -27,7 +35,7 @@ public class SMSListing extends ListActivity {
     	
     	ArrayList<HashMap<String, String>> listViewData = new ArrayList<HashMap<String, String>>();
     	
-    	ArrayList<Message> messagesList = new SMSSchedulerDBHelper(this).retrieveMessages();
+    	messagesList = new SMSSchedulerDBHelper(this).retrieveMessages();
     	
     	if(messagesList == null || messagesList.isEmpty()) {
     		Toast.makeText(this, getString(R.string.toast_message_sms_listing_no_sms_to_show), Toast.LENGTH_SHORT).show();
@@ -50,7 +58,14 @@ public class SMSListing extends ListActivity {
 	    lv = this.getListView();
 	    
 	    
-	   // lv.setOnItemSelectedListener(this);
+	   lv.setOnItemClickListener(new OnItemClickListener() {
+		   @Override
+		   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			   int idOfClickedMessage = messagesList.get(position).id;
+			   
+			   //sfdasfsdgfdg
+		   }
+	   });
 	    
 	    SimpleAdapter mSchedule = new SimpleAdapter
 	    			(this, listViewData, 
