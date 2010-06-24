@@ -82,7 +82,9 @@ public final class R {
 	========================================================== 
          */
         public static final int toast_message_schedule_sms_done_no_contact_number=0x7f060004;
-        public static final int toast_message_sms_listing_no_sms_to_show=0x7f060006;
-        public static final int toast_message_sms_listing_problem_in_delete=0x7f060007;
+        public static final int toast_message_schedule_sms_problem_in_adding_message=0x7f060006;
+        public static final int toast_message_schedule_sms_problem_in_updating_message=0x7f060007;
+        public static final int toast_message_sms_listing_no_sms_to_show=0x7f060008;
+        public static final int toast_message_sms_listing_problem_in_delete=0x7f060009;
     }
 }

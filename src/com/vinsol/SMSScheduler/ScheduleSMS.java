@@ -206,6 +206,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			break;
     		}
     		case R.id.schedule_sms_message_from_template_button: {
+    			Toast.makeText(this, "Under Construction :)", Toast.LENGTH_LONG).show();
     			break;
     		}
     		case R.id.schedule_sms_done_button: {
@@ -287,18 +288,37 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         	
         	if(message == null || message.equalsIgnoreCase("")) {
         		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_blank_message), Toast.LENGTH_LONG).show();
-        	} else {
+        	} else {	
         		String scheduledTime = "" + scheduledTimeCalendar.getTimeInMillis();
             	
-        		long messageID = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
-            	if(messageID != -1){
-            		new SMSSchedulerDBHelper(this).addReceivers(messageID, listOfReceivers);
+        		//========================= for Add page =======================================//
+        		if(typeOfPage == Constant.PAGE_TYPE_ADD) {
+        			long messageID = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
+        			if(messageID != -1) {
+        				new SMSSchedulerDBHelper(this).addReceivers(messageID, listOfReceivers);
             		
-            		new IntentHandler().gotoSMSListingPage(this);
+        				new IntentHandler().gotoSMSListingPage(this);
             		
-            	}else {
-            		Toast.makeText(this, "message not added ", Toast.LENGTH_SHORT).show();
-            	}
+        			}else {
+        				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_problem_in_adding_message), Toast.LENGTH_SHORT).show();
+        			}
+        		}//end if(type of page is add)
+        		
+        		else if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
+        			
+        			long messageID = messageForEdit.id;
+        			int numberOfAffectedRows = new SMSSchedulerDBHelper(this).updateMessage(messageID, message, scheduledTime);
+        			
+        			if(numberOfAffectedRows != 0) {
+        				new SMSSchedulerDBHelper(this).updateReceivers(messageID, listOfReceivers);
+        				
+        				new IntentHandler().gotoSMSListingPage(this);
+            		
+        			}else {
+        				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_problem_in_updating_message), Toast.LENGTH_SHORT).show();
+        			}
+        			
+        		}//end else if(type of page is Edit)
         	}
     	}
     }//end Method doneButtonHandler

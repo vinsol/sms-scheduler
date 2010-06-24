@@ -119,6 +119,31 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     }//end method addMessage
     
     /**=====================================================================
+     * method updateMessage
+     *======================================================================*/
+    public int updateMessage(long idOfMessage, String message, String scheduledTime) {
+    	  
+    	SMSSchedulerDBObject = getWritableDatabase();
+    	
+    	ContentValues messageValues = new ContentValues();
+    	messageValues.put(MESSAGE_TABLE_COLUMN_ID, idOfMessage);
+    	messageValues.put(MESSAGE_TABLE_COLUMN_SCHEDULED_TIME, scheduledTime);
+        messageValues.put(MESSAGE_TABLE_COLUMN_MESSAGE_BODY, message);
+        messageValues.put(MESSAGE_TABLE_COLUMN_STATUS, Constant.STATUS_SCHEDULED);
+        
+        int numberOfRowsAffected = 0;
+        
+        try {
+        	numberOfRowsAffected = SMSSchedulerDBObject.update(MESSAGE_TABLE_NAME, messageValues, MESSAGE_TABLE_COLUMN_ID + "=" + idOfMessage, null);
+        }catch(SQLException sqle) {
+        	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> updateMessage -> in catch", "SQLException has occurred" + sqle);
+        }finally {
+        	SMSSchedulerDBObject.close();
+        }
+    	return numberOfRowsAffected;
+    }//end method updateMessage
+    
+    /**=====================================================================
      * method retrieveMessages
      *======================================================================*/
     public ArrayList<Message> retrieveMessages() {
@@ -181,7 +206,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     /**=====================================================================
      * method add Receivers
      *======================================================================*/
-    public void addReceivers(long messageID, ArrayList<Receiver> contactInfoList) {
+    public void addReceivers(long messageId, ArrayList<Receiver> contactInfoList) {
     	  
     	SMSSchedulerDBObject = getWritableDatabase();
     
@@ -193,7 +218,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     		ContentValues contactValues = new ContentValues();
             
     		
-    		contactValues.put(RECEIVER_TABLE_MESSAGE_ID, messageID);
+    		contactValues.put(RECEIVER_TABLE_MESSAGE_ID, messageId);
             contactValues.put(RECEIVER_TABLE_COLUMN_CONTACT_NUMBER, contactNumber);
             contactValues.put(RECEIVER_TABLE_COLUMN_RECEIVER_NAME, displayName);
             
@@ -208,9 +233,43 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     	
     }//end method addReceivers
     
+    /**=====================================================================
+     * method update Receivers
+     *======================================================================*/
+    public void updateReceivers(long messageId, ArrayList<Receiver> contactInfoList) {
+    	  
+    	SMSSchedulerDBObject = getWritableDatabase();
+    
+    	
+        try {
+        	SMSSchedulerDBObject.delete(RECEIVER_TABLE_NAME, RECEIVER_TABLE_MESSAGE_ID + "=" + messageId , null);
+        
+        	for(int i=0; i<contactInfoList.size(); i++) {
+        		
+        		String contactNumber = contactInfoList.get(i).getPhoneNumber();
+        		String displayName = contactInfoList.get(i).getDisplayName();
+        		
+        		ContentValues contactValues = new ContentValues();
+                
+        		
+        		contactValues.put(RECEIVER_TABLE_MESSAGE_ID, messageId);
+                contactValues.put(RECEIVER_TABLE_COLUMN_CONTACT_NUMBER, contactNumber);
+                contactValues.put(RECEIVER_TABLE_COLUMN_RECEIVER_NAME, displayName);
+                
+            	SMSSchedulerDBObject.insertOrThrow(RECEIVER_TABLE_NAME, null, contactValues);
+                
+        	}//end for
+ 
+        } catch(SQLException sqle) {
+        	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> updateReceivers -> in catch", "SQLException has occurred" + sqle);
+        } finally {
+        	SMSSchedulerDBObject.close();
+        }
+    }//end method updateReceivers
+    
     
     /**=====================================================================
-     * method retrieveContacts
+     * method retrieveReceivers
      *======================================================================*/
     public ArrayList<Receiver> retrieveReceivers(int messageId) {
     	  
