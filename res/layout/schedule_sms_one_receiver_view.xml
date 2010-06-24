@@ -2,7 +2,7 @@
 <TextView
 	xmlns:android="http://schemas.android.com/apk/res/android" 
 	android:id="@+id/schedule_sms_one_reciever_view_contact_detail"
-  	android:layout_width="wrap_content"
+  	android:layout_width="fill_parent"
   	android:layout_height="wrap_content"
   	android:paddingLeft="20dip"
   	android:paddingTop="5dip"

@@ -13,10 +13,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -25,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.vinsol.SMSScheduler.ContactAppManager.ContactAccessor;
  
@@ -112,7 +115,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         //========================== receiver Detail List View ==========================//
         receiverDetailListView = this.getListView();
         receiverDetailListView.setDivider(getResources().getDrawable(R.drawable.divider));
-        //receiverDetailListView.setOnItemSelectedListener(this);
+        
+        registerForContextMenu(receiverDetailListView);
         
         
         receiverDetailAdapter = new ArrayAdapter<String>(this, R.layout.schedule_sms_one_receiver_view);
@@ -372,12 +376,58 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     		}
 	};//end object timeSetListenerObject
 	
+	/**==================================================================
+	 * method pad(int c)
+	 *===================================================================*/
 	private static String pad(int c) {
 	    if (c >= 10)
 	        return String.valueOf(c);
 	    else
 	        return "0" + String.valueOf(c);
+	}//end method pad
+	
+	
+	
+	String headingForContextMenu;
+	/**=============================================================================
+	 * method onCreateContextMenu
+	 *==============================================================================*/
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		int positionOfClickedListItem = ((AdapterContextMenuInfo)menuInfo).position;
+		
+		String displayName = listOfReceivers.get(positionOfClickedListItem).getDisplayName();
+		
+		if(displayName.equalsIgnoreCase(Constant.UNKNOWN_NAME)){
+			headingForContextMenu = listOfReceivers.get(positionOfClickedListItem).getPhoneNumber();
+		} else{
+			headingForContextMenu = displayName;
+		}
+	
+		menu.setHeaderTitle(headingForContextMenu);
+		
+		menu.add(0, R.id.SCHEDULE_SMS_RECEIVER_CONTEXT_MENU_DELETE, 0,  "Delete");
 	}
+
+	/**=============================================================================
+	 * method onContextItemSelected
+	 *==============================================================================*/
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+	
+		int positionOfClickedListItem = info.position;
+		switch (item.getItemId()) {
+			case R.id.SCHEDULE_SMS_RECEIVER_CONTEXT_MENU_DELETE: {
+				listOfReceivers.remove(positionOfClickedListItem);
+				receiverDetailAdapter.remove(headingForContextMenu);
+				return true;
+			}
+			default: {
+				return super.onContextItemSelected(item);
+			}
+		}//end switch
+	}//end method onContextItemSelected
+	
 	
 	/**==================================================================
 	 * method onCreateOptionsMenu(Menu menu)

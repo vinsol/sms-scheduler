@@ -138,7 +138,7 @@ public class SMSListing extends ListActivity {
 				return super.onContextItemSelected(item);
 			}
 		}//end switch
-	}
+	}//end method onContextItemSelected
 	
 	/**==================================================================
 	 * method onCreateOptionsMenu(Menu menu)

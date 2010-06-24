@@ -23,25 +23,38 @@ public final class R {
     public static final class id {
         public static final int OPTION_MENU_ABOUT=0x7f050002;
         public static final int OPTION_MENU_HELP=0x7f050003;
+        /**  ===========================================================
+		IDs for option menu
+	================================================================ 
+         */
         public static final int OPTION_MENU_SCHEDULE_SMS=0x7f050000;
         public static final int OPTION_MENU_SETTINGS=0x7f050004;
         public static final int OPTION_MENU_SMS_LISTING=0x7f050001;
+        /**  ===========================================================
+		IDs for ScheduleSMS context menu
+	================================================================ 
+         */
+        public static final int SCHEDULE_SMS_RECEIVER_CONTEXT_MENU_DELETE=0x7f050008;
         public static final int SMS_LISTING_CONTEXT_MENU_ADD_TO_TEMPLATE=0x7f050007;
         public static final int SMS_LISTING_CONTEXT_MENU_DELETE=0x7f050006;
+        /**  ===========================================================
+		IDs for SMSListing context menu
+	================================================================ 
+         */
         public static final int SMS_LISTING_CONTEXT_MENU_EDIT=0x7f050005;
-        public static final int message_listing_one_message_view_message_body=0x7f050008;
-        public static final int message_listing_one_message_view_send_date=0x7f050009;
-        public static final int message_listing_one_message_view_send_time=0x7f05000a;
-        public static final int message_listing_one_message_view_status=0x7f05000b;
-        public static final int schedule_sms_add_from_contact_button=0x7f05000e;
-        public static final int schedule_sms_add_number_button=0x7f05000d;
-        public static final int schedule_sms_contact_number_edit_text=0x7f05000c;
-        public static final int schedule_sms_done_button=0x7f050013;
-        public static final int schedule_sms_message_edit_text=0x7f05000f;
-        public static final int schedule_sms_message_from_template_button=0x7f050010;
-        public static final int schedule_sms_one_reciever_view_contact_detail=0x7f050014;
-        public static final int schedule_sms_send_date_edit_text=0x7f050011;
-        public static final int schedule_sms_send_time_edit_text=0x7f050012;
+        public static final int message_listing_one_message_view_message_body=0x7f050009;
+        public static final int message_listing_one_message_view_send_date=0x7f05000a;
+        public static final int message_listing_one_message_view_send_time=0x7f05000b;
+        public static final int message_listing_one_message_view_status=0x7f05000c;
+        public static final int schedule_sms_add_from_contact_button=0x7f05000f;
+        public static final int schedule_sms_add_number_button=0x7f05000e;
+        public static final int schedule_sms_contact_number_edit_text=0x7f05000d;
+        public static final int schedule_sms_done_button=0x7f050014;
+        public static final int schedule_sms_message_edit_text=0x7f050010;
+        public static final int schedule_sms_message_from_template_button=0x7f050011;
+        public static final int schedule_sms_one_reciever_view_contact_detail=0x7f050015;
+        public static final int schedule_sms_send_date_edit_text=0x7f050012;
+        public static final int schedule_sms_send_time_edit_text=0x7f050013;
     }
     public static final class layout {
         public static final int message_listing=0x7f030000;
