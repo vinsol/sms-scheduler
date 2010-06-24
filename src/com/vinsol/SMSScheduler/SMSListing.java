@@ -48,9 +48,13 @@ public class SMSListing extends ListActivity {
 		for(int i=0; i<sizeOfMessagesList; i++){
 			HashMap<String, String> map = new HashMap<String, String>();
 			
+			long scheduledTimeInMilliSecond = messagesList.get(i).scheduledTimeInMilliSecond;
+			String dateString = CalendarDateConverter.getDateString(scheduledTimeInMilliSecond);
+			String timeString = CalendarDateConverter.getTimeString(scheduledTimeInMilliSecond);
+			
 			map.put(Constant.MESSAGE_BODY, messagesList.get(i).messageBody);
-			map.put(Constant.SCHEDULED_DATE, messagesList.get(i).getDateString());
-			map.put(Constant.SCHEDULED_TIME, messagesList.get(i).getTimeString());
+			map.put(Constant.SCHEDULED_DATE, dateString);
+			map.put(Constant.SCHEDULED_TIME, timeString);
 			map.put(Constant.STATUS, messagesList.get(i).getStatusInString());
 			
 			listViewData.add(map);

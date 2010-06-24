@@ -40,12 +40,9 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     EditText sendDateEditText, sendTimeEditText;
     
     EditText messageEditText;
-	
-	Calendar currentTimeCalendar, scheduledTimeCalendar;
-	
-	int currentDate, currentMonth, currentYear;
-	int currentHour, currentMinute;
-	
+		
+    Calendar scheduledTimeCalendar = Calendar.getInstance();
+   
 	ListView receiverDetailListView;
 	
 	ArrayAdapter<String> receiverDetailAdapter;
@@ -64,7 +61,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     //message used when type Of page is Edit
     Message messageForEdit;
       
-    
+    int typeOfPage;
     
     /**=========================================================== 
      * method onCreate()
@@ -77,30 +74,9 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
     	setContentView(R.layout.schedule_sms);
     	
-    	int typeOfPage = getIntent().getIntExtra(Constant.TYPE_OF_SCHEDULE_SMS_PAGE, Constant.PAGE_TYPE_ADD);
-        
-    	//=======================================================================
-    	// if mode of page is edit than setting message and list of receivers
-    	//=======================================================================
-    	messageForEdit = MessageAndReceivers.message;
-    	listOfReceivers = MessageAndReceivers.receivers;
+    	//======================== setting type of page ===========================//
+    	typeOfPage = getIntent().getIntExtra(Constant.TYPE_OF_SCHEDULE_SMS_PAGE, Constant.PAGE_TYPE_ADD);
     	
-    	//======================== setting current Date and time ===========================//
-		currentTimeCalendar = Calendar.getInstance();
-		scheduledTimeCalendar = Calendar.getInstance();
-    	
-		if(typeOfPage == Constant.PAGE_TYPE_EDIT){
-    		currentTimeCalendar.setTimeInMillis(messageForEdit.scheduledTimeInMilliSecond);
-    		scheduledTimeCalendar.setTimeInMillis(messageForEdit.scheduledTimeInMilliSecond);
-    	}
-    	
-    	currentDate = currentTimeCalendar.get(Calendar.DATE);
-    	currentMonth = currentTimeCalendar.get(Calendar.MONTH);
-    	currentYear = currentTimeCalendar.get(Calendar.YEAR);
-    	//if we wants hour in 24 hour format then use HOUR_OF_DAY else use HOUR
-    	currentHour = currentTimeCalendar.get(Calendar.HOUR_OF_DAY);
-    	currentMinute = currentTimeCalendar.get(Calendar.MINUTE);
-        
     	//========================== Add phone Number Edit Text ============================//
         contactNumberEditText = (EditText)findViewById(R.id.schedule_sms_contact_number_edit_text);
         
@@ -117,7 +93,6 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         receiverDetailListView.setDivider(getResources().getDrawable(R.drawable.divider));
         
         registerForContextMenu(receiverDetailListView);
-        
         
         receiverDetailAdapter = new ArrayAdapter<String>(this, R.layout.schedule_sms_one_receiver_view);
         
@@ -149,32 +124,66 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         //========================== Schedule SMS Button ==========================//
         Button scheduleSMSButton = (Button) findViewById(R.id.schedule_sms_done_button);
         if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
-        	scheduleSMSButton.setText("Edit");
+        	scheduleSMSButton.setText("Edit SMS");
         }
         scheduleSMSButton.setOnClickListener(this);
         
-        //========================================================================
-        // if type of page is edit fill message edit text, receivers , date and 
-        // time edit text
-        //========================================================================
-        if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
-        	messageEditText.setText(messageForEdit.messageBody);
-        	sendDateEditText.setText(messageForEdit.getDateString());
-        	sendTimeEditText.setText(messageForEdit.getTimeString());
-        	
-        	for(int i=0; i < listOfReceivers.size(); i++ ) {
-        		String contactNumber = listOfReceivers.get(i).getPhoneNumber();
-        		String displayName = listOfReceivers.get(i).getDisplayName();
-        		
-        		if(displayName.equalsIgnoreCase(Constant.UNKNOWN_NAME)) {
-        			receiverDetailAdapter.add(contactNumber);
-        		}else {
-        			receiverDetailAdapter.add(displayName);
-        		}
-        	}
+        //======================fill Form Data according to the pageType =======================// 
+        if(typeOfPage == Constant.PAGE_TYPE_ADD) {
+        	fillDateAndTimeEditText();
+        }else if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
+        	fillFormWithDataForEdit();
         }
                 
     }//end method onCreate
+    
+    /**========================================================================
+	 * method filldateAndTimeEditText
+	 *=========================================================================*/
+    void fillDateAndTimeEditText(){
+ 
+    	//========================== fill dateEditText ================================//
+    	String scheduledDate = CalendarDateConverter.getDateString(scheduledTimeCalendar);
+        sendDateEditText.setText(scheduledDate);
+        
+    	//========================== fill timeEditText =================================//
+    	String scheduledTime = CalendarDateConverter.getTimeString(scheduledTimeCalendar);
+        sendTimeEditText.setText(scheduledTime);
+        
+    }//end method fillDateAndTimeEditText
+    
+    
+	
+	/**========================================================================
+	 * method fillFormWithDataForEdit 
+	 * if type of page is edit fill message edit text and receivers
+	 *=========================================================================*/
+    void fillFormWithDataForEdit(){
+    	
+    	messageForEdit = MessageAndReceivers.message;
+		listOfReceivers = MessageAndReceivers.receivers;
+		
+		scheduledTimeCalendar.setTimeInMillis(messageForEdit.scheduledTimeInMilliSecond);
+    	
+		//============================ fillDate And time Edit Text =====================//
+		fillDateAndTimeEditText();
+		
+    	//=========================== fill messageEditText ============================//
+		messageEditText.setText(messageForEdit.messageBody);
+    	
+		//=========================== fill receiversList ==============================//
+    	for(int i=0; i < listOfReceivers.size(); i++ ) {
+    		String contactNumber = listOfReceivers.get(i).getPhoneNumber();
+    		String displayName = listOfReceivers.get(i).getDisplayName();
+    		
+    		if(displayName.equalsIgnoreCase(Constant.UNKNOWN_NAME)) {
+    			receiverDetailAdapter.add(contactNumber);
+    		}else {
+    			receiverDetailAdapter.add(displayName);
+    		}
+    	}
+    }//end method fillfillFormWithDataForEdit
+	
     
     /**===============================================================
      * method onClick
@@ -302,10 +311,17 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     protected Dialog onCreateDialog(int id) {
         switch (id) {
 	        case DATE_DIALOG_ID: {
-	            return new DatePickerDialog(this, dateSetListenerObject, currentYear, currentMonth, currentDate);
+	        	int scheduledDate = scheduledTimeCalendar.get(Calendar.DATE);
+	        	int scheduledMonth = scheduledTimeCalendar.get(Calendar.MONTH);
+	        	int scheduledYear = scheduledTimeCalendar.get(Calendar.YEAR);
+	        	return new DatePickerDialog(this, dateSetListenerObject, scheduledYear, scheduledMonth, scheduledDate);
 	        }
 	        case TIME_DIALOG_ID: {
-	        	return new TimePickerDialog(this, timeSetListenerObject, currentHour, currentMinute, true);
+	        	//if we wants hour in 24 hour format then use HOUR_OF_DAY else use HOUR
+	        	int scheduledHour = scheduledTimeCalendar.get(Calendar.HOUR_OF_DAY);
+	        	int scheduledMinute = scheduledTimeCalendar.get(Calendar.MINUTE);
+	            
+	        	return new TimePickerDialog(this, timeSetListenerObject, scheduledHour, scheduledMinute, true);
 	        }
         }//end switch
 		return null;
@@ -339,23 +355,12 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     		
     		@Override
             public void onTimeSet(TimePicker view, int hour, int minute) {
-                Log.v("in onTimeSet", "hour = " + hour);
-                Log.v("in onTimeSet", "minute = " + minute);
                 
     			//================== setting calendar time ======================//
             	scheduledTimeCalendar.set(Calendar.HOUR_OF_DAY, hour);
             	scheduledTimeCalendar.set(Calendar.MINUTE, minute);
             	scheduledTimeCalendar.set(Calendar.SECOND, 0);
             	scheduledTimeCalendar.set(Calendar.MILLISECOND, 0);
-            	
-            	Log.v("Current Time calendar millisecond = " , "" + currentTimeCalendar.getTimeInMillis());
-            	Log.v("Scheduled Time calendar millisecond = ", "" + scheduledTimeCalendar.getTimeInMillis());
-            	
-            	Log.v("Current Time year = "  + currentTimeCalendar.get(Calendar.YEAR) , "Scheduled Time year = "  + scheduledTimeCalendar.get(Calendar.YEAR));
-            	Log.v("Current Time month = "  + currentTimeCalendar.get(Calendar.MONTH) , "Scheduled Time month = "  + scheduledTimeCalendar.get(Calendar.MONTH));
-            	Log.v("Current Time date = "  + currentTimeCalendar.get(Calendar.DATE) , "Scheduled Time date = "  + scheduledTimeCalendar.get(Calendar.DATE));
-            	Log.v("Current Time hour = "  + currentTimeCalendar.get(Calendar.HOUR_OF_DAY) , "Scheduled Time hour = "  + scheduledTimeCalendar.get(Calendar.HOUR_OF_DAY));
-            	Log.v("Current Time minute = "  + currentTimeCalendar.get(Calendar.MINUTE) , "Scheduled Time minute = "  + scheduledTimeCalendar.get(Calendar.MINUTE));
             	
             	//String amORpm;
             	//int amORpm1 = scheduledTimeCalendar.get(Calendar.AM_PM);
