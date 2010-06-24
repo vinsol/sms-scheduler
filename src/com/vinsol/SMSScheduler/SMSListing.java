@@ -3,7 +3,10 @@ package com.vinsol.SMSScheduler;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -23,6 +26,8 @@ public class SMSListing extends ListActivity {
 	
 	ArrayList<Message> messagesList;
 	
+	Context context;
+	
 	/**==========================================================================
 	 * method onCreate()
 	 *===========================================================================*/
@@ -33,6 +38,8 @@ public class SMSListing extends ListActivity {
     	requestWindowFeature(Window.FEATURE_NO_TITLE);
     
     	setContentView(R.layout.message_listing);
+    	
+    	context = this;
     	
     	ArrayList<HashMap<String, String>> listViewData = new ArrayList<HashMap<String, String>>();
     	
@@ -62,22 +69,7 @@ public class SMSListing extends ListActivity {
 		
 	    lv = this.getListView();
 	    registerForContextMenu(lv);
-	    
-/*	   lv.setOnItemClickListener(new OnItemClickListener() {
-		   @Override
-		   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			   int idOfClickedMessage = messagesList.get(position).id;
-			   
-			   ArrayList<Receiver> receiversArrayList = new SMSSchedulerDBHelper(SMSListing.this).retrieveReceivers(idOfClickedMessage);
-			   
-			   MessageAndReceivers.message = messagesList.get(position);
-			   MessageAndReceivers.receivers = receiversArrayList;
-			  
-			  new IntentHandler().gotoScheduleSMSEditPage(SMSListing.this);
-			   
-		   }
-	   });
-*/	    
+	    	    
 	    SimpleAdapter mSchedule = new SimpleAdapter
 	    			(this, listViewData, 
     						R.layout.message_listing_one_message_view, 
@@ -117,21 +109,46 @@ public class SMSListing extends ListActivity {
 	 *==============================================================================*/
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		int positionOfClickedListItem = info.position;
+		final int positionOfClickedListItem = info.position;
+		
 		switch (item.getItemId()) {
 			case R.id.SMS_LISTING_CONTEXT_MENU_EDIT: {
 				int idOfClickedMessage = messagesList.get(positionOfClickedListItem).id;
 				   
-				   ArrayList<Receiver> receiversArrayList = new SMSSchedulerDBHelper(SMSListing.this).retrieveReceivers(idOfClickedMessage);
+				ArrayList<Receiver> receiversArrayList = new SMSSchedulerDBHelper(context).retrieveReceivers(idOfClickedMessage);
 				   
-				   MessageAndReceivers.message = messagesList.get(positionOfClickedListItem);
-				   MessageAndReceivers.receivers = receiversArrayList;
+				MessageAndReceivers.message = messagesList.get(positionOfClickedListItem);
+				MessageAndReceivers.receivers = receiversArrayList;
 				  
-				  new IntentHandler().gotoScheduleSMSEditPage(SMSListing.this);
+				new IntentHandler().gotoScheduleSMSEditPage(context);
 				return true;
 			}
 			case R.id.SMS_LISTING_CONTEXT_MENU_DELETE: {
-				Toast.makeText(this, "Under Development :)", Toast.LENGTH_SHORT).show();
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Delete")
+					   .setMessage("Are you sure?")
+				       .setCancelable(false)
+				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   int idOfClickedMessage = messagesList.get(positionOfClickedListItem).id;
+				        	   boolean isDeleted = new SMSSchedulerDBHelper(context).deleteMessage(idOfClickedMessage);
+				        	   
+				        	   if(isDeleted) {
+				        		   new IntentHandler().gotoSMSListingPage(context);
+				        	   }else {
+				        		   Toast.makeText(context,
+        				   			  context.getString(R.string.toast_message_sms_listing_problem_in_delete),
+        				   			  Toast.LENGTH_LONG).show();
+				        	   }
+				           }
+				       })
+				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				                dialog.cancel();
+				           }
+				       });
+				AlertDialog deleteAlert = builder.create();
+				deleteAlert.show();
 				return true;
 			}
 			case R.id.SMS_LISTING_CONTEXT_MENU_ADD_TO_TEMPLATE: {

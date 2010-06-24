@@ -43,10 +43,7 @@
         android:textSize="15dip"
         >
      </TextView>
- <!-- android:layout_toRightOf="@id/message_listing_one_message_view_send_date"
-       android:layout_marginLeft="15dip"
-          -->
-          
+         
      <TextView 
      	android:id="@+id/message_listing_one_message_view_status"
      	android:layout_width="wrap_content"

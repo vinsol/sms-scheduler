@@ -156,17 +156,17 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     /**=====================================================================
      * method delete message
      *======================================================================*/
-    public boolean deleteMessage(String idOfMessage) {
+    public boolean deleteMessage(int idOfMessage) {
     	  
     	SMSSchedulerDBObject = getWritableDatabase();
     	
     	int affectedRow = 0;
         
         try {
-        	affectedRow = SMSSchedulerDBObject.delete(MESSAGE_TABLE_NAME, "_id=" + idOfMessage , null);
-        	Log.v("row id of created record = ", "" + affectedRow);
+        	affectedRow = SMSSchedulerDBObject.delete(RECEIVER_TABLE_NAME, RECEIVER_TABLE_MESSAGE_ID + "=" + idOfMessage , null);
+        	affectedRow = SMSSchedulerDBObject.delete(MESSAGE_TABLE_NAME, MESSAGE_TABLE_COLUMN_ID + "=" + idOfMessage , null);
         }catch(SQLException sqle) {
-        	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> deleteSMS -> in catch", "SQLException has occurred" + sqle);
+        	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> deleteMessage -> in catch", "SQLException has occurred" + sqle);
         }finally {
         	SMSSchedulerDBObject.close();
         }
