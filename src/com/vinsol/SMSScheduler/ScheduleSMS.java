@@ -35,6 +35,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     EditText contactNumberEditText;
     
     EditText sendDateEditText, sendTimeEditText;
+    
+    EditText messageEditText;
 	
 	Calendar currentTimeCalendar, scheduledTimeCalendar;
 	
@@ -56,7 +58,10 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     
     ArrayList<Receiver> listOfReceivers = new ArrayList<Receiver>();
 
-
+    //message used when type Of page is Edit
+    Message messageForEdit;
+      
+    
     
     /**=========================================================== 
      * method onCreate()
@@ -67,19 +72,31 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         
     	super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-    	setContentView(R.layout.schedule_sms);        
+    	setContentView(R.layout.schedule_sms);
+    	
+    	int typeOfPage = getIntent().getIntExtra(Constant.TYPE_OF_SCHEDULE_SMS_PAGE, Constant.PAGE_TYPE_ADD);
         
+    	//=======================================================================
+    	// if mode of page is edit than setting message and list of receivers
+    	//=======================================================================
+    	messageForEdit = MessageAndReceivers.message;
+    	listOfReceivers = MessageAndReceivers.receivers;
+    	
     	//======================== setting current Date and time ===========================//
-    	currentTimeCalendar = Calendar.getInstance();
+		currentTimeCalendar = Calendar.getInstance();
+		scheduledTimeCalendar = Calendar.getInstance();
+    	
+		if(typeOfPage == Constant.PAGE_TYPE_EDIT){
+    		currentTimeCalendar.setTimeInMillis(messageForEdit.scheduledTimeInMilliSecond);
+    		scheduledTimeCalendar.setTimeInMillis(messageForEdit.scheduledTimeInMilliSecond);
+    	}
+    	
     	currentDate = currentTimeCalendar.get(Calendar.DATE);
     	currentMonth = currentTimeCalendar.get(Calendar.MONTH);
     	currentYear = currentTimeCalendar.get(Calendar.YEAR);
     	//if we wants hour in 24 hour format then use HOUR_OF_DAY else use HOUR
     	currentHour = currentTimeCalendar.get(Calendar.HOUR_OF_DAY);
     	currentMinute = currentTimeCalendar.get(Calendar.MINUTE);
-    	
-    	
-    	scheduledTimeCalendar = Calendar.getInstance();
         
     	//========================== Add phone Number Edit Text ============================//
         contactNumberEditText = (EditText)findViewById(R.id.schedule_sms_contact_number_edit_text);
@@ -105,6 +122,10 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 		}else{
 			setListAdapter(receiverDetailAdapter);
 		}
+        
+        //========================== message Edit text ==========================//
+        messageEditText = (EditText)findViewById(R.id.schedule_sms_message_edit_text);
+        
         //========================== Choose Message From Template Button ==========================//
         Button chooseMessageFromTemplateButton = (Button)findViewById(R.id.schedule_sms_message_from_template_button);
         chooseMessageFromTemplateButton.setOnClickListener(this);
@@ -123,7 +144,31 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
       
         //========================== Schedule SMS Button ==========================//
         Button scheduleSMSButton = (Button) findViewById(R.id.schedule_sms_done_button);
+        if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
+        	scheduleSMSButton.setText("Edit");
+        }
         scheduleSMSButton.setOnClickListener(this);
+        
+        //========================================================================
+        // if type of page is edit fill message edit text, receivers , date and 
+        // time edit text
+        //========================================================================
+        if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
+        	messageEditText.setText(messageForEdit.messageBody);
+        	sendDateEditText.setText(messageForEdit.getDateString());
+        	sendTimeEditText.setText(messageForEdit.getTimeString());
+        	
+        	for(int i=0; i < listOfReceivers.size(); i++ ) {
+        		String contactNumber = listOfReceivers.get(i).getPhoneNumber();
+        		String displayName = listOfReceivers.get(i).getDisplayName();
+        		
+        		if(displayName.equalsIgnoreCase(Constant.UNKNOWN_NAME)) {
+        			receiverDetailAdapter.add(contactNumber);
+        		}else {
+        			receiverDetailAdapter.add(displayName);
+        		}
+        	}
+        }
                 
     }//end method onCreate
     
@@ -140,7 +185,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			String contactNumber = contactNumberEditText.getText().toString();
     			receiverDetailAdapter.add(contactNumber);
     			contactNumberEditText.setText("");
-    			addToReceiverList("Unknown Name", contactNumber);
+    			addToReceiverList(Constant.UNKNOWN_NAME, contactNumber);
     			break;
     		}
     		case R.id.schedule_sms_add_from_contact_button: {
@@ -225,7 +270,6 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	if((listOfReceivers.size()) <= 0) {
     		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_no_contact_number), Toast.LENGTH_LONG).show();
     	} else {
-    		EditText messageEditText = (EditText)findViewById(R.id.schedule_sms_message_edit_text);
         	String message = messageEditText.getText().toString();
         	
         	if(message == null || message.equalsIgnoreCase("")) {
@@ -276,9 +320,9 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             	scheduledTimeCalendar.set(Calendar.MONTH, monthOfYear);
             	scheduledTimeCalendar.set(Calendar.DATE, dayOfMonth);
             		
-            	sendDateEditText.setText("" + scheduledTimeCalendar.get(Calendar.MONTH + 1)
-            							+ "/" + scheduledTimeCalendar.get(Calendar.DATE)
-            							+ "/" + scheduledTimeCalendar.get(Calendar.YEAR));
+            	sendDateEditText.setText(""+ scheduledTimeCalendar.get(Calendar.DATE) 
+            							   + "/" + (scheduledTimeCalendar.get(Calendar.MONTH) + 1)
+            							   + "/" + scheduledTimeCalendar.get(Calendar.YEAR));
             }
     };//end object dateSetListenerObject
     

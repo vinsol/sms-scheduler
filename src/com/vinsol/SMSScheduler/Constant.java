@@ -26,4 +26,10 @@ public class Constant {
 	public static final String SCHEDULED_DATE = "date";
 	public static final String SCHEDULED_TIME = "time";
 	public static final String STATUS = "status";
+	
+	/**============================================
+	 * other Strings 
+	 *=============================================*/
+	public static final String UNKNOWN_NAME = "Unknown Name";
+	
 }//end class Constants

@@ -223,8 +223,8 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 		if (receiversCursor.moveToFirst()) {
 			do {
 				Receiver receiverObject = new Receiver();
-				receiverObject.setPhoneNumber(receiversCursor.getString(1));
-				receiverObject.setDisplayName(receiversCursor.getString(2));
+				receiverObject.setPhoneNumber(receiversCursor.getString(2));
+				receiverObject.setDisplayName(receiversCursor.getString(3));
 				
 				receiversList.add(receiverObject);
 			} while (receiversCursor.moveToNext());

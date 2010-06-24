@@ -6,15 +6,16 @@ import java.util.HashMap;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class SMSListing extends ListActivity {
 	
@@ -56,9 +57,9 @@ public class SMSListing extends ListActivity {
 		}
 		
 	    lv = this.getListView();
+	    registerForContextMenu(lv);
 	    
-	    
-	   lv.setOnItemClickListener(new OnItemClickListener() {
+/*	   lv.setOnItemClickListener(new OnItemClickListener() {
 		   @Override
 		   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			   int idOfClickedMessage = messagesList.get(position).id;
@@ -70,10 +71,9 @@ public class SMSListing extends ListActivity {
 			  
 			  new IntentHandler().gotoScheduleSMSEditPage(SMSListing.this);
 			   
-			  //fdsfsdfgsd
 		   }
 	   });
-	    
+*/	    
 	    SimpleAdapter mSchedule = new SimpleAdapter
 	    			(this, listViewData, 
     						R.layout.message_listing_one_message_view, 
@@ -92,6 +92,53 @@ public class SMSListing extends ListActivity {
 			setListAdapter(mSchedule);
 		}
 	}//end method onCreate
+	
+	/**=============================================================================
+	 * method onCreateContextMenu
+	 *==============================================================================*/
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		int positionOfClickedListItem = ((AdapterContextMenuInfo)menuInfo).position;
+		String MessageBody = messagesList.get(positionOfClickedListItem).messageBody;
+	
+		menu.setHeaderTitle(MessageBody);
+		
+		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_EDIT, 0, "Edit");
+		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_DELETE, 0,  "Delete");
+		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_ADD_TO_TEMPLATE, 0,  "Add to Templates");
+	}
+
+	/**=============================================================================
+	 * method onContextItemSelected
+	 *==============================================================================*/
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		int positionOfClickedListItem = info.position;
+		switch (item.getItemId()) {
+			case R.id.SMS_LISTING_CONTEXT_MENU_EDIT: {
+				int idOfClickedMessage = messagesList.get(positionOfClickedListItem).id;
+				   
+				   ArrayList<Receiver> receiversArrayList = new SMSSchedulerDBHelper(SMSListing.this).retrieveReceivers(idOfClickedMessage);
+				   
+				   MessageAndReceivers.message = messagesList.get(positionOfClickedListItem);
+				   MessageAndReceivers.receivers = receiversArrayList;
+				  
+				  new IntentHandler().gotoScheduleSMSEditPage(SMSListing.this);
+				return true;
+			}
+			case R.id.SMS_LISTING_CONTEXT_MENU_DELETE: {
+				Toast.makeText(this, "Under Development :)", Toast.LENGTH_SHORT).show();
+				return true;
+			}
+			case R.id.SMS_LISTING_CONTEXT_MENU_ADD_TO_TEMPLATE: {
+				Toast.makeText(this, "Under Development :)", Toast.LENGTH_SHORT).show();
+				return true;
+			}
+			default: {
+				return super.onContextItemSelected(item);
+			}
+		}//end switch
+	}
 	
 	/**==================================================================
 	 * method onCreateOptionsMenu(Menu menu)
