@@ -99,7 +99,7 @@ public class SMSListing extends ListActivity {
 	
 		menu.setHeaderTitle(MessageBody);
 		
-		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_EDIT, 0, "Edit");
+		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_EDIT, 0, "Update");
 		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_DELETE, 0,  "Delete");
 		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_ADD_TO_TEMPLATE, 0,  "Add to Templates");
 	}

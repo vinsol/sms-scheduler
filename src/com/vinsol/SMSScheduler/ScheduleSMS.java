@@ -40,7 +40,9 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     EditText sendDateEditText, sendTimeEditText;
     
     EditText messageEditText;
-		
+	
+    Button scheduleSMSButton;
+    
     Calendar scheduledTimeCalendar = Calendar.getInstance();
    
 	ListView receiverDetailListView;
@@ -122,10 +124,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         
       
         //========================== Schedule SMS Button ==========================//
-        Button scheduleSMSButton = (Button) findViewById(R.id.schedule_sms_done_button);
-        if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
-        	scheduleSMSButton.setText("Edit SMS");
-        }
+        scheduleSMSButton = (Button) findViewById(R.id.schedule_sms_done_button);
         scheduleSMSButton.setOnClickListener(this);
         
         //======================fill Form Data according to the pageType =======================// 
@@ -182,6 +181,9 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			receiverDetailAdapter.add(displayName);
     		}
     	}
+    	
+    	//====================== set the text "Update" of done button ==========================// 
+    	scheduleSMSButton.setText("Update");
     }//end method fillfillFormWithDataForEdit
 	
     
