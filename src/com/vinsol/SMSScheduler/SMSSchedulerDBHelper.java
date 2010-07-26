@@ -10,9 +10,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 
+	Context context;
+	
 	//database details
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "sms_scheduler.db";
@@ -60,6 +63,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
      *======================================================================*/
     SMSSchedulerDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context =context; 
     }
 
     /**=====================================================================
@@ -121,7 +125,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     /**=====================================================================
      * method updateMessage
      *======================================================================*/
-    public int updateMessage(long idOfMessage, String message, String scheduledTime) {
+    public int updateMessage(long idOfMessage, String message, String scheduledTime, int statusOfMessage) {
     	  
     	SMSSchedulerDBObject = getWritableDatabase();
     	
@@ -129,7 +133,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     	messageValues.put(MESSAGE_TABLE_COLUMN_ID, idOfMessage);
     	messageValues.put(MESSAGE_TABLE_COLUMN_SCHEDULED_TIME, scheduledTime);
         messageValues.put(MESSAGE_TABLE_COLUMN_MESSAGE_BODY, message);
-        messageValues.put(MESSAGE_TABLE_COLUMN_STATUS, Constant.STATUS_SCHEDULED);
+        messageValues.put(MESSAGE_TABLE_COLUMN_STATUS, statusOfMessage);
         
         int numberOfRowsAffected = 0;
         
@@ -146,11 +150,26 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     /**=====================================================================
      * method retrieveMessages
      *======================================================================*/
-    public ArrayList<Message> retrieveMessages() {
+    public ArrayList<Message> retrieveMessages(long time, int status) {
+    	
+    	String selection = null;
+    	
+    	if(time == Constant.ALL_TIME && status == Constant.STATUS_ALL) {
+    		selection = null;
+    	} else if (time == Constant.ALL_TIME && status == Constant.STATUS_SCHEDULED) {
+    		selection = MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SCHEDULED;
+    	} else if (time == Constant.ALL_TIME && status == Constant.STATUS_SEND) {
+    		selection = MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SEND;
+    	//if here means time != ALL_TIME
+    	} else if(status == Constant.STATUS_SCHEDULED) {
+    		selection = MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + "<=" + time + " and " + MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SCHEDULED;
+    	} else {
+    		Toast.makeText(context, "in SMSSchedulerDBHelper -> in retrieve Message -> unhandled type", Toast.LENGTH_LONG).show();
+    	}
     	  
     	SMSSchedulerDBObject = getReadableDatabase();
 
-		Cursor messagesCursor = SMSSchedulerDBObject.query(MESSAGE_TABLE_NAME, null, null, null, null, null, null);
+		Cursor messagesCursor = SMSSchedulerDBObject.query(MESSAGE_TABLE_NAME, null, selection, null, null, null, null);
        	
 		ArrayList<Message> messagesList = new ArrayList<Message>();
 		
@@ -177,19 +196,19 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 
     }//end method retrieveMessages
     
-    
+        
     /**=====================================================================
      * method delete message
      *======================================================================*/
-    public boolean deleteMessage(int idOfMessage) {
+    public boolean deleteMessage(long idOfClickedMessage) {
     	  
     	SMSSchedulerDBObject = getWritableDatabase();
     	
     	int affectedRow = 0;
         
         try {
-        	affectedRow = SMSSchedulerDBObject.delete(RECEIVER_TABLE_NAME, RECEIVER_TABLE_MESSAGE_ID + "=" + idOfMessage , null);
-        	affectedRow = SMSSchedulerDBObject.delete(MESSAGE_TABLE_NAME, MESSAGE_TABLE_COLUMN_ID + "=" + idOfMessage , null);
+        	affectedRow = SMSSchedulerDBObject.delete(RECEIVER_TABLE_NAME, RECEIVER_TABLE_MESSAGE_ID + "=" + idOfClickedMessage , null);
+        	affectedRow = SMSSchedulerDBObject.delete(MESSAGE_TABLE_NAME, MESSAGE_TABLE_COLUMN_ID + "=" + idOfClickedMessage , null);
         }catch(SQLException sqle) {
         	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> deleteMessage -> in catch", "SQLException has occurred" + sqle);
         }finally {
@@ -271,7 +290,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     /**=====================================================================
      * method retrieveReceivers
      *======================================================================*/
-    public ArrayList<Receiver> retrieveReceivers(int messageId) {
+    public ArrayList<Receiver> retrieveReceivers(long messageId) {
     	  
     	SMSSchedulerDBObject = getReadableDatabase();
 
@@ -298,6 +317,39 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 		return receiversList;
 
     }//end method retrieveReceivers
+
+    
+    /**=====================================================================
+     * method findNextSMSScheduledTime
+     *======================================================================*/
+    public long findNextSMSScheduledTime(long currentTime) {
+    	  
+    	SMSSchedulerDBObject = getReadableDatabase();
+    	
+    	String nextScheduledTimeQuery = "select MIN(" + MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + ")"
+    									+ " from " + MESSAGE_TABLE_NAME
+    									+ " where " + MESSAGE_TABLE_COLUMN_STATUS + "!=" + Constant.STATUS_SEND
+    									+ " and " + MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + ">=" + currentTime;	
+    		
+		Cursor nextTimeCursor = SMSSchedulerDBObject.rawQuery(nextScheduledTimeQuery, null);
+       	
+		long nextScheduledTime;
+		
+		if (nextTimeCursor.moveToFirst()) {
+			do {
+				nextScheduledTime = nextTimeCursor.getLong(0);
+			} while (nextTimeCursor.moveToNext());
+		}else {
+			nextScheduledTime = Constant.NO_NEXT_SCHEDULED_TIME;
+		}
+		if (nextTimeCursor != null && !nextTimeCursor.isClosed()) {
+			nextTimeCursor.close();
+		}
+		SMSSchedulerDBObject.close();
+		
+		return nextScheduledTime;
+
+    }//end method findNextSMSScheduledTime
     
 }//end class SMSSchedulerDBHelper
 

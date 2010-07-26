@@ -1,7 +1,7 @@
 package com.vinsol.SMSScheduler;
 
 public class Message {
-	int id;
+	long id;
 	long scheduledTimeInMilliSecond;
 	String messageBody;
 	int status;

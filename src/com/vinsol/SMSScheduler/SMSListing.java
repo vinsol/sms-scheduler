@@ -43,7 +43,7 @@ public class SMSListing extends ListActivity {
     	
     	ArrayList<HashMap<String, String>> listViewData = new ArrayList<HashMap<String, String>>();
     	
-    	messagesList = new SMSSchedulerDBHelper(this).retrieveMessages();
+    	messagesList = new SMSSchedulerDBHelper(this).retrieveMessages(Constant.ALL_TIME, Constant.STATUS_ALL);
     	
     	if(messagesList == null || messagesList.isEmpty()) {
     		Toast.makeText(this, getString(R.string.toast_message_sms_listing_no_sms_to_show), Toast.LENGTH_SHORT).show();
@@ -113,7 +113,7 @@ public class SMSListing extends ListActivity {
 		
 		switch (item.getItemId()) {
 			case R.id.SMS_LISTING_CONTEXT_MENU_EDIT: {
-				int idOfClickedMessage = messagesList.get(positionOfClickedListItem).id;
+				long idOfClickedMessage = messagesList.get(positionOfClickedListItem).id;
 				   
 				ArrayList<Receiver> receiversArrayList = new SMSSchedulerDBHelper(context).retrieveReceivers(idOfClickedMessage);
 				   
@@ -130,7 +130,7 @@ public class SMSListing extends ListActivity {
 				       .setCancelable(false)
 				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
-				        	   int idOfClickedMessage = messagesList.get(positionOfClickedListItem).id;
+				        	   long idOfClickedMessage = messagesList.get(positionOfClickedListItem).id;
 				        	   boolean isDeleted = new SMSSchedulerDBHelper(context).deleteMessage(idOfClickedMessage);
 				        	   
 				        	   if(isDeleted) {

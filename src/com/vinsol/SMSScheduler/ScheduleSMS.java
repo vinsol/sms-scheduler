@@ -301,25 +301,29 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         		final String scheduledTime = "" + scheduledTimeCalendar.getTimeInMillis();
             			
     			Calendar currentTimeCalendar = Calendar.getInstance();
-        			
-    			if(scheduledTimeCalendar.getTimeInMillis() <= currentTimeCalendar.getTimeInMillis()) {
+        		final long currentTimeInMillis = currentTimeCalendar.getTimeInMillis();	
+    			
+    			if(scheduledTimeCalendar.getTimeInMillis() <= currentTimeInMillis) {
     				AlertDialog.Builder builder = new AlertDialog.Builder(this);
     				builder.setTitle("Scheduled Time")
     						.setMessage(getString(R.string.alert_dialog_message_scheduled_time_in_past))
     						.setCancelable(false)
     						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
     							public void onClick(DialogInterface dialog, int id) {
-    				        	   saveMessageInDatabase(message, scheduledTime);
-    				        	   //toDo
-    				        	   //toDo
-    				        	   //toDo
-    				        	   //toDo
-    				        	   //toDo
-    				        	   //toDo
-    				        	   //toDo
-    				        	  // sendMessage();
+    				        	   Thread t = new Thread(){
+    				        		   @Override
+    				        		   public void run(){
+    				        			   long messageId = saveMessageAndReceiversInDatabase(message, scheduledTime);
+    	    				        	   Message newMessage = new Message();
+    	    				        	   newMessage.id = messageId;
+    	    				        	   newMessage.messageBody = message;
+    	    				        	   
+    	    				        	   new SMSSender().sendSMS(ScheduleSMS.this, listOfReceivers, newMessage);
+    				        		   }
+    				        	   };
     				        	   
-    				        	   
+    				        	   t.start();
+    							 
     				        	   new IntentHandler().gotoSMSListingPage(context);
     				           }
     				       })
@@ -328,20 +332,20 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     				                dialog.cancel();
     				           }
     				       });
-    				AlertDialog deleteAlert = builder.create();
-    				deleteAlert.show();
+    				AlertDialog scheduleTimeInPastAlert = builder.create();
+    				scheduleTimeInPastAlert.show();
     			}else { //means scheduled time is in future
-    				saveMessageInDatabase(message, scheduledTime);
     				
-    				//toDo
-    				//toDo
-    				//toDo
-    				//toDo
-    				//toDo
-    				//toDo
-    				//toDo
+    				Thread t = new Thread(){
+    					@Override
+    					public void run() {
+    						saveMessageAndReceiversInDatabase(message, scheduledTime);
+    	    				new ScheduleAlarm().scheduleAlarm(ScheduleSMS.this, currentTimeInMillis);
+    					}
+    				};
     				
-    				//rescheduleAlarmManager();
+    				t.start();
+    				
     				new IntentHandler().gotoSMSListingPage(context);
     				
     			}
@@ -352,35 +356,34 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     /**====================================================================
      * saveMesageInDatabase
      *=====================================================================*/
-    private boolean saveMessageInDatabase(String message, String scheduledTime){
+    private long saveMessageAndReceiversInDatabase(String message, String scheduledTime){
+    	long messageId;
     	//========================= for Add page =======================================//
 		if(typeOfPage == Constant.PAGE_TYPE_ADD) {
-			long messageID = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
-			if(messageID != -1) {
-				new SMSSchedulerDBHelper(this).addReceivers(messageID, listOfReceivers);
-				return true;
+			messageId = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
+			if(messageId != -1) {
+				new SMSSchedulerDBHelper(this).addReceivers(messageId, listOfReceivers);
 			}else {
 				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_problem_in_adding_message), Toast.LENGTH_SHORT).show();
-				return false;
 			}
+			return messageId;
 		}//end if(type of page is add)
 		
 		//========================= for Add page =======================================//
 		else if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
 			
-			long messageID = messageForEdit.id;
-			int numberOfAffectedRows = new SMSSchedulerDBHelper(this).updateMessage(messageID, message, scheduledTime);
+			messageId = messageForEdit.id;
+			int numberOfAffectedRows = new SMSSchedulerDBHelper(this).updateMessage(messageId, message, scheduledTime, Constant.STATUS_SCHEDULED);
 			
 			if(numberOfAffectedRows != 0) {
-				new SMSSchedulerDBHelper(this).updateReceivers(messageID, listOfReceivers);
-				return true;
+				new SMSSchedulerDBHelper(this).updateReceivers(messageId, listOfReceivers);				
 			}else {
 				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_problem_in_updating_message), Toast.LENGTH_SHORT).show();
-				return false;
 			}
+			return messageId;
 		}//end else if(type of page is Edit)
 		else {
-			return false;
+			return -1;
 		}
     }//end method saveMessageInDatabase
   

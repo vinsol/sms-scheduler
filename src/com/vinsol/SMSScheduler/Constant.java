@@ -7,6 +7,7 @@ public class Constant {
 	 *=============================================*/
 	public static final int STATUS_SCHEDULED = 1;
 	public static final int STATUS_SEND = 2;
+	public static final int STATUS_ALL = 3;
 	
 	public static final String STATUS_SCHEDULED_STRING = "SCHEDULED";
 	public static final String STATUS_SEND_STRING = "SEND";
@@ -31,5 +32,11 @@ public class Constant {
 	 * other Strings 
 	 *=============================================*/
 	public static final String UNKNOWN_NAME = "Unknown Name";
+	
+	/**============================================
+	 * other Constants 
+	 *=============================================*/
+	public static final long ALL_TIME = -1;
+	public static final long NO_NEXT_SCHEDULED_TIME = -1;
 	
 }//end class Constants

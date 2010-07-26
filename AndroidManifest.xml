@@ -32,7 +32,7 @@
         </activity>
         
         <service 
-        	android:name=".SendSMSService">
+        	android:name=".AlarmHandlerService">
         </service>
         
         <receiver  
