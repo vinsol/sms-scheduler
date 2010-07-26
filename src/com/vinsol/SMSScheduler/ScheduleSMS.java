@@ -3,10 +3,13 @@ package com.vinsol.SMSScheduler;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -49,6 +52,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 	
 	ArrayAdapter<String> receiverDetailAdapter;
 	
+	Context context;
+	
 	
 	//An SDK-specific instance of {@link ContactAccessor}.  The activity does not need
 	//to know what SDK it is running in: all idiosyncrasies of different SDKs are
@@ -75,6 +80,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
     	setContentView(R.layout.schedule_sms);
+    
+    	context = this;
     	
     	//======================== setting type of page ===========================//
     	typeOfPage = getIntent().getIntExtra(Constant.TYPE_OF_SCHEDULE_SMS_PAGE, Constant.PAGE_TYPE_ADD);
@@ -282,49 +289,103 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     /**=====================================================================
      * method doneButtonHandler 
      * ====================================================================*/
-    void doneButtonHandler(){
+    void doneButtonHandler() {
+    	
+    	//=============== common for both add and edit =======================//
+		
     	if((listOfReceivers.size()) <= 0) {
     		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_no_contact_number), Toast.LENGTH_LONG).show();
     	} else {
-        	String message = messageEditText.getText().toString();
+        	final String message = messageEditText.getText().toString();
         	
         	if(message == null || message.equalsIgnoreCase("")) {
         		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_blank_message), Toast.LENGTH_LONG).show();
         	} else {	
-        		String scheduledTime = "" + scheduledTimeCalendar.getTimeInMillis();
-            	
-        		//========================= for Add page =======================================//
-        		if(typeOfPage == Constant.PAGE_TYPE_ADD) {
-        			long messageID = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
-        			if(messageID != -1) {
-        				new SMSSchedulerDBHelper(this).addReceivers(messageID, listOfReceivers);
-            		
-        				new IntentHandler().gotoSMSListingPage(this);
-            		
-        			}else {
-        				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_problem_in_adding_message), Toast.LENGTH_SHORT).show();
-        			}
-        		}//end if(type of page is add)
-        		
-        		else if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
+        		final String scheduledTime = "" + scheduledTimeCalendar.getTimeInMillis();
+            			
+    			Calendar currentTimeCalendar = Calendar.getInstance();
         			
-        			long messageID = messageForEdit.id;
-        			int numberOfAffectedRows = new SMSSchedulerDBHelper(this).updateMessage(messageID, message, scheduledTime);
-        			
-        			if(numberOfAffectedRows != 0) {
-        				new SMSSchedulerDBHelper(this).updateReceivers(messageID, listOfReceivers);
-        				
-        				new IntentHandler().gotoSMSListingPage(this);
-            		
-        			}else {
-        				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_problem_in_updating_message), Toast.LENGTH_SHORT).show();
-        			}
-        			
-        		}//end else if(type of page is Edit)
+    			if(scheduledTimeCalendar.getTimeInMillis() <= currentTimeCalendar.getTimeInMillis()) {
+    				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    				builder.setTitle("Scheduled Time")
+    						.setMessage(getString(R.string.alert_dialog_message_scheduled_time_in_past))
+    						.setCancelable(false)
+    						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+    							public void onClick(DialogInterface dialog, int id) {
+    				        	   saveMessageInDatabase(message, scheduledTime);
+    				        	   //toDo
+    				        	   //toDo
+    				        	   //toDo
+    				        	   //toDo
+    				        	   //toDo
+    				        	   //toDo
+    				        	   //toDo
+    				        	  // sendMessage();
+    				        	   
+    				        	   
+    				        	   new IntentHandler().gotoSMSListingPage(context);
+    				           }
+    				       })
+    				       .setNegativeButton("Reschedule", new DialogInterface.OnClickListener() {
+    				           public void onClick(DialogInterface dialog, int id) {
+    				                dialog.cancel();
+    				           }
+    				       });
+    				AlertDialog deleteAlert = builder.create();
+    				deleteAlert.show();
+    			}else { //means scheduled time is in future
+    				saveMessageInDatabase(message, scheduledTime);
+    				
+    				//toDo
+    				//toDo
+    				//toDo
+    				//toDo
+    				//toDo
+    				//toDo
+    				//toDo
+    				
+    				//rescheduleAlarmManager();
+    				new IntentHandler().gotoSMSListingPage(context);
+    				
+    			}
         	}
     	}
     }//end Method doneButtonHandler
-
+    
+    /**====================================================================
+     * saveMesageInDatabase
+     *=====================================================================*/
+    private boolean saveMessageInDatabase(String message, String scheduledTime){
+    	//========================= for Add page =======================================//
+		if(typeOfPage == Constant.PAGE_TYPE_ADD) {
+			long messageID = new SMSSchedulerDBHelper(this).addMessage(message, scheduledTime);
+			if(messageID != -1) {
+				new SMSSchedulerDBHelper(this).addReceivers(messageID, listOfReceivers);
+				return true;
+			}else {
+				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_problem_in_adding_message), Toast.LENGTH_SHORT).show();
+				return false;
+			}
+		}//end if(type of page is add)
+		
+		//========================= for Add page =======================================//
+		else if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
+			
+			long messageID = messageForEdit.id;
+			int numberOfAffectedRows = new SMSSchedulerDBHelper(this).updateMessage(messageID, message, scheduledTime);
+			
+			if(numberOfAffectedRows != 0) {
+				new SMSSchedulerDBHelper(this).updateReceivers(messageID, listOfReceivers);
+				return true;
+			}else {
+				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_problem_in_updating_message), Toast.LENGTH_SHORT).show();
+				return false;
+			}
+		}//end else if(type of page is Edit)
+		else {
+			return false;
+		}
+    }//end method saveMessageInDatabase
   
     /**================================================================
      * method onCreateDialog
@@ -362,9 +423,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             	scheduledTimeCalendar.set(Calendar.MONTH, monthOfYear);
             	scheduledTimeCalendar.set(Calendar.DATE, dayOfMonth);
             		
-            	sendDateEditText.setText(""+ scheduledTimeCalendar.get(Calendar.DATE) 
-            							   + "/" + (scheduledTimeCalendar.get(Calendar.MONTH) + 1)
-            							   + "/" + scheduledTimeCalendar.get(Calendar.YEAR));
+            	String dateInString = CalendarDateConverter.getDateString(scheduledTimeCalendar);
+            	sendDateEditText.setText(dateInString);
             }
     };//end object dateSetListenerObject
     
@@ -397,24 +457,12 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             	//int extractedHour = scheduledTimeCalendar.get(Calendar.HOUR);
             	//int extractedMinute = scheduledTimeCalendar.get(Calendar.MINUTE);
             	
-            	sendTimeEditText.setText("" + pad(hour)
-            							+ ":" + pad(minute));
-            								
+            	String timeInString = CalendarDateConverter.getTimeString(scheduledTimeCalendar);
+            	sendTimeEditText.setText(timeInString);
     		}
 	};//end object timeSetListenerObject
 	
-	/**==================================================================
-	 * method pad(int c)
-	 *===================================================================*/
-	private static String pad(int c) {
-	    if (c >= 10)
-	        return String.valueOf(c);
-	    else
-	        return "0" + String.valueOf(c);
-	}//end method pad
-	
-	
-	
+
 	String headingForContextMenu;
 	/**=============================================================================
 	 * method onCreateContextMenu

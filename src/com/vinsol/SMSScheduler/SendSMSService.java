@@ -13,18 +13,31 @@ import android.widget.Toast;
 
 public class SendSMSService extends Service {
 
+	/**===========================================================
+	 * method onBind
+	 *============================================================*/
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
 	}//end method onBind
 	
+	/**===========================================================
+	 * method onCreate
+	 *============================================================*/
 	@Override
     public void onCreate() {
 		super.onCreate();
-		findListingOfMessagesToSend();
-		sendMessagesAndUpDateStatus();
+		
+		Thread t = new Thread(){
+			@Override
+			public void run() {
+				findListingOfMessagesToSend();
+				sendMessagesAndUpDateStatus();
+				stopSelf();
+			}
+		};
+		t.start();
 	
-		stopSelf();
 	}//end method onCreate
 	
 	void findListingOfMessagesToSend(){

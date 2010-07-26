@@ -7,7 +7,7 @@ import java.util.Calendar;
 public class CalendarDateConverter {
 	
 	static DateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-	static DateFormat timeFormatter = new SimpleDateFormat("hh:mm");
+	static DateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
 	
 	/**====================================================================
 	 * method getDateString

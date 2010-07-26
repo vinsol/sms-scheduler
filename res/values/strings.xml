@@ -12,7 +12,11 @@
 	========================================================== -->
 	<string name="alert_dialog_heading_db_not_exist">"Database"</string>
 	<string name="alert_dialog_message_db_not_exist">"Problem in opening Database. Please try again."</string>
-	    
+	
+	<string name="alert_dialog_message_scheduled_time_in_past">"Scheduled time is less than or equal to current time.
+							So the message will be send immediately"</string>
+	
+		    
 	<!-- ======================================================
 	     String shown on Toast 
 	========================================================== -->

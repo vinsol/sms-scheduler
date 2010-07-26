@@ -34,16 +34,29 @@
         <service 
         	android:name=".SendSMSService">
         </service>
-
         
-		
+        <receiver  
+        	android:process=":remote" 
+        	android:name="AlarmReceiver">
+       	</receiver>
+        
     </application>
     
     <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
     <uses-permission android:name="android.permission.RECEIVE_SMS"></uses-permission>
     <uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
     
+    <supports-screens 
+    	android:smallScreens= "false" 
+        android:normalScreens= "true" 
+        android:largeScreens= "false" 
+        android:anyDensity= "false" />
+
     
-    <uses-sdk android:minSdkVersion="7" />
+    
+    <uses-sdk 
+    	android:minSdkVersion="3"
+     	android:targetSdkVersion="4"
+     />
 
 </manifest> 
