@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -40,7 +39,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 	
     EditText contactNumberEditText;
     
-    EditText sendDateEditText, sendTimeEditText;
+    Button sendDateButton, sendTimeButton;
     
     EditText messageEditText;
 	
@@ -119,15 +118,13 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         chooseMessageFromTemplateButton.setOnClickListener(this);
         
         
-        //======================== Send Date EditText ===============================//
-        sendDateEditText = (EditText)findViewById(R.id.schedule_sms_send_date_edit_text);
-        sendDateEditText.setInputType(InputType.TYPE_NULL);
-        sendDateEditText.setOnClickListener(this);
+        //======================== Send Date Button ===============================//
+        sendDateButton = (Button)findViewById(R.id.schedule_sms_send_date_button);
+        sendDateButton.setOnClickListener(this);
         
-        //========================== Send Time EditText ===============================//
-        sendTimeEditText = (EditText)findViewById(R.id.schedule_sms_send_time_edit_text);
-        sendTimeEditText.setInputType(InputType.TYPE_NULL);
-        sendTimeEditText.setOnClickListener(this);
+        //========================== Send Time Button ===============================//
+        sendTimeButton = (Button)findViewById(R.id.schedule_sms_send_time_button);
+        sendTimeButton.setOnClickListener(this);
         
       
         //========================== Schedule SMS Button ==========================//
@@ -136,7 +133,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         
         //======================fill Form Data according to the pageType =======================// 
         if(typeOfPage == Constant.PAGE_TYPE_ADD) {
-        	fillDateAndTimeEditText();
+        	fillDateAndTimeButton();
         }else if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
         	fillFormWithDataForEdit();
         }
@@ -144,19 +141,19 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     }//end method onCreate
     
     /**========================================================================
-	 * method filldateAndTimeEditText
+	 * method filldateAndTimeButton
 	 *=========================================================================*/
-    void fillDateAndTimeEditText(){
+    void fillDateAndTimeButton(){
  
-    	//========================== fill dateEditText ================================//
+    	//========================== fill dateButton ================================//
     	String scheduledDate = CalendarDateConverter.getDateString(scheduledTimeCalendar);
-        sendDateEditText.setText(scheduledDate);
+        sendDateButton.setText(scheduledDate);
         
-    	//========================== fill timeEditText =================================//
+    	//========================== fill timeButton =================================//
     	String scheduledTime = CalendarDateConverter.getTimeString(scheduledTimeCalendar);
-        sendTimeEditText.setText(scheduledTime);
+        sendTimeButton.setText(scheduledTime);
         
-    }//end method fillDateAndTimeEditText
+    }//end method fillDateAndTimeButton
     
     
 	
@@ -171,8 +168,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 		
 		scheduledTimeCalendar.setTimeInMillis(messageForEdit.scheduledTimeInMilliSecond);
     	
-		//============================ fillDate And time Edit Text =====================//
-		fillDateAndTimeEditText();
+		//============================ fillDate And time button ========================//
+		fillDateAndTimeButton();
 		
     	//=========================== fill messageEditText ============================//
 		messageEditText.setText(messageForEdit.messageBody);
@@ -222,11 +219,11 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			doneButtonHandler();
     			break;
     		}
-    		case R.id.schedule_sms_send_date_edit_text: {
+    		case R.id.schedule_sms_send_date_button: {
     			showDialog(DATE_DIALOG_ID);
     			break;
     		}
-    		case R.id.schedule_sms_send_time_edit_text: {
+    		case R.id.schedule_sms_send_time_button: {
     			showDialog(TIME_DIALOG_ID);
     			break;
     		}
@@ -424,7 +421,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             	scheduledTimeCalendar.set(Calendar.DATE, dayOfMonth);
             		
             	String dateInString = CalendarDateConverter.getDateString(scheduledTimeCalendar);
-            	sendDateEditText.setText(dateInString);
+            	sendDateButton.setText(dateInString);
             }
     };//end object dateSetListenerObject
     
@@ -458,7 +455,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             	//int extractedMinute = scheduledTimeCalendar.get(Calendar.MINUTE);
             	
             	String timeInString = CalendarDateConverter.getTimeString(scheduledTimeCalendar);
-            	sendTimeEditText.setText(timeInString);
+            	sendTimeButton.setText(timeInString);
     		}
 	};//end object timeSetListenerObject
 	

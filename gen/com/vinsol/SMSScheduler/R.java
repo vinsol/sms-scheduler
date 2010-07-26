@@ -57,8 +57,8 @@ public final class R {
         public static final int schedule_sms_message_edit_text=0x7f050018;
         public static final int schedule_sms_message_from_template_button=0x7f050019;
         public static final int schedule_sms_one_reciever_view_contact_detail=0x7f05001a;
-        public static final int schedule_sms_send_date_edit_text=0x7f050015;
-        public static final int schedule_sms_send_time_edit_text=0x7f050016;
+        public static final int schedule_sms_send_date_button=0x7f050015;
+        public static final int schedule_sms_send_time_button=0x7f050016;
         public static final int to_text_view=0x7f05000d;
     }
     public static final class layout {

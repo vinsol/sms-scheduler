@@ -94,23 +94,23 @@
     	android:layout_marginTop="10dip"
     	android:layout_above="@id/schedule_sms_linear_layout"
     	>
-	    <EditText 
-        	android:id="@+id/schedule_sms_send_date_edit_text"  
+	    <Button 
+        	android:id="@+id/schedule_sms_send_date_button"  
 	        android:layout_width="140dip" 
 	        android:layout_height="wrap_content"
 	        android:hint="Date"
 	        android:layout_marginRight="20dip"
 	        android:singleLine="true"
 	        >
-        </EditText>
-        <EditText 
-        	android:id="@+id/schedule_sms_send_time_edit_text"  
+        </Button>
+        <Button 
+        	android:id="@+id/schedule_sms_send_time_button"  
 	        android:layout_width="140dip" 
 	        android:layout_height="wrap_content"
 	        android:hint="Time"
 	        android:singleLine="true"
 	        >
-        </EditText>
+        </Button>
     </LinearLayout>
     
     <!-- =========================================
