@@ -22,6 +22,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class SMSListing extends ListActivity {
 	
+	int typeOfPage;
 	ListView lv;
 	
 	ArrayList<Message> messagesList;
@@ -39,7 +40,7 @@ public class SMSListing extends ListActivity {
     
     	setContentView(R.layout.message_listing);
     	
-    	int typeOfPage = getIntent().getIntExtra(Constant.TYPE_OF_SMS_LISTING_PAGE, Constant.PAGE_TYPE_SCHEDULED);
+    	typeOfPage = getIntent().getIntExtra(Constant.TYPE_OF_SMS_LISTING_PAGE, Constant.PAGE_TYPE_SCHEDULED);
     	
     	context = this;
     	
@@ -103,8 +104,9 @@ public class SMSListing extends ListActivity {
 		String MessageBody = messagesList.get(positionOfClickedListItem).messageBody;
 	
 		menu.setHeaderTitle(MessageBody);
-		
-		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_EDIT, 0, "Update");
+		if(typeOfPage == Constant.PAGE_TYPE_SCHEDULED) {
+			menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_EDIT, 0, "Update");
+		}
 		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_DELETE, 0,  "Delete");
 		menu.add(0, R.id.SMS_LISTING_CONTEXT_MENU_ADD_TO_TEMPLATE, 0,  "Add to Templates");
 	}
