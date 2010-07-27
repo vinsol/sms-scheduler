@@ -526,7 +526,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 	 * create optionMenu
 	 *===================================================================*/
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    new OptionMenuHelper().createOptionMenu(menu);
+	    new OptionMenuHelper().createOptionMenu(menu, Constant.OPTION_MENU_FOR_SCHEDULED_SMS);
 	    return true;
 	}//end method onCreateOptionsMenu
 

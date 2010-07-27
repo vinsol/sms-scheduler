@@ -21,7 +21,13 @@ public class Constant {
 	public static final int SELECTED_TAB_SENT_SMS = 2;
 	
 	/**============================================
-	 * Schedule SMS Page Type
+	 * Option Menu For Activity
+	 *=============================================*/
+	public static final int OPTION_MENU_FOR_SCHEDULED_SMS = 1;
+	public static final int OPTION_MENU_FOR_SMS_LISTING = 2;
+	
+	/**============================================
+	 * ScheduleSMS Page Type
 	 *=============================================*/
 	public static final String TYPE_OF_SCHEDULE_SMS_PAGE = "pageType";
 	

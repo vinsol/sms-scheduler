@@ -7,12 +7,15 @@ import android.widget.Toast;
 
 public class OptionMenuHelper {
 	
-	public boolean createOptionMenu(Menu menu){
-		menu.add(0, R.id.OPTION_MENU_SCHEDULE_SMS, 0, "SCHEDULE SMS");
-		menu.add(0, R.id.OPTION_MENU_SMS_LISTING, 0, "SMS LISTING");
-		menu.add(0, R.id.OPTION_MENU_ABOUT, 0, "ABOUT");
+	public boolean createOptionMenu(Menu menu, int forWhichActivity){
+		if(forWhichActivity == Constant.OPTION_MENU_FOR_SCHEDULED_SMS) {
+			menu.add(0, R.id.OPTION_MENU_SMS_LISTING, 0, "SMS LISTING");
+		} else if(forWhichActivity == Constant.OPTION_MENU_FOR_SMS_LISTING) {
+			menu.add(0, R.id.OPTION_MENU_SCHEDULE_SMS, 0, "SCHEDULE SMS");
+		}
 		menu.add(0, R.id.OPTION_MENU_HELP, 0, "HELP");
-		menu.add(0, R.id.OPTION_MENU_SETTINGS, 0, "SETTING");
+		menu.add(0, R.id.OPTION_MENU_ABOUT, 0, "ABOUT");
+		//menu.add(0, R.id.OPTION_MENU_SETTINGS, 0, "SETTING");
 	    return true;
 	}
 	
@@ -38,10 +41,11 @@ public class OptionMenuHelper {
 		    	Toast.makeText(context, "Under Development :)", Toast.LENGTH_SHORT).show();
 		    	return true;
 		    }
-		    case R.id.OPTION_MENU_SETTINGS: {
+		  /*  case R.id.OPTION_MENU_SETTINGS: {
 		    	Toast.makeText(context, "Under Development :)", Toast.LENGTH_SHORT).show();
 		    	return true;
 		    }
+		    */
 		        
 	    }	
 	    return false;

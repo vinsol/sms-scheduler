@@ -180,7 +180,7 @@ public class SMSListing extends ListActivity {
 	 * create optionMenu
 	 *===================================================================*/
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    new OptionMenuHelper().createOptionMenu(menu);
+	    new OptionMenuHelper().createOptionMenu(menu, Constant.OPTION_MENU_FOR_SMS_LISTING);
 	    return true;
 	}//end method onCreateOptionsMenu
 
