@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -467,7 +468,18 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     		}
 	};//end object timeSetListenerObject
 	
+	/**=============================================================================
+	 * method onKeyDown
+	 *==============================================================================*/
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+	    	new IntentHandler().gotoSMSListingTabActivity(context, Constant.SELECTED_TAB_SCHEDULED_SMS);  
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}//end method onKeyDown
 
+	
 	String headingForContextMenu;
 	/**=============================================================================
 	 * method onCreateContextMenu

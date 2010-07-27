@@ -82,6 +82,7 @@ public final class R {
 	========================================================== 
          */
         public static final int empty_list_view_message=0x7f06000b;
+        public static final int option_menu_about=0x7f06000c;
         /**  ======================================================
 	     String shown on progress dialog 
 	========================================================== 

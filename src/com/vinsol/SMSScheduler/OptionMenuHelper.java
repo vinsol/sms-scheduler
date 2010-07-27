@@ -28,7 +28,10 @@ public class OptionMenuHelper {
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_ABOUT: {
-		    	Toast.makeText(context, "Under Development :)", Toast.LENGTH_SHORT).show();
+		    	String titleOfDialog = context.getString(R.string.app_name);
+		    	String messageOfDialog = context.getString(R.string.option_menu_about);
+		    	
+		    	new ShowAlertDialog(context, titleOfDialog, messageOfDialog).showDialog();
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_HELP: {

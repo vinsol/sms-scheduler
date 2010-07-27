@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SMSScheduler</string>
+    <string name="app_name">SMS Scheduler</string>
 	
 	<!-- ======================================================
 	     String shown on progress dialog 
@@ -13,8 +13,8 @@
 	<string name="alert_dialog_heading_db_not_exist">"Database"</string>
 	<string name="alert_dialog_message_db_not_exist">"Problem in opening Database. Please try again."</string>
 	
-	<string name="alert_dialog_message_scheduled_time_in_past">"Scheduled time is less than or equal to current time.
-							So the message will be send immediately"</string>
+	<string name="alert_dialog_message_scheduled_time_in_past">"<p>Scheduled time is less than or equal to current time.</p>
+							<p>So the message will be send immediately.</p>"</string>
 	
 		    
 	<!-- ======================================================
@@ -36,6 +36,7 @@
 	     Other Strings 
 	========================================================== -->
 	<string name="empty_list_view_message">"There is no messages to show in this tab please select another tab OR for scheduling new messages click on menu button"</string>    
-	
+
+	<string name="option_menu_about">"SMS Scheduler \n Version=1.0 \n Developed By: <b>Vinsol</b>"</string>    
 	
 </resources>
