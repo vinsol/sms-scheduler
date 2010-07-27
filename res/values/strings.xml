@@ -29,7 +29,6 @@
 	<string name="toast_message_schedule_sms_problem_in_adding_message">"Some Problem in adding message, please Try Again"</string> 
 	<string name="toast_message_schedule_sms_problem_in_updating_message">"Some Problem in updating message, please Try Again"</string> 
 	
-	<string name="toast_message_sms_listing_no_sms_to_show">"No SMS To Show"</string>    
 	<string name="toast_message_sms_listing_problem_in_delete">"Some Problem in deleting message, please Try Again"</string>    
 	
 	

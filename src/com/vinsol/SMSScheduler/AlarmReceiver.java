@@ -3,18 +3,17 @@ package com.vinsol.SMSScheduler;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
+import android.util.Log;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
-			Intent sendSMSServiceIntent = new Intent(context, AlarmHandlerService.class);
-			context.startService(sendSMSServiceIntent);
+			Intent alarmHandlerServiceIntent = new Intent(context, AlarmHandlerService.class);
+			context.startService(alarmHandlerServiceIntent);
 		} catch (Exception e) {
-			Toast.makeText(context, "There was an error somewhere, but we still received an alarm", Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
+			Log.e("In SMSScheduler -> in AlarmReceiver -> in onReceive", "Exception has occurred " + e);
 		}
 	}
 }//end class AlarmReceiver

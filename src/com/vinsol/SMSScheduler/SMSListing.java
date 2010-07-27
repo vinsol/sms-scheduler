@@ -51,12 +51,15 @@ public class SMSListing extends ListActivity {
     	} else if(typeOfPage == Constant.PAGE_TYPE_SENT) {
     		messagesList = new SMSSchedulerDBHelper(this).retrieveMessages(Constant.ALL_TIME, Constant.STATUS_SENT);
     	}
+    	
+    	int sizeOfMessagesList;
+    	
     	if(messagesList == null || messagesList.isEmpty()) {
-    		Toast.makeText(this, getString(R.string.toast_message_sms_listing_no_sms_to_show), Toast.LENGTH_SHORT).show();
-    		return;
+    		sizeOfMessagesList = 0;
+    	} else {
+    		sizeOfMessagesList = messagesList.size();
     	}
     	
-    	int sizeOfMessagesList = messagesList.size();
     	
 		for(int i=0; i<sizeOfMessagesList; i++){
 			HashMap<String, String> map = new HashMap<String, String>();
@@ -141,7 +144,11 @@ public class SMSListing extends ListActivity {
 				        	   boolean isDeleted = new SMSSchedulerDBHelper(context).deleteMessage(idOfClickedMessage);
 				        	   
 				        	   if(isDeleted) {
-				        		   new IntentHandler().gotoSMSListingTabActivity(context);
+				        		   if(typeOfPage == Constant.PAGE_TYPE_SCHEDULED) {
+				        			   new IntentHandler().gotoSMSListingTabActivity(context, Constant.SELECTED_TAB_SCHEDULED_SMS);
+				        		   } else if(typeOfPage == Constant.PAGE_TYPE_SENT) {
+				        			   new IntentHandler().gotoSMSListingTabActivity(context, Constant.SELECTED_TAB_SENT_SMS);
+				        		   }
 				        	   }else {
 				        		   Toast.makeText(context,
         				   			  context.getString(R.string.toast_message_sms_listing_problem_in_delete),

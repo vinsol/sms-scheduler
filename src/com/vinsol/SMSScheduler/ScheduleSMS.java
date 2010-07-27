@@ -329,7 +329,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     				        	   
     								t.start();
     							 
-    								new IntentHandler().gotoSMSListingTabActivity(context);
+    								new IntentHandler().gotoSMSListingTabActivity(context, Constant.SELECTED_TAB_SENT_SMS);
     				           }
     				       })
     				       .setNegativeButton("Reschedule", new DialogInterface.OnClickListener() {
@@ -351,7 +351,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     				
     				t.start();
     				
-    				new IntentHandler().gotoSMSListingTabActivity(context);
+    				new IntentHandler().gotoSMSListingTabActivity(context, Constant.SELECTED_TAB_SCHEDULED_SMS);
     				
     			}
         	}

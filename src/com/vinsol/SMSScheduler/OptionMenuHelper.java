@@ -24,7 +24,7 @@ public class OptionMenuHelper {
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_SMS_LISTING: {
-		    	new IntentHandler().gotoSMSListingTabActivity(context);
+		    	new IntentHandler().gotoSMSListingTabActivity(context, Constant.SELECTED_TAB_SCHEDULED_SMS);
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_ABOUT: {

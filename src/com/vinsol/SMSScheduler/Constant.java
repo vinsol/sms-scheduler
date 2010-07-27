@@ -13,6 +13,14 @@ public class Constant {
 	public static final String STATUS_SEND_STRING = "SEND";
 	
 	/**============================================
+	 * SMSListingTabActivity SelectedTab
+	 *=============================================*/
+	public static final String SMS_LISTING_TAB_ACTIVITY_SELCTED_TAB = "selectedTab";
+	
+	public static final int SELECTED_TAB_SCHEDULED_SMS = 1;
+	public static final int SELECTED_TAB_SENT_SMS = 2;
+	
+	/**============================================
 	 * Schedule SMS Page Type
 	 *=============================================*/
 	public static final String TYPE_OF_SCHEDULE_SMS_PAGE = "pageType";

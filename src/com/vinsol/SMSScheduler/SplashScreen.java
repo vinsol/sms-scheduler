@@ -69,7 +69,7 @@ public class SplashScreen extends Activity {
 			 splashScreenProgressDialog.dismiss();
 			 
 			 if(isDBExist) {
-				 new IntentHandler().gotoSMSListingTabActivity(ctx);
+				 new IntentHandler().gotoSMSListingTabActivity(ctx, Constant.SELECTED_TAB_SCHEDULED_SMS);
 			 } else{
 				 String alertDialogHeading = ctx.getString(R.string.alert_dialog_heading_db_not_exist);
 				 String alertDialogMessage = ctx.getString(R.string.alert_dialog_message_db_not_exist);
