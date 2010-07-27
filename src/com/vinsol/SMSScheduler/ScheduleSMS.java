@@ -202,9 +202,13 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	switch(idOfClickedView){
 			case R.id.schedule_sms_add_number_button: {
     			String contactNumber = contactNumberEditText.getText().toString();
-    			receiverDetailAdapter.add(contactNumber);
-    			contactNumberEditText.setText("");
-    			addToReceiverList(Constant.UNKNOWN_NAME, contactNumber);
+    			if(contactNumber == null || contactNumber.equalsIgnoreCase("")) {
+    				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_blank_contact_number_edit_text), Toast.LENGTH_SHORT).show();
+    			} else {
+	    			receiverDetailAdapter.add(contactNumber);
+	    			contactNumberEditText.setText("");
+	    			addToReceiverList(Constant.UNKNOWN_NAME, contactNumber);
+    			}
     			break;
     		}
     		case R.id.schedule_sms_add_from_contact_button: {

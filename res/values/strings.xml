@@ -23,6 +23,9 @@
 	<string name="toast_message_schedule_sms_done_no_contact_number">"Please add a contact number"</string>
 	<string name="toast_message_schedule_sms_done_blank_message">"Message can not be blank"</string> 
 	
+	<string name="toast_message_schedule_sms_blank_contact_number_edit_text">"Please enter the contact number"</string> 
+	
+	
 	<string name="toast_message_schedule_sms_problem_in_adding_message">"Some Problem in adding message, please Try Again"</string> 
 	<string name="toast_message_schedule_sms_problem_in_updating_message">"Some Problem in updating message, please Try Again"</string> 
 	
