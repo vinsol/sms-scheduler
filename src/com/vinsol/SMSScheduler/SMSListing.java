@@ -134,7 +134,7 @@ public class SMSListing extends ListActivity {
 				        	   boolean isDeleted = new SMSSchedulerDBHelper(context).deleteMessage(idOfClickedMessage);
 				        	   
 				        	   if(isDeleted) {
-				        		   new IntentHandler().gotoSMSListingPage(context);
+				        		   new IntentHandler().gotoSMSListingTabActivity(context);
 				        	   }else {
 				        		   Toast.makeText(context,
         				   			  context.getString(R.string.toast_message_sms_listing_problem_in_delete),

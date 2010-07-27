@@ -20,8 +20,8 @@ public class IntentHandler {
 		context.startActivity(intent);
 	}
 	
-	void gotoSMSListingPage(Context context) {
-		Intent intent = new Intent(context, SMSListing.class);
+	void gotoSMSListingTabActivity(Context context) {
+		Intent intent = new Intent(context, SMSListingTabActivity.class);
 		((Activity) context).finish();
 		context.startActivity(intent);
 	}

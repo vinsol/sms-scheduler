@@ -31,6 +31,12 @@
             >
         </activity>
         
+        <activity 
+        	android:name=".SMSListingTabActivity"
+        	android:screenOrientation="portrait"
+            >
+        </activity>
+        
         <service 
         	android:name=".AlarmHandlerService">
         </service>
