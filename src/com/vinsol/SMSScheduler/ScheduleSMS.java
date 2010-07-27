@@ -310,21 +310,22 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     						.setCancelable(false)
     						.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
     							public void onClick(DialogInterface dialog, int id) {
-    				        	   Thread t = new Thread(){
-    				        		   @Override
-    				        		   public void run(){
-    				        			   long messageId = saveMessageAndReceiversInDatabase(message, scheduledTime);
-    	    				        	   Message newMessage = new Message();
-    	    				        	   newMessage.id = messageId;
-    	    				        	   newMessage.messageBody = message;
+    								final long messageId = saveMessageAndReceiversInDatabase(message, scheduledTime);
+	    				        	   
+    								Thread t = new Thread(){
+    									@Override
+    									public void run(){
+    										Message newMessage = new Message();
+    										newMessage.id = messageId;
+    										newMessage.messageBody = message;
     	    				        	   
-    	    				        	   new SMSSender().sendSMS(ScheduleSMS.this, listOfReceivers, newMessage);
-    				        		   }
-    				        	   };
+    										new SMSSender().sendSMS(ScheduleSMS.this, listOfReceivers, newMessage);
+    									}
+    								};
     				        	   
-    				        	   t.start();
+    								t.start();
     							 
-    				        	   new IntentHandler().gotoSMSListingPage(context);
+    								new IntentHandler().gotoSMSListingPage(context);
     				           }
     				       })
     				       .setNegativeButton("Reschedule", new DialogInterface.OnClickListener() {
@@ -335,12 +336,12 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     				AlertDialog scheduleTimeInPastAlert = builder.create();
     				scheduleTimeInPastAlert.show();
     			}else { //means scheduled time is in future
+    				saveMessageAndReceiversInDatabase(message, scheduledTime);
     				
     				Thread t = new Thread(){
     					@Override
     					public void run() {
-    						saveMessageAndReceiversInDatabase(message, scheduledTime);
-    	    				new ScheduleAlarm().scheduleAlarm(ScheduleSMS.this, currentTimeInMillis);
+    						new ScheduleAlarm().scheduleAlarm(ScheduleSMS.this, currentTimeInMillis);
     					}
     				};
     				
