@@ -32,4 +32,11 @@
 	<string name="toast_message_sms_listing_no_sms_to_show">"No SMS To Show"</string>    
 	<string name="toast_message_sms_listing_problem_in_delete">"Some Problem in deleting message, please Try Again"</string>    
 	
+	
+	<!-- ======================================================
+	     Other Strings 
+	========================================================== -->
+	<string name="empty_list_view_message">"There is no messages to show in this tab please select another tab OR for scheduling new messages click on menu button"</string>    
+	
+	
 </resources>

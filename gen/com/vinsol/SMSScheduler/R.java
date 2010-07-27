@@ -78,6 +78,11 @@ public final class R {
         public static final int alert_dialog_message_scheduled_time_in_past=0x7f060004;
         public static final int app_name=0x7f060000;
         /**  ======================================================
+	     Other Strings 
+	========================================================== 
+         */
+        public static final int empty_list_view_message=0x7f06000c;
+        /**  ======================================================
 	     String shown on progress dialog 
 	========================================================== 
          */

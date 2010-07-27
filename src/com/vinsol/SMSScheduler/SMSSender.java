@@ -18,7 +18,7 @@ public class SMSSender {
             smsManager.sendTextMessage(receiver.getPhoneNumber(), null, message.messageBody, null, null);
 		}
     	//updating message status
-		new SMSSchedulerDBHelper(context).updateMessage(message.id, message.messageBody, "" + message.scheduledTimeInMilliSecond, Constant.STATUS_SEND);
+		new SMSSchedulerDBHelper(context).updateMessage(message.id, message.messageBody, "" + message.scheduledTimeInMilliSecond, Constant.STATUS_SENT);
 		               
     }//end method sendSMS()
 }//end class SMSSender

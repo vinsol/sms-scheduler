@@ -10,7 +10,7 @@ public class Message {
 		String statusInString = null;
 		if(status == Constant.STATUS_SCHEDULED) {
 			statusInString = Constant.STATUS_SCHEDULED_STRING;
-		} else if(status == Constant.STATUS_SEND) {
+		} else if(status == Constant.STATUS_SENT) {
 			statusInString = Constant.STATUS_SEND_STRING;
 		}
 		return statusInString;

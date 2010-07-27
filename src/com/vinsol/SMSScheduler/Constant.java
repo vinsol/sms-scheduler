@@ -6,7 +6,7 @@ public class Constant {
 	 * Status Of Message
 	 *=============================================*/
 	public static final int STATUS_SCHEDULED = 1;
-	public static final int STATUS_SEND = 2;
+	public static final int STATUS_SENT = 2;
 	public static final int STATUS_ALL = 3;
 	
 	public static final String STATUS_SCHEDULED_STRING = "SCHEDULED";
@@ -19,6 +19,14 @@ public class Constant {
 	
 	public static final int PAGE_TYPE_ADD = 1;
 	public static final int PAGE_TYPE_EDIT = 2;
+	
+	/**============================================
+	 * SMSListing Page Type
+	 *=============================================*/
+	public static final String TYPE_OF_SMS_LISTING_PAGE = "pageType";
+	
+	public static final int PAGE_TYPE_SCHEDULED = 1;
+	public static final int PAGE_TYPE_SENT = 2;
 	
 	/**============================================
 	 * Strings for HashMap for message listing

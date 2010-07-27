@@ -39,12 +39,17 @@ public class SMSListing extends ListActivity {
     
     	setContentView(R.layout.message_listing);
     	
+    	int typeOfPage = getIntent().getIntExtra(Constant.TYPE_OF_SMS_LISTING_PAGE, Constant.PAGE_TYPE_SCHEDULED);
+    	
     	context = this;
     	
     	ArrayList<HashMap<String, String>> listViewData = new ArrayList<HashMap<String, String>>();
     	
-    	messagesList = new SMSSchedulerDBHelper(this).retrieveMessages(Constant.ALL_TIME, Constant.STATUS_ALL);
-    	
+    	if(typeOfPage == Constant.PAGE_TYPE_SCHEDULED) {
+    		messagesList = new SMSSchedulerDBHelper(this).retrieveMessages(Constant.ALL_TIME, Constant.STATUS_SCHEDULED);
+    	} else if(typeOfPage == Constant.PAGE_TYPE_SENT) {
+    		messagesList = new SMSSchedulerDBHelper(this).retrieveMessages(Constant.ALL_TIME, Constant.STATUS_SENT);
+    	}
     	if(messagesList == null || messagesList.isEmpty()) {
     		Toast.makeText(this, getString(R.string.toast_message_sms_listing_no_sms_to_show), Toast.LENGTH_SHORT).show();
     		return;

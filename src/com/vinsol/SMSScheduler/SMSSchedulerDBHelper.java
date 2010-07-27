@@ -158,8 +158,8 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     		selection = null;
     	} else if (time == Constant.ALL_TIME && status == Constant.STATUS_SCHEDULED) {
     		selection = MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SCHEDULED;
-    	} else if (time == Constant.ALL_TIME && status == Constant.STATUS_SEND) {
-    		selection = MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SEND;
+    	} else if (time == Constant.ALL_TIME && status == Constant.STATUS_SENT) {
+    		selection = MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SENT;
     	//if here means time != ALL_TIME
     	} else if(status == Constant.STATUS_SCHEDULED) {
     		selection = MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + "<=" + time + " and " + MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SCHEDULED;
@@ -328,7 +328,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     	
     	String nextScheduledTimeQuery = "select MIN(" + MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + ")"
     									+ " from " + MESSAGE_TABLE_NAME
-    									+ " where " + MESSAGE_TABLE_COLUMN_STATUS + "!=" + Constant.STATUS_SEND
+    									+ " where " + MESSAGE_TABLE_COLUMN_STATUS + "!=" + Constant.STATUS_SENT
     									+ " and " + MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + ">=" + currentTime;	
     		
 		Cursor nextTimeCursor = SMSSchedulerDBObject.rawQuery(nextScheduledTimeQuery, null);
