@@ -166,7 +166,16 @@ public class SMSListing extends ListActivity {
 				return true;
 			}
 			case R.id.SMS_LISTING_CONTEXT_MENU_ADD_TO_TEMPLATE: {
-				Toast.makeText(this, "Under Development :)", Toast.LENGTH_SHORT).show();
+				String messageBody = messagesList.get(positionOfClickedListItem).messageBody;
+				
+				long resultRow = new SMSSchedulerDBHelper(SMSListing.this).addTemplate(messageBody);
+				if(resultRow == Constant.TEMPLATE_ALREADY_EXIST) {
+					Toast.makeText(SMSListing.this, getString(R.string.toast_message_sms_listing_template_already_exist), Toast.LENGTH_SHORT).show();
+				}else if(resultRow == -1) {
+					Toast.makeText(SMSListing.this, getString(R.string.toast_message_sms_listing_problem_in_adding_template), Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(SMSListing.this, getString(R.string.toast_message_sms_listing_template_added_successfully), Toast.LENGTH_SHORT).show();
+				}
 				return true;
 			}
 			default: {

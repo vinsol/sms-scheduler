@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -66,7 +67,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TEMPLATE_TABLE =
 		        "CREATE TABLE " + TEMPLATE_TABLE_NAME + " (" 
 		        + TEMPLATE_TABLE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-		        + TEMPLATE_TABLE_COLUMN_TEMPLATE_BODY + " TEXT" 
+		        + TEMPLATE_TABLE_COLUMN_TEMPLATE_BODY + " TEXT UNIQUE" 
 		        + ");";
     
     SQLiteDatabase SMSSchedulerDBObject;
@@ -415,7 +416,10 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
         
         try {
         	resultRow = SMSSchedulerDBObject.insertOrThrow(TEMPLATE_TABLE_NAME, null, templateValues);
-        }catch(SQLException sqle) {
+        } catch(SQLiteConstraintException sqlce) {
+        	resultRow = Constant.TEMPLATE_ALREADY_EXIST;
+        	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> addTemplate -> in catch", "SQLiteConstraintException has occurred" + sqlce);
+        } catch(SQLException sqle) {
         	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> addTemplate -> in catch", "SQLException has occurred" + sqle);
         }finally {
         	SMSSchedulerDBObject.close();

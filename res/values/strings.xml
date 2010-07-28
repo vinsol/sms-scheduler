@@ -33,6 +33,10 @@
 	<string name="toast_message_schedule_sms_problem_in_adding_message">"Some Problem in adding message, please Try Again"</string> 
 	<string name="toast_message_schedule_sms_problem_in_updating_message">"Some Problem in updating message, please Try Again"</string> 
 	
+	<string name="toast_message_sms_listing_problem_in_adding_template">"Some Problem in adding message to template, please Try Again"</string> 
+	<string name="toast_message_sms_listing_template_added_successfully">"Message added to template successfully"</string>
+	<string name="toast_message_sms_listing_template_already_exist">"Message already exist as template"</string> 
+	
 	<string name="toast_message_sms_listing_problem_in_delete">"Some Problem in deleting message, please Try Again"</string>    
 	
 	

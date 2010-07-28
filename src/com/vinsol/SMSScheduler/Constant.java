@@ -61,4 +61,6 @@ public class Constant {
 	public static final long ALL_TIME = -1;
 	public static final long NO_NEXT_SCHEDULED_TIME = -1;
 	
+	public static final long TEMPLATE_ALREADY_EXIST = -2;
+	
 }//end class Constants

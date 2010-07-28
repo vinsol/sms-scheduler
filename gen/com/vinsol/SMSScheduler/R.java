@@ -85,8 +85,8 @@ public final class R {
 	     Other Strings 
 	========================================================== 
          */
-        public static final int empty_list_view_message=0x7f06000d;
-        public static final int option_menu_about=0x7f06000e;
+        public static final int empty_list_view_message=0x7f060010;
+        public static final int option_menu_about=0x7f060011;
         /**  ======================================================
 	     String shown on progress dialog 
 	========================================================== 
@@ -102,6 +102,9 @@ public final class R {
 	========================================================== 
          */
         public static final int toast_message_schedule_sms_receiver_already_exist=0x7f060006;
-        public static final int toast_message_sms_listing_problem_in_delete=0x7f06000c;
+        public static final int toast_message_sms_listing_problem_in_adding_template=0x7f06000c;
+        public static final int toast_message_sms_listing_problem_in_delete=0x7f06000f;
+        public static final int toast_message_sms_listing_template_added_successfully=0x7f06000d;
+        public static final int toast_message_sms_listing_template_already_exist=0x7f06000e;
     }
 }
