@@ -400,5 +400,59 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     	
     }//end method prefillTemplateTable
     
+    
+    /**=====================================================================
+     * method addTemplate
+     *======================================================================*/
+    public long addTemplate(String templateBody) {
+    	  
+    	SMSSchedulerDBObject = getWritableDatabase();
+    	
+    	ContentValues templateValues = new ContentValues();
+        templateValues.put(TEMPLATE_TABLE_COLUMN_TEMPLATE_BODY, templateBody);
+        
+        long resultRow = -1;
+        
+        try {
+        	resultRow = SMSSchedulerDBObject.insertOrThrow(TEMPLATE_TABLE_NAME, null, templateValues);
+        }catch(SQLException sqle) {
+        	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> addTemplate -> in catch", "SQLException has occurred" + sqle);
+        }finally {
+        	SMSSchedulerDBObject.close();
+        }
+    	return resultRow;
+    }//end method addTemplate
+    
+    
+    /**=====================================================================
+     * method retrieveTemplates
+     *======================================================================*/
+    public ArrayList<String> retrieveTemplates() {
+    	
+    	SMSSchedulerDBObject = getReadableDatabase();
+
+		Cursor templatesCursor = SMSSchedulerDBObject.query(TEMPLATE_TABLE_NAME, null, null, null, null, null, null);
+       	
+		ArrayList<String> templatesList = new ArrayList<String>();
+		
+		if (templatesCursor.moveToFirst()) {
+			do {
+				String templateBody = templatesCursor.getString(1);
+				
+				templatesList.add(templateBody);
+			} while (templatesCursor.moveToNext());
+		}else {
+			templatesList = null;
+		}
+		if (templatesCursor != null && !templatesCursor.isClosed()) {
+			templatesCursor.close();
+		}
+		
+		SMSSchedulerDBObject.close();
+		
+		return templatesList;
+
+    }//end method retrieveTemplate
+    
 }//end class SMSSchedulerDBHelper
 

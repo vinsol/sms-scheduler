@@ -213,7 +213,22 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			break;
     		}
     		case R.id.schedule_sms_message_from_template_button: {
-    			Toast.makeText(this, "Under Construction :)", Toast.LENGTH_LONG).show();
+    			ArrayList<String> templateArrayList = new SMSSchedulerDBHelper(this).retrieveTemplates();
+    			
+    			final String[] templateArray = templateArrayList.toArray(new String[0]);	
+    			
+    			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    			String alertDialogHeading = getString(R.string.alert_dialog_heading_pick_a_message);
+    			
+    			builder.setTitle(alertDialogHeading);
+    			builder.setSingleChoiceItems(templateArray, -1, new DialogInterface.OnClickListener() {
+    			    public void onClick(DialogInterface dialog, int position) {
+    			    	messageEditText.setText(templateArray[position]);
+    			    	dialog.dismiss();
+    			    }
+    			});
+    			AlertDialog alert = builder.create();
+    			alert.show();
     			break;
     		}
     		case R.id.schedule_sms_done_button: {
