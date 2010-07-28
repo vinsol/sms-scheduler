@@ -8,6 +8,9 @@
 package com.vinsol.SMSScheduler;
 
 public final class R {
+    public static final class array {
+        public static final int template_array=0x7f070000;
+    }
     public static final class attr {
     }
     public static final class color {

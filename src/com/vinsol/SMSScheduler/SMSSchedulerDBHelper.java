@@ -16,6 +16,8 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 
 	Context context;
 	
+	boolean isNewInstallation = false;
+	
 	//database details
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "sms_scheduler.db";
@@ -23,6 +25,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 	//table name
 	private static final String MESSAGE_TABLE_NAME = "message";
     private static final String RECEIVER_TABLE_NAME = "receiver";
+    private static final String TEMPLATE_TABLE_NAME = "template";
  
     //MESSAGE_TABLE columns name
     private static final String MESSAGE_TABLE_COLUMN_ID = "_id";
@@ -35,6 +38,10 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     private static final String RECEIVER_TABLE_MESSAGE_ID = "message_id";
     private static final String RECEIVER_TABLE_COLUMN_CONTACT_NUMBER = "contact_number";
     private static final String RECEIVER_TABLE_COLUMN_RECEIVER_NAME = "name";
+    
+    //TEMPLATE_TABLE columns name
+    private static final String TEMPLATE_TABLE_COLUMN_ID = "_id";
+    private static final String TEMPLATE_TABLE_COLUMN_TEMPLATE_BODY = "template_body";
     
     
     //create SMS table String
@@ -55,6 +62,13 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 		        + RECEIVER_TABLE_COLUMN_RECEIVER_NAME + " TEXT" 
 		        + ");";
     
+    //create template table string
+    private static final String CREATE_TEMPLATE_TABLE =
+		        "CREATE TABLE " + TEMPLATE_TABLE_NAME + " (" 
+		        + TEMPLATE_TABLE_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+		        + TEMPLATE_TABLE_COLUMN_TEMPLATE_BODY + " TEXT" 
+		        + ");";
+    
     SQLiteDatabase SMSSchedulerDBObject;
 
     /**=====================================================================
@@ -71,10 +85,12 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
      *======================================================================*/
     @Override
     public void onCreate(SQLiteDatabase db) {
-    	Log.v("in SMSSchedulerDBHelper -> in OnCreate", " before execSQL");
-        db.execSQL(CREATE_SMS_TABLE);
+    	isNewInstallation = true;
+    	
+    	db.execSQL(CREATE_SMS_TABLE);
         db.execSQL(CREATE_CONTACT_TABLE);
-        Log.v("in SMSSchedulerDBHelper -> in OnCreate", " after execSQL");
+        db.execSQL(CREATE_TEMPLATE_TABLE);
+       
     }//end method onCreate
     
     /**=====================================================================
@@ -92,6 +108,10 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     	try{
     		SMSSchedulerDBObject = getReadableDatabase();
     		SMSSchedulerDBObject.close();
+    		
+    		if(isNewInstallation) {
+    			prefillTemplateTable();
+    		}
     		return true;
     	}catch(SQLiteException sqle){
     		return false;
@@ -350,6 +370,35 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 		return nextScheduledTime;
 
     }//end method findNextSMSScheduledTime
+    
+    
+    /**=====================================================================
+     * method prefillTemplateTable
+     *======================================================================*/
+    public void prefillTemplateTable() {
+    	  
+    	SMSSchedulerDBObject = getWritableDatabase();
+    
+    	String[] templateArray = context.getResources().getStringArray(R.array.template_array);
+    	
+    	for(int i=0; i<templateArray.length; i++) {
+    		
+    		String templateBody = templateArray[i];
+    		
+    		ContentValues contactValues = new ContentValues();
+            
+    		contactValues.put(TEMPLATE_TABLE_COLUMN_TEMPLATE_BODY, templateBody);
+            
+            try {
+            	SMSSchedulerDBObject.insertOrThrow(TEMPLATE_TABLE_NAME, null, contactValues);
+            }catch(SQLException sqle) {
+            	Log.v("in SMSScheduler -> in SMSSchedulerDBHelper -> prefillTemplateTable -> in catch", "SQLException has occurred" + sqle);
+            }
+    	}//end for
+    	
+    	SMSSchedulerDBObject.close();
+    	
+    }//end method prefillTemplateTable
     
 }//end class SMSSchedulerDBHelper
 
