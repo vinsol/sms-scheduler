@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -105,9 +104,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         
         receiverDetailAdapter = new ArrayAdapter<String>(this, R.layout.schedule_sms_one_receiver_view);
         
-        if(receiverDetailAdapter == null){
-			Log.v("In SMSScheduler -> in ScheduleSMS -> in OnCreate","receiverDetailAdapter" );
-		}else{
+        if(!(receiverDetailAdapter == null)){
 			setListAdapter(receiverDetailAdapter);
 		}
         
@@ -206,7 +203,6 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			if(contactNumber == null || contactNumber.equalsIgnoreCase("")) {
     				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_blank_contact_number_edit_text), Toast.LENGTH_SHORT).show();
     			} else {
-	    			receiverDetailAdapter.add(contactNumber);
 	    			contactNumberEditText.setText("");
 	    			addToReceiverList(Constant.UNKNOWN_NAME, contactNumber);
     			}
@@ -267,12 +263,10 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             @Override
             protected void onPostExecute(Receiver contactInfoObject) {
                 String contactName = contactInfoObject.getDisplayName();
-                String contactNumber = contactInfoObject.getPhoneNumber();
-                receiverDetailAdapter.add(contactName);  
+                String contactNumber = contactInfoObject.getPhoneNumber();  
                 addToReceiverList(contactName, contactNumber);
             }
         };
-
         task.execute(contactUri);
     }//end method getContactInfoFromContentProvider
     
@@ -284,7 +278,16 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	ci.setDisplayName(contactName);
     	ci.setPhoneNumber(contactNumber);
     	
-    	listOfReceivers.add(ci);
+    	if(listOfReceivers.contains(ci)) {
+    		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_receiver_already_exist), Toast.LENGTH_SHORT).show();
+    	} else {
+    		if(contactName.equalsIgnoreCase(Constant.UNKNOWN_NAME)) {
+    			receiverDetailAdapter.add(contactNumber);
+    		}else {
+    			receiverDetailAdapter.add(contactName);
+    		}
+    		listOfReceivers.add(ci);
+    	}
     }//end method addToReceiverList
     
     
