@@ -98,7 +98,6 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         
         //========================== receiver Detail List View ==========================//
         receiverDetailListView = this.getListView();
-        receiverDetailListView.setDivider(getResources().getDrawable(R.drawable.divider));
         
         registerForContextMenu(receiverDetailListView);
         

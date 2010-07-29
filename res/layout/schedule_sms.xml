@@ -161,6 +161,7 @@
         android:fadingEdge="none"
         android:layout_below="@id/first_linear_layout"
         android:layout_above="@id/message_linear_layout"
+        android:divider="@drawable/divider"
     	>
     </ListView>
         
