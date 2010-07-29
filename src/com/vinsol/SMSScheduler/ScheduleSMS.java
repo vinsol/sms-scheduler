@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -30,6 +31,7 @@ import android.widget.ListView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.vinsol.SMSScheduler.ContactAppManager.ContactAccessor;
  
@@ -99,6 +101,15 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         //========================== receiver Detail List View ==========================//
         receiverDetailListView = this.getListView();
         
+        //================== receiver Detail List View onItemClickListener ==================//
+        receiverDetailListView.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				view.performLongClick();
+			}
+        });
+        
+        //=============== receiver Detail List View  register for context menu ===================//
         registerForContextMenu(receiverDetailListView);
         
         receiverDetailAdapter = new ArrayAdapter<String>(this, R.layout.schedule_sms_one_receiver_view);

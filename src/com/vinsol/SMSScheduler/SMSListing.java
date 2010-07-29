@@ -15,10 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class SMSListing extends ListActivity {
 	
@@ -77,6 +79,14 @@ public class SMSListing extends ListActivity {
 		}
 		
 	    lv = this.getListView();
+	    
+	    lv.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				view.performLongClick();
+			}
+	    }) ;
+	    
 	    registerForContextMenu(lv);
 	    	    
 	    SimpleAdapter mSchedule = new SimpleAdapter
