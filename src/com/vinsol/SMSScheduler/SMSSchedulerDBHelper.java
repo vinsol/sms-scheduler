@@ -174,13 +174,16 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     public ArrayList<Message> retrieveMessages(long time, int status) {
     	
     	String selection = null;
+    	String orderBy = null;
     	
     	if(time == Constant.ALL_TIME && status == Constant.STATUS_ALL) {
     		selection = null;
     	} else if (time == Constant.ALL_TIME && status == Constant.STATUS_SCHEDULED) {
     		selection = MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SCHEDULED;
+    		orderBy = "" + MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + " ASC";
     	} else if (time == Constant.ALL_TIME && status == Constant.STATUS_SENT) {
     		selection = MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SENT;
+    		orderBy = "" + MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + " DESC";
     	//if here means time != ALL_TIME
     	} else if(status == Constant.STATUS_SCHEDULED) {
     		selection = MESSAGE_TABLE_COLUMN_SCHEDULED_TIME + "<=" + time + " and " + MESSAGE_TABLE_COLUMN_STATUS + "=" + Constant.STATUS_SCHEDULED;
@@ -190,7 +193,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     	  
     	SMSSchedulerDBObject = getReadableDatabase();
 
-		Cursor messagesCursor = SMSSchedulerDBObject.query(MESSAGE_TABLE_NAME, null, selection, null, null, null, null);
+		Cursor messagesCursor = SMSSchedulerDBObject.query(MESSAGE_TABLE_NAME, null, selection, null, null, null, orderBy);
        	
 		ArrayList<Message> messagesList = new ArrayList<Message>();
 		
