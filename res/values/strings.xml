@@ -47,4 +47,5 @@
 
 	<string name="option_menu_about">"SMS Scheduler \n Version=1.0 \n Developed By: <b>Vinsol</b>"</string>    
 	
+	<string name="option_menu_help_uri">"http://www.vinsol.com"</string>    
 </resources>

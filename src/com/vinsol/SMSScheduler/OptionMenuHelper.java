@@ -1,9 +1,10 @@
 package com.vinsol.SMSScheduler;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class OptionMenuHelper {
 	
@@ -38,7 +39,11 @@ public class OptionMenuHelper {
 		    	return true;
 		    }
 		    case R.id.OPTION_MENU_HELP: {
-		    	Toast.makeText(context, "Under Development :)", Toast.LENGTH_SHORT).show();
+		    	Intent helpIntent = new Intent();
+		    	helpIntent.setAction(Intent.ACTION_VIEW);
+		    	Uri uri = Uri.parse(context.getString(R.string.option_menu_help_uri));
+		    	helpIntent.setData(uri);
+		    	context.startActivity(helpIntent);
 		    	return true;
 		    }
 		  /*  case R.id.OPTION_MENU_SETTINGS: {
