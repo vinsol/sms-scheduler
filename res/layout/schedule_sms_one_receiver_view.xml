@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android" 
-	android:id="@+id/schedule_sms_one_reciever_view_contact_detail"
-  	android:layout_width="fill_parent"
-  	android:layout_height="wrap_content"
-  	android:paddingLeft="20dip"
-  	android:paddingTop="8dip"
-  	android:paddingBottom="8dip"
-  	android:textColor="@color/black"
-  	android:textStyle="bold"
-  	android:maxLines="1"
-  	android:textSize="17dip">
-</TextView>
+	android:orientation="horizontal"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:paddingTop="10dip"
+	android:paddingLeft="10dip"
+	android:paddingBottom="10dip" 
+	>
+	<ImageView 
+		android:id="@+id/schedule_sms_one_receiver_view_contact_image"
+	    android:src="@drawable/icon"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" 
+	    >
+    </ImageView>
+	
+	<TextView
+		xmlns:android="http://schemas.android.com/apk/res/android" 
+		android:id="@+id/schedule_sms_one_reciever_view_contact_detail"
+	  	android:layout_width="fill_parent"
+	  	android:layout_height="wrap_content"
+	  	android:paddingLeft="20dip"
+	  	android:paddingTop="8dip"
+	  	android:paddingBottom="8dip"
+	  	android:textColor="@color/black"
+	  	android:textStyle="bold"
+	  	android:maxLines="1"
+	  	android:textSize="17dip"
+	  	android:gravity="center_vertical">
+	</TextView>
+</LinearLayout>

@@ -57,4 +57,18 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
 
         return contactInfo;
     }//end method LoadContact
+    
+    /**    public void bindView(View view, Context context, Cursor cursor) {
+        ImageView imageView = (ImageView) view.findViewById(R.id.contact_image);
+     
+        int id = cursor.getColumnIndex(People._ID);
+        Uri uri = ContentUris.withAppendedId(People.CONTENT_URI, cursor.getLong(id));
+     
+        Bitmap bitmap = People.loadContactPhoto(context, uri, R.drawable.icon, null);
+     
+        imageView.setImageBitmap(bitmap);
+     
+        super.bindView(view, context, cursor);
+    }*/
+    
 }//end class ContactAccessorSdk3_4

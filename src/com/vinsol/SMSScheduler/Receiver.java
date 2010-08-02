@@ -1,5 +1,7 @@
 package com.vinsol.SMSScheduler;
 
+import android.graphics.Bitmap;
+
 
 /**=========================================================
  * A model object containing contact data.
@@ -8,6 +10,8 @@ public class Receiver {
 
     private String displayName;
     private String phoneNumber;
+    
+    private Bitmap contactImage;
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
@@ -42,4 +46,12 @@ public class Receiver {
     		return false;
     	}
 	}//end method equals   
+
+	public void setContactImage(Bitmap contactImage) {
+		this.contactImage = contactImage;
+	}
+
+	public Bitmap getContactImage() {
+		return contactImage;
+	}
 }//end class Receiver

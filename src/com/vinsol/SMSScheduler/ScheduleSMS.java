@@ -24,7 +24,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -58,7 +57,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
    
 	ListView receiverDetailListView;
 	
-	ArrayAdapter<String> receiverDetailAdapter;
+	ReceiverListAdapter receiverListAdapter;
 	
 	Context context;
 	
@@ -72,8 +71,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     private static final int PICK_CONTACT_REQUEST = 1;
     
     ArrayList<Receiver> listOfReceivers = new ArrayList<Receiver>();
-
-    //message used when type Of page is Edit
+    ArrayList<Receiver> receiversForAdapter = new ArrayList<Receiver>();
+    
     Message messageForEdit;
       
     int typeOfPage;
@@ -119,11 +118,11 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         //=============== receiver Detail List View  register for context menu ===================//
         registerForContextMenu(receiverDetailListView);
         
-        receiverDetailAdapter = new ArrayAdapter<String>(this, R.layout.schedule_sms_one_receiver_view);
+        receiverListAdapter = new ReceiverListAdapter (this, receiversForAdapter);
         
-        if(!(receiverDetailAdapter == null)){
-			setListAdapter(receiverDetailAdapter);
-		}
+        if(!(receiverListAdapter == null)){
+			setListAdapter(receiverListAdapter);
+		} 
         
         //========================== write new message Button ==========================//
         writeNewMessageButton = (Button)findViewById(R.id.schedule_sms_new_message_button);
@@ -201,20 +200,13 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	
 		//=========================== fill receiversList ==============================//
     	for(int i=0; i < listOfReceivers.size(); i++ ) {
-    		String contactNumber = listOfReceivers.get(i).getPhoneNumber();
-    		String displayName = listOfReceivers.get(i).getDisplayName();
-    		
-    		if(displayName.equalsIgnoreCase(Constant.UNKNOWN_NAME)) {
-    			receiverDetailAdapter.add(contactNumber);
-    		}else {
-    			receiverDetailAdapter.add(displayName);
-    		}
+    		receiverListAdapter.add(listOfReceivers.get(i));
     	}
     	
     	//====================== set the text "Update" of done button ==========================// 
     	scheduleSMSButton.setText("Update");
     }//end method fillfillFormWithDataForEdit
-	
+    
     /**========================================================================
 	 * method fillMessageTextView 
 	 *=========================================================================*/
@@ -241,7 +233,12 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_blank_contact_number_edit_text), Toast.LENGTH_SHORT).show();
     			} else {
 	    			contactNumberEditText.setText("");
-	    			addToReceiverList(Constant.UNKNOWN_NAME, contactNumber);
+	    			Receiver receiver = new Receiver();
+	    			receiver.setPhoneNumber(contactNumber);
+	    			receiver.setDisplayName(Constant.UNKNOWN_NAME);
+	    			receiver.setContactImage(null); 
+	    			addToReceiverList(receiver);
+	    			
     			}
     			break;
     		}
@@ -273,6 +270,58 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	}//end switch
     	
     }//end method onClick
+    
+    
+    /**=========================================================================================
+     * method onActivityResult
+     * Invoked when the contact picker activity is finished. The {@code contactUri} parameter
+     * will contain a reference to the contact selected by the user. We will treat it as
+     * an opaque URI and allow the SDK-specific ContactAccessor to handle the URI accordingly.
+     *==========================================================================================*/
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_CONTACT_REQUEST && resultCode == RESULT_OK) {
+            getContactInfoFromContentProvider(data.getData());
+        }
+    }//end method onActivityResult
+
+    /**=================================================================================
+     * Load contact information on a background thread.
+     *==================================================================================*/
+    private void getContactInfoFromContentProvider(Uri contactUri) {
+
+    	//We should always run database queries on a background thread. The database may be
+        //locked by some process for a long time.  If we locked up the UI thread while waiting
+        //for the query to come back, we might get an "Application Not Responding" dialog.
+        AsyncTask<Uri, Void, Receiver> task = new AsyncTask<Uri, Void, Receiver>() {
+
+            @Override
+            protected Receiver doInBackground(Uri... uris) {
+    			return mContactAccessor.loadContact(getContentResolver(), uris[0]);
+           }
+
+            @Override
+            protected void onPostExecute(Receiver contactInfoObject) {
+                addToReceiverList(contactInfoObject);
+            }
+        };
+        task.execute(contactUri);
+    	
+    	//Receiver receiver = mContactAccessor.loadContact(getContentResolver(), contactUri);
+    	//addToReceiverList(receiver);
+    }//end method getContactInfoFromContentProvider
+    
+    /**=====================================================================
+     * method addToReceiverList
+     * ====================================================================*/
+    void addToReceiverList(Receiver receiver) {
+    	if(listOfReceivers.contains(receiver)) {
+    		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_receiver_already_exist), Toast.LENGTH_SHORT).show();
+    	} else {
+    		listOfReceivers.add(receiver);
+    		receiverListAdapter.add(receiver);
+    	}
+    }//end method addToReceiverList
     
     /**=============================================================================
      * method showAlertDialogForWriteOrUpdateMessage
@@ -346,64 +395,6 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 		AlertDialog alert = builder.create();
 		alert.show();
     }//end method showAlertDoalogForChooseFromTemplate
-    
-    /**=========================================================================================
-     * method onActivityResult
-     * Invoked when the contact picker activity is finished. The {@code contactUri} parameter
-     * will contain a reference to the contact selected by the user. We will treat it as
-     * an opaque URI and allow the SDK-specific ContactAccessor to handle the URI accordingly.
-     *==========================================================================================*/
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_CONTACT_REQUEST && resultCode == RESULT_OK) {
-            getContactInfoFromContentProvider(data.getData());
-        }
-    }//end method onActivityResult
-
-    /**=================================================================================
-     * Load contact information on a background thread.
-     *==================================================================================*/
-    private void getContactInfoFromContentProvider(Uri contactUri) {
-
-    	//We should always run database queries on a background thread. The database may be
-        //locked by some process for a long time.  If we locked up the UI thread while waiting
-        //for the query to come back, we might get an "Application Not Responding" dialog.
-        AsyncTask<Uri, Void, Receiver> task = new AsyncTask<Uri, Void, Receiver>() {
-
-            @Override
-            protected Receiver doInBackground(Uri... uris) {
-                return mContactAccessor.loadContact(getContentResolver(), uris[0]);
-            }
-
-            @Override
-            protected void onPostExecute(Receiver contactInfoObject) {
-                String contactName = contactInfoObject.getDisplayName();
-                String contactNumber = contactInfoObject.getPhoneNumber();  
-                addToReceiverList(contactName, contactNumber);
-            }
-        };
-        task.execute(contactUri);
-    }//end method getContactInfoFromContentProvider
-    
-    /**=====================================================================
-     * method addToReceiverList
-     * ====================================================================*/
-    void addToReceiverList(String contactName, String contactNumber) {
-    	Receiver ci = new Receiver();
-    	ci.setDisplayName(contactName);
-    	ci.setPhoneNumber(contactNumber);
-    	
-    	if(listOfReceivers.contains(ci)) {
-    		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_receiver_already_exist), Toast.LENGTH_SHORT).show();
-    	} else {
-    		if(contactName.equalsIgnoreCase(Constant.UNKNOWN_NAME)) {
-    			receiverDetailAdapter.add(contactNumber);
-    		}else {
-    			receiverDetailAdapter.add(contactName);
-    		}
-    		listOfReceivers.add(ci);
-    	}
-    }//end method addToReceiverList
     
     
     /**=====================================================================
@@ -645,8 +636,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 			case R.id.SCHEDULE_SMS_RECEIVER_CONTEXT_MENU_DELETE: {
 				AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 				int positionOfClickedListItem = info.position;
+				receiverListAdapter.remove(listOfReceivers.get(positionOfClickedListItem));
 				listOfReceivers.remove(positionOfClickedListItem);
-				receiverDetailAdapter.remove(headingForContextMenu);
 				return true;
 			}
 			case R.id.SCHEDULE_SMS_MESSAGE_CONTEXT_MENU_UPDATE: {
