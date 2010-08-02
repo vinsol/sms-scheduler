@@ -22,12 +22,15 @@ import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -42,10 +45,14 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     EditText contactNumberEditText;
     
     Button sendDateButton, sendTimeButton;
+    	
+    Button writeNewMessageButton;
     
-    EditText messageEditText;
-	
+    Button chooseMessageFromTemplateButton;
+    
     Button scheduleSMSButton;
+    
+    TextView messageTextView;
     
     Calendar scheduledTimeCalendar = Calendar.getInstance();
    
@@ -118,13 +125,23 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 			setListAdapter(receiverDetailAdapter);
 		}
         
-        //========================== message Edit text ==========================//
-        messageEditText = (EditText)findViewById(R.id.schedule_sms_message_edit_text);
+        //========================== write new message Button ==========================//
+        writeNewMessageButton = (Button)findViewById(R.id.schedule_sms_new_message_button);
+        writeNewMessageButton.setOnClickListener(this);
         
         //========================== Choose Message From Template Button ==========================//
-        Button chooseMessageFromTemplateButton = (Button)findViewById(R.id.schedule_sms_message_from_template_button);
+        chooseMessageFromTemplateButton = (Button)findViewById(R.id.schedule_sms_message_from_template_button);
         chooseMessageFromTemplateButton.setOnClickListener(this);
         
+        //=========================== Message TextView =============================//
+        messageTextView = (TextView)findViewById(R.id.schedule_sms_message_text_view);    	
+        registerForContextMenu(messageTextView);
+        messageTextView.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				v.performLongClick();
+			}
+        });
         
         //======================== Send Date Button ===============================//
         sendDateButton = (Button)findViewById(R.id.schedule_sms_send_date_button);
@@ -179,8 +196,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 		//============================ fillDate And time button ========================//
 		fillDateAndTimeButton();
 		
-    	//=========================== fill messageEditText ============================//
-		messageEditText.setText(messageForEdit.messageBody);
+    	//=========================== fill messageTextView ============================//
+		fillMessageTextView(messageForEdit.messageBody);
     	
 		//=========================== fill receiversList ==============================//
     	for(int i=0; i < listOfReceivers.size(); i++ ) {
@@ -198,6 +215,16 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	scheduleSMSButton.setText("Update");
     }//end method fillfillFormWithDataForEdit
 	
+    /**========================================================================
+	 * method fillMessageTextView 
+	 *=========================================================================*/
+    void fillMessageTextView(String message) {
+    	writeNewMessageButton.setVisibility(View.GONE);
+    	chooseMessageFromTemplateButton.setVisibility(View.GONE);
+    	
+    	messageTextView.setText(message);
+    	messageTextView.setVisibility(View.VISIBLE);
+    }//end method fillMessageTextView
     
     /**===============================================================
      * method onClick
@@ -222,23 +249,13 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     			startActivityForResult(mContactAccessor.getPickContactIntent(), PICK_CONTACT_REQUEST);
     			break;
     		}
+    		case R.id.schedule_sms_new_message_button: {
+    			showAlertDialogForWriteOrUpdateMessage(null);
+    			break;
+    		}
+    		
     		case R.id.schedule_sms_message_from_template_button: {
-    			ArrayList<String> templateArrayList = new SMSSchedulerDBHelper(this).retrieveTemplates();
-    			
-    			final String[] templateArray = templateArrayList.toArray(new String[0]);	
-    			
-    			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    			String alertDialogHeading = getString(R.string.alert_dialog_heading_pick_a_message);
-    			
-    			builder.setTitle(alertDialogHeading);
-    			builder.setSingleChoiceItems(templateArray, -1, new DialogInterface.OnClickListener() {
-    			    public void onClick(DialogInterface dialog, int position) {
-    			    	messageEditText.setText(templateArray[position]);
-    			    	dialog.dismiss();
-    			    }
-    			});
-    			AlertDialog alert = builder.create();
-    			alert.show();
+    			showAlertDialogForChooseFromTemplate();
     			break;
     		}
     		case R.id.schedule_sms_done_button: {
@@ -256,6 +273,79 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	}//end switch
     	
     }//end method onClick
+    
+    /**=============================================================================
+     * method showAlertDialogForWriteOrUpdateMessage
+     * @param message
+     *==============================================================================*/
+    void showAlertDialogForWriteOrUpdateMessage(String message) {
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		String alertDialogHeading = getString(R.string.alert_dialog_heading_compose_message);
+		String alertDialogMessage = getString(R.string.alert_dialog_message_compose_message);
+		
+		LinearLayout llForMessageEditText = new LinearLayout(this);
+		llForMessageEditText.setOrientation(LinearLayout.HORIZONTAL);
+		llForMessageEditText.setPadding(10, 0, 10, 0);
+		
+		final EditText messageEditText = new EditText(this);
+		LayoutParams lpForMessageEditText = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+		messageEditText.setLayoutParams(lpForMessageEditText);
+		messageEditText.setLines(2);
+		
+		llForMessageEditText.addView(messageEditText);
+		
+		if(!(message == null || message.equalsIgnoreCase(""))) {
+			messageEditText.setText(message);
+		}
+		
+		builder.setTitle(alertDialogHeading);
+		builder.setMessage(alertDialogMessage);
+		builder.setView(llForMessageEditText);
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int position) {
+		    	String message = messageEditText.getText().toString();
+		    	if(message == null || message.equalsIgnoreCase("")) {
+		    		String toastMessage = getString(R.string.toast_message_schedule_sms_blank_message);
+		    		Toast.makeText(ScheduleSMS.this, toastMessage, Toast.LENGTH_SHORT).show();
+		    	}else {
+		    		fillMessageTextView(message);
+		    	}
+		    	dialog.dismiss();
+		    }
+		});
+		
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int position) {
+		    	dialog.dismiss();
+		    }
+		});
+		
+		AlertDialog alert = builder.create();
+		alert.show();
+    }//end method showAlertDialogForWriteOrUpdateMessage
+    
+    /**=============================================================================
+     * method showAlertDialogForChooseFromTemplate
+     *==============================================================================*/
+    void showAlertDialogForChooseFromTemplate() {
+    	
+    	ArrayList<String> templateArrayList = new SMSSchedulerDBHelper(this).retrieveTemplates();
+		
+		final String[] templateArray = templateArrayList.toArray(new String[0]);	
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		String alertDialogHeading = getString(R.string.alert_dialog_heading_pick_a_message);
+		
+		builder.setTitle(alertDialogHeading);
+		builder.setSingleChoiceItems(templateArray, -1, new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int position) {
+		    	fillMessageTextView(templateArray[position]);
+		    	dialog.dismiss();
+		    }
+		});
+		AlertDialog alert = builder.create();
+		alert.show();
+    }//end method showAlertDoalogForChooseFromTemplate
     
     /**=========================================================================================
      * method onActivityResult
@@ -326,8 +416,8 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	if((listOfReceivers.size()) <= 0) {
     		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_no_contact_number), Toast.LENGTH_LONG).show();
     	} else {
-        	final String message = messageEditText.getText().toString();
-        	
+    		final String message = (String)messageTextView.getText();
+    		
         	if(message == null || message.equalsIgnoreCase("")) {
         		Toast.makeText(this, getString(R.string.toast_message_schedule_sms_done_blank_message), Toast.LENGTH_LONG).show();
         	} else {	
@@ -512,34 +602,60 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 	/**=============================================================================
 	 * method onCreateContextMenu
 	 *==============================================================================*/
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		int positionOfClickedListItem = ((AdapterContextMenuInfo)menuInfo).position;
-		
-		String displayName = listOfReceivers.get(positionOfClickedListItem).getDisplayName();
-		
-		if(displayName.equalsIgnoreCase(Constant.UNKNOWN_NAME)){
-			headingForContextMenu = listOfReceivers.get(positionOfClickedListItem).getPhoneNumber();
-		} else{
-			headingForContextMenu = displayName;
-		}
-	
-		menu.setHeaderTitle(headingForContextMenu);
-		
-		menu.add(0, R.id.SCHEDULE_SMS_RECEIVER_CONTEXT_MENU_DELETE, 0,  "Delete");
-	}
+	public void onCreateContextMenu(ContextMenu menu, View clickedView, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, clickedView, menuInfo);
+		switch(clickedView.getId()) {
+			case android.R.id.list: {
+				int positionOfClickedListItem = ((AdapterContextMenuInfo)menuInfo).position;
+				
+				String displayName = listOfReceivers.get(positionOfClickedListItem).getDisplayName();
+				
+				if(displayName.equalsIgnoreCase(Constant.UNKNOWN_NAME)){
+					headingForContextMenu = listOfReceivers.get(positionOfClickedListItem).getPhoneNumber();
+				} else{
+					headingForContextMenu = displayName;
+				}
+			
+				menu.setHeaderTitle(headingForContextMenu);
+				
+				menu.add(0, R.id.SCHEDULE_SMS_RECEIVER_CONTEXT_MENU_DELETE, 0,  "Delete");
+				break;
+			}//end case android.R.id.list:
+			
+			case R.id.schedule_sms_message_text_view: {
+				headingForContextMenu = "Options";
+				menu.setHeaderTitle(headingForContextMenu);
+				
+				menu.add(0, R.id.SCHEDULE_SMS_MESSAGE_CONTEXT_MENU_UPDATE, 0,  "Update");
+				menu.add(0, R.id.SCHEDULE_SMS_MESSAGE_CONTEXT_MENU_CHOOSE_FROM_TEMPLATE, 1, getString(R.string.schedule_sms_choose_message_from_template));
+				break;
+			}//end case schedule_sms_message_text_view:	
+			default: {
+				Toast.makeText(this, "For Developer -> ContextMenu for this item does not exist", Toast.LENGTH_SHORT).show();
+			}
+		}//end switch
+	}//end method onCreateContextMenu
 
 	/**=============================================================================
 	 * method onContextItemSelected
 	 *==============================================================================*/
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-	
-		int positionOfClickedListItem = info.position;
+		
 		switch (item.getItemId()) {
 			case R.id.SCHEDULE_SMS_RECEIVER_CONTEXT_MENU_DELETE: {
+				AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+				int positionOfClickedListItem = info.position;
 				listOfReceivers.remove(positionOfClickedListItem);
 				receiverDetailAdapter.remove(headingForContextMenu);
+				return true;
+			}
+			case R.id.SCHEDULE_SMS_MESSAGE_CONTEXT_MENU_UPDATE: {
+				String messageForUpdate = (String)messageTextView.getText();
+				showAlertDialogForWriteOrUpdateMessage(messageForUpdate);
+				return true;
+			}
+			case R.id.SCHEDULE_SMS_MESSAGE_CONTEXT_MENU_CHOOSE_FROM_TEMPLATE: {
+				showAlertDialogForChooseFromTemplate();
 				return true;
 			}
 			default: {

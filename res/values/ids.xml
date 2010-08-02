@@ -19,4 +19,7 @@
 		IDs for ScheduleSMS context menu
 	================================================================ -->
 	<item name="SCHEDULE_SMS_RECEIVER_CONTEXT_MENU_DELETE" type="id"></item>
+	
+	<item name="SCHEDULE_SMS_MESSAGE_CONTEXT_MENU_UPDATE" type="id"></item>
+	<item name="SCHEDULE_SMS_MESSAGE_CONTEXT_MENU_CHOOSE_FROM_TEMPLATE" type="id"></item>
 </resources>

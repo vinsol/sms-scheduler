@@ -124,23 +124,41 @@
     	android:background="@color/gray"
     	android:layout_above="@id/date_time_linear_layout"
     	>
-	    <EditText 
-        	android:id="@+id/schedule_sms_message_edit_text"  
+    	<!-- ======== Write new message button =========== -->    
+ 		<Button 
+        	android:id="@+id/schedule_sms_new_message_button"  
 	        android:layout_width="fill_parent" 
 	        android:layout_height="wrap_content"
 	        android:layout_marginTop="5dip"
 	        android:layout_marginBottom="5dip"
-	        android:hint="Message"
+	        android:text="Write New Message"
 	        android:singleLine="true"
 	        >
-        </EditText>
+        </Button>
+        <!-- =========== Choose message from template button ========== -->
         <Button 
         	android:id="@+id/schedule_sms_message_from_template_button"  
         	android:layout_width="fill_parent" 
         	android:layout_height="wrap_content"
-        	android:text="Choose Message From Template"
+        	android:text="@string/schedule_sms_choose_message_from_template"
         	>
        	</Button>
+       	
+       	<!-- ========== Invisible Text view for Message ============= -->
+       	<TextView
+       		android:id="@+id/schedule_sms_message_text_view"
+       		android:layout_width="fill_parent"
+       		android:layout_height="fill_parent"
+       		android:layout_marginTop="5dip"
+       		android:layout_marginBottom="5dip"
+       		android:textSize="20dip"
+       		android:textColor="@color/white"
+       		android:lines="2"
+       		android:visibility="gone"
+       		android:padding="10dip"
+       		>
+       	</TextView>
+       	
     </LinearLayout>      
     
         
@@ -164,9 +182,5 @@
         android:divider="@drawable/divider"
     	>
     </ListView>
-        
-    
-     
-    
-
+       
 </RelativeLayout>
