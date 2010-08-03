@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.util.Log;
 
 import com.vinsol.SMSScheduler.Receiver;
 
@@ -35,38 +34,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * method loadContact
      * Retrieves the contact information.
      *================================================================================*/
-/*    @Override
-    public Receiver loadContact(ContentResolver contentResolver, Uri contactUri) {
-        Receiver contactInfo = new Receiver();
-        long contactId = -1;
-
-        // Load the display name for the specified person
-        Cursor cursor = contentResolver.query(contactUri,
-                new String[]{Contacts._ID, Contacts.DISPLAY_NAME}, null, null, null);
-        try {
-            if (cursor.moveToFirst()) {
-                contactId = cursor.getLong(0);
-                contactInfo.setDisplayName(cursor.getString(1));
-            }
-        } finally {
-            cursor.close();
-        }
-
-        // Load the phone number (if any).
-        cursor = contentResolver.query(Phone.CONTENT_URI,
-                new String[]{Phone.NUMBER},
-                Phone.CONTACT_ID + "=" + contactId, null, Phone.IS_SUPER_PRIMARY + " DESC");
-        try {
-            if (cursor.moveToFirst()) {
-                contactInfo.setPhoneNumber(cursor.getString(0));
-            }
-        } finally {
-            cursor.close();
-        }
-        return contactInfo;
-    }//end method loadContact
-    */
-    
     @Override
     public Receiver loadContact(ContentResolver contentResolver, Uri contactUri) {
         Receiver contactInfo = new Receiver();
@@ -97,38 +64,25 @@ public class ContactAccessorSdk5 extends ContactAccessor {
             cursor.close();
         }    
         
+        //Load contact Image (if any).
         InputStream is = openPhoto(contentResolver, contactId);
-        if(is == null) {
-        	Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaacontactAccessor 5+ " , "image not presant");
-        } else {
+        if(is != null) {
         	Bitmap bitmapimage = BitmapFactory.decodeStream(is);
         	contactInfo.setContactImage(bitmapimage);
         }
         return contactInfo;
     }//end method loadContact
     
+    /**============================================================================
+     * method openPhoto
+     * @param contentResolver
+     * @param contactId
+     * @return
+     *=============================================================================*/
     public InputStream openPhoto(ContentResolver contentResolver, long contactId) {
     	Uri contactUri = ContentUris.withAppendedId(Contacts.CONTENT_URI, contactId);
-        /*Uri photoUri = Uri.withAppendedPath(contactUri, Contacts.Photo.CONTENT_DIRECTORY);
-        Cursor cursor = contentResolver.query(photoUri, new String[] {Contacts.Photo.}, null, null, null);
-        if (cursor == null) {
-            return null;
-        }
-        try {
-            if (cursor.moveToFirst()) {
-                byte[] data = cursor.getBlob(0);
-                if (data != null) {
-                    return new ByteArrayInputStream(data);
-                }
-            }
-        } finally {
-            cursor.close();
-        }
-        return null;
-    */
     	
-    	return Contacts.openContactPhotoInputStream(contentResolver, contactUri);
-    		
+    	return Contacts.openContactPhotoInputStream(contentResolver, contactUri);	
     }
     	
 }//end class ContactAccessorSdk5
