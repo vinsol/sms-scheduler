@@ -180,6 +180,7 @@
         android:layout_below="@id/first_linear_layout"
         android:layout_above="@id/message_linear_layout"
         android:divider="@drawable/divider"
+        android:dividerHeight="1.5dip"
         android:cacheColorHint="#00000000"
     	>
     </ListView>
