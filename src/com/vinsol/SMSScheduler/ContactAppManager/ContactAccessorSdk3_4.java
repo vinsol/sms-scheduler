@@ -54,7 +54,6 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
         cursor = contentResolver.query(phoneUri, new String[]{Phones.NUMBER, Phones.TYPE}, null, null, Phones.ISPRIMARY + " DESC");
 
         try {
-        	cursor.moveToFirst();
         	int i=0;
     		int phoneNumberCount = cursor.getCount();
             String[] phoneNumberArray = new String[phoneNumberCount];
