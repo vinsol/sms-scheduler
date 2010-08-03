@@ -56,8 +56,12 @@ public class ReceiverListAdapter extends ArrayAdapter<Receiver> {
         imageView.setImageDrawable(contactDrawable);
        
         // Set the text on the TextView
-        TextView textView = (TextView) rowView.findViewById(R.id.schedule_sms_one_reciever_view_contact_detail);
-        textView.setText(contactDetail);
+        TextView contactDetailTextView = (TextView) rowView.findViewById(R.id.schedule_sms_one_reciever_view_contact_detail);
+        contactDetailTextView.setText(contactDetail);
+        
+        // Set the type
+        TextView contactTypeTextView = (TextView) rowView.findViewById(R.id.schedule_sms_one_reciever_view_contact_type);
+        contactTypeTextView.setText(receiver.getPhoneType());
 
         return rowView;
     }

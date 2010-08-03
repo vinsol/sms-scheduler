@@ -301,8 +301,29 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
            }
 
             @Override
-            protected void onPostExecute(Receiver contactInfoObject) {
-                addToReceiverList(contactInfoObject);
+            protected void onPostExecute(final Receiver contactInfoObject) {
+                final String[] phoneNumberArray = contactInfoObject.getPhoneNumberArray() != null?contactInfoObject.getPhoneNumberArray(): new String[0];
+                final String[] phoneTypeArray = contactInfoObject.getPhoneTypeArray() != null?contactInfoObject.getPhoneTypeArray(): new String[0];
+     
+                if(phoneNumberArray.length > 1) {           	
+            		
+            		AlertDialog.Builder builder = new AlertDialog.Builder(ScheduleSMS.this);
+            		String alertDialogHeading = getString(R.string.alert_dialog_heading_pick_a_contact_number);
+            		
+            		builder.setTitle(alertDialogHeading);
+            		builder.setSingleChoiceItems(phoneNumberArray, 0, new DialogInterface.OnClickListener() {
+            		    public void onClick(DialogInterface dialog, int position) {
+            		    	contactInfoObject.setPhoneNumber(phoneNumberArray[position]);
+            		    	contactInfoObject.setPhoneType(phoneTypeArray[position]);
+                        	addToReceiverList(contactInfoObject);
+            		    	dialog.dismiss();
+            		    }
+            		});
+            		AlertDialog alert = builder.create();
+            		alert.show();
+                } else {
+                	addToReceiverList(contactInfoObject);
+                }
             }
         };
         task.execute(contactUri);

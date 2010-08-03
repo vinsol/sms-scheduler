@@ -51,12 +51,26 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
         }
 
         Uri phoneUri = Uri.withAppendedPath(contactUri, Phones.CONTENT_DIRECTORY);
-        cursor = contentResolver.query(phoneUri, new String[]{Phones.NUMBER}, null, null, Phones.ISPRIMARY + " DESC");
+        cursor = contentResolver.query(phoneUri, new String[]{Phones.NUMBER, Phones.TYPE}, null, null, Phones.ISPRIMARY + " DESC");
 
         try {
-            if (cursor.moveToFirst()) {
-                contactInfo.setPhoneNumber(cursor.getString(0));
-            }
+        	cursor.moveToFirst();
+        	int i=0;
+    		int phoneNumberCount = cursor.getCount();
+            String[] phoneNumberArray = new String[phoneNumberCount];
+    		String[] phoneTypeArray = new String[phoneNumberCount];
+    		if(cursor.moveToFirst()){
+	    		do {
+	    			phoneNumberArray[i] = cursor.getString(cursor.getColumnIndex(Phones.NUMBER));
+	    			String phoneType = cursor.getString(cursor.getColumnIndex(Phones.TYPE));
+	    			phoneTypeArray[i] = convertPhoneTypeValueToString(phoneType);
+	    			i++;
+	    		}while (cursor.moveToNext());         	
+	    		contactInfo.setPhoneNumber(phoneNumberArray[0]);
+	    		contactInfo.setPhoneNumberArray(phoneNumberArray);
+	    		contactInfo.setPhoneTypeArray(phoneTypeArray);
+    		}
+
         } finally {
             cursor.close();
         }
@@ -68,6 +82,43 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
         
         return contactInfo;
     }//end method LoadContact
+    
+    /**============================================================================
+     * method convertPhoneTypeValueToString
+     *=============================================================================*/
+    String convertPhoneTypeValueToString (String numericValue) {
+    	int phoneTypeNumeric = Integer.parseInt(numericValue);
+    	String phoneType = null;
+    	switch(phoneTypeNumeric) {
+	    	case Phones.TYPE_CUSTOM:
+	    		phoneType = "Custom";
+	    		break;
+	    	case Phones.TYPE_FAX_HOME:
+	    		phoneType = "Fax Home";
+	    		break;
+	    	case Phones.TYPE_FAX_WORK:
+	    		phoneType = "Fax Work";
+	    		break;
+	    	case Phones.TYPE_HOME:
+	    		phoneType = "Home";
+	    		break;
+	    	case Phones.TYPE_MOBILE:
+	    		phoneType = "Mobile";
+	    		break;
+	    	case Phones.TYPE_OTHER:
+	    		phoneType = "Other";
+	    		break;
+	    	case Phones.TYPE_PAGER:
+	    		phoneType = "Pager";
+	    		break;
+	    	case Phones.TYPE_WORK:
+	    		phoneType = "Work";
+	    		break;
+    		default:
+    			phoneType = "Undefined Type";
+    	}//end switch
+    	return phoneType;
+    }
     
     /**============================================================================
      * method openPhoto

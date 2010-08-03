@@ -9,10 +9,14 @@ import android.graphics.Bitmap;
 public class Receiver {
 
     private String displayName;
-    private String phoneNumber;
+    private String phoneNumber; //selected phone number on which SMS will be sent
+    private String phoneType; //selected phone number's type
     
     private Bitmap contactImage;
 
+    private String[] phoneNumberArray;
+    private String[] phoneTypeArray;
+    
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
@@ -53,5 +57,29 @@ public class Receiver {
 
 	public Bitmap getContactImage() {
 		return contactImage;
+	}
+
+	public void setPhoneNumberArray(String[] phoneNumberArray) {
+		this.phoneNumberArray = phoneNumberArray;
+	}
+
+	public String[] getPhoneNumberArray() {
+		return phoneNumberArray;
+	}
+
+	public void setPhoneTypeArray(String[] phoneTypeArray) {
+		this.phoneTypeArray = phoneTypeArray;
+	}
+
+	public String[] getPhoneTypeArray() {
+		return phoneTypeArray;
+	}
+
+	public void setPhoneType(String phoneType) {
+		this.phoneType = phoneType;
+	}
+
+	public String getPhoneType() {
+		return phoneType;
 	}
 }//end class Receiver

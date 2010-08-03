@@ -19,6 +19,8 @@
 	
 	<string name="alert_dialog_heading_pick_a_message">"Pick a message"</string>
 	
+	<string name="alert_dialog_heading_pick_a_contact_number">"Pick a number"</string>
+	
 	<string name="alert_dialog_message_scheduled_time_in_past">"<p>Scheduled time is less than or equal to current time.</p>
 							<p>So the message will be send immediately.</p>"</string>
 	
