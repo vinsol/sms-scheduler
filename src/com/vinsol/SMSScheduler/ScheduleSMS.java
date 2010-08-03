@@ -297,7 +297,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 
             @Override
             protected Receiver doInBackground(Uri... uris) {
-    			return mContactAccessor.loadContact(getContentResolver(), uris[0]);
+    			return mContactAccessor.loadContact(ScheduleSMS.this, getContentResolver(), uris[0]);
            }
 
             @Override

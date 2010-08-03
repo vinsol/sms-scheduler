@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -35,7 +36,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
      * Retrieves the contact information.
      *================================================================================*/
     @Override
-    public Receiver loadContact(ContentResolver contentResolver, Uri contactUri) {
+    public Receiver loadContact(Context context, ContentResolver contentResolver, Uri contactUri) {
         Receiver contactInfo = new Receiver();
         long contactId = -1;
         

@@ -1,12 +1,16 @@
 package com.vinsol.SMSScheduler.ContactAppManager;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.Contacts.People;
 import android.provider.Contacts.People.Phones;
 
+import com.vinsol.SMSScheduler.R;
 import com.vinsol.SMSScheduler.Receiver;
 
 /**=========================================================================================
@@ -31,21 +35,23 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
      * Retrieves the contact information.
      *====================================================================================*/
     @Override
-    public Receiver loadContact(ContentResolver contentResolver, Uri contactUri) {
+    public Receiver loadContact(Context context, ContentResolver contentResolver, Uri contactUri) {
         Receiver contactInfo = new Receiver();
+        long contactId = -1;
+        
         Cursor cursor = contentResolver.query(contactUri,
-                new String[]{People.DISPLAY_NAME}, null, null, null);
+                new String[]{People._ID, People.DISPLAY_NAME}, null, null, null);
         try {
             if (cursor.moveToFirst()) {
-                contactInfo.setDisplayName(cursor.getString(0));
+            	contactId = cursor.getLong(0);
+                contactInfo.setDisplayName(cursor.getString(1));
             }
         } finally {
             cursor.close();
         }
 
         Uri phoneUri = Uri.withAppendedPath(contactUri, Phones.CONTENT_DIRECTORY);
-        cursor = contentResolver.query(phoneUri,
-                new String[]{Phones.NUMBER}, null, null, Phones.ISPRIMARY + " DESC");
+        cursor = contentResolver.query(phoneUri, new String[]{Phones.NUMBER}, null, null, Phones.ISPRIMARY + " DESC");
 
         try {
             if (cursor.moveToFirst()) {
@@ -54,21 +60,26 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
         } finally {
             cursor.close();
         }
-
+        
+      //Load contact Image (if any).
+        Bitmap bitmapImage = openPhoto(context, contentResolver, contactId);
+        
+    	contactInfo.setContactImage(bitmapImage);
+        
         return contactInfo;
     }//end method LoadContact
     
-    /**    public void bindView(View view, Context context, Cursor cursor) {
-        ImageView imageView = (ImageView) view.findViewById(R.id.contact_image);
-     
-        int id = cursor.getColumnIndex(People._ID);
-        Uri uri = ContentUris.withAppendedId(People.CONTENT_URI, cursor.getLong(id));
-     
-        Bitmap bitmap = People.loadContactPhoto(context, uri, R.drawable.icon, null);
-     
-        imageView.setImageBitmap(bitmap);
-     
-        super.bindView(view, context, cursor);
-    }*/
+    /**============================================================================
+     * method openPhoto
+     * @param Context
+     * @param contentResolver
+     * @param contactId
+     * @return
+     *=============================================================================*/
+    public Bitmap openPhoto(Context context, ContentResolver contentResolver, long contactId) {
+    	Uri contactUri = ContentUris.withAppendedId(People.CONTENT_URI, contactId);
+    	
+    	return People.loadContactPhoto(context, contactUri, R.drawable.icon, null);
+    }
     
 }//end class ContactAccessorSdk3_4

@@ -1,6 +1,7 @@
 package com.vinsol.SMSScheduler.ContactAppManager;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -71,5 +72,5 @@ public abstract class ContactAccessor {
      * used, but the result is the same: the {@link #mDisplayName} and {@link #mPhoneNumber}
      * fields are populated with correct data.
      *================================================================================================*/
-    public abstract Receiver loadContact(ContentResolver contentResolver, Uri contactUri);
+    public abstract Receiver loadContact(Context context, ContentResolver contentResolver, Uri contactUri);
 }//end class ContactAccessor
