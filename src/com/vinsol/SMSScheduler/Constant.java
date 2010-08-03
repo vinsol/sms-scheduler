@@ -54,6 +54,7 @@ public class Constant {
 	 * other Strings 
 	 *=============================================*/
 	public static final String UNKNOWN_NAME = "Unknown Name";
+	public static final String UNKNOWN_TYPE = "Unknown Type";
 	
 	/**============================================
 	 * other Constants 

@@ -43,6 +43,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     private static final String RECEIVER_TABLE_COLUMN_CONTACT_NUMBER = "contact_number";
     private static final String RECEIVER_TABLE_COLUMN_RECEIVER_NAME = "name";
     private static final String RECEIVER_TABLE_COLUMN_RECEIVER_IMAGE = "image";
+    private static final String RECEIVER_TABLE_COLUMN_PHONE_TYPE = "type";
     
     //TEMPLATE_TABLE columns name
     private static final String TEMPLATE_TABLE_COLUMN_ID = "_id";
@@ -65,6 +66,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 		        + RECEIVER_TABLE_MESSAGE_ID + " TEXT, "
 		        + RECEIVER_TABLE_COLUMN_CONTACT_NUMBER + " TEXT, " 
 		        + RECEIVER_TABLE_COLUMN_RECEIVER_NAME + " TEXT, "
+		        + RECEIVER_TABLE_COLUMN_PHONE_TYPE + " TEXT, "
 		        + RECEIVER_TABLE_COLUMN_RECEIVER_IMAGE + " BLOB"
 		        + ");";
     
@@ -262,6 +264,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     		
     		String contactNumber = receiversList.get(i).getPhoneNumber();
     		String displayName = receiversList.get(i).getDisplayName();
+    		String phoneType = receiversList.get(i).getPhoneType();
     		Bitmap image = receiversList.get(i).getContactImage();
     		byte[] imageByteArray = null;
     		if(image != null){
@@ -276,6 +279,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
     		contactValues.put(RECEIVER_TABLE_MESSAGE_ID, messageId);
             contactValues.put(RECEIVER_TABLE_COLUMN_CONTACT_NUMBER, contactNumber);
             contactValues.put(RECEIVER_TABLE_COLUMN_RECEIVER_NAME, displayName);
+            contactValues.put(RECEIVER_TABLE_COLUMN_PHONE_TYPE, phoneType);
             contactValues.put(RECEIVER_TABLE_COLUMN_RECEIVER_IMAGE, imageByteArray);
             
             try {
@@ -304,6 +308,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
         		
         		String contactNumber = receiversList.get(i).getPhoneNumber();
         		String displayName = receiversList.get(i).getDisplayName();
+        		String phoneType = receiversList.get(i).getPhoneType();
         		Bitmap image = receiversList.get(i).getContactImage();
         		byte[] imageByteArray = null;
         		if(image != null){
@@ -317,6 +322,7 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
         		contactValues.put(RECEIVER_TABLE_MESSAGE_ID, messageId);
                 contactValues.put(RECEIVER_TABLE_COLUMN_CONTACT_NUMBER, contactNumber);
                 contactValues.put(RECEIVER_TABLE_COLUMN_RECEIVER_NAME, displayName);
+                contactValues.put(RECEIVER_TABLE_COLUMN_PHONE_TYPE, phoneType);
                 contactValues.put(RECEIVER_TABLE_COLUMN_RECEIVER_IMAGE, imageByteArray);
                 
             	SMSSchedulerDBObject.insertOrThrow(RECEIVER_TABLE_NAME, null, contactValues);
@@ -347,7 +353,8 @@ public class SMSSchedulerDBHelper extends SQLiteOpenHelper {
 				Receiver receiverObject = new Receiver();
 				receiverObject.setPhoneNumber(receiversCursor.getString(2));
 				receiverObject.setDisplayName(receiversCursor.getString(3));
-				byte[] imageByteArray = receiversCursor.getBlob(4);
+				receiverObject.setPhoneType(receiversCursor.getString(4));
+				byte[] imageByteArray = receiversCursor.getBlob(5);
 				Bitmap image = null;
 				
 				if(imageByteArray != null) {

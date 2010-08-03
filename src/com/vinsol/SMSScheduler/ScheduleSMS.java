@@ -236,6 +236,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
 	    			Receiver receiver = new Receiver();
 	    			receiver.setPhoneNumber(contactNumber);
 	    			receiver.setDisplayName(Constant.UNKNOWN_NAME);
+	    			receiver.setPhoneType(Constant.UNKNOWN_TYPE);
 	    			receiver.setContactImage(null); 
 	    			addToReceiverList(receiver);
 	    			

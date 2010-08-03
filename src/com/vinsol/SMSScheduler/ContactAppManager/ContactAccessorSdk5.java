@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 
+import com.vinsol.SMSScheduler.Constant;
 import com.vinsol.SMSScheduler.Receiver;
 
 /**==============================================================================================
@@ -69,6 +70,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 	    			i++;
 	    		}while (cursor.moveToNext());         	
 	    		contactInfo.setPhoneNumber(phoneNumberArray[0]);
+	    		contactInfo.setPhoneType(phoneTypeArray[0]);
 	    		contactInfo.setPhoneNumberArray(phoneNumberArray);
 	    		contactInfo.setPhoneTypeArray(phoneTypeArray);
     		}
@@ -171,7 +173,7 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 	    		phoneType = "TTY TDD";
 	    		break;
 	    	default:
-    			phoneType = "Undefined Type";
+    			phoneType = Constant.UNKNOWN_TYPE;
     	}//end switch
     	return phoneType;
     }

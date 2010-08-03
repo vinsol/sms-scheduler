@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.provider.Contacts.People;
 import android.provider.Contacts.People.Phones;
 
+import com.vinsol.SMSScheduler.Constant;
 import com.vinsol.SMSScheduler.R;
 import com.vinsol.SMSScheduler.Receiver;
 
@@ -66,6 +67,7 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
 	    			i++;
 	    		}while (cursor.moveToNext());         	
 	    		contactInfo.setPhoneNumber(phoneNumberArray[0]);
+	    		contactInfo.setPhoneType(phoneTypeArray[0]);
 	    		contactInfo.setPhoneNumberArray(phoneNumberArray);
 	    		contactInfo.setPhoneTypeArray(phoneTypeArray);
     		}
@@ -114,7 +116,7 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
 	    		phoneType = "Work";
 	    		break;
     		default:
-    			phoneType = "Undefined Type";
+    			phoneType = Constant.UNKNOWN_TYPE;
     	}//end switch
     	return phoneType;
     }
