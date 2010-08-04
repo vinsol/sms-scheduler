@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.Contacts;
 import android.provider.Contacts.People;
 import android.provider.Contacts.People.Phones;
+import android.util.Log;
 
 import com.vinsol.SMSScheduler.Constant;
 import com.vinsol.SMSScheduler.R;
@@ -76,7 +78,7 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
             cursor.close();
         }
         
-      //Load contact Image (if any).
+        //Load contact Image (if any).
         Bitmap bitmapImage = openPhoto(context, contentResolver, contactId);
         
     	contactInfo.setContactImage(bitmapImage);
@@ -88,10 +90,44 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
      * method loadContactFromContactNumber
      * Retrieves the contact information.
      *================================================================================*/
-    @Override
-    public Receiver loadContactFromContactNumber(Context context, String contactNumber){
-    	return null;
-    }
+    public Receiver loadContactFromContactNumber(Context context, String contactNumber) {
+        Receiver contactInfo = new Receiver();
+        long contactId = -1;
+        
+        ContentResolver contentResolver = context.getContentResolver();
+        
+        Uri phoneUri = Contacts.Phones.CONTENT_URI;
+        
+        Cursor cursor = contentResolver.query(phoneUri, new String[]{"person", Phones.TYPE, Phones.NAME},
+        		Phones.NUMBER + "='" + contactNumber + "'", null, null);
+        
+        try {
+        	if(cursor.moveToFirst()) {
+				
+        		contactId = cursor.getLong(cursor.getColumnIndex("person"));
+        		String phoneType = cursor.getString(cursor.getColumnIndex(Phones.TYPE));
+				String displayName = cursor.getString(cursor.getColumnIndex(Phones.NAME));
+        		
+        		String phoneTypeString = convertPhoneTypeValueToString(phoneType);
+										
+				contactInfo.setPhoneNumber(contactNumber);
+	    		contactInfo.setPhoneType(phoneTypeString);
+	    		contactInfo.setDisplayName(displayName);
+    		}
+            
+        } catch (Exception e) {
+        	Log.e("in SMSScheduler -> ContactAccessor3_4 -> method loadContactFromContactNumber -> catch",  "exception = " + e);
+        } finally {
+            cursor.close();
+        }
+       
+        //Load contact Image (if any).
+        Bitmap bitmapImage = openPhoto(context, contentResolver, contactId);
+        
+    	contactInfo.setContactImage(bitmapImage);
+        
+        return contactInfo;
+    }//end class loadContactFromContactNumber
     
     /**============================================================================
      * method convertPhoneTypeValueToString

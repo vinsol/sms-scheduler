@@ -114,9 +114,6 @@ public class ContactAccessorSdk5 extends ContactAccessor {
 				contactInfo.setPhoneNumber(contactNumber);
 	    		contactInfo.setPhoneType(phoneTypeString);
     		}
-            if (cursor.moveToFirst()) {
-                contactInfo.setPhoneNumber(cursor.getString(0));
-            }
         } finally {
             cursor.close();
         }

@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -162,7 +163,7 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         	Uri uri = getIntent().getData();
         	if(uri != null) {
         		String schema = uri.getScheme();
-        		if(schema.equalsIgnoreCase("smsto")) {
+        		if(schema.equalsIgnoreCase("smsto") || schema.equalsIgnoreCase("sms")) {
         			String schemaSpecificPart = uri.getSchemeSpecificPart();
         			Receiver contactInfoObject = mContactAccessor.loadContactFromContactNumber(context, schemaSpecificPart);
         			addToReceiverList(contactInfoObject);
