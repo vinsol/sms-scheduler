@@ -305,9 +305,12 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             protected void onPostExecute(final Receiver contactInfoObject) {
                 final String[] phoneNumberArray = contactInfoObject.getPhoneNumberArray() != null?contactInfoObject.getPhoneNumberArray(): new String[0];
                 final String[] phoneTypeArray = contactInfoObject.getPhoneTypeArray() != null?contactInfoObject.getPhoneTypeArray(): new String[0];
-     
-                if(phoneNumberArray.length > 1) {           	
-            		
+                
+                if(phoneNumberArray.length == 0) {
+                	Toast.makeText(ScheduleSMS.this, getString(R.string.toast_message_schedule_sms_receiver_has_no_contact_number), Toast.LENGTH_LONG).show();
+                } else if(phoneNumberArray.length == 1) {
+                	addToReceiverList(contactInfoObject);
+                } else {//means phoneNumberArray.length > 1           	
             		AlertDialog.Builder builder = new AlertDialog.Builder(ScheduleSMS.this);
             		String alertDialogHeading = getString(R.string.alert_dialog_heading_pick_a_contact_number);
             		
@@ -322,15 +325,11 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
             		});
             		AlertDialog alert = builder.create();
             		alert.show();
-                } else {
-                	addToReceiverList(contactInfoObject);
                 }
             }
         };
         task.execute(contactUri);
-    	
-    	//Receiver receiver = mContactAccessor.loadContact(getContentResolver(), contactUri);
-    	//addToReceiverList(receiver);
+
     }//end method getContactInfoFromContentProvider
     
     /**=====================================================================

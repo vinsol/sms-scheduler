@@ -93,29 +93,30 @@ public final class R {
 	     Other Strings 
 	========================================================== 
          */
-        public static final int empty_list_view_message=0x7f060014;
-        public static final int option_menu_about=0x7f060015;
-        public static final int option_menu_help_uri=0x7f060016;
+        public static final int empty_list_view_message=0x7f060015;
+        public static final int option_menu_about=0x7f060016;
+        public static final int option_menu_help_uri=0x7f060017;
         /**  ======================================================
 	     String shown on progress dialog 
 	========================================================== 
          */
         public static final int progress_dialog_message_splash_screen=0x7f060001;
-        public static final int schedule_sms_choose_message_from_template=0x7f060017;
-        public static final int toast_message_schedule_sms_blank_contact_number_edit_text=0x7f06000d;
-        public static final int toast_message_schedule_sms_blank_message=0x7f06000a;
-        public static final int toast_message_schedule_sms_done_blank_message=0x7f06000c;
-        public static final int toast_message_schedule_sms_done_no_contact_number=0x7f06000b;
-        public static final int toast_message_schedule_sms_problem_in_adding_message=0x7f06000e;
-        public static final int toast_message_schedule_sms_problem_in_updating_message=0x7f06000f;
+        public static final int schedule_sms_choose_message_from_template=0x7f060018;
+        public static final int toast_message_schedule_sms_blank_contact_number_edit_text=0x7f06000e;
+        public static final int toast_message_schedule_sms_blank_message=0x7f06000b;
+        public static final int toast_message_schedule_sms_done_blank_message=0x7f06000d;
+        public static final int toast_message_schedule_sms_done_no_contact_number=0x7f06000c;
+        public static final int toast_message_schedule_sms_problem_in_adding_message=0x7f06000f;
+        public static final int toast_message_schedule_sms_problem_in_updating_message=0x7f060010;
         /**  ======================================================
 	     String shown on Toast 
 	========================================================== 
          */
         public static final int toast_message_schedule_sms_receiver_already_exist=0x7f060009;
-        public static final int toast_message_sms_listing_problem_in_adding_template=0x7f060010;
-        public static final int toast_message_sms_listing_problem_in_delete=0x7f060013;
-        public static final int toast_message_sms_listing_template_added_successfully=0x7f060011;
-        public static final int toast_message_sms_listing_template_already_exist=0x7f060012;
+        public static final int toast_message_schedule_sms_receiver_has_no_contact_number=0x7f06000a;
+        public static final int toast_message_sms_listing_problem_in_adding_template=0x7f060011;
+        public static final int toast_message_sms_listing_problem_in_delete=0x7f060014;
+        public static final int toast_message_sms_listing_template_added_successfully=0x7f060012;
+        public static final int toast_message_sms_listing_template_already_exist=0x7f060013;
     }
 }

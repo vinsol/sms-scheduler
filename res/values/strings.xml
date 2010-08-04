@@ -29,6 +29,8 @@
 	     String shown on Toast 
 	========================================================== -->
 	<string name="toast_message_schedule_sms_receiver_already_exist">"This recipient has already been added"</string>
+
+	<string name="toast_message_schedule_sms_receiver_has_no_contact_number">"This recipient has no contact number"</string>
 	
 	<string name="toast_message_schedule_sms_blank_message">"Please write a message"</string>
 	
