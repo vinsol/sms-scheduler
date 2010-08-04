@@ -23,6 +23,7 @@ import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -228,6 +229,10 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
     	
     	switch(idOfClickedView){
 			case R.id.schedule_sms_add_number_button: {
+				//hide the keyboard
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(contactNumberEditText.getWindowToken(), 0);
+				
     			String contactNumber = contactNumberEditText.getText().toString();
     			if(contactNumber == null || contactNumber.equalsIgnoreCase("")) {
     				Toast.makeText(this, getString(R.string.toast_message_schedule_sms_blank_contact_number_edit_text), Toast.LENGTH_SHORT).show();
