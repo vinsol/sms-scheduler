@@ -73,4 +73,10 @@ public abstract class ContactAccessor {
      * fields are populated with correct data.
      *================================================================================================*/
     public abstract Receiver loadContact(Context context, ContentResolver contentResolver, Uri contactUri);
+    
+    /**===============================================================================
+     * method loadContactFromContactNumber
+     * Retrieves the contact information.
+     *================================================================================*/
+    public abstract Receiver loadContactFromContactNumber(Context context, String contactNumber);
 }//end class ContactAccessor

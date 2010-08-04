@@ -158,6 +158,16 @@ public class ScheduleSMS extends ListActivity implements OnClickListener {
         
         //======================fill Form Data according to the pageType =======================// 
         if(typeOfPage == Constant.PAGE_TYPE_ADD) {
+        	//uri will not null if we are opening app from contact screen
+        	Uri uri = getIntent().getData();
+        	if(uri != null) {
+        		String schema = uri.getScheme();
+        		if(schema.equalsIgnoreCase("smsto")) {
+        			String schemaSpecificPart = uri.getSchemeSpecificPart();
+        			Receiver contactInfoObject = mContactAccessor.loadContactFromContactNumber(context, schemaSpecificPart);
+        			addToReceiverList(contactInfoObject);
+        		}   	
+        	}
         	fillDateAndTimeButton();
         }else if(typeOfPage == Constant.PAGE_TYPE_EDIT) {
         	fillFormWithDataForEdit();

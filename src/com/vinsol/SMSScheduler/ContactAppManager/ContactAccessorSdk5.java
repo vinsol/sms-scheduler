@@ -90,6 +90,56 @@ public class ContactAccessorSdk5 extends ContactAccessor {
         return contactInfo;
     }//end method loadContact
     
+    
+    /**===============================================================================
+     * method loadContactFromContactNumber
+     * Retrieves the contact information.
+     *================================================================================*/
+    public Receiver loadContactFromContactNumber(Context context, String contactNumber) {
+        Receiver contactInfo = new Receiver();
+        long contactId = -1;
+        
+        ContentResolver contentResolver = context.getContentResolver();
+        
+        Cursor cursor = contentResolver.query(Phone.CONTENT_URI, new String[]{Phone.CONTACT_ID, Phone.TYPE},
+        		Phone.NUMBER + "='" + contactNumber + "'", null, null);
+        
+     
+        try {
+        	if(cursor.moveToFirst()){
+				String phoneType = cursor.getString(cursor.getColumnIndex(Phone.TYPE));
+				String phoneTypeString = convertPhoneTypeValueToString(phoneType);
+				contactId = cursor.getLong(cursor.getColumnIndex(Phone.CONTACT_ID));
+				
+				contactInfo.setPhoneNumber(contactNumber);
+	    		contactInfo.setPhoneType(phoneTypeString);
+    		}
+            if (cursor.moveToFirst()) {
+                contactInfo.setPhoneNumber(cursor.getString(0));
+            }
+        } finally {
+            cursor.close();
+        }
+        
+        cursor = contentResolver.query(Contacts.CONTENT_URI, new String[]{Contacts.DISPLAY_NAME}, Contacts._ID + "='" + contactId + "'", null, null);
+        try {
+            if (cursor.moveToFirst()) {
+                contactInfo.setDisplayName(cursor.getString(cursor.getColumnIndex(Contacts.DISPLAY_NAME)));
+            }
+        } finally {
+            cursor.close();
+        }
+        
+        //Load contact Image (if any).
+        InputStream is = openPhoto(contentResolver, contactId);
+        if(is != null) {
+        	Bitmap bitmapimage = BitmapFactory.decodeStream(is);
+        	contactInfo.setContactImage(bitmapimage);
+        }
+        
+        return contactInfo;
+    }//end class loadContactFromContactNumber
+    
     /**============================================================================
      * method openPhoto
      * @param contentResolver

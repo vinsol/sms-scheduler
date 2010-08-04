@@ -84,6 +84,15 @@ public class ContactAccessorSdk3_4 extends ContactAccessor {
         return contactInfo;
     }//end method LoadContact
     
+    /**===============================================================================
+     * method loadContactFromContactNumber
+     * Retrieves the contact information.
+     *================================================================================*/
+    @Override
+    public Receiver loadContactFromContactNumber(Context context, String contactNumber){
+    	return null;
+    }
+    
     /**============================================================================
      * method convertPhoneTypeValueToString
      *=============================================================================*/
