@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:paddingTop="5dip"
+	android:paddingLeft="10dip"
+	android:paddingBottom="5dip" 
+	>
+	<ImageView 
+		android:id="@+id/schedule_sms_one_receiver_view_contact_image"
+	    android:src="@drawable/icon"
+	    android:layout_width="48dip"
+	    android:layout_height="48dip" 
+	    android:layout_alignParentLeft="true"
+	    >
+    </ImageView>
+	
+	<TextView
+		android:id="@+id/schedule_sms_one_reciever_view_contact_detail"
+	  	android:layout_width="fill_parent"
+	  	android:layout_height="wrap_content"
+	  	android:paddingLeft="20dip"
+	  	android:textColor="@color/black"
+	  	android:textStyle="bold"
+	  	android:maxLines="1"
+	  	android:textSize="15dip"
+	  	android:layout_toRightOf="@id/schedule_sms_one_receiver_view_contact_image"
+	  	android:layout_alignParentTop="true">
+	</TextView>
+	
+	<TextView
+		android:id="@+id/schedule_sms_one_reciever_view_contact_type"
+	  	android:layout_width="fill_parent"
+	  	android:layout_height="wrap_content"
+	  	android:paddingLeft="20dip"
+	  	android:paddingTop="8dip"
+	  	android:textColor="@color/black"
+	  	android:textStyle="bold"
+	  	android:maxLines="1"
+	  	android:textSize="15dip"
+	  	android:layout_toRightOf="@id/schedule_sms_one_receiver_view_contact_image"
+	  	android:layout_below="@id/schedule_sms_one_reciever_view_contact_detail">
+	</TextView>
+</RelativeLayout>

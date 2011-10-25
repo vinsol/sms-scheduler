@@ -1,0 +1,7 @@
+<resources>
+	<string-array name="template_array">
+		<item>Happy Birthday</item>
+		<item>Happy Marriage Anniversary</item>
+		<item>I am working</item>
+	</string-array>
+</resources>

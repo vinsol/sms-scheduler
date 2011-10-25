@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="fill_parent"
+     android:layout_height="wrap_content"
+     android:paddingTop="5dip"
+     android:paddingBottom="5dip"
+     >
+ 
+     <TextView 
+     	android:id="@+id/message_listing_one_message_view_message_body"
+     	android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+   	  	android:layout_marginLeft="15dip"
+       	android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="17dip"
+     	android:maxLines="1"
+     	android:ellipsize="end"
+     	>
+     </TextView>
+ 
+     <TextView 
+     	android:id="@+id/message_listing_one_message_view_send_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_below="@id/message_listing_one_message_view_message_body"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="15dip"
+        android:textColor="@color/black"
+        android:maxLines="1"
+        android:textSize="15dip"
+        >
+     </TextView>
+     
+     <TextView 
+     	android:id="@+id/message_listing_one_message_view_send_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_below="@id/message_listing_one_message_view_message_body"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:textColor="@color/black"
+        android:maxLines="1"
+        android:textSize="15dip"
+        >
+     </TextView>
+         
+     <TextView 
+     	android:id="@+id/message_listing_one_message_view_status"
+     	android:layout_width="wrap_content"
+        android:layout_height="wrap_content"  
+        android:layout_below="@id/message_listing_one_message_view_message_body"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dip"
+        android:gravity="right"
+        android:textColor="@color/black"
+        android:maxLines="1"
+        android:textSize="15dip"
+        >
+     </TextView>
+               
+</RelativeLayout>
