@@ -550,6 +550,8 @@ public class EditSmsActivity extends Activity {
 			
 		}
 		intent = new Intent(EditSmsActivity.this, SMSHandleReceiver.class);
+	
+		intent.setAction(DBAdapter.PRIVATE_SMS_ACTION);
 		intent.putExtra("ID", id);
 		intent.putExtra("NUMBER", number);
 		intent.putExtra("MESSAGE", messageText.getText().toString());
