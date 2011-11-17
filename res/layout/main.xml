@@ -25,7 +25,7 @@
 			android:layout_height = "wrap_content"
 			android:text = "SMS Scheduler"
 			android:textSize="24sp"
-			android:textColor="#ffffff"
+			android:textColor="@color/white"
 			android:textStyle="bold"
 			android:layout_centerInParent="true"
 			>
@@ -48,7 +48,7 @@
 		android:layout_height = "fill_parent"
 		android:layout_width = "fill_parent"
 		android:background="@drawable/bg"
-		android:cacheColorHint="#00000000"
+		android:cacheColorHint="@color/transparent"
 		>
 	</ExpandableListView>
 </LinearLayout>
