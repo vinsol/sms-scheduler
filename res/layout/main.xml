@@ -2,48 +2,50 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    
-    
+    android:layout_height="fill_parent"
+    >
     <RelativeLayout
-		android:layout_height = "wrap_content"
 		android:layout_width = "fill_parent"
-		android:background="#999999"
-		android:layout_marginBottom="2dp">
-		
+		android:layout_height = "wrap_content"
+		android:background="@drawable/header_background"
+		android:layout_marginBottom="2dp"
+		>
 		<ImageButton
 			android:id = "@+id/main_options_menu_imgbutton"
 			android:layout_width = "48dp"
 			android:layout_height = "48dp"
 			android:layout_alignParentLeft="true"
 			android:layout_marginLeft="5dp"
-			android:layout_marginTop = "5dp"/>
+			android:layout_marginTop = "5dp"
+			>
+		</ImageButton>
 		
-		<TextView 
-			android:layout_height = "54dp"
-			android:layout_width = "wrap_content"
-			android:layout_toRightOf="@id/main_options_menu_imgbutton"
-			android:layout_toLeftOf="@+id/main_new_sms_imgbutton"
+		<TextView
+		    android:layout_width = "wrap_content" 
+			android:layout_height = "wrap_content"
 			android:text = "SMS Scheduler"
 			android:textSize="25sp"
 			android:textColor="#ffffff"
-			android:gravity="center"
-			android:layout_alignBaseline="@id/main_new_sms_imgbutton"/>
+			android:layout_centerInParent="true"
+			>
+		</TextView>
 			
 		<ImageButton 
-			android:id = "@id/main_new_sms_imgbutton"
+			android:id = "@+id/main_new_sms_imgbutton"
 			android:layout_height = "48dp"
 			android:layout_width = "48dp"
 			android:layout_alignParentRight="true"
 			android:layout_marginRight="5dp"
 			android:layout_marginTop = "5dp"
-			android:src="@drawable/ic_btn_write_sms"/>
-		
+			android:src="@drawable/ic_btn_write_sms"
+			>
+		</ImageButton>
 	</RelativeLayout>
 	
 	<ExpandableListView 
 		android:id = "@+id/main_expandable_list"
-		android:layout_height = "wrap_content"
-		android:layout_width = "fill_parent"/>
-
+		android:layout_height = "fill_parent"
+		android:layout_width = "fill_parent"
+		>
+	</ExpandableListView>
 </LinearLayout>
