@@ -7,7 +7,7 @@
     <RelativeLayout
 		android:layout_width = "fill_parent"
 		android:layout_height = "wrap_content"
-		android:background="@drawable/header_background"
+		android:background="@drawable/header_bg"
 		android:layout_marginBottom="2dp"
 		>
 		<ImageButton
