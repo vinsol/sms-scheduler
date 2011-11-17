@@ -1,4 +1,4 @@
-package com.smsschedulerexpl.android;
+package com.vinsol.sms_scheduler;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;

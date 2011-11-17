@@ -1,7 +1,8 @@
-package com.smsschedulerexpl.android;
+package com.vinsol.sms_scheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;

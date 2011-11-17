@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.smsschedulerexpl.android"
+      package="com.vinsol.sms_scheduler"
       android:versionCode="1"
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="3" />
@@ -22,7 +22,7 @@
         	
         </activity>
         
-        <activity android:name = ".EditSmsActivity" android:label = "Edit SMS">
+        <activity android:name = "com.vinsol.sms_scheduler.EditSmsActivity" android:label = "Edit SMS">
         	
         </activity>
         
@@ -30,6 +30,6 @@
 		
 		<receiver android:name=".SentReceiver" android:enabled="true"></receiver>
 		
-		<receiver android:name=".DeliverReceiver" android:enabled="true"></receiver>
+		<receiver android:name="com.vinsol.sms_scheduler.DeliverReceiver" android:enabled="true"></receiver>
     </application>
 </manifest>

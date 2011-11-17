@@ -1,4 +1,4 @@
-package com.smsschedulerexpl.android;
+package com.vinsol.sms_scheduler;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
