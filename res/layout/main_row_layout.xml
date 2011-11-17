@@ -13,8 +13,7 @@
     	<TextView 
     		android:id = "@+id/main_row_message_area"
     		android:layout_height = "fill_parent"
-    		android:layout_width = "240dp"
-    		android:background="#333333"/>
+    		android:layout_width = "240dp"/>
     		
     	<LinearLayout
     		android:layout_height = "50dp"
@@ -51,7 +50,6 @@
     		android:layout_width = "120dp"
     		android:text = "Mr.Reveiver"
     		android:gravity="center_vertical"
-    		android:background="#333333"
     		android:paddingLeft="2dp"/>
     	
     </LinearLayout>

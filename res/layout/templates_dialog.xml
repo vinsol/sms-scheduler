@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="300dp"
+  android:layout_height="460dp"
+  android:layout_gravity="center_horizontal">
+    
+    <TextView
+   		android:layout_height= "40dp"
+   		android:layout_width = "320dp"
+   		android:paddingTop="2dp"
+   		android:paddingBottom="2dp"
+   		android:gravity="center"
+   		android:text = "Templates"
+   		android:textSize = "20sp"/>
+   		
+   	<View 
+   		android:layout_height="5dp"
+   		android:layout_width = "280dp"
+   		android:layout_gravity="center_horizontal"
+   		android:background="#222222"/>
+   		
+   	<ListView 
+   		android:id = "@+id/dialog_template_list"
+   		android:layout_height = "wrap_content"
+   		android:layout_width = "fill_parent"/>
+   		
+</LinearLayout>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+    
+    <RelativeLayout 
+    	android:layout_height = "60dp"
+    	android:layout_width = "fill_parent"
+    	android:layout_gravity="center_vertical"
+    	android:background="#999999">
+    	
+    	<TextView 
+    		android:layout_height = "wrap_content"
+    		android:layout_width = "wrap_content"
+    		android:paddingLeft="20dp"
+    		android:paddingTop="5dp"
+    		android:layout_margin = "5dp"
+    		android:textSize="25sp"
+    		android:textColor="#ffffff"
+    		android:text = "Manage Templates"/>
+    		
+    	<ImageButton
+    		android:id ="@+id/new_template_image_button"
+    		android:layout_height = "wrap_content"
+    		android:layout_width = "wrap_content"
+    		android:src="@drawable/ic_btn_write_sms"
+    		android:layout_marginTop = "7dp"
+    		android:layout_marginRight="5dp"
+    		android:layout_alignParentRight="true"/>
+    	
+    </RelativeLayout>
+    
+    
+    <LinearLayout 
+    	android:id = "@+id/new_template_input_space"
+    	android:orientation="vertical"
+    	android:layout_height = "wrap_content"
+    	android:layout_width = "fill_parent"
+    	android:visibility="gone">
+    	
+    	<EditText 
+    		android:id = "@+id/new_template_input_edit_text"
+    		android:layout_height = "150dp"
+    		android:layout_width = "fill_parent"
+    		android:hint="Type your template here"
+    		android:gravity="top"/>
+    	
+    	<LinearLayout 
+    		android:layout_height = "wrap_content"
+    		android:layout_width = "fill_parent"
+    		android:orientation="horizontal">
+    		
+    		<Button 
+    			android:id = "@+id/new_template_add_button"
+    			android:layout_height = "wrap_content"
+    			android:layout_width = "fill_parent"
+    			android:layout_weight = "1"
+    			android:text = "Add"
+    			android:textSize="12sp"/>
+    		
+    		<Button 
+    			android:id = "@+id/new_template_cancel_button"
+    			android:layout_height = "wrap_content"
+    			android:layout_width = "fill_parent"
+    			android:layout_weight = "1"
+    			android:text = "Cancel"
+    			android:textSize="12sp"/>
+    	
+    	</LinearLayout>	
+    	
+    	
+    </LinearLayout>
+    
+    
+    <ListView 
+    	android:id = "@+id/template_manager_list"
+    	android:layout_height = "wrap_content"
+    	android:layout_width = "fill_parent"/>
+    
+</LinearLayout>

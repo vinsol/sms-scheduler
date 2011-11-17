@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/template_opt_menu"
+        android:title="Manage Templates"
+        android:icon="@drawable/icon" />
+        
+    <item android:id="@+id/group_opt_menu"
+        android:title="Manage Groups"
+        android:icon="@drawable/ic_btn_write_sms" />
+    
+</menu>

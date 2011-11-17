@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#eeeeee">
+    android:layout_height="fill_parent">
     
     
     <RelativeLayout
@@ -41,11 +40,6 @@
 			android:src="@drawable/ic_btn_write_sms"/>
 		
 	</RelativeLayout>
-	
-	<View 
-    	android:layout_height = "5dp"
-    	android:layout_width = "fill_parent"
-    	android:background="#000000"/>
 	
 	<ExpandableListView 
 		android:id = "@+id/main_expandable_list"
