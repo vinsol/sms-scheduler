@@ -1,4 +1,4 @@
-package com.smsschedulerexpl.android;
+package com.vinsol.sms_scheduler;
 
 import android.app.Activity;
 import android.app.AlarmManager;

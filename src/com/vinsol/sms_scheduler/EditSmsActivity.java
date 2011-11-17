@@ -1,4 +1,4 @@
-package com.smsschedulerexpl.android;
+package com.vinsol.sms_scheduler;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,40 +15,38 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.DatePicker.OnDateChangedListener;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.TimePicker.OnTimeChangedListener;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.DatePicker.OnDateChangedListener;
+import android.widget.TimePicker.OnTimeChangedListener;
 
-public class NewScheduleActivity extends Activity {
-	
+public class EditSmsActivity extends Activity {
+
 	//---------References to the widgets-----------------
 	AutoCompleteTextView 	numbersText;
 	ImageButton 			addFromContactsImgButton;
@@ -70,7 +68,7 @@ public class NewScheduleActivity extends Activity {
 	ArrayList<String> parts = new ArrayList<String>();
 	ArrayList<String> templatesArray = new ArrayList<String>();
 	
-	DBAdapter mdba = new DBAdapter(NewScheduleActivity.this);
+	DBAdapter mdba = new DBAdapter(EditSmsActivity.this);
 	
 	Dialog dateSelectDialog;
 	Dialog templateDialog;
@@ -87,11 +85,15 @@ public class NewScheduleActivity extends Activity {
 	int [] images = {R.drawable.icon, R.drawable.ic_btn_write_sms};
 	String [] smileys = {":-) ", ":-( "};
 	
+	long editedGroup;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.new_schedule_layout);
+		
+		Intent intent = getIntent();
+		
 		
 		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
@@ -109,6 +111,10 @@ public class NewScheduleActivity extends Activity {
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		
 		
+		numbersText.setText(intent.getStringExtra("NUMBER"));
+		messageText.setText(intent.getStringExtra("MESSAGE"));
+		processDate = new Date(intent.getLongExtra("TIME", 0));
+		editedGroup = intent.getLongExtra("GROUP", 0);
 		
 		setFunctionalities();
 		
@@ -120,7 +126,7 @@ public class NewScheduleActivity extends Activity {
 	public void setFunctionalities(){
 		
 		//------------Date Select Button set to current date--------------------
-		Date currentDate = new Date();
+		Date currentDate = processDate;
 		final SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 		dateButton.setText(sdf.format(currentDate));
 		processDate = currentDate; 
@@ -129,7 +135,7 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				dateSelectDialog = new Dialog(NewScheduleActivity.this);
+				dateSelectDialog = new Dialog(EditSmsActivity.this);
 				dateSelectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dateSelectDialog.setContentView(R.layout.date_input_dialog);
 				
@@ -186,7 +192,7 @@ public class NewScheduleActivity extends Activity {
 							String temp = sdf.format(new Date(processDate.getYear(), processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes()));
 							dateButton.setText(temp);
 						}else{
-//							Toast.makeText(NewScheduleActivity.this, "Invalid Date", Toast.LENGTH_SHORT).show();
+//							Toast.makeText(EditSmsActivity.this, "Invalid Date", Toast.LENGTH_SHORT).show();
 //							dateLabel.setBackgroundColor(Color.rgb(180, 0, 0));
 							processDate = refDate;
 							dateSelectDialog.cancel();
@@ -311,7 +317,7 @@ public class NewScheduleActivity extends Activity {
 			public void onClick(View v) {
 				loadTemplates();
 				TemplateAdapter templateAdapter = new TemplateAdapter();
-				templateDialog = new Dialog(NewScheduleActivity.this);
+				templateDialog = new Dialog(EditSmsActivity.this);
 				templateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				templateDialog.setContentView(R.layout.templates_dialog);
 				ListView templateList = (ListView) templateDialog.findViewById(R.id.dialog_template_list);
@@ -332,9 +338,9 @@ public class NewScheduleActivity extends Activity {
 			public void onClick(View v) {
 				mdba.open();
 				if(mdba.addTemplate(messageText.getText().toString()) > 0){
-					Toast.makeText(NewScheduleActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+					Toast.makeText(EditSmsActivity.this, "Template added", Toast.LENGTH_SHORT).show();
 				}else{
-					Toast.makeText(NewScheduleActivity.this, "Template couldn't be added", Toast.LENGTH_SHORT).show();
+					Toast.makeText(EditSmsActivity.this, "Template couldn't be added", Toast.LENGTH_SHORT).show();
 				}
 				mdba.close();
 			}
@@ -368,15 +374,15 @@ public class NewScheduleActivity extends Activity {
 			public void onClick(View v) {
 				
 				if(numbersText.getText().toString().matches("(''|(' ')+)")){
-					Toast.makeText(NewScheduleActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
+					Toast.makeText(EditSmsActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
 					numbersText.requestFocus();
 				}else{
 					if(!checkDateValidity(processDate)){
-						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+						Toast.makeText(EditSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 					}
 					doSmsScheduling();
 				}
-			NewScheduleActivity.this.finish();
+			EditSmsActivity.this.finish();
 			}
 		});
 	}
@@ -386,7 +392,7 @@ public class NewScheduleActivity extends Activity {
 	//-------------------Adapter for list in the templates dialog--------------------
 	class TemplateAdapter extends ArrayAdapter{
 		TemplateAdapter(){
-			super(NewScheduleActivity.this, R.layout.template_list_row, templatesArray);
+			super(EditSmsActivity.this, R.layout.template_list_row, templatesArray);
 		}
 		
 		@Override
@@ -503,18 +509,23 @@ public class NewScheduleActivity extends Activity {
 		long groupId = mdba.getNextGroupId();
 		String[] numbers = numbersText.getText().toString().split(",(' ')*");
 		if(!(messageText.getText().toString().matches("(''|(' ')+)"))){
-		for(int i = 0; i< numbers.length; i++){
-			Log.i("MESSAGE", "processing for" + numbers[i]);
-			long received_id = mdba.scheduleSms(numbers[i], messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-			if(mdba.getCurrentPiFiretime() == -1){
-				Log.i("MESSAGE", "Step 1");
-				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
-			}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-				Log.i("MESSAGE", "Step 1 alt");
-				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
+			ArrayList<Long> editedIds = mdba.getIds(editedGroup);
+			for(int i = 0; i< editedIds.size(); i++){
+				mdba.deleteSms(editedIds.get(i), EditSmsActivity.this);
 			}
-			Log.i("MESSAGE", "succesful");
-		}
+			
+			for(int i = 0; i< numbers.length; i++){
+				Log.i("MESSAGE", "processing for" + numbers[i]);
+				long received_id = mdba.scheduleSms(numbers[i], messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
+				if(mdba.getCurrentPiFiretime() == -1){
+					Log.i("MESSAGE", "Step 1");
+					handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
+				}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+					Log.i("MESSAGE", "Step 1 alt");
+					handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
+				}
+				Log.i("MESSAGE", "succesful");
+			}
 		}
 		mdba.close();
 	}
@@ -526,7 +537,7 @@ public class NewScheduleActivity extends Activity {
 		Cursor cur = mdba.getPiDetails();
 		cur.moveToFirst();
 		
-		Intent intent = new Intent(NewScheduleActivity.this, SMSHandleReceiver.class);
+		Intent intent = new Intent(EditSmsActivity.this, SMSHandleReceiver.class);
 		intent.setAction(DBAdapter.PRIVATE_SMS_ACTION);
 		
 		PendingIntent pi;
@@ -535,17 +546,18 @@ public class NewScheduleActivity extends Activity {
 			intent.putExtra("NUMBER", " ");
 			intent.putExtra("MESSAGE", " ");
 			
-			pi = PendingIntent.getBroadcast(NewScheduleActivity.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+			pi = PendingIntent.getBroadcast(EditSmsActivity.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 			pi.cancel();
 			
 		}
+		intent = new Intent(EditSmsActivity.this, SMSHandleReceiver.class);
 		intent.putExtra("ID", id);
 		intent.putExtra("NUMBER", number);
 		intent.putExtra("MESSAGE", messageText.getText().toString());
 		
 		Random rand = new Random();
 		int piNumber = rand.nextInt();
-		pi = PendingIntent.getBroadcast(NewScheduleActivity.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		pi = PendingIntent.getBroadcast(EditSmsActivity.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		mdba.updatePi(piNumber, id, time);
 		
 		AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
