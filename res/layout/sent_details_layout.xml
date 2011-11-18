@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="300dp"
+  android:layout_height="match_parent">
+    
+    <ListView 
+    	android:id= "@+id/sent_details_dialog_number_list"
+    	android:layout_height = "wrap_content"
+    	android:layout_width = "fill_parent"
+    	android:layout_margin="5dp"/>
+    
+    <View 
+    	android:layout_height = "3dp"
+    	android:layout_width = "290dp"
+    	android:layout_gravity = "center_horizontal"
+    	android:background="#333333"/>
+    
+    <TextView 
+    	android:layout_height = "wrap_content"
+    	android:layout_width = "wrap_content"
+    	android:textSize="22sp"
+    	android:text = "Sent At:"
+    	android:layout_margin="5dp"/>
+    
+    <TextView 
+    	android:id = "@+id/sent_details_dialog_time_label"
+    	android:layout_height = "wrap_content"
+    	android:layout_width = "fill_parent"
+    	android:layout_gravity="center_horizontal"
+    	android:background="#222222"
+    	android:layout_margin="5dp"/>
+    
+    
+    <View 
+    	android:layout_height = "3dp"
+    	android:layout_width = "290dp"
+    	android:layout_gravity = "center_horizontal"
+    	android:background="#333333"/>
+    
+    	
+    <TextView
+    	android:layout_height = "wrap_content"
+    	android:layout_width = "wrap_content"
+    	android:textSize="22sp"
+    	android:text = "Message:"
+    	android:layout_margin="5dp"/>
+    	
+    
+    <TextView
+    	android:id = "@+id/sent_details_dialog_message_space"
+    	android:layout_height = "150dp"
+    	android:layout_width = "fill_parent"
+    	android:layout_margin="5dp"
+    	android:editable="false"/>
+    
+</LinearLayout>

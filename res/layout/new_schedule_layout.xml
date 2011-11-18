@@ -232,7 +232,7 @@
 		    		android:layout_above="@+id/addButton"
 		    		android:columnWidth="35dp"
 		   	 		android:numColumns="auto_fit"
-		    		android:verticalSpacing="35dp"
+		    		android:verticalSpacing="3dp"
 		    		android:horizontalSpacing="10dp"
 		    		android:stretchMode="columnWidth"
 		    		android:gravity="center"
