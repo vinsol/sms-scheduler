@@ -82,8 +82,33 @@ public class NewScheduleActivity extends Activity {
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	
-	int [] images = {R.drawable.icon, R.drawable.ic_btn_write_sms};
-	String [] smileys = {":-) ", ":-( "};
+	int [] images = {R.drawable.emoticon_01, R.drawable.emoticon_02,
+					 R.drawable.emoticon_03, R.drawable.emoticon_04,
+					 R.drawable.emoticon_05, R.drawable.emoticon_06,
+					 R.drawable.emoticon_07, R.drawable.emoticon_08,
+					 R.drawable.emoticon_09, R.drawable.emoticon_10,
+					 R.drawable.emoticon_11, R.drawable.emoticon_12,
+					 R.drawable.emoticon_13, R.drawable.emoticon_14,
+					 R.drawable.emoticon_15, R.drawable.emoticon_16,
+					 R.drawable.emoticon_17
+					};
+	String [] smileys = {":-) ",
+			":-D ",
+			";-D ",
+			"B-D ",
+			":-} ",
+			":-P ",
+			";-) ",
+			":-) ",
+			":-) ",
+			"$-) ",
+			":-) ",
+			":-( ",
+			":'-( ",
+			":-( ",
+			";-( ",
+			":-/ ",
+			":-O "};
 	
 	
 	@Override
@@ -158,6 +183,8 @@ public class NewScheduleActivity extends Activity {
 					}
 				});
 				//---------------------------------------end of DatePicker setup------
+				
+				
 				String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
 				dateLabel.setText(temp);
 				refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
@@ -468,7 +495,6 @@ public class NewScheduleActivity extends Activity {
 		templatesArray.clear();
 		
 		if(cur.moveToFirst()){
-			Log.i("MESSAGE", "cursor has some records");
 			do{
 				templatesArray.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
 			}while(cur.moveToNext());
@@ -493,7 +519,6 @@ public class NewScheduleActivity extends Activity {
 	
 	//--------------------function to Scheduling a new sms------------------------------------
 	public void doSmsScheduling(){
-		Log.i("MESSAGE", "into doScheduling");
 		Calendar cal = new GregorianCalendar(processDate.getYear() + 1900, processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes());
 		final SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 		String dateString = sdf.format(cal.getTime());
@@ -502,16 +527,12 @@ public class NewScheduleActivity extends Activity {
 		String[] numbers = numbersText.getText().toString().split(",(' ')*");
 		if(!(messageText.getText().toString().matches("(''|(' ')+)"))){
 		for(int i = 0; i< numbers.length; i++){
-			Log.i("MESSAGE", "processing for" + numbers[i]);
 			long received_id = mdba.scheduleSms(numbers[i], messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
 			if(mdba.getCurrentPiFiretime() == -1){
-				Log.i("MESSAGE", "Step 1");
 				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
 			}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-				Log.i("MESSAGE", "Step 1 alt");
 				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
 			}
-			Log.i("MESSAGE", "succesful");
 		}
 		}
 		mdba.close();
@@ -520,7 +541,6 @@ public class NewScheduleActivity extends Activity {
 	
 	public void handlePiUpdate(String number, long groupId, long id, long time){
 		//Cancel the pi conditionally----------------------
-		Log.i("MESSAGE", "Step 2");
 		Cursor cur = mdba.getPiDetails();
 		cur.moveToFirst();
 		
