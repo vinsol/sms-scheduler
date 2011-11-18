@@ -58,35 +58,47 @@
 		    android:layout_width="fill_parent"
 		    android:layout_height="fill_parent"
 		    android:orientation="vertical"
-		    >
+		    android:paddingLeft="10dip"
+	    	android:paddingRight="10dip"
+	    	>
 		    <!-- contacts linear layout -->
-			<LinearLayout 
-		    	android:orientation = "horizontal"
-		    	android:layout_height = "wrap_content"
+			<RelativeLayout 
 		    	android:layout_width = "fill_parent"
+		    	android:layout_height = "wrap_content"
+		    	android:layout_marginTop="10dp"
 		    	>
 		    	<AutoCompleteTextView
 		    		android:id = "@+id/new_numbers_text"
+		    		android:layout_width = "fill_parent"
 		    		android:layout_height = "wrap_content"
-		    		android:layout_width = "220dp"
-		    		android:layout_margin = "5dp"
 		    		android:hint="To"
+		    		android:minLines="2"
+		    		android:maxLines="2"
+		    		android:gravity="top"
+		    		android:layout_toLeftOf="@+id/new_add_from_contact_imgbutton"
 		    		>
 	    		</AutoCompleteTextView>
 		    		
 		    	<ImageButton 
-		    		android:id = "@+id/new_add_from_contact_imgbutton"
-		    		android:layout_height = "36dp"
-		    		android:layout_width = "36dp"
+		    		android:id = "@id/new_add_from_contact_imgbutton"
+		    		android:layout_width = "wrap_content"
+		    		android:layout_height = "wrap_content"
+		    		android:background="@drawable/contacts"
+		    		android:layout_alignParentRight="true"
+		    		android:layout_marginLeft="10dp"
+		    		android:layout_centerVertical="true"
 		    		>
 	    		</ImageButton>		
-	    	</LinearLayout>
+	    	</RelativeLayout>
 	    	
 		    <!-- Date time button -->
 		    <Button 
 			   	android:id = "@+id/new_date_button"
+			   	android:layout_width = "fill_parent"
 			   	android:layout_height = "wrap_content"
-			   	android:layout_width = "316dp"
+			   	android:textColor="@color/text_color_grey"
+			   	android:textSize="20sp"
+			   	android:layout_marginTop="10dp"
 			   	>
 	    	</Button>
 	    	
@@ -97,8 +109,7 @@
     			android:layout_width = "wrap_content"
 		    	android:layout_height = "wrap_content"
 		    	android:background="@drawable/message_top_bg"
-		    	android:layout_marginLeft="10dip"
-		    	android:layout_marginRight="10dip"
+		    	android:layout_marginTop="10dip"
 		    	>
 	    		<TextView
 	    			android:layout_height = "wrap_content"
@@ -139,7 +150,7 @@
 		   		android:background="@drawable/message_bg"
 		   		android:padding="5dp"
 		   		android:layout_below="@id/message_top_layout"
-		   		android:layout_marginLeft="10dip"
+		   		android:maxLines="4"
 		   		>
 	   		</EditText>
 	   		
@@ -149,8 +160,6 @@
 	    		android:layout_width = "wrap_content"
 	    		android:background="@drawable/message_bottom_bg"
 	    		android:layout_below="@id/new_message_space"
-				android:layout_marginLeft="10dip"
-				android:layout_marginRight="10dip"	 
 				android:paddingLeft="15dip"
 	    		android:paddingRight="15dip"
 	    		>
@@ -206,7 +215,7 @@
     			</ImageButton>
  			</RelativeLayout> 
  			
-   		    <LinearLayout 
+			<LinearLayout 
 				android:id = "@+id/smiley_layout"
 				android:orientation = "horizontal"
 				android:layout_height= "120dp"
