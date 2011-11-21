@@ -142,7 +142,7 @@
    		    <!-- message edit text -->
    		    <EditText
 				android:id = "@+id/new_message_space" 
-		   		android:layout_width="wrap_content" 
+		   		android:layout_width="fill_parent" 
 		   		android:layout_height="wrap_content"
 		   		android:inputType="textMultiLine"
 		   		android:gravity="top"
