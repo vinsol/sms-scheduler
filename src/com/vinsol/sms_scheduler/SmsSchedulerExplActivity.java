@@ -1,9 +1,8 @@
 package com.vinsol.sms_scheduler;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -13,28 +12,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.AbsListView.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
-import android.widget.ExpandableListView.OnChildClickListener;
 
 public class SmsSchedulerExplActivity extends Activity {
     /** Called when the activity is first created. */
@@ -256,6 +258,22 @@ public class SmsSchedulerExplActivity extends Activity {
     		
     		
     		@Override
+			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    			if(convertView == null) {
+    				LayoutInflater li = getLayoutInflater();
+        			convertView = li.inflate(R.layout.expandable_list_group_view, null);	
+    			}
+    			
+    			TextView groupHeading = (TextView) convertView.findViewById(R.id.group_heading);
+    			groupHeading.setText(headerData.get(groupPosition).get(NAME));
+    			
+    			return convertView;
+    			
+    		}
+
+
+
+			@Override
     		public android.view.View getChildView(int groupPosition, int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
     			final View v = super.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
     			
