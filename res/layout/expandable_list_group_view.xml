@@ -10,7 +10,7 @@
     	android:layout_height = "40dip"
     	android:layout_width = "fill_parent"
     	android:textSize="18sp"
-    	android:textColor="#00539f"
+    	android:textColor="@color/text_blue"
     	android:paddingLeft="40dip"
     	android:gravity="center_vertical"
     	>

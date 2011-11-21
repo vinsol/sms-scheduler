@@ -96,7 +96,7 @@
 			   	android:id = "@+id/new_date_button"
 			   	android:layout_width = "fill_parent"
 			   	android:layout_height = "wrap_content"
-			   	android:textColor="@color/text_color_grey"
+			   	android:textColor="@color/text_grey"
 			   	android:textSize="20sp"
 			   	android:layout_marginTop="10dp"
 			   	>

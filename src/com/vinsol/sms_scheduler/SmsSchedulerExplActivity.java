@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -25,14 +24,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AbsListView.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
@@ -161,6 +158,8 @@ public class SmsSchedulerExplActivity extends Activity {
     	
     	setExplData();
     	explList.setAdapter(mAdapter);
+    	explList.expandGroup(0);
+    	explList.expandGroup(1);
     	registerReceiver(mUpdateReceiver, mIntentFilter);
     }
     
@@ -284,12 +283,12 @@ public class SmsSchedulerExplActivity extends Activity {
     			
     			Log.i("MESSAGE", "------------------------Value of ChildPosition : " + childSchArray.size());
     			
-    			if(groupPosition == 0){
+    			if(groupPosition == 0) {
     				messageTextView.setText(childSchArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSchArray.get(childPosition).keyImageRes);
     				dateTextView.setText(childSchArray.get(childPosition).keyDate);
     				receiverTextView.setText(childSchArray.get(childPosition).keyNumber);
-    			}else if(groupPosition == 1){
+    			} else if(groupPosition == 1) {
     				messageTextView.setText(childSentArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
     				dateTextView.setText(childSentArray.get(childPosition).keyDate);
