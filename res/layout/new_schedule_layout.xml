@@ -108,21 +108,41 @@
 		     	android:id="@+id/message_top_layout"    	
     			android:layout_width = "wrap_content"
 		    	android:layout_height = "wrap_content"
-		    	android:background="@drawable/message_top_bg"
+		    	android:background="@drawable/header_bg"
 		    	android:layout_marginTop="10dip"
+		    	android:gravity="center_vertical"
+		    	android:paddingLeft="10dip"
+		    	android:paddingRight="10dip"
 		    	>
-	    		<TextView
+	    		
+	    		<ImageButton 
+	    			android:id = "@+id/template_imgbutton"
 	    			android:layout_height = "wrap_content"
 	    			android:layout_width = "wrap_content"
-	    			android:text = "Message"
-	    			android:textSize="18sp"
-	    			android:textStyle="bold"
-	    			android:textColor="@color/white"
-	    			android:layout_marginTop="5dp"
-	    			android:layout_marginLeft = "15dp"
-	    			android:layout_marginBottom="5dp"
+	    			android:layout_margin="2dp"
+	    			android:background="@drawable/template"
 	    			>
-    			</TextView>
+    			</ImageButton>
+	    		
+	    		<ImageButton 
+	    			android:id = "@+id/speech_imgbutton"
+	    			android:layout_height = "wrap_content"
+	    			android:layout_width = "wrap_content"
+	    			android:layout_margin="2dp"
+	    			android:background="@drawable/voice"
+	    			android:layout_toRightOf="@id/template_imgbutton"
+	    			>
+    			</ImageButton>
+	    		
+	    		<ImageButton 
+	    			android:id = "@+id/add_template_imgbutton"
+	    			android:layout_height = "wrap_content"
+	    			android:layout_width = "wrap_content"
+	    			android:layout_margin="2dp"
+	    			android:background="@drawable/add_to_template"
+	    			android:layout_alignParentRight="true"
+	    			>
+    			</ImageButton>
 		    		
 	    		<TextView
 	    			android:id = "@+id/new_char_count_text"
@@ -150,78 +170,17 @@
 		   		android:background="@drawable/message_bg"
 		   		android:padding="5dp"
 		   		android:layout_below="@id/message_top_layout"
-		   		android:maxLines="4"
+		   		android:minLines="4"
 		   		>
 	   		</EditText>
 	   		
-   		    <!-- message bottom layout -->    
-   		    <RelativeLayout 
-	    		android:layout_height = "wrap_content"
-	    		android:layout_width = "wrap_content"
-	    		android:background="@drawable/message_bottom_bg"
-	    		android:layout_below="@id/new_message_space"
-				android:paddingLeft="15dip"
-	    		android:paddingRight="15dip"
-	    		>
-	    		
-	    		<ImageButton 
-	    			android:id = "@+id/smiley_imgbutton"
-	    			android:layout_height = "wrap_content"
-	    			android:layout_width = "wrap_content"
-	    			android:layout_margin="2dp"
-	    			android:background="@drawable/emoticon"	
-	    			android:layout_alignParentLeft="true"
-	    			>
-    			</ImageButton>
-	    		
-	    		<ImageButton 
-	    			android:id = "@+id/template_imgbutton"
-	    			android:layout_height = "wrap_content"
-	    			android:layout_width = "wrap_content"
-	    			android:layout_margin="2dp"
-	    			android:background="@drawable/template"
-	    			android:layout_toRightOf="@id/smiley_imgbutton"
-	    			>
-    			</ImageButton>
-	    		
-	    		<ImageButton 
-	    			android:id = "@+id/spell_check_imgbutton"
-	    			android:layout_height = "wrap_content"
-	    			android:layout_width = "wrap_content"
-	    			android:layout_margin="2dp"
-	    			android:background="@drawable/spell_check"	
-	    			android:layout_toRightOf="@id/template_imgbutton"
-	    			>
-    			</ImageButton>
-	    			
-	    		<ImageButton 
-	    			android:id = "@+id/speech_imgbutton"
-	    			android:layout_height = "wrap_content"
-	    			android:layout_width = "wrap_content"
-	    			android:layout_margin="2dp"
-	    			android:background="@drawable/voice"
-	    			android:layout_toRightOf="@id/spell_check_imgbutton"
-	    			>
-    			</ImageButton>
-	    		
-	    		<ImageButton 
-	    			android:id = "@+id/add_template_imgbutton"
-	    			android:layout_height = "wrap_content"
-	    			android:layout_width = "wrap_content"
-	    			android:layout_margin="2dp"
-	    			android:background="@drawable/add_to_template"
-	    			android:layout_alignParentRight="true"
-	    			>
-    			</ImageButton>
- 			</RelativeLayout> 
- 			
+   		        <!-- smiley -->
 			<LinearLayout 
 				android:id = "@+id/smiley_layout"
 				android:orientation = "horizontal"
 				android:layout_height= "120dp"
 				android:layout_width = "fill_parent"
 				android:layout_above="@+id/schedule_cancel_button_layout"
-				android:visibility="gone"
 				android:background="#555555"
 				>
 				<GridView 
