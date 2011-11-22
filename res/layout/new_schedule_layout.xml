@@ -115,6 +115,7 @@
 		    	android:paddingRight="10dip"
 		    	>
 	    		
+			    <!-- template button -->
 	    		<ImageButton 
 	    			android:id = "@+id/template_imgbutton"
 	    			android:layout_height = "wrap_content"
@@ -124,6 +125,7 @@
 	    			>
     			</ImageButton>
 	    		
+	    		<!-- voice button -->    
 	    		<ImageButton 
 	    			android:id = "@+id/speech_imgbutton"
 	    			android:layout_height = "wrap_content"
@@ -134,6 +136,7 @@
 	    			>
     			</ImageButton>
 	    		
+	    		   <!-- add to template button -->
 	    		<ImageButton 
 	    			android:id = "@+id/add_template_imgbutton"
 	    			android:layout_height = "wrap_content"
@@ -143,38 +146,46 @@
 	    			android:layout_alignParentRight="true"
 	    			>
     			</ImageButton>
-		    		
+   			</RelativeLayout>
+    		    
+			    
+			<FrameLayout 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:background="@drawable/message_bg"
+		   		>
+			    <!-- char count text -->    
 	    		<TextView
 	    			android:id = "@+id/new_char_count_text"
 	    			android:layout_height = "wrap_content"
 	    			android:layout_width = "wrap_content"
 	    			android:text = "0 (0)"
-	    			android:textSize="18sp"
+	    			android:textSize="70sp"
 	    			android:textStyle="bold"
-	    			android:textColor="@color/white"
+	    			android:textColor="#ffe2e1dd"
 	    			android:paddingRight="15dp"
 	    			android:layout_marginTop="5dp"
-	    			android:layout_alignParentRight="true"
+	    			android:layout_gravity="center"
 	    			>
     			</TextView>	
-   			</RelativeLayout>
-    		    
-   		    <!-- message edit text -->
-   		    <EditText
-				android:id = "@+id/new_message_space" 
-		   		android:layout_width="fill_parent" 
-		   		android:layout_height="wrap_content"
-		   		android:inputType="textMultiLine"
-		   		android:gravity="top"
-		   		android:hint="Type your Message here"
-		   		android:background="@drawable/message_bg"
-		   		android:padding="5dp"
-		   		android:layout_below="@id/message_top_layout"
-		   		android:minLines="4"
-		   		>
-	   		</EditText>
-	   		
-   		        <!-- smiley -->
+			    
+				<!-- message edit text -->
+	   		    <EditText
+					android:id = "@+id/new_message_space" 
+			   		android:layout_width="fill_parent" 
+			   		android:layout_height="wrap_content"
+			   		android:inputType="textMultiLine"
+			   		android:gravity="top"
+			   		android:hint="Type your Message here"
+			   		android:padding="5dp"
+			   		android:layout_below="@id/message_top_layout"
+			   		android:minLines="4"
+			   		android:background="#00000000"
+			   		>
+		   		</EditText>
+	   		</FrameLayout>   
+   		    
+   		    <!-- smiley -->
 			<LinearLayout 
 				android:id = "@+id/smiley_layout"
 				android:orientation = "horizontal"
