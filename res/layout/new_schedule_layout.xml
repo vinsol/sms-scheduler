@@ -178,10 +178,11 @@
 			<LinearLayout 
 				android:id = "@+id/smiley_layout"
 				android:orientation = "horizontal"
-				android:layout_height= "120dp"
+				android:layout_height= "170dp"
 				android:layout_width = "fill_parent"
 				android:layout_above="@+id/schedule_cancel_button_layout"
 				android:background="#555555"
+				android:layout_marginBottom="20dp"
 				>
 				<GridView 
 		    		android:id = "@+id/smileysGrid"
