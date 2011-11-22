@@ -16,7 +16,7 @@
             </intent-filter>
 		</activity>
         
-        <activity android:name = ".NewScheduleActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan"></activity>
+        <activity android:name = ".NewScheduleActivity" android:label = "Schedule New SMS"></activity>
         <activity android:name = ".ManageTemplateActivity" android:label = "Manage Templates"></activity>
         <activity android:name = "com.vinsol.sms_scheduler.EditSmsActivity" android:label = "Edit SMS"></activity>
         

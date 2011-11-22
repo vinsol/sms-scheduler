@@ -74,33 +74,28 @@ public class NewScheduleActivity extends Activity {
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	
-	int [] images = {R.drawable.emoticon_01, R.drawable.emoticon_02,
+	int [] images = {
+					 R.drawable.emoticon_01, R.drawable.emoticon_02,
 					 R.drawable.emoticon_03, R.drawable.emoticon_04,
 					 R.drawable.emoticon_05, R.drawable.emoticon_06,
 					 R.drawable.emoticon_07, R.drawable.emoticon_08,
 					 R.drawable.emoticon_09, R.drawable.emoticon_10,
 					 R.drawable.emoticon_11, R.drawable.emoticon_12,
-					 R.drawable.emoticon_13, R.drawable.emoticon_14,
-					 R.drawable.emoticon_15, R.drawable.emoticon_16,
-					 R.drawable.emoticon_17
 					};
-	String [] smileys = {":-) ",
+	String [] smileys = {
+			":-) ",
 			":-D ",
-			";-D ",
 			"B-D ",
-			":-} ",
 			":-P ",
 			";-) ",
-			":-) ",
-			":-) ",
+			"o:-) ",
 			"$-) ",
-			":-) ",
 			":-( ",
 			":'-( ",
-			":-( ",
-			";-( ",
-			":-/ ",
-			":-O "};
+			":-\\ ",
+			":-O ", 
+			":-X "
+	};
 	
 	
 	@Override
