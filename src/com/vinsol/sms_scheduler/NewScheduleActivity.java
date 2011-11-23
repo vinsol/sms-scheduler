@@ -1,4 +1,4 @@
-package com.smsschedulerexpl.android;
+package com.vinsol.sms_scheduler;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -17,49 +18,44 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.TimePicker.OnTimeChangedListener;
+import android.widget.Toast;
 
-public class EditSmsActivity extends Activity {
-
+public class NewScheduleActivity extends Activity {
+	
 	//---------References to the widgets-----------------
 	AutoCompleteTextView 	numbersText;
 	ImageButton 			addFromContactsImgButton;
 	Button 					dateButton;
 	TextView 				characterCountText;
 	EditText 				messageText;
-	ImageButton 			smileyImageButton;
 	ImageButton 			templateImageButton;
-	ImageButton				spellCheckImageButton;
 	ImageButton 			speechImageButton;
 	ImageButton 			addTemplateImageButton;
 	Button 					scheduleButton;
 	Button 					cancelButton;
-	LinearLayout			smileyLinearLayout;
 	GridView				smileysGrid;
 	//--------------------------------------------------------
 	
@@ -67,53 +63,59 @@ public class EditSmsActivity extends Activity {
 	ArrayList<String> parts = new ArrayList<String>();
 	ArrayList<String> templatesArray = new ArrayList<String>();
 	
-	DBAdapter mdba = new DBAdapter(EditSmsActivity.this);
+	DBAdapter mdba = new DBAdapter(NewScheduleActivity.this);
 	
 	Dialog dateSelectDialog;
 	Dialog templateDialog;
-	boolean suggestionsBoolean = true;
 	
 	Date refDate = new Date();
 	Calendar refCal = new GregorianCalendar();
 	Date processDate = new Date();
 	
-	boolean smileyVisible = false;
-	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	
-	int [] images = {R.drawable.icon, R.drawable.ic_btn_write_sms};
-	String [] smileys = {":-) ", ":-( "};
+	int [] images = {
+					 R.drawable.emoticon_01, R.drawable.emoticon_02,
+					 R.drawable.emoticon_03, R.drawable.emoticon_04,
+					 R.drawable.emoticon_05, R.drawable.emoticon_06,
+					 R.drawable.emoticon_07, R.drawable.emoticon_08,
+					 R.drawable.emoticon_09, R.drawable.emoticon_10,
+					 R.drawable.emoticon_11, R.drawable.emoticon_12,
+					};
+	String [] smileys = {
+			":-) ",
+			":-D ",
+			"B-D ",
+			":-P ",
+			";-) ",
+			"o:-) ",
+			"$-) ",
+			":-( ",
+			":'-( ",
+			":-\\ ",
+			":-O ", 
+			":-X "
+	};
 	
-	long editedGroup;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.new_schedule_layout);
 		
-		Intent intent = getIntent();
-		
-		
 		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
 		dateButton 					= (Button) 					findViewById(R.id.new_date_button);
 		characterCountText 			= (TextView) 				findViewById(R.id.new_char_count_text);
 		messageText 				= (EditText) 				findViewById(R.id.new_message_space);
-		smileyImageButton 			= (ImageButton) 			findViewById(R.id.smiley_imgbutton);
 		templateImageButton 		= (ImageButton) 			findViewById(R.id.template_imgbutton);
-		spellCheckImageButton		= (ImageButton)				findViewById(R.id.spell_check_imgbutton);
 		speechImageButton 			= (ImageButton) 			findViewById(R.id.speech_imgbutton);
 		addTemplateImageButton 		= (ImageButton) 			findViewById(R.id.add_template_imgbutton);
 		scheduleButton 				= (Button) 					findViewById(R.id.new_schedule_button);
 		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
-		smileyLinearLayout			= (LinearLayout) 			findViewById(R.id.smiley_layout);
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		
 		
-		numbersText.setText(intent.getStringExtra("NUMBER"));
-		messageText.setText(intent.getStringExtra("MESSAGE"));
-		processDate = new Date(intent.getLongExtra("TIME", 0));
-		editedGroup = intent.getLongExtra("GROUP", 0);
 		
 		setFunctionalities();
 		
@@ -125,7 +127,7 @@ public class EditSmsActivity extends Activity {
 	public void setFunctionalities(){
 		
 		//------------Date Select Button set to current date--------------------
-		Date currentDate = processDate;
+		Date currentDate = new Date();
 		final SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 		dateButton.setText(sdf.format(currentDate));
 		processDate = currentDate; 
@@ -134,7 +136,7 @@ public class EditSmsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				dateSelectDialog = new Dialog(EditSmsActivity.this);
+				dateSelectDialog = new Dialog(NewScheduleActivity.this);
 				dateSelectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dateSelectDialog.setContentView(R.layout.date_input_dialog);
 				
@@ -165,6 +167,8 @@ public class EditSmsActivity extends Activity {
 					}
 				});
 				//---------------------------------------end of DatePicker setup------
+				
+				
 				String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
 				dateLabel.setText(temp);
 				refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
@@ -191,7 +195,7 @@ public class EditSmsActivity extends Activity {
 							String temp = sdf.format(new Date(processDate.getYear(), processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes()));
 							dateButton.setText(temp);
 						}else{
-//							Toast.makeText(EditSmsActivity.this, "Invalid Date", Toast.LENGTH_SHORT).show();
+//							Toast.makeText(NewScheduleActivity.this, "Invalid Date", Toast.LENGTH_SHORT).show();
 //							dateLabel.setBackgroundColor(Color.rgb(180, 0, 0));
 							processDate = refDate;
 							dateSelectDialog.cancel();
@@ -265,26 +269,6 @@ public class EditSmsActivity extends Activity {
 		});
 		
 		
-		
-		
-		//---------------functionality of smiley button-------------------------
-		smileyImageButton.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(smileyVisible){
-					smileyVisible = false;
-					smileyLinearLayout.setVisibility(LinearLayout.GONE);
-				}else{
-					smileyVisible = true;
-					smileyLinearLayout.setVisibility(LinearLayout.VISIBLE);
-				}
-			}
-		});
-		//------------------------------------------------end of smiley button func----------------
-		
-		
-		
 		//-------------------Setting up the smileys Grid---------------------------------
 		smileysGrid.setAdapter(new SmileysAdapter(this));
 		smileysGrid.setOnItemClickListener(new OnItemClickListener() {
@@ -316,7 +300,7 @@ public class EditSmsActivity extends Activity {
 			public void onClick(View v) {
 				loadTemplates();
 				TemplateAdapter templateAdapter = new TemplateAdapter();
-				templateDialog = new Dialog(EditSmsActivity.this);
+				templateDialog = new Dialog(NewScheduleActivity.this);
 				templateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				templateDialog.setContentView(R.layout.templates_dialog);
 				ListView templateList = (ListView) templateDialog.findViewById(R.id.dialog_template_list);
@@ -337,33 +321,13 @@ public class EditSmsActivity extends Activity {
 			public void onClick(View v) {
 				mdba.open();
 				if(mdba.addTemplate(messageText.getText().toString()) > 0){
-					Toast.makeText(EditSmsActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+					Toast.makeText(NewScheduleActivity.this, "Template added", Toast.LENGTH_SHORT).show();
 				}else{
-					Toast.makeText(EditSmsActivity.this, "Template couldn't be added", Toast.LENGTH_SHORT).show();
+					Toast.makeText(NewScheduleActivity.this, "Template couldn't be added", Toast.LENGTH_SHORT).show();
 				}
 				mdba.close();
 			}
 		});
-		
-		
-		
-		//-----------------functionality for spell check  button ---------------------------
-		spellCheckImageButton.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(suggestionsBoolean){
-					suggestionsBoolean = false;
-					messageText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-					//spellCheckImageButton.setImageResource(R.drawable.);
-				}else{
-					suggestionsBoolean = true;
-					messageText = (EditText) findViewById(R.id.new_message_space);
-					//spellCheckImageButton.setImageResource(R.drawable.);
-				}
-			}
-		});
-		
 		
 		
 		//----------------functionality for schedule button----------------------------
@@ -373,15 +337,15 @@ public class EditSmsActivity extends Activity {
 			public void onClick(View v) {
 				
 				if(numbersText.getText().toString().matches("(''|(' ')+)")){
-					Toast.makeText(EditSmsActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
+					Toast.makeText(NewScheduleActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
 					numbersText.requestFocus();
 				}else{
 					if(!checkDateValidity(processDate)){
-						Toast.makeText(EditSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 					}
 					doSmsScheduling();
 				}
-			EditSmsActivity.this.finish();
+			NewScheduleActivity.this.finish();
 			}
 		});
 	}
@@ -391,7 +355,7 @@ public class EditSmsActivity extends Activity {
 	//-------------------Adapter for list in the templates dialog--------------------
 	class TemplateAdapter extends ArrayAdapter{
 		TemplateAdapter(){
-			super(EditSmsActivity.this, R.layout.template_list_row, templatesArray);
+			super(NewScheduleActivity.this, R.layout.template_list_row, templatesArray);
 		}
 		
 		@Override
@@ -475,7 +439,6 @@ public class EditSmsActivity extends Activity {
 		templatesArray.clear();
 		
 		if(cur.moveToFirst()){
-			Log.i("MESSAGE", "cursor has some records");
 			do{
 				templatesArray.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
 			}while(cur.moveToNext());
@@ -500,7 +463,6 @@ public class EditSmsActivity extends Activity {
 	
 	//--------------------function to Scheduling a new sms------------------------------------
 	public void doSmsScheduling(){
-		Log.i("MESSAGE", "into doScheduling");
 		Calendar cal = new GregorianCalendar(processDate.getYear() + 1900, processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes());
 		final SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 		String dateString = sdf.format(cal.getTime());
@@ -508,23 +470,14 @@ public class EditSmsActivity extends Activity {
 		long groupId = mdba.getNextGroupId();
 		String[] numbers = numbersText.getText().toString().split(",(' ')*");
 		if(!(messageText.getText().toString().matches("(''|(' ')+)"))){
-			ArrayList<Long> editedIds = mdba.getIds(editedGroup);
-			for(int i = 0; i< editedIds.size(); i++){
-				mdba.deleteSms(editedIds.get(i), EditSmsActivity.this);
+		for(int i = 0; i< numbers.length; i++){
+			long received_id = mdba.scheduleSms(numbers[i], messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
+			if(mdba.getCurrentPiFiretime() == -1){
+				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
+			}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
 			}
-			
-			for(int i = 0; i< numbers.length; i++){
-				Log.i("MESSAGE", "processing for" + numbers[i]);
-				long received_id = mdba.scheduleSms(numbers[i], messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-				if(mdba.getCurrentPiFiretime() == -1){
-					Log.i("MESSAGE", "Step 1");
-					handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
-				}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-					Log.i("MESSAGE", "Step 1 alt");
-					handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
-				}
-				Log.i("MESSAGE", "succesful");
-			}
+		}
 		}
 		mdba.close();
 	}
@@ -532,11 +485,10 @@ public class EditSmsActivity extends Activity {
 	
 	public void handlePiUpdate(String number, long groupId, long id, long time){
 		//Cancel the pi conditionally----------------------
-		Log.i("MESSAGE", "Step 2");
 		Cursor cur = mdba.getPiDetails();
 		cur.moveToFirst();
 		
-		Intent intent = new Intent(EditSmsActivity.this, SMSHandleReceiver.class);
+		Intent intent = new Intent(NewScheduleActivity.this, SMSHandleReceiver.class);
 		intent.setAction(DBAdapter.PRIVATE_SMS_ACTION);
 		
 		PendingIntent pi;
@@ -545,18 +497,17 @@ public class EditSmsActivity extends Activity {
 			intent.putExtra("NUMBER", " ");
 			intent.putExtra("MESSAGE", " ");
 			
-			pi = PendingIntent.getBroadcast(EditSmsActivity.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+			pi = PendingIntent.getBroadcast(NewScheduleActivity.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 			pi.cancel();
 			
 		}
-		intent = new Intent(EditSmsActivity.this, SMSHandleReceiver.class);
 		intent.putExtra("ID", id);
 		intent.putExtra("NUMBER", number);
 		intent.putExtra("MESSAGE", messageText.getText().toString());
 		
 		Random rand = new Random();
 		int piNumber = rand.nextInt();
-		pi = PendingIntent.getBroadcast(EditSmsActivity.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		pi = PendingIntent.getBroadcast(NewScheduleActivity.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		mdba.updatePi(piNumber, id, time);
 		
 		AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);

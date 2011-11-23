@@ -1,7 +1,8 @@
-package com.smsschedulerexpl.android;
+package com.vinsol.sms_scheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -14,23 +15,25 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
-import android.widget.ExpandableListView.OnChildClickListener;
 
 public class SmsSchedulerExplActivity extends Activity {
     /** Called when the activity is first created. */
@@ -44,7 +47,10 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	SimpleExpandableListAdapter mAdapter;
 	private ArrayList<HashMap<String, String>> headerData;
-	private ArrayList<ArrayList<HashMap<String, Object>>> childData = new ArrayList<ArrayList<HashMap<String, Object>>>();;
+	private ArrayList<ArrayList<HashMap<String, Object>>> childData = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	
+	private String[] numbersForSentDialog = new String[]{};
+	private ArrayList<Long> idsForSentDialog = new ArrayList<Long>();
 	
 	int sizeOfChildSchArray = 0;
 	
@@ -58,6 +64,8 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	final int MENU_DELETE = 432142;
 	final int MENU_EDIT = 432143;
+	
+	Dialog sentInfoDialog;
 	
 	IntentFilter mIntentFilter;
 	private BroadcastReceiver mUpdateReceiver = new BroadcastReceiver() {
@@ -115,7 +123,7 @@ public class SmsSchedulerExplActivity extends Activity {
 					intent.putExtra("TIME", childSchArray.get(childPosition).keyTimeMilis);
 					startActivity(intent);
 				}else if(groupPosition == 1){
-					
+					showSentInfoDialog(childPosition);
 				}
 				
 				return false;
@@ -150,6 +158,8 @@ public class SmsSchedulerExplActivity extends Activity {
     	
     	setExplData();
     	explList.setAdapter(mAdapter);
+    	explList.expandGroup(0);
+    	explList.expandGroup(1);
     	registerReceiver(mUpdateReceiver, mIntentFilter);
     }
     
@@ -210,33 +220,7 @@ public class SmsSchedulerExplActivity extends Activity {
 	         		 
 					Toast.makeText(this.getApplicationContext(), "Message Deleted", Toast.LENGTH_SHORT).show();
 					break;
-					
-					
-					
 					//--------------------------------------------------------------------------------------------------
-					
-					
-//				case MENU_EDIT:
-//					long selectedGrpId = 0;
-//					
-//					Intent intent = new Intent(this.getApplicationContext(), EditSmsActivty.class);
-//					
-//					if(groupPos == 0){
-//						intent.putExtra("GROUP", childSchArray.get(childPos).keyGrpId);
-//						intent.putExtra("NUMBER", childSchArray.get(childPos).keyNumber);
-//						intent.putExtra("MESSAGE", childSchArray.get(childPos).keyMessage);
-//						intent.putExtra("TIME", childSchArray.get(childPos).keyTimeMilis);
-//					}else if(groupPos == 1){
-//						intent.putExtra("GROUP", childSentArray.get(childPos).keyGrpId);
-//						intent.putExtra("NUMBER", childSentArray.get(childPos).keyNumber);
-//						intent.putExtra("MESSAGE", childSentArray.get(childPos).keyMessage);
-//						intent.putExtra("TIME", childSentArray.get(childPos).keyTimeMilis);
-//					}
-//					
-//					
-//					startActivity(intent);
-//					
-//					break;
 					
 			}
 		}
@@ -273,6 +257,22 @@ public class SmsSchedulerExplActivity extends Activity {
     		
     		
     		@Override
+			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    			if(convertView == null) {
+    				LayoutInflater li = getLayoutInflater();
+        			convertView = li.inflate(R.layout.expandable_list_group_view, null);	
+    			}
+    			
+    			TextView groupHeading = (TextView) convertView.findViewById(R.id.group_heading);
+    			groupHeading.setText(headerData.get(groupPosition).get(NAME));
+    			
+    			return convertView;
+    			
+    		}
+
+
+
+			@Override
     		public android.view.View getChildView(int groupPosition, int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
     			final View v = super.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
     			
@@ -283,12 +283,12 @@ public class SmsSchedulerExplActivity extends Activity {
     			
     			Log.i("MESSAGE", "------------------------Value of ChildPosition : " + childSchArray.size());
     			
-    			if(groupPosition == 0){
+    			if(groupPosition == 0) {
     				messageTextView.setText(childSchArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSchArray.get(childPosition).keyImageRes);
     				dateTextView.setText(childSchArray.get(childPosition).keyDate);
     				receiverTextView.setText(childSchArray.get(childPosition).keyNumber);
-    			}else if(groupPosition == 1){
+    			} else if(groupPosition == 1) {
     				messageTextView.setText(childSentArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
     				dateTextView.setText(childSentArray.get(childPosition).keyDate);
@@ -461,6 +461,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		child.put(DATE, childSentArray.get(i).keyDate);
     		child.put(RECEIVER, childSentArray.get(i).keyNumber);
     		groupChildSent.add(child);
+    		mdba.close();
     	}
     	
     	childData.add(groupChildSent);
@@ -560,11 +561,101 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	
 	
+	
+	
 	@Override
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(mUpdateReceiver);
 	}
+	
+	
+	
+	
+	
+	public void showSentInfoDialog(int childPos){
+		sentInfoDialog = new Dialog(SmsSchedulerExplActivity.this);
+		sentInfoDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		sentInfoDialog.setContentView(R.layout.sent_details_layout);
+		ListView numbersList = (ListView) sentInfoDialog.findViewById(R.id.sent_details_dialog_number_list);
+		TextView timeLabel = (TextView) sentInfoDialog.findViewById(R.id.sent_details_dialog_time_label);
+		TextView messageSpace = (TextView) sentInfoDialog.findViewById(R.id.sent_details_dialog_message_space);
+		mdba.open();
+		numbersForSentDialog = childSentArray.get(childPos).keyNumber.split(", ");
+		idsForSentDialog = mdba.getIds(childSentArray.get(childPos).keyGrpId);
+		timeLabel.setText(childSentArray.get(childPos).keyDate);
+		messageSpace.setText(childSentArray.get(childPos).keyMessage);
+		SentDialogNumberListAdapter sentDialogAdapter = new SentDialogNumberListAdapter();
+		numbersList.setAdapter(sentDialogAdapter);
+		
+		sentInfoDialog.show();
+	}
     
+	
+	
+	
+	class SentDialogNumberListAdapter extends ArrayAdapter{
+		SentDialogNumberListAdapter(){
+    		super(SmsSchedulerExplActivity.this, R.layout.sent_details_number_list_row, numbersForSentDialog);
+    	}
+    	
+    	
+    	@Override
+    	public View getView(final int position, View convertView, ViewGroup parent) {
+    		if(convertView!=null){
+    			return convertView;
+    		}
+    		final int _position  = position;
+    		LayoutInflater inflater = getLayoutInflater();
+    		View row = inflater.inflate(R.layout.sent_details_number_list_row, parent, false);
+    		
+    		
+    		TextView numberLabel = (TextView)row.findViewById(R.id.sent_details_number_list_number_text);
+    		numberLabel.setText(numbersForSentDialog[position]);
+    		
+    		ImageView statusImage = (ImageView)row.findViewById(R.id.sent_details_number_list_status_image);
+    		
+    		long currentId = idsForSentDialog.get(position);
+    		
+    		int condition = 1;
+    		Cursor cur = mdba.fetchSmsDetails(currentId);
+			cur.moveToFirst();
+			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == cur.getInt(cur.getColumnIndex(DBAdapter.KEY_MSG_PARTS))){
+				condition = 2;
+			}
+			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_DELIVER))>0 && (condition == 2)){
+				condition = 3;
+			}
+			if(mdba.checkDeliver(currentId)){
+				condition = 4;
+			}
+			
+			
+			switch (condition) {
+			case 1:
+				statusImage.setImageResource(R.drawable.icon);
+				break;
+				
+			case 2:
+				statusImage.setImageResource(R.drawable.ic_btn_write_sms);
+				break;
+				
+			case 3:
+				statusImage.setImageResource(R.drawable.icon);
+				break;
+				
+			case 4:
+				statusImage.setImageResource(R.drawable.ic_btn_write_sms);
+				break;
+				
+			default:
+				break;
+			}
+    		
+    		return row;
+    	}
+    }
+	
+	
 	
 }
