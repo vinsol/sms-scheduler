@@ -13,4 +13,9 @@ public class MyContact {
 	public MyContact(){
 		
 	}
+	
+	@Override
+	public String toString() {
+		return this.name + ", ";
+	}
 }

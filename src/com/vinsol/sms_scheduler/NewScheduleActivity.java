@@ -92,8 +92,7 @@ public class NewScheduleActivity extends Activity {
 	Calendar refCal = new GregorianCalendar();
 	Date processDate = new Date();
 	
-	ArrayList<Person> mContacts = new ArrayList<Person>();
-	ArrayList<Person> shortlist = new ArrayList<Person>();
+	ArrayList<MyContact> shortlist = new ArrayList<MyContact>();
 	
 	boolean smileyVisible = false;
 	
@@ -152,9 +151,6 @@ public class NewScheduleActivity extends Activity {
 		  Toast.makeText(this, "Tragedy!", Toast.LENGTH_SHORT).show();
 		}
 		//---------------------------------------------------------------------
-		
-		mContacts = getContactList();
-		Toast.makeText(this, mContacts.size()+"", Toast.LENGTH_SHORT).show();
 		
 		
 		setFunctionalities();
@@ -685,25 +681,56 @@ public class NewScheduleActivity extends Activity {
 	
 	//--------------------------Setting up the Autocomplete text-----------------------------// 
 	
-	public ArrayList<Person> shortlistContacts(CharSequence constraint){
+//	public ArrayList<Person> shortlistContacts(CharSequence constraint){
+//		String text = (String) constraint;
+//		shortlist.clear();
+//		Log.i("MESSAGE", "f : " + text);
+//		Pattern p = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
+//		for(int i = 0; i < mContacts.size(); i++){
+//			Log.i("MESSAGE", mContacts.get(i).getName());
+//			mContacts.get(i).personNumber = refineNumber(mContacts.get(i).getNumber());
+//			Matcher m = p.matcher(mContacts.get(i).getName());
+//			if(m.find()){
+//				shortlist.add(mContacts.get(i));
+//				Log.i("MESSAGE", "shortlist size fins : " + shortlist.size());
+//			}
+//			else
+//			{
+//				m = p.matcher(mContacts.get(i).getNumber());
+//				if(m.find()){
+//					shortlist.add(mContacts.get(i));
+//					
+//				}
+//			}
+//		}
+//		Log.v("MESSAGE", "shortlist size : " + shortlist.size());
+//		Log.v("YO", "Yo");
+//		return shortlist;
+//					
+//	}
+	
+	
+	
+	
+	
+	public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 		String text = (String) constraint;
 		shortlist.clear();
 		Log.i("MESSAGE", "f : " + text);
 		Pattern p = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
-		for(int i = 0; i < mContacts.size(); i++){
-			Log.i("MESSAGE", mContacts.get(i).getName());
-			mContacts.get(i).personNumber = refineNumber(mContacts.get(i).getNumber());
-			Matcher m = p.matcher(mContacts.get(i).getName());
+		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
+			Log.i("MESSAGE", SplashActivity.contactsList.get(i).name);
+			SplashActivity.contactsList.get(i).number = refineNumber(SplashActivity.contactsList.get(i).number);
+			Matcher m = p.matcher(SplashActivity.contactsList.get(i).name);
 			if(m.find()){
-				shortlist.add(mContacts.get(i));
+				shortlist.add(SplashActivity.contactsList.get(i));
 				Log.i("MESSAGE", "shortlist size fins : " + shortlist.size());
 			}
 			else
 			{
-				m = p.matcher(mContacts.get(i).getNumber());
+				m = p.matcher(SplashActivity.contactsList.get(i).number);
 				if(m.find()){
-					shortlist.add(mContacts.get(i));
-					
+					shortlist.add(SplashActivity.contactsList.get(i));
 				}
 			}
 		}
@@ -720,14 +747,13 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	//--------------------------Adapter for Autocomplete text----------------------------
-	class AutoCompleteAdapter extends ArrayAdapter<Person> implements Filterable{
+	class AutoCompleteAdapter extends ArrayAdapter<MyContact> implements Filterable{
     	
-    	private ArrayList<Person> mData;
+    	private ArrayList<MyContact> mData;
     	
 		public AutoCompleteAdapter(Context context) {
 			super(context, android.R.layout.simple_dropdown_item_1line);
-			mData = new ArrayList<Person>();
-			mData.add(new Person("hi", "hi"));
+			mData = new ArrayList<MyContact>();
 			Log.i("MSG", "into the adapter");
 		}
 			
@@ -737,7 +763,7 @@ public class NewScheduleActivity extends Activity {
 		}
 		
 		@Override
-		public Person getItem(int position) {
+		public MyContact getItem(int position) {
 			return mData.get(position);
 		}
 		
@@ -782,8 +808,8 @@ public class NewScheduleActivity extends Activity {
     		View row = inflater.inflate(R.layout.dropdown_row_layout, parent, false);
 			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
 			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
-			nameLabel.setText(shortlist.get(position).getName());
-			numberLabel.setText(shortlist.get(position).getNumber());
+			nameLabel.setText(shortlist.get(position).name);
+			numberLabel.setText(shortlist.get(position).number);
 			return row;
 		}
 	
