@@ -30,6 +30,10 @@
             </intent-filter>
         </activity>
         
+        <activity android:name = ".ContactsTabsActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait">
+            
+        </activity>
+        
 		<receiver android:name=".SMSHandleReceiver" android:enabled="true"></receiver>
 		<receiver android:name=".SentReceiver" android:enabled="true"></receiver>
 		<receiver android:name="com.vinsol.sms_scheduler.DeliverReceiver" android:enabled="true"></receiver>

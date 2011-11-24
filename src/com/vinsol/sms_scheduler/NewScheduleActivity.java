@@ -18,16 +18,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Contacts;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.Data;
-import android.provider.ContactsContract.PhoneLookup;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
-import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -96,6 +89,11 @@ public class NewScheduleActivity extends Activity {
 	
 	boolean smileyVisible = false;
 	
+	static ArrayList<SpannedEntity> spannables = new ArrayList<SpannedEntity>();
+	
+	
+	ArrayList<Long> ids = new ArrayList<Long>();
+	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	
 	static int [] images = {
@@ -162,6 +160,21 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	public void setFunctionalities(){
+		
+		addFromContactsImgButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(NewScheduleActivity.this, ContactsTabsActivity.class);
+				ArrayList<String> idsString = new ArrayList<String>();
+				for(int i = 0; i<ids.size(); i++){
+					idsString.add(String.valueOf(ids.get(i)));
+				}
+				intent.putExtra("IDSARRAY", idsString);
+				startActivityForResult(intent, 2);
+			}
+		});
+		
 		
 		//------------Date Select Button set to current date--------------------
 		Date currentDate = new Date();
@@ -317,10 +330,10 @@ public class NewScheduleActivity extends Activity {
 				String afterString = messageText.getText().toString().substring(cursorPos, messageText.length());
 				if(cursorPos!=0){
 					messageText.setText(beforeString + " " + smileys[position] + afterString);
-					messageText.setSelection(cursorPos + 5);
+					messageText.setSelection(cursorPos + smileys[position].length());
 				}else
 					messageText.setText(smileys[position] + afterString);
-					messageText.setSelection(cursorPos + 4);
+					messageText.setSelection(cursorPos + smileys[position].length());
 				}
 		
 		});
@@ -607,111 +620,37 @@ public class NewScheduleActivity extends Activity {
             mList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
                     matches));
         }
+        
+        else if(resultCode == 2){
+        	ArrayList<String> idsString = new ArrayList<String>();
+        	idsString = data.getStringArrayListExtra("IDSARRAY");
+        	ids.clear();
+        	String str = "";
+        	for(int i = 0; i< idsString.size(); i++){
+        		ids.add(Long.parseLong(idsString.get(i)));
+        		for(int j = 0; j< SplashActivity.contactsList.size(); j++){
+        			if(SplashActivity.contactsList.get(j).content_uri_id.equals(idsString.get(i))){
+        				str = str + refineNumber(SplashActivity.contactsList.get(j).number);
+                		if(i < idsString.size()-1){
+                			str = str + ", ";
+                		}
+        			}
+        		}
+        		
+        	}
+        	
+        	numbersText.setText(str);
+        }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
 	
-	
-	
-	
-	
-	
-	
-	
-	public ArrayList<Person> getContactList(){
-		ArrayList<Person> contactList = new ArrayList<Person>();
 
-		Uri contactUri = ContactsContract.Contacts.CONTENT_URI;
-		String[] PROJECTION = new String[] {
-				ContactsContract.Contacts._ID,
-				ContactsContract.Contacts.DISPLAY_NAME,
-				ContactsContract.Contacts.HAS_PHONE_NUMBER,
-		};
-		String SELECTION = ContactsContract.Contacts.HAS_PHONE_NUMBER + "='1'";
-		Cursor contacts = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, SELECTION, null, null);
-
-
-		if (contacts.getCount() > 0)
-		{
-			while(contacts.moveToNext()) {
-				Person aContact = new Person();
-				int idFieldColumnIndex = 0;
-				int nameFieldColumnIndex = 0;
-				int numberFieldColumnIndex = 0;
-
-				String contactId = contacts.getString(contacts.getColumnIndex(ContactsContract.Contacts._ID));
-
-           	 	nameFieldColumnIndex = contacts.getColumnIndex(PhoneLookup.DISPLAY_NAME);
-           	 	if (nameFieldColumnIndex > -1)
-           	 	{
-           	 		aContact.setName(contacts.getString(nameFieldColumnIndex));
-           	 	}
-
-            	PROJECTION = new String[] {Phone.NUMBER};
-            	final Cursor phone = managedQuery(Phone.CONTENT_URI, PROJECTION, Data.CONTACT_ID + "=?", new String[]{String.valueOf(contactId)}, null);
-            	if(phone.moveToFirst()) {
-            		while(!phone.isAfterLast())
-            		{
-            			numberFieldColumnIndex = phone.getColumnIndex(Phone.NUMBER);
-            			if (numberFieldColumnIndex > -1)
-            			{
-            				aContact.setNumber(phone.getString(numberFieldColumnIndex));
-            				phone.moveToNext();
-                        	TelephonyManager mTelephonyMgr;
-                        	mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-                        	if (!mTelephonyMgr.getLine1Number().contains(aContact.getNumber()))
-                        	{
-                        		contactList.add(aContact);
-                        	}
-            			}
-            		}
-            	}
-            	phone.close();
-			}
-
-			contacts.close();
-		}
-
-		return contactList;
-	}
-	
 	
 	
 	
 	
 	//--------------------------Setting up the Autocomplete text-----------------------------// 
-	
-//	public ArrayList<Person> shortlistContacts(CharSequence constraint){
-//		String text = (String) constraint;
-//		shortlist.clear();
-//		Log.i("MESSAGE", "f : " + text);
-//		Pattern p = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
-//		for(int i = 0; i < mContacts.size(); i++){
-//			Log.i("MESSAGE", mContacts.get(i).getName());
-//			mContacts.get(i).personNumber = refineNumber(mContacts.get(i).getNumber());
-//			Matcher m = p.matcher(mContacts.get(i).getName());
-//			if(m.find()){
-//				shortlist.add(mContacts.get(i));
-//				Log.i("MESSAGE", "shortlist size fins : " + shortlist.size());
-//			}
-//			else
-//			{
-//				m = p.matcher(mContacts.get(i).getNumber());
-//				if(m.find()){
-//					shortlist.add(mContacts.get(i));
-//					
-//				}
-//			}
-//		}
-//		Log.v("MESSAGE", "shortlist size : " + shortlist.size());
-//		Log.v("YO", "Yo");
-//		return shortlist;
-//					
-//	}
-	
-	
-	
-	
 	
 	public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 		String text = (String) constraint;

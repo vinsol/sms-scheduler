@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height = "fill_parent"
+    android:layout_width = "fill_parent">
+    
+	<TabHost android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/tabHost">
+    
+    <TabWidget
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:id="@android:id/tabs"/>
+    
+    <FrameLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:id="@android:id/tabcontent">
+     
+     	<LinearLayout
+     		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:id="@+id/contacts_tab"
+    		android:orientation="vertical"
+    		android:paddingTop="60px">
+    		
+     		<ListView
+     		    android:id = "@+id/contacts_tabs_native_contacts_list"
+     		    android:layout_height = "wrap_content"
+     		    android:layout_width = "fill_parent"/>
+
+     	</LinearLayout>
+
+     	<LinearLayout
+     		android:layout_width="fill_parent"
+   	 		android:layout_height="fill_parent"
+    		android:id="@+id/private_groups_tab"
+    		android:orientation="vertical"
+    		android:paddingTop="60px">
+     
+     		<ListView 
+     		    android:id = "@+id/contacts_tabs_private_groups_list"
+     		    android:layout_height = "wrap_content"
+     		    android:layout_width = "fill_parent"/>
+
+     	</LinearLayout>
+
+      
+  	</FrameLayout>
+
+	</TabHost>
+	
+	<LinearLayout
+	    android:layout_height = "wrap_content"
+	    android:layout_width = "fill_parent"
+	    android:orientation="horizontal"
+	    android:layout_alignParentBottom="true">
+	    
+	    <Button
+	        android:id = "@+id/contacts_tab_done_button"
+	        android:layout_height="wrap_content"
+	        android:layout_width = "fill_parent"
+	        android:layout_weight="1"
+	        android:text = "Done"
+	        android:layout_margin = "5dp"/>
+	    
+	    
+	    <Button
+	        android:id = "@+id/contacts_tab_cancel_button"
+	        android:layout_height="wrap_content"
+	        android:layout_width = "fill_parent"
+	        android:layout_weight="1"
+	        android:text = "Cancel"
+	        android:layout_marginTop = "5dp"
+	        android:layout_marginBottom="5dp"
+	        android:layout_marginRight="5dp"/>
+	    
+	</LinearLayout>
+</RelativeLayout>
