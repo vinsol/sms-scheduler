@@ -1,9 +1,8 @@
 package com.vinsol.sms_scheduler;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -16,25 +15,25 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
-import android.widget.ExpandableListView.OnChildClickListener;
 
 public class SmsSchedulerExplActivity extends Activity {
     /** Called when the activity is first created. */
@@ -159,6 +158,8 @@ public class SmsSchedulerExplActivity extends Activity {
     	
     	setExplData();
     	explList.setAdapter(mAdapter);
+    	explList.expandGroup(0);
+    	explList.expandGroup(1);
     	registerReceiver(mUpdateReceiver, mIntentFilter);
     }
     
@@ -256,6 +257,22 @@ public class SmsSchedulerExplActivity extends Activity {
     		
     		
     		@Override
+			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    			if(convertView == null) {
+    				LayoutInflater li = getLayoutInflater();
+        			convertView = li.inflate(R.layout.expandable_list_group_view, null);	
+    			}
+    			
+    			TextView groupHeading = (TextView) convertView.findViewById(R.id.group_heading);
+    			groupHeading.setText(headerData.get(groupPosition).get(NAME));
+    			
+    			return convertView;
+    			
+    		}
+
+
+
+			@Override
     		public android.view.View getChildView(int groupPosition, int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
     			final View v = super.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
     			
@@ -266,12 +283,12 @@ public class SmsSchedulerExplActivity extends Activity {
     			
     			Log.i("MESSAGE", "------------------------Value of ChildPosition : " + childSchArray.size());
     			
-    			if(groupPosition == 0){
+    			if(groupPosition == 0) {
     				messageTextView.setText(childSchArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSchArray.get(childPosition).keyImageRes);
     				dateTextView.setText(childSchArray.get(childPosition).keyDate);
     				receiverTextView.setText(childSchArray.get(childPosition).keyNumber);
-    			}else if(groupPosition == 1){
+    			} else if(groupPosition == 1) {
     				messageTextView.setText(childSentArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
     				dateTextView.setText(childSentArray.get(childPosition).keyDate);

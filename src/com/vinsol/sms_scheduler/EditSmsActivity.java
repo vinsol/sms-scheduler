@@ -66,14 +66,11 @@ public class EditSmsActivity extends Activity {
 	Button 					dateButton;
 	TextView 				characterCountText;
 	EditText 				messageText;
-	ImageButton 			smileyImageButton;
 	ImageButton 			templateImageButton;
-	ImageButton				spellCheckImageButton;
 	ImageButton 			speechImageButton;
 	ImageButton 			addTemplateImageButton;
 	Button 					scheduleButton;
 	Button 					cancelButton;
-	LinearLayout			smileyLinearLayout;
 	GridView				smileysGrid;
 	//--------------------------------------------------------
 	
@@ -85,12 +82,11 @@ public class EditSmsActivity extends Activity {
 	
 	Dialog dateSelectDialog;
 	Dialog templateDialog;
-	boolean suggestionsBoolean = true;
 	
 	Date refDate = new Date();
 	Calendar refCal = new GregorianCalendar();
 	Date processDate = new Date();
-	
+
 	ArrayList<Person> mContacts = new ArrayList<Person>();
 	ArrayList<Person> shortlist = new ArrayList<Person>();
 	
@@ -114,14 +110,11 @@ public class EditSmsActivity extends Activity {
 		dateButton 					= (Button) 					findViewById(R.id.new_date_button);
 		characterCountText 			= (TextView) 				findViewById(R.id.new_char_count_text);
 		messageText 				= (EditText) 				findViewById(R.id.new_message_space);
-		smileyImageButton 			= (ImageButton) 			findViewById(R.id.smiley_imgbutton);
 		templateImageButton 		= (ImageButton) 			findViewById(R.id.template_imgbutton);
-		spellCheckImageButton		= (ImageButton)				findViewById(R.id.spell_check_imgbutton);
 		speechImageButton 			= (ImageButton) 			findViewById(R.id.speech_imgbutton);
 		addTemplateImageButton 		= (ImageButton) 			findViewById(R.id.add_template_imgbutton);
 		scheduleButton 				= (Button) 					findViewById(R.id.new_schedule_button);
 		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
-		smileyLinearLayout			= (LinearLayout) 			findViewById(R.id.smiley_layout);
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		
 		
@@ -281,28 +274,7 @@ public class EditSmsActivity extends Activity {
 				parts 		 	= smsManager.divideMessage(s.toString());
 				characterCountText.setText(String.valueOf(length) + " (" + String.valueOf(parts.size()) + ")");
 			}
-		});
-		
-		
-		
-		
-		//---------------functionality of smiley button-------------------------
-		smileyImageButton.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(smileyVisible){
-					smileyVisible = false;
-					smileyLinearLayout.setVisibility(LinearLayout.GONE);
-				}else{
-					smileyVisible = true;
-					smileyLinearLayout.setVisibility(LinearLayout.VISIBLE);
-				}
-			}
-		});
-		//------------------------------------------------end of smiley button func----------------
-		
-		
+		});		
 		
 		//-------------------Setting up the smileys Grid---------------------------------
 		smileysGrid.setAdapter(new SmileysAdapter(this));
@@ -363,26 +335,6 @@ public class EditSmsActivity extends Activity {
 				mdba.close();
 			}
 		});
-		
-		
-		
-		//-----------------functionality for spell check  button ---------------------------
-		spellCheckImageButton.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(suggestionsBoolean){
-					suggestionsBoolean = false;
-					messageText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-					//spellCheckImageButton.setImageResource(R.drawable.);
-				}else{
-					suggestionsBoolean = true;
-					messageText = (EditText) findViewById(R.id.new_message_space);
-					//spellCheckImageButton.setImageResource(R.drawable.);
-				}
-			}
-		});
-		
 		
 		
 		//----------------functionality for schedule button----------------------------
