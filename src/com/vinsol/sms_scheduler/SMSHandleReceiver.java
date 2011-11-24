@@ -28,6 +28,8 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 	ArrayList<String> parts;
 	int msgSize;
 	
+	
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		mContext = context;
@@ -35,6 +37,11 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		number = intent.getStringExtra("NUMBER");
 		id = intent.getLongExtra("ID", 0);
 		myActivity = (context instanceof NewScheduleActivity) ? (NewScheduleActivity)context : null;
+		
+		DBAdapter mdba = new DBAdapter(context);
+		
+		mdba.open();
+		mdba.makeOperated(id);
 		
 		Log.i("MESSAGE", "Number to the SMSHandleReceiver : " + number);
 		Log.i("MESSAGE", "ID in SMSHandle : " + id);
@@ -69,10 +76,12 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			pideliver = PendingIntent.getBroadcast(context, 0, ideliver, PendingIntent.FLAG_UPDATE_CURRENT);
 			deliverIntents.add(pideliver);
 		}
+		Log.i("MSG", "Before");
 		smsManager.sendMultipartTextMessage(number, null, parts, sentIntents, deliverIntents);
+		Log.i("MSG", "After");
 		
 		
-		DBAdapter mdba = new DBAdapter(context);
+		//DBAdapter mdba = new DBAdapter(context);
 		mdba.open();
 		mdba.makeOperated(id);
 		Cursor cur = mdba.fetchRemainingScheduled();

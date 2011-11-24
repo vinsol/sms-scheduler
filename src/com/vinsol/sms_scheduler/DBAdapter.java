@@ -1,8 +1,10 @@
 package com.vinsol.sms_scheduler;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -13,6 +15,11 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.Data;
+import android.provider.ContactsContract.PhoneLookup;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 
@@ -22,6 +29,8 @@ public class DBAdapter{
 	private static final String DATABASE_SMS_TABLE = "smsTable";
 	private static final String DATABASE_PI_TABLE = "piTable";
 	private static final String DATABASE_TEMPLATE_TABLE = "templateTable";
+	private static final String DATABASE_GROUP_TABLE = "groupTable";
+	private static final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
 	private static final int DATABASE_VERSION = 1;
 	
 	Cursor cur;
@@ -56,6 +65,15 @@ public class DBAdapter{
 	public static final String KEY_TEMP_ID = "_id";
 	public static final String KEY_TEMP_CONTENT = "content";
 	
+	//-----------------keys for group table-----------------------
+	public static final String KEY_GROUP_ID = "_id";
+	public static final String KEY_GROUP_NAME = "group_name";
+	
+	//----------------keys for group contacts relation----------------
+	public static final String KEY_RELATION_ID = "_id";
+	public static final String KEY_GROUP_REL_ID = "group_rel_id";
+	public static final String KEY_CONTACTS_ID = "contacts_id";
+	
 	//------------------------------------------------------------------end of static keys defs-------
 	
 	
@@ -77,6 +95,15 @@ public class DBAdapter{
 		DATABASE_TEMPLATE_TABLE + " (" + KEY_TEMP_ID + " integer primary key autoincrement, " +
 		KEY_TEMP_CONTENT + " text);";
 	
+	
+	private static final String DATABASE_CREATE_GROUP_TABLE = "create table " +
+		DATABASE_GROUP_TABLE + " (" + KEY_GROUP_ID + " integer primary key autoincrement, " +
+		KEY_GROUP_NAME + " text);";
+	
+	
+	private static final String DATABASE_CREATE_GROUP_CONTACT_RELATION = "create table " +
+	DATABASE_GROUP_CONTACT_RELATION + " (" + KEY_RELATION_ID + " integer primary key autoincrement, " +
+	KEY_GROUP_REL_ID + " integer, " + KEY_CONTACTS_ID + " integer);";
 	
 	
 	private SQLiteDatabase db;
@@ -114,13 +141,13 @@ public class DBAdapter{
 	}
 	
 	public Cursor fetchRemainingScheduled(){
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS}, KEY_SENT + "= 0 AND " + KEY_OPERATED + "<> 1 AND " + KEY_MESSAGE + " NOT LIKE ' '" , null, null, null, KEY_TIME_MILLIS);
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS}, KEY_OPERATED + "=0"/* + KEY_MESSAGE + " NOT LIKE ' '"*/ , null, null, null, KEY_TIME_MILLIS);
 		Log.i("MESSAGE", "No of other schedules from DBAdapter : " + cur.getCount());
 		return cur;
 	}
 	
 	public Cursor fetchSmsDetails(long id){
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS}, KEY_ID + "=" + id, null, null, null, null);
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_TIME_MILLIS}, KEY_ID + "=" + id, null, null, null, null);
 		return cur;
 	}
 	
@@ -442,8 +469,17 @@ public class DBAdapter{
 	public void updatePi(long pi_number, long id, long time){
 		
 		ContentValues cv = new ContentValues();
-		cv.put(KEY_OPERATED, 0);
-		db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + getCurrentPiId(), null);
+		
+		if(getCurrentPiId()!=-1){
+			Cursor cur = fetchSmsDetails(getCurrentPiId());
+			if(cur.moveToFirst()){
+				if(cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS))>System.currentTimeMillis()){
+					cv.put(KEY_OPERATED, 0);
+					db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + getCurrentPiId(), null);
+				}
+			}
+		}
+		
 		cv.clear();
 		
 		cv.put(KEY_PI_NUMBER, pi_number);
@@ -499,6 +535,74 @@ public class DBAdapter{
 	
 	
 	
+	
+	//-----------------------------------functions related to group table--------------------------------------
+	
+	public Cursor fetchAllGroups(){
+		Cursor cur = db.query(DATABASE_GROUP_TABLE, null, null, null, null, null, null);
+		return cur;
+	}
+	
+	
+	
+	public ArrayList<Long> fetchIdsForGroups(long groupId){
+		ArrayList<Long> ids = new ArrayList<Long>();
+		Cursor cur = db.query(DATABASE_GROUP_CONTACT_RELATION, new String[]{KEY_CONTACTS_ID}, KEY_GROUP_REL_ID + "=" + groupId, null, null, null, null);
+		if(cur.moveToFirst()){
+			do{
+				ids.add(cur.getLong(cur.getColumnIndex(KEY_CONTACTS_ID)));
+			}while(cur.moveToNext());
+		}
+		return ids;
+	}
+	
+	
+	
+	public long createGroup(String name, ArrayList<Long> contactIds){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_GROUP_NAME, name);
+		long grpid = db.insert(DATABASE_GROUP_TABLE, null, cv);
+		for(int i = 0; i< contactIds.size(); i++){
+			addContactToGroup(contactIds.get(i), grpid);
+		}
+		return grpid;
+	}
+	
+	
+	
+	public void addContactToGroup(long contactId, long groupId){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_GROUP_REL_ID, groupId);
+		cv.put(KEY_CONTACTS_ID, contactId);
+		db.insert(DATABASE_GROUP_CONTACT_RELATION, null, cv);
+	}
+	
+	
+	
+	
+	public void removeContactFromGroup(long contactId, long groupId){
+		db.delete(DATABASE_GROUP_CONTACT_RELATION, KEY_GROUP_REL_ID + "=" + groupId + " AND " + KEY_CONTACTS_ID + "=" + contactId, null);
+	}
+	
+	
+	
+	
+	public void removeGroup(long groupId){
+		db.delete(DATABASE_GROUP_CONTACT_RELATION, groupId + "=" + groupId, null);
+		db.delete(DATABASE_GROUP_TABLE, groupId + "=" + groupId, null);
+	}
+	
+	
+	public void setGroupName(String name, long groupId){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_GROUP_NAME, name);
+		db.update(DATABASE_GROUP_TABLE, cv, KEY_GROUP_ID + "=" + groupId, null);
+	}
+	
+	//---------------------------------------------------------------end of functions for group table---------------------
+	
+	
+	
 	public class MyOpenHelper extends SQLiteOpenHelper{
 		
 		MyOpenHelper(Context context){
@@ -510,6 +614,8 @@ public class DBAdapter{
 	        db.execSQL(DATABASE_CREATE_SMS_TABLE);
 	        db.execSQL(DATABASE_CREATE_TEMPLATE_TABLE);
 	        db.execSQL(DATABASE_CREATE_PI_TABLE);
+	        db.execSQL(DATABASE_CREATE_GROUP_TABLE);
+	        db.execSQL(DATABASE_CREATE_GROUP_CONTACT_RELATION);
 	        
 	        ContentValues initialPi = new ContentValues();
 	        initialPi.put(KEY_PI_ID, 1);

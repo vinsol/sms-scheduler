@@ -531,13 +531,16 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
+    	Intent intent;
+		switch (item.getItemId()) {
 	        case R.id.template_opt_menu:
-	        					Intent intent = new Intent(SmsSchedulerExplActivity.this, ManageTemplateActivity.class);
+	        					intent = new Intent(SmsSchedulerExplActivity.this, ManageTemplateActivity.class);
 	        					startActivity(intent);
 	                            break;
-	        case R.id.group_opt_menu:     Toast.makeText(this, "You pressed the groups menu", Toast.LENGTH_LONG).show();
-	                            break;
+	        case R.id.group_opt_menu:
+	                            intent = new Intent(SmsSchedulerExplActivity.this, ManageGroupsActivity.class);
+	                            startActivity(intent);
+	        					break;
 	    }
 	    return true;
 	}

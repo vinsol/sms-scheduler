@@ -9,7 +9,8 @@
     	android:id= "@+id/sent_details_dialog_number_list"
     	android:layout_height = "wrap_content"
     	android:layout_width = "fill_parent"
-    	android:layout_margin="5dp"/>
+    	android:layout_margin="5dp"
+    	/>
     
     <View 
     	android:layout_height = "3dp"

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical" >
+
+    <TextView 
+        android:id = "@+id/manage_groups_row_group_name"
+        android:layout_height = "wrap_content"
+        android:layout_width = "wrap_content"
+        android:textSize = "20sp"
+        android:layout_margin="15dp"
+        android:text="something"
+        />
+    
+    <RelativeLayout
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/manage_groups_row_group_delete_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@android:drawable/ic_delete" />
+        
+    </RelativeLayout>
+    
+
+</RelativeLayout>

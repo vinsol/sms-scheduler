@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView 
+        android:id = "@+id/contacts_list_label"
+        android:layout_height = "wrap_content"
+        android:layout_width = "fill_parent"
+        android:text = "Select Contacts"
+        android:gravity="center_horizontal"
+        android:textSize="20sp"/>
+    
+    <ListView 
+        android:id = "@+id/contacts_list_main_list"
+        android:layout_height = "wrap_content"
+        android:layout_width = "fill_parent"
+        android:layout_above="@+id/contact_list_main_buttons_layout"
+        android:layout_below="@id/contacts_list_label">
+        
+    </ListView>
+	
+    <LinearLayout
+        android:id = "@id/contact_list_main_buttons_layout"
+        android:layout_height = "wrap_content"
+        android:layout_width = "fill_parent"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        
+        <Button 
+            android:id = "@+id/contacts_list_layout_done_button"
+            android:layout_height = "wrap_content"
+            android:layout_width = "fill_parent"
+            android:layout_weight = "1"
+            android:layout_margin = "5dp"
+            android:text="Done"/>
+        
+        <Button 
+            android:id = "@+id/contacts_list_layout_cancel_button"
+            android:layout_height = "wrap_content"
+            android:layout_width = "fill_parent"
+            android:layout_weight = "1"
+            android:layout_marginRight = "5dp"
+            android:layout_marginTop = "5dp"
+            android:layout_marginBottom="5dp"
+            android:text="Cancel"/>
+        
+    </LinearLayout>
+        
+</RelativeLayout>

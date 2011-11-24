@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="56dp" >
+
+    <ImageView 
+        android:id = "@+id/contact_list_row_contact_pic"
+        android:layout_height = "40dp"
+        android:layout_width = "40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_margin = "10dp"
+        android:src="@drawable/contacts"/>
+    
+    <TextView 
+        android:id = "@+id/contact_list_row_contact_name"
+        android:layout_height = "wrap_content"
+        android:layout_width = "210dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/contact_list_row_contact_pic"
+        android:layout_margin="5dp"
+        android:text = "Achin"/>
+    
+    <TextView 
+        android:id = "@+id/contact_list_row_contact_number"
+        android:layout_height = "wrap_content"
+        android:layout_width = "210dp"
+        android:layout_toRightOf="@id/contact_list_row_contact_pic"
+        android:layout_below="@id/contact_list_row_contact_name"
+        android:layout_marginLeft = "5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:text = "9811173722"/>
+	
+    <LinearLayout 
+        android:layout_height = "fill_parent"
+        android:layout_width = "50dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_alignParentRight="true">
+        
+        <CheckBox
+            android:id = "@+id/contact_list_row_contact_check"
+            android:layout_height = "wrap_content"
+            android:layout_width = "wrap_content"
+            android:layout_gravity="center_vertical"/>
+        
+    </LinearLayout>
+</RelativeLayout>

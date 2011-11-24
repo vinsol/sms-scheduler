@@ -48,7 +48,7 @@ public class SentReceiver extends BroadcastReceiver{
                  
                  break;
              case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                 Toast.makeText(context, "Generic failure", 
+                 Toast.makeText(context, "Generic failure",
                          Toast.LENGTH_SHORT).show();
                  break;
              case SmsManager.RESULT_ERROR_NO_SERVICE:

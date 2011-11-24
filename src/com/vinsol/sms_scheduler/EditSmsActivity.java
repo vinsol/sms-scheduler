@@ -6,7 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -15,8 +16,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.Data;
+import android.provider.ContactsContract.PhoneLookup;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -33,6 +40,8 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -44,6 +53,10 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.TimePicker.OnTimeChangedListener;
+
+
+
+
 
 public class EditSmsActivity extends Activity {
 
@@ -78,13 +91,14 @@ public class EditSmsActivity extends Activity {
 	Calendar refCal = new GregorianCalendar();
 	Date processDate = new Date();
 	
+	ArrayList<Person> mContacts = new ArrayList<Person>();
+	ArrayList<Person> shortlist = new ArrayList<Person>();
+	
 	boolean smileyVisible = false;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	
-	int [] images = {R.drawable.icon, R.drawable.ic_btn_write_sms};
-	String [] smileys = {":-) ", ":-( "};
-	
+
 	long editedGroup;
 	
 	@Override
@@ -116,9 +130,13 @@ public class EditSmsActivity extends Activity {
 		processDate = new Date(intent.getLongExtra("TIME", 0));
 		editedGroup = intent.getLongExtra("GROUP", 0);
 		
+		mContacts = getContactList();
+		Toast.makeText(this, mContacts.size()+"", Toast.LENGTH_SHORT).show();
+		
 		setFunctionalities();
 		
-		
+		AutoCompleteAdapter myAutoCompleteAdapter = new AutoCompleteAdapter(this);
+		numbersText.setAdapter(myAutoCompleteAdapter);
 	}
 	
 	
@@ -296,10 +314,10 @@ public class EditSmsActivity extends Activity {
 				String beforeString = messageText.getText().toString().substring(0, cursorPos);
 				String afterString = messageText.getText().toString().substring(cursorPos, messageText.length());
 				if(cursorPos!=0){
-					messageText.setText(beforeString + " " + smileys[position] + afterString);
+					messageText.setText(beforeString + " " + NewScheduleActivity.smileys[position] + afterString);
 					messageText.setSelection(cursorPos + 5);
 				}else
-					messageText.setText(smileys[position] + afterString);
+					messageText.setText(NewScheduleActivity.smileys[position] + afterString);
 					messageText.setSelection(cursorPos + 4);
 				}
 		
@@ -433,7 +451,7 @@ public class EditSmsActivity extends Activity {
 	    }
 
 	    public int getCount() {
-	        return images.length;
+	        return NewScheduleActivity.images.length;
 	    }
 
 	    public Object getItem(int position) {
@@ -457,7 +475,7 @@ public class EditSmsActivity extends Activity {
 				imageView = (ImageView) convertView;
 			}
 			
-			imageView.setImageResource(images[position]);
+			imageView.setImageResource(NewScheduleActivity.images[position]);
 			return imageView;
 		}
 	} // ...End of ImageAdapter...
@@ -566,5 +584,205 @@ public class EditSmsActivity extends Activity {
     	alarmManager.set(AlarmManager.RTC_WAKEUP, time, pi);
     	Toast.makeText(this.getApplicationContext(), "Message Scheduled", Toast.LENGTH_SHORT).show();
 		
+	}
+	
+	
+	
+	
+	
+	public ArrayList<Person> getContactList(){
+		ArrayList<Person> contactList = new ArrayList<Person>();
+
+		Uri contactUri = ContactsContract.Contacts.CONTENT_URI;
+		String[] PROJECTION = new String[] {
+				ContactsContract.Contacts._ID,
+				ContactsContract.Contacts.DISPLAY_NAME,
+				ContactsContract.Contacts.HAS_PHONE_NUMBER,
+		};
+		String SELECTION = ContactsContract.Contacts.HAS_PHONE_NUMBER + "='1'";
+		Cursor contacts = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, SELECTION, null, null);
+
+
+		if (contacts.getCount() > 0)
+		{
+			while(contacts.moveToNext()) {
+				Person aContact = new Person();
+				int idFieldColumnIndex = 0;
+				int nameFieldColumnIndex = 0;
+				int numberFieldColumnIndex = 0;
+
+				String contactId = contacts.getString(contacts.getColumnIndex(ContactsContract.Contacts._ID));
+
+           	 	nameFieldColumnIndex = contacts.getColumnIndex(PhoneLookup.DISPLAY_NAME);
+           	 	if (nameFieldColumnIndex > -1)
+           	 	{
+           	 		aContact.setName(contacts.getString(nameFieldColumnIndex));
+           	 	}
+
+            	PROJECTION = new String[] {Phone.NUMBER};
+            	final Cursor phone = managedQuery(Phone.CONTENT_URI, PROJECTION, Data.CONTACT_ID + "=?", new String[]{String.valueOf(contactId)}, null);
+            	if(phone.moveToFirst()) {
+            		while(!phone.isAfterLast())
+            		{
+            			numberFieldColumnIndex = phone.getColumnIndex(Phone.NUMBER);
+            			if (numberFieldColumnIndex > -1)
+            			{
+            				aContact.setNumber(phone.getString(numberFieldColumnIndex));
+            				phone.moveToNext();
+                        	TelephonyManager mTelephonyMgr;
+                        	mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                        	if (!mTelephonyMgr.getLine1Number().contains(aContact.getNumber()))
+                        	{
+                        		contactList.add(aContact);
+                        	}
+            			}
+            		}
+            	}
+            	phone.close();
+			}
+
+			contacts.close();
+		}
+
+		return contactList;
+	}
+	
+	
+	
+	
+	
+	
+	
+//--------------------------Setting up the Autocomplete text-----------------------------// 
+	
+	public ArrayList<Person> shortlistContacts(CharSequence constraint){
+		String text = (String) constraint;
+		shortlist.clear();
+		Log.i("MESSAGE", "f : " + text);
+		Pattern p = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
+		for(int i = 0; i < mContacts.size(); i++){
+			Log.i("MESSAGE", mContacts.get(i).getName());
+			mContacts.get(i).personNumber = refineNumber(mContacts.get(i).getNumber());
+			Matcher m = p.matcher(mContacts.get(i).getName());
+			if(m.find()){
+				shortlist.add(mContacts.get(i));
+				Log.i("MESSAGE", "shortlist size fins : " + shortlist.size());
+			}
+			else
+			{
+				m = p.matcher(mContacts.get(i).getNumber());
+				if(m.find()){
+					shortlist.add(mContacts.get(i));
+					
+				}
+			}
+		}
+		Log.v("MESSAGE", "shortlist size : " + shortlist.size());
+		Log.v("YO", "Yo");
+		return shortlist;
+					
+	}
+	
+	
+	
+	
+	
+	
+	
+	//--------------------------Adapter for Autocomplete text----------------------------
+	class AutoCompleteAdapter extends ArrayAdapter<Person> implements Filterable{
+    	
+    	private ArrayList<Person> mData;
+    	
+		public AutoCompleteAdapter(Context context) {
+			super(context, android.R.layout.simple_dropdown_item_1line);
+			mData = new ArrayList<Person>();
+			mData.add(new Person("hi", "hi"));
+			Log.i("MSG", "into the adapter");
+		}
+			
+		@Override
+		public int getCount() {
+			return mData.size();
+		}
+		
+		@Override
+		public Person getItem(int position) {
+			return mData.get(position);
+		}
+		
+		
+		@Override
+		public Filter getFilter() {
+			Filter myFilter = new Filter(){
+			
+				
+				@Override
+				protected FilterResults performFiltering(CharSequence constraint) {
+					Log.i("MSG", "Into performing filter");
+					mData.clear();
+					FilterResults filterResults = new FilterResults();
+					mData = shortlistContacts(constraint);
+					Log.i("MSG", String.valueOf(mData.size()));
+					filterResults.values = mData;
+					filterResults.count = mData.size();
+					
+					return filterResults;
+				}
+
+				@Override
+				protected void publishResults(CharSequence constraints, FilterResults results) {
+					Log.i("MSG", "Into publish results");
+					if(results != null && results.count > 0) {
+						Log.i("MSG", results.count+"");
+		                notifyDataSetChanged();
+		            }else {
+		                notifyDataSetInvalidated();
+		            }
+					
+				}
+			};
+			
+			return myFilter;
+		}
+		
+		public View getView(int position, View convertView, ViewGroup parent){
+			
+			LayoutInflater inflater = getLayoutInflater();
+    		View row = inflater.inflate(R.layout.dropdown_row_layout, parent, false);
+			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
+			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
+			nameLabel.setText(shortlist.get(position).getName());
+			numberLabel.setText(shortlist.get(position).getNumber());
+			return row;
+		}
+	
+	}
+	
+	
+	
+	
+	public String refineNumber(String number){
+		if(number.matches("[0-9]+")){
+			return number;
+		}
+		ArrayList<Character> chars = new ArrayList<Character>();
+		for(int i = 0; i< number.length(); i++){
+			chars.add(number.charAt(i));
+		}
+		for(int i = 0; i< chars.size(); i++){
+			if(!(chars.get(i)=='0' || chars.get(i)=='1' || chars.get(i)=='2' || chars.get(i)=='3' || chars.get(i)=='4' ||
+					chars.get(i)=='5' || chars.get(i)=='6' || chars.get(i)=='7' || chars.get(i)=='8' || chars.get(i)=='9' || chars.get(i)=='+')){
+				chars.remove(i);
+				i--;
+			}
+		}
+		//if(number.matches("[0-9]{10}")){
+			number = new String();
+			for(int i = 0; i< chars.size(); i++){
+				number = number + chars.get(i);
+			}
+			return number;
+		//}
 	}
 }
