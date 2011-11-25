@@ -36,6 +36,7 @@ public class ContactsTabsActivity extends Activity {
 	
 	ArrayList<MyContact> selectedIds = new ArrayList<MyContact>();
 	
+	ArrayList<SpannedEntity> SpansTemp = new ArrayList<SpannedEntity>();
 	
 	
 	DBAdapter mdba = new DBAdapter(this);
@@ -55,11 +56,16 @@ public class ContactsTabsActivity extends Activity {
 		
 		Intent intent = getIntent();
 		idsString = intent.getStringArrayListExtra("IDSARRAY");
-		for(int i = 0; i< idsString.size(); i++){
-			ids.add(Long.parseLong(idsString.get(i)));
+		
+		for(int i = 0; i < NewScheduleActivity.Spans.size(); i++){
+			SpansTemp.add(NewScheduleActivity.Spans.get(i));
 		}
 		
-		Log.i("MSG", ids.size()+ "");
+//		for(int i = 0; i< idsString.size(); i++){
+//			ids.add(Long.parseLong(idsString.get(i)));
+//		}
+		
+		Log.i("MSG", NewScheduleActivity.Spans + "");
 		
 		//tabHost = (TabHost)findViewById(R.id.tabHost);
 		//tabHost.setup();
@@ -123,6 +129,12 @@ public class ContactsTabsActivity extends Activity {
 				intent.putExtra("IDSARRAY", idsString);
 				setResult(2, intent);
 				
+				NewScheduleActivity.Spans.clear();
+				for(int i = 0; i< SpansTemp.size(); i++){
+					NewScheduleActivity.Spans.add(SpansTemp.get(i));
+				}
+				
+				
 				ContactsTabsActivity.this.finish();
 			}
 		});
@@ -148,6 +160,11 @@ public class ContactsTabsActivity extends Activity {
 		Intent intent = new Intent();
 		intent.putExtra("IDSARRAY", idsString);
 		setResult(2, intent);
+		
+		NewScheduleActivity.Spans.clear();
+		for(int i = 0; i< SpansTemp.size(); i++){
+			NewScheduleActivity.Spans.add(SpansTemp.get(i));
+		}
 		
 		ContactsTabsActivity.this.finish();
 	}
@@ -178,11 +195,9 @@ public class ContactsTabsActivity extends Activity {
     		nameText.setText(SplashActivity.contactsList.get(position).name);
     		numberText.setText(SplashActivity.contactsList.get(position).number);
     		
-    		for(int i = 0; i< ids.size(); i++){
-    			if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == ids.get(i)){
+    		for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
+    			if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
     				contactCheck.setChecked(true);
-    			}else{
-    				contactCheck.setChecked(false);
     			}
     		}
     		contactCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -190,11 +205,12 @@ public class ContactsTabsActivity extends Activity {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
-						ids.add(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id));
+						SpannedEntity span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(_position).name, Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id), -1);
+						NewScheduleActivity.Spans.add(span);
 					}else{
-						for(int i = 0; i< ids.size(); i++){
-			    			if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == ids.get(i)){
-			    				ids.remove(i);
+						for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
+			    			if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
+			    				NewScheduleActivity.Spans.remove(i);
 			    			}
 			    		}
 					}

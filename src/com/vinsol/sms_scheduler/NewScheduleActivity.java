@@ -79,7 +79,7 @@ public class NewScheduleActivity extends Activity {
 	ArrayList<String> templatesArray = new ArrayList<String>();
 	
 	//---------------------------------------------------------------
-	ArrayList<SpannedEntity> Spans = new ArrayList<SpannedEntity>();
+	static ArrayList<SpannedEntity> Spans = new ArrayList<SpannedEntity>();
 	private SpannableStringBuilder ssb = new SpannableStringBuilder();
 	private int spanStartPosition = 0;
 	private ArrayList<ClickableSpan> clickableSpanArrayList = new ArrayList<ClickableSpan>();
@@ -210,37 +210,9 @@ public class NewScheduleActivity extends Activity {
 				final SpannedEntity span = new SpannedEntity(-1, 2, shortlist.get(position).name, Long.parseLong(shortlist.get(position).content_uri_id), -1);
 				Spans.add(span);
 				
-				clickableSpanArrayList.add(new ClickableSpan() {
-					
-					@Override
-					public void onClick(View widget) {
-						for(int i = 0; i< Spans.size(); i++){
-							if(Spans.get(i).entityId == span.entityId){
-								Spans.remove(i);
-								refreshSpannableString();
-								break;
-							}
-						}
-					}
-					
-					@Override
-					public void updateDrawState(TextPaint ds) {
-						super.updateDrawState(ds);
-						ds.bgColor = 0Xffb2d6d7;
-	    				ds.setUnderlineText(false);
-					}
-				});
+				refreshSpannableString();
 				
-	    		ssb.append(span.displayName + ", ");
-	    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (span.displayName.length())), 0);
-	    		spanStartPosition += span.displayName.length() + 2;
-				
-				numbersText.setText(ssb);
-				
-				// make sure we keep the caret at the end of the text view
-		        Editable spannable = numbersText.getText();
-		        //Selection.setSelection(spannable, spannable.length());
-				numbersText.setSelection(spanStartPosition);
+
 			}
 		});
 		
@@ -662,18 +634,34 @@ public class NewScheduleActivity extends Activity {
 		String dateString = sdf.format(cal.getTime());
 		mdba.open();
 		long groupId = mdba.getNextGroupId();
-		String[] numbers = numbersText.getText().toString().split(",(' ')*");
-		if(!(messageText.getText().toString().matches("(''|(' ')+)"))){
-		for(int i = 0; i< numbers.length; i++){
-			long received_id = mdba.scheduleSms(numbers[i], messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-			if(mdba.getCurrentPiFiretime() == -1){
-				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
-			}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
+		//String[] numbers = numbersText.getText().toString().split(",(' ')*");
+		ArrayList<String> numbers = new ArrayList<String>();
+		mdba.open();
+		for(int i = 0; i< Spans.size(); i++){
+			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
+				if(Spans.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+					numbers.add(SplashActivity.contactsList.get(j).number);
+					long received_id = mdba.scheduleSms(SplashActivity.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
+					if(mdba.getCurrentPiFiretime() == -1){
+						handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+						handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+					}
+					//Spans.get(i).smsId = rece
+				}
 			}
 		}
-		}
 		mdba.close();
+//		if(!(messageText.getText().toString().matches("(''|(' ')+)"))){
+//		for(int i = 0; i< numbers.length; i++){
+//			
+//			if(mdba.getCurrentPiFiretime() == -1){
+//				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
+//			}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+//				handlePiUpdate(numbers[i], groupId, received_id, cal.getTimeInMillis());
+//			}
+//		}
+//		}
 	}
 	
 	
@@ -728,62 +716,8 @@ public class NewScheduleActivity extends Activity {
         
         else if(resultCode == 2){
         	idsString.clear();
-        	ArrayList<String> idsStringTemp = data.getStringArrayListExtra("IDSARRAY");
-        	for (int i = 0; i < idsStringTemp.size(); i++) {
-				idsString.add(idsStringTemp.get(i));
-			}
-        	ids.clear();
-        	for(int i = 0; i< idsString.size(); i++){
-        		ids.add(Long.parseLong(idsString.get(i)));
-        		for(int j = 0; j< SplashActivity.contactsList.size(); j++){
-        			if(SplashActivity.contactsList.get(j).content_uri_id.equals(idsString.get(i))){
-        				boolean absent = true;
-        				for(int k = 0; k< Spans.size(); k++){
-        					if(Spans.get(k).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
-        						absent = false;
-        						break;
-        					}
-        				}
-        				if(absent){
-        					final SpannedEntity span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(j).name, Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id), -1);
-        					Spans.add(span);
-        				
-        					clickableSpanArrayList.add(new ClickableSpan() {
-        					
-        						@Override
-        						public void onClick(View widget) {
-        							for(int i = 0; i< Spans.size(); i++){
-        								if(Spans.get(i).entityId == span.entityId){
-        									Spans.remove(i);
-        									refreshSpannableString();
-        									break;
-        								}
-        							}
-        						}
-        					
-        						@Override
-        						public void updateDrawState(TextPaint ds) {
-        							super.updateDrawState(ds);
-        							ds.bgColor = 0Xffb2d6d7;
-        							ds.setUnderlineText(false);
-        						}
-        					});
-        				
-        					ssb.append(span.displayName + ", ");
-        					ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (span.displayName.length())), 0);
-        					spanStartPosition += span.displayName.length() + 2;
-        				
-        					numbersText.setText(ssb);
-        				
-        					// make sure we keep the caret at the end of the text view
-        					Editable spannable = numbersText.getText();
-        					//Selection.setSelection(spannable, spannable.length());
-        					numbersText.setSelection(spanStartPosition);
-        				}
-        			}
-        		}
-        		
-        	}
+        	refreshSpannableString();
+
         }
 
         super.onActivityResult(requestCode, resultCode, data);
