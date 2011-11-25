@@ -67,7 +67,6 @@ public class SplashActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
-			Toast.makeText(SplashActivity.this, "Data Loaded", Toast.LENGTH_SHORT).show();
 			Intent intent = new Intent(SplashActivity.this, SmsSchedulerExplActivity.class);
 			SplashActivity.this.finish();
 			startActivity(intent);

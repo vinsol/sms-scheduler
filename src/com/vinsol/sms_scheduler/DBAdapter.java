@@ -31,6 +31,7 @@ public class DBAdapter{
 	private static final String DATABASE_TEMPLATE_TABLE = "templateTable";
 	private static final String DATABASE_GROUP_TABLE = "groupTable";
 	private static final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
+	private static final String DATABASE_SPANS_TABLE = "spanTable";
 	private static final int DATABASE_VERSION = 1;
 	
 	Cursor cur;
@@ -74,6 +75,13 @@ public class DBAdapter{
 	public static final String KEY_GROUP_REL_ID = "group_rel_id";
 	public static final String KEY_CONTACTS_ID = "contacts_id";
 	
+	//-----------------keys for spans table----------------------------
+	public static final String KEY_SPAN_ID = "_id";
+	public static final String KEY_SPAN_DN = "span_display_name";
+	public static final String KEY_SPAN_TYPE = "span_type";
+	public static final String KEY_SPAN_ENTITY_ID = "span_entity_id";
+	public static final String KEY_SPAN_SMS_ID = "span_sms_id";
+	
 	//------------------------------------------------------------------end of static keys defs-------
 	
 	
@@ -104,6 +112,12 @@ public class DBAdapter{
 	private static final String DATABASE_CREATE_GROUP_CONTACT_RELATION = "create table " +
 	DATABASE_GROUP_CONTACT_RELATION + " (" + KEY_RELATION_ID + " integer primary key autoincrement, " +
 	KEY_GROUP_REL_ID + " integer, " + KEY_CONTACTS_ID + " integer);";
+	
+	
+	private static final String DATABASE_CREATE_SPANS_TABLE =  "create table " + 
+		DATABASE_SPANS_TABLE + " (" + KEY_SPAN_ID + " integer primary key autoincrement, " +
+		KEY_SPAN_DN + " text, " + KEY_SPAN_TYPE + " integer, " + KEY_SPAN_ENTITY_ID + " integer, " +
+		KEY_SPAN_SMS_ID + " integer);";
 	
 	
 	private SQLiteDatabase db;
@@ -602,6 +616,33 @@ public class DBAdapter{
 	//---------------------------------------------------------------end of functions for group table---------------------
 	
 	
+	//---------------------------functions related to spans table---------------------------------
+	public Cursor fetchSpansForSms(long smsId){
+		Cursor cur = db.query(DATABASE_SPANS_TABLE, null, KEY_SPAN_SMS_ID + "=" + smsId, null, null, null, null);
+		return cur;
+	}
+	
+	public long createSpan(String displayName, long entityId, int type, long smsId){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_SPAN_DN, displayName);
+		cv.put(KEY_SPAN_ENTITY_ID, entityId);
+		cv.put(KEY_SPAN_TYPE, type);
+		cv.put(KEY_SPAN_SMS_ID, smsId);
+		
+		long spanId = db.insert(DATABASE_SPANS_TABLE, null, cv);
+		return spanId;
+	}
+	
+	public void deleteSpan(long smsId, long entityId, int type){
+		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_SMS_ID + "=" + smsId + " AND " + KEY_SPAN_ENTITY_ID + "=" + entityId + " AND " + KEY_SPAN_TYPE + "=" + type, null);
+	}
+	
+	
+	public void deleteSpan(long spanId){
+		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_ID + "=" + spanId, null);
+	}
+	//---------------------------------------------------------------end of functions for spans table--------------
+	
 	
 	public class MyOpenHelper extends SQLiteOpenHelper{
 		
@@ -616,6 +657,7 @@ public class DBAdapter{
 	        db.execSQL(DATABASE_CREATE_PI_TABLE);
 	        db.execSQL(DATABASE_CREATE_GROUP_TABLE);
 	        db.execSQL(DATABASE_CREATE_GROUP_CONTACT_RELATION);
+	        db.execSQL(DATABASE_CREATE_SPANS_TABLE);
 	        
 	        ContentValues initialPi = new ContentValues();
 	        initialPi.put(KEY_PI_ID, 1);

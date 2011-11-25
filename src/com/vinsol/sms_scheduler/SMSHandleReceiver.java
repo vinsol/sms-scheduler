@@ -77,7 +77,11 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			deliverIntents.add(pideliver);
 		}
 		Log.i("MSG", "Before");
-		smsManager.sendMultipartTextMessage(number, null, parts, sentIntents, deliverIntents);
+		try{
+			smsManager.sendMultipartTextMessage(number, null, parts, sentIntents, deliverIntents);
+		}catch(IllegalArgumentException iae){
+			
+		}
 		Log.i("MSG", "After");
 		
 		

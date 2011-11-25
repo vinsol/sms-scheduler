@@ -4,9 +4,10 @@
     android:layout_height = "fill_parent"
     android:layout_width = "fill_parent">
     
-	<TabHost android:layout_width="fill_parent"
+<!--	<TabHost android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:id="@+id/tabHost">
+    android:id="@+id/tabHost"
+    android:layout_above="@+id/contacts_tabs_buttons_layout">
     
     <TabWidget
     	android:layout_width="fill_parent"
@@ -16,14 +17,15 @@
     <FrameLayout
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:id="@android:id/tabcontent">
+    	android:id="@android:id/tabcontent"> -->
      
      	<LinearLayout
      		android:layout_width="fill_parent"
     		android:layout_height="wrap_content"
     		android:id="@+id/contacts_tab"
     		android:orientation="vertical"
-    		android:paddingTop="60px">
+    		android:paddingTop="60px"
+    		android:layout_above="@+id/contacts_tabs_buttons_layout">
     		
      		<ListView
      		    android:id = "@+id/contacts_tabs_native_contacts_list"
@@ -32,7 +34,7 @@
 
      	</LinearLayout>
 
-     	<LinearLayout
+<!--      	<LinearLayout
      		android:layout_width="fill_parent"
    	 		android:layout_height="fill_parent"
     		android:id="@+id/private_groups_tab"
@@ -49,9 +51,10 @@
       
   	</FrameLayout>
 
-	</TabHost>
+	</TabHost>  -->
 	
 	<LinearLayout
+	    android:id = "@id/contacts_tabs_buttons_layout"
 	    android:layout_height = "wrap_content"
 	    android:layout_width = "fill_parent"
 	    android:orientation="horizontal"

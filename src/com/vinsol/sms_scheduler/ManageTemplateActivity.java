@@ -76,14 +76,29 @@ public class ManageTemplateActivity extends Activity{
 					Toast.makeText(ManageTemplateActivity.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
 				}else{
 					mdba.open();
-					long newId = mdba.addTemplate(newTemplateBody.getText().toString());
-					mdba.close();
-					templatesArray.add(newTemplateBody.getText().toString());
-					templatesIdArray.add(newId);
-					loadData();
-					templatesList.setAdapter(new MyAdapter());
-					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-					Toast.makeText(ManageTemplateActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+					Cursor cur = mdba.fetchAllTemplates();
+					boolean z = true;
+					if(cur.moveToFirst()){
+						do{
+							if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)).equals(newTemplateBody.getText().toString())){
+								z = false;
+								break;
+							}
+						}while(cur.moveToNext());
+					}
+					if(!z){
+						Toast.makeText(ManageTemplateActivity.this, "Template already exists", Toast.LENGTH_SHORT).show();
+					}else{
+						mdba.open();
+						long newId = mdba.addTemplate(newTemplateBody.getText().toString());
+						mdba.close();
+//						templatesArray.add(newTemplateBody.getText().toString());
+//						templatesIdArray.add(newId);
+						loadData();
+						templatesList.setAdapter(new MyAdapter());
+						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
+						Toast.makeText(ManageTemplateActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+					}
 				}
 			}
 		});
@@ -110,6 +125,7 @@ public class ManageTemplateActivity extends Activity{
 		mdba.close();
 		
 		templatesArray.clear();
+		templatesIdArray.clear();
 		if(cur.moveToFirst()){
 			do{
 				templatesArray.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
@@ -146,15 +162,14 @@ public class ManageTemplateActivity extends Activity{
 				
 				@Override
 				public void onClick(View v) {
+					Log.i("MSG", templatesIdArray.get(position) + "");
+					Log.i("MSG", position + "");
 					mdba.open();
 					mdba.removeTemplate(templatesIdArray.get(position));
 					mdba.close();
-					//templatesArray.clear();
-					//templatesIdArray.clear();
 					loadData();
 					mAdapter = new MyAdapter();
 					templatesList.setAdapter(mAdapter);
-					//mAdapter.notifyDataSetChanged();
 				}
 			});
     		return row;

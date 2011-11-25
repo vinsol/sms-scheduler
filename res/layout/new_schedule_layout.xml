@@ -71,9 +71,9 @@
 		    		android:id = "@+id/new_numbers_text"
 		    		android:layout_width = "fill_parent"
 		    		android:layout_height = "wrap_content"
-		    		android:hint="To"
+		    		android:hint="Recipients"
 		    		android:minLines="2"
-		    		android:maxLines="2"
+		    		
 		    		android:gravity="top"
 		    		android:layout_toLeftOf="@+id/new_add_from_contact_imgbutton"
 		    		>

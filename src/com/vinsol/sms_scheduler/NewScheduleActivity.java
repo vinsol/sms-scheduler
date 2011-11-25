@@ -22,7 +22,12 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.Editable;
+import android.text.Selection;
+import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +57,7 @@ import android.widget.Toast;
 public class NewScheduleActivity extends Activity {
 	
 	//---------References to the widgets-----------------
-	AutoCompleteTextView 	numbersText;
+	static AutoCompleteTextView 	numbersText;
 	ImageButton 			addFromContactsImgButton;
 	Button 					dateButton;
 	TextView 				characterCountText;
@@ -73,6 +78,13 @@ public class NewScheduleActivity extends Activity {
 	ArrayList<String> parts = new ArrayList<String>();
 	ArrayList<String> templatesArray = new ArrayList<String>();
 	
+	//---------------------------------------------------------------
+	ArrayList<SpannedEntity> Spans = new ArrayList<SpannedEntity>();
+	private SpannableStringBuilder ssb = new SpannableStringBuilder();
+	private int spanStartPosition = 0;
+	private ArrayList<ClickableSpan> clickableSpanArrayList = new ArrayList<ClickableSpan>();
+	//--------------------------------------------------------------------
+	
 	DBAdapter mdba = new DBAdapter(NewScheduleActivity.this);
 	
 	Dialog dateSelectDialog;
@@ -89,10 +101,13 @@ public class NewScheduleActivity extends Activity {
 	
 	boolean smileyVisible = false;
 	
+	static int positionTrack;
+	
 	static ArrayList<SpannedEntity> spannables = new ArrayList<SpannedEntity>();
 	
 	
 	ArrayList<Long> ids = new ArrayList<Long>();
+	ArrayList<String> idsString = new ArrayList<String>();
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	
@@ -146,7 +161,6 @@ public class NewScheduleActivity extends Activity {
 		  new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
 		if (activities.size() == 0) {
 		  speechImageButton.setEnabled(false);
-		  Toast.makeText(this, "Tragedy!", Toast.LENGTH_SHORT).show();
 		}
 		//---------------------------------------------------------------------
 		
@@ -166,14 +180,74 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(NewScheduleActivity.this, ContactsTabsActivity.class);
-				ArrayList<String> idsString = new ArrayList<String>();
-				for(int i = 0; i<ids.size(); i++){
-					idsString.add(String.valueOf(ids.get(i)));
-				}
 				intent.putExtra("IDSARRAY", idsString);
 				startActivityForResult(intent, 2);
 			}
 		});
+		
+		
+		
+		
+		
+		
+		
+		numbersText.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				numbersText.setSelection(spanStartPosition);
+			}
+		});
+		
+		
+		numbersText.setLongClickable(false);
+		numbersText.setMovementMethod(LinkMovementMethod.getInstance());
+		
+		numbersText.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				final SpannedEntity span = new SpannedEntity(-1, 2, shortlist.get(position).name, Long.parseLong(shortlist.get(position).content_uri_id), -1);
+				Spans.add(span);
+				
+				clickableSpanArrayList.add(new ClickableSpan() {
+					
+					@Override
+					public void onClick(View widget) {
+						for(int i = 0; i< Spans.size(); i++){
+							if(Spans.get(i).entityId == span.entityId){
+								Spans.remove(i);
+								refreshSpannableString();
+								break;
+							}
+						}
+					}
+					
+					@Override
+					public void updateDrawState(TextPaint ds) {
+						super.updateDrawState(ds);
+						ds.bgColor = 0Xffb2d6d7;
+	    				ds.setUnderlineText(false);
+					}
+				});
+				
+	    		ssb.append(span.displayName + ", ");
+	    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (span.displayName.length())), 0);
+	    		spanStartPosition += span.displayName.length() + 2;
+				
+				numbersText.setText(ssb);
+				
+				// make sure we keep the caret at the end of the text view
+		        Editable spannable = numbersText.getText();
+		        //Selection.setSelection(spannable, spannable.length());
+				numbersText.setSelection(spanStartPosition);
+			}
+		});
+		
+		
+		
+		
+		
 		
 		
 		//------------Date Select Button set to current date--------------------
@@ -245,8 +319,6 @@ public class NewScheduleActivity extends Activity {
 							String temp = sdf.format(new Date(processDate.getYear(), processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes()));
 							dateButton.setText(temp);
 						}else{
-//							Toast.makeText(NewScheduleActivity.this, "Invalid Date", Toast.LENGTH_SHORT).show();
-//							dateLabel.setBackgroundColor(Color.rgb(180, 0, 0));
 							processDate = refDate;
 							dateSelectDialog.cancel();
 							String temp = sdf.format(new Date(processDate.getYear(), processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes()));
@@ -330,7 +402,7 @@ public class NewScheduleActivity extends Activity {
 				String afterString = messageText.getText().toString().substring(cursorPos, messageText.length());
 				if(cursorPos!=0){
 					messageText.setText(beforeString + " " + smileys[position] + afterString);
-					messageText.setSelection(cursorPos + smileys[position].length());
+					messageText.setSelection(cursorPos + smileys[position].length() + 1);
 				}else
 					messageText.setText(smileys[position] + afterString);
 					messageText.setSelection(cursorPos + smileys[position].length());
@@ -408,13 +480,32 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				mdba.open();
-				if(mdba.addTemplate(messageText.getText().toString()) > 0){
-					Toast.makeText(NewScheduleActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+				if(messageText.getText().toString().matches("(''|[' ']*)")){
+					Toast.makeText(NewScheduleActivity.this, "Text is blank. Couldn't add it as Template", Toast.LENGTH_SHORT).show();
 				}else{
-					Toast.makeText(NewScheduleActivity.this, "Template couldn't be added", Toast.LENGTH_SHORT).show();
+					mdba.open();
+					Cursor cur = mdba.fetchAllTemplates();
+					boolean z = true;
+					if(cur.moveToFirst()){
+						do{
+							if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)).equals(messageText.getText().toString())){
+								z = false;
+								break;
+							}
+						}while(cur.moveToNext());
+					}
+					if(z){
+						if(mdba.addTemplate(messageText.getText().toString()) > 0){
+							Toast.makeText(NewScheduleActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+						}else{
+							Toast.makeText(NewScheduleActivity.this, "Template couldn't be added", Toast.LENGTH_SHORT).show();
+						}
+						mdba.close();
+					}else{
+						Toast.makeText(NewScheduleActivity.this, "Template already exists", Toast.LENGTH_SHORT).show();
+					}
+					
 				}
-				mdba.close();
 			}
 		});
 		
@@ -425,7 +516,7 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				if(numbersText.getText().toString().matches("(''|(' ')+)")){
+				if(numbersText.getText().toString().matches("(''|[' ']*)")){
 					Toast.makeText(NewScheduleActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
 					numbersText.requestFocus();
 				}else{
@@ -437,6 +528,20 @@ public class NewScheduleActivity extends Activity {
 			NewScheduleActivity.this.finish();
 			}
 		});
+		
+		
+		
+		
+		
+		//--------------------------functionality for Cancel Button--------------------------
+		cancelButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				NewScheduleActivity.this.finish();
+			}
+		});
+		
 	}
 	
 	
@@ -622,24 +727,63 @@ public class NewScheduleActivity extends Activity {
         }
         
         else if(resultCode == 2){
-        	ArrayList<String> idsString = new ArrayList<String>();
-        	idsString = data.getStringArrayListExtra("IDSARRAY");
+        	idsString.clear();
+        	ArrayList<String> idsStringTemp = data.getStringArrayListExtra("IDSARRAY");
+        	for (int i = 0; i < idsStringTemp.size(); i++) {
+				idsString.add(idsStringTemp.get(i));
+			}
         	ids.clear();
-        	String str = "";
         	for(int i = 0; i< idsString.size(); i++){
         		ids.add(Long.parseLong(idsString.get(i)));
         		for(int j = 0; j< SplashActivity.contactsList.size(); j++){
         			if(SplashActivity.contactsList.get(j).content_uri_id.equals(idsString.get(i))){
-        				str = str + refineNumber(SplashActivity.contactsList.get(j).number);
-                		if(i < idsString.size()-1){
-                			str = str + ", ";
-                		}
+        				boolean absent = true;
+        				for(int k = 0; k< Spans.size(); k++){
+        					if(Spans.get(k).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+        						absent = false;
+        						break;
+        					}
+        				}
+        				if(absent){
+        					final SpannedEntity span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(j).name, Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id), -1);
+        					Spans.add(span);
+        				
+        					clickableSpanArrayList.add(new ClickableSpan() {
+        					
+        						@Override
+        						public void onClick(View widget) {
+        							for(int i = 0; i< Spans.size(); i++){
+        								if(Spans.get(i).entityId == span.entityId){
+        									Spans.remove(i);
+        									refreshSpannableString();
+        									break;
+        								}
+        							}
+        						}
+        					
+        						@Override
+        						public void updateDrawState(TextPaint ds) {
+        							super.updateDrawState(ds);
+        							ds.bgColor = 0Xffb2d6d7;
+        							ds.setUnderlineText(false);
+        						}
+        					});
+        				
+        					ssb.append(span.displayName + ", ");
+        					ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (span.displayName.length())), 0);
+        					spanStartPosition += span.displayName.length() + 2;
+        				
+        					numbersText.setText(ssb);
+        				
+        					// make sure we keep the caret at the end of the text view
+        					Editable spannable = numbersText.getText();
+        					//Selection.setSelection(spannable, spannable.length());
+        					numbersText.setSelection(spanStartPosition);
+        				}
         			}
         		}
         		
         	}
-        	
-        	numbersText.setText(str);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -656,7 +800,20 @@ public class NewScheduleActivity extends Activity {
 		String text = (String) constraint;
 		shortlist.clear();
 		Log.i("MESSAGE", "f : " + text);
-		Pattern p = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
+		
+		positionTrack = 0;
+		
+		for(int i = 0; i< text.length(); i++){
+			if(text.charAt(i) == ','){
+				if(text.charAt(i+1) == ' '){
+					positionTrack = i+2;
+				}
+			}
+		}
+		
+		String text2 = text.substring(positionTrack, text.length());
+		
+		Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
 		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
 			Log.i("MESSAGE", SplashActivity.contactsList.get(i).name);
 			SplashActivity.contactsList.get(i).number = refineNumber(SplashActivity.contactsList.get(i).number);
@@ -779,6 +936,55 @@ public class NewScheduleActivity extends Activity {
 			}
 			return number;
 		//}
+	}
+	
+	
+	
+	
+	public void refreshSpannableString(){
+		ssb = new SpannableStringBuilder();
+		clickableSpanArrayList = new ArrayList<ClickableSpan>();
+		spanStartPosition = 0;
+		numbersText.setText("");
+			
+		
+		for(int i = 0; i< Spans.size(); i++){
+			final int _i = i;
+		
+			
+			
+			clickableSpanArrayList.add(new ClickableSpan() {
+				
+				@Override
+				public void onClick(View widget) {
+					for(int j = 0; j< Spans.size(); j++){
+						if(Spans.get(_i).entityId == Spans.get(j).entityId){
+							Spans.remove(_i);
+							refreshSpannableString();
+							break;
+						}
+					}
+				}
+			
+				@Override
+				public void updateDrawState(TextPaint ds) {
+					super.updateDrawState(ds);
+					ds.bgColor = 0Xffb2d6d7;
+					ds.setUnderlineText(false);
+				}
+			});
+			
+    		ssb.append(Spans.get(i).displayName + ", ");
+    		Log.i("MSG", "spanStartPosition : " + spanStartPosition + " " + Spans.get(i).displayName);
+    		
+    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), 0);
+    		spanStartPosition += Spans.get(i).displayName.length() + 2;
+			
+			numbersText.setText(ssb);
+			
+			
+			numbersText.setSelection(spanStartPosition);
+		}
 	}
 	
 }

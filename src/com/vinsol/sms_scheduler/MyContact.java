@@ -1,6 +1,7 @@
 package com.vinsol.sms_scheduler;
 
 import android.graphics.Bitmap;
+import android.text.SpannableStringBuilder;
 
 public class MyContact {
 
@@ -16,6 +17,7 @@ public class MyContact {
 	
 	@Override
 	public String toString() {
-		return this.number + ", ";
+		return NewScheduleActivity.numbersText.getText().toString().substring(0, NewScheduleActivity.positionTrack) + this.number;
+		
 	}
 }
