@@ -17,7 +17,7 @@ public class MyContact {
 	
 	@Override
 	public String toString() {
-		return NewScheduleActivity.numbersText.getText().toString().substring(0, NewScheduleActivity.positionTrack) + this.number;
+		return "";//NewScheduleActivity.numbersText.getText().toString().substring(0, NewScheduleActivity.positionTrack) + this.number;
 		
 	}
 }

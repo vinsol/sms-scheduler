@@ -310,10 +310,8 @@ public class DBAdapter{
 	
 	
 	public void deleteSms(long id, Context context){
-		Log.i("MESSAGE", "==================== From Deletesms().....Id :" + id);
-		Log.i("MESSAGE", "==================== From Deletesms().....Id in PiTable :" + getCurrentPiId());
+		Log.i("MSG", "Id to be deleted : " + id);
 		if(getCurrentPiId()==id){
-			Log.i("MESSAGE", "==================== From Deletesms()");
 			Cursor cur = getPiDetails();
 			cur.moveToFirst();
 			
@@ -321,32 +319,40 @@ public class DBAdapter{
 			intent.setAction(PRIVATE_SMS_ACTION);
 			PendingIntent pi = PendingIntent.getBroadcast(context, cur.getInt(cur.getColumnIndex(KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 			pi.cancel();
+			Log.i("MSG", "before1");
+			deleteSpan(id);
+			Log.i("MSG", "before2");
 			db.delete(DATABASE_SMS_TABLE, KEY_ID + "=" + id, null);
+			Log.i("MSG", "before");
 			Cursor cur2 = fetchRemainingScheduled();
+			Log.i("MSG", "cursor2 size : " + cur2.getCount());
 			if(cur2.moveToFirst()){
-				Log.i("MESSAGE", "==================== From Deletesms().....more msgs found");
+				Log.i("MSG", "cursor2 size : " + cur2.getCount());
 				intent.setAction(PRIVATE_SMS_ACTION);
 				intent.putExtra("ID", cur2.getString(cur2.getColumnIndex(KEY_ID)));
 				intent.putExtra("NUMBER", cur2.getString(cur2.getColumnIndex(KEY_NUMBER)));
 				intent.putExtra("MESSAGE", cur2.getString(cur2.getColumnIndex(KEY_MESSAGE)));
 				
+				Log.i("MSG", "next sms id : " + cur2.getString(cur2.getColumnIndex(KEY_ID)));
+				
+				
+				
 				Random rand = new Random();
 				int piNumber = rand.nextInt();
 				pi = PendingIntent.getBroadcast(context, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-				updatePi(piNumber, cur2.getLong(cur2.getColumnIndex(KEY_GRPID)), cur2.getLong(cur2.getColumnIndex(KEY_TIME_MILLIS)));
+				updatePi(piNumber, cur2.getLong(cur2.getColumnIndex(KEY_ID)), cur2.getLong(cur2.getColumnIndex(KEY_TIME_MILLIS)));
 				
 				AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
 		    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur2.getLong(cur2.getColumnIndex(KEY_TIME_MILLIS)), pi);
 			}else{
-				Log.i("MESSAGE", "==================== From Deletesms()..... no more msgs found");
 				updatePi(0, -1, -1);
 			}
 			
-			
 		}else{
+			deleteSpan(id);
 			db.delete(DATABASE_SMS_TABLE, KEY_ID + "=" + id, null);
 		}
-		
+		Log.i("MSG", "pi sms id : " + getCurrentPiId());
 	}
 	
 	
@@ -617,8 +623,10 @@ public class DBAdapter{
 	
 	
 	//---------------------------functions related to spans table---------------------------------
-	public Cursor fetchSpansForSms(long smsId){
+	public Cursor fetchSpanForSms(long smsId){
+		Log.i("MSG", "smsId in fetchspan dba : " + smsId);
 		Cursor cur = db.query(DATABASE_SPANS_TABLE, null, KEY_SPAN_SMS_ID + "=" + smsId, null, null, null, null);
+		Log.i("MSG", "cursor length : " + cur.getCount());
 		return cur;
 	}
 	
@@ -633,14 +641,14 @@ public class DBAdapter{
 		return spanId;
 	}
 	
-	public void deleteSpan(long smsId, long entityId, int type){
-		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_SMS_ID + "=" + smsId + " AND " + KEY_SPAN_ENTITY_ID + "=" + entityId + " AND " + KEY_SPAN_TYPE + "=" + type, null);
+	public void deleteSpan(long smsId){
+		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_SMS_ID + "=" + smsId, null);
 	}
 	
 	
-	public void deleteSpan(long spanId){
-		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_ID + "=" + spanId, null);
-	}
+//	public void deleteSpan(long spanId){
+//		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_ID + "=" + spanId, null);
+//	}
 	//---------------------------------------------------------------end of functions for spans table--------------
 	
 	

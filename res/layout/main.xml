@@ -43,13 +43,34 @@
 		</ImageButton>
 	</RelativeLayout>
 	
-	<ExpandableListView 
-		android:id = "@+id/main_expandable_list"
-		android:layout_height = "fill_parent"
-		android:layout_width = "fill_parent"
-		android:background="@drawable/bg"
-		android:cacheColorHint="@color/transparent"
-		android:groupIndicator="@drawable/expander_group"
-		>
-	</ExpandableListView>
+	<LinearLayout 
+	    android:id = "@+id/expanded_list_layout"
+	    android:layout_height = "fill_parent"
+	    android:layout_width = "fill_parent">
+	    
+	    <ExpandableListView 
+			android:id = "@+id/main_expandable_list"
+			android:layout_height = "fill_parent"
+			android:layout_width = "fill_parent"
+			android:background="@drawable/bg"
+			android:cacheColorHint="@color/transparent"
+			android:groupIndicator="@drawable/expander_group">
+		</ExpandableListView>
+	    
+	</LinearLayout>
+	
+	<LinearLayout
+	    android:id = "@+id/blank_list_layout"
+	    android:layout_height = "fill_parent"
+	    android:layout_width = "fill_parent">
+	    
+	    <Button 
+	        android:id = "@+id/blank_list_add_button"
+	        android:layout_height = "fill_parent"
+	        android:layout_width = "fill_parent"
+	        android:text = "No SMS scheduled\nTap to Schedule an SMS"/>
+	    
+	</LinearLayout>
+	    
+	
 </LinearLayout>

@@ -25,11 +25,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
@@ -44,6 +46,11 @@ public class SmsSchedulerExplActivity extends Activity {
 	ExpandableListView 		explList;
 	ImageButton				newSmsButton;
 	ImageButton				optionsImageButton;
+	
+	LinearLayout explListLayout;
+	LinearLayout blankListLayout;
+	
+	Button blankListAddButton;
 	
 	SimpleExpandableListAdapter mAdapter;
 	private ArrayList<HashMap<String, String>> headerData;
@@ -97,7 +104,13 @@ public class SmsSchedulerExplActivity extends Activity {
         newSmsButton 		= (ImageButton) findViewById(R.id.main_new_sms_imgbutton);
         explList 	 		= (ExpandableListView) findViewById(R.id.main_expandable_list);
         optionsImageButton 	= (ImageButton) findViewById(R.id.main_options_menu_imgbutton);
+        explListLayout		= (LinearLayout) findViewById(R.id.expanded_list_layout);
+        blankListLayout		= (LinearLayout) findViewById(R.id.blank_list_layout);
+        blankListAddButton	= (Button) findViewById(R.id.blank_list_add_button);
+        
         registerForContextMenu(explList);
+        
+        
         
         newSmsButton.setOnClickListener(new OnClickListener() {
 			
@@ -110,13 +123,23 @@ public class SmsSchedulerExplActivity extends Activity {
         
         
         
+        blankListAddButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(SmsSchedulerExplActivity.this, NewScheduleActivity.class);
+				startActivity(intent);
+			}
+		});
+        
+        
         
         explList.setOnChildClickListener(new OnChildClickListener() {
 			
 			@Override
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
 				if(groupPosition == 0){
-					Intent intent = new Intent(SmsSchedulerExplActivity.this, EditSmsActivity.class);
+					Intent intent = new Intent(SmsSchedulerExplActivity.this, EditScheduledSmsActivity.class);
 					intent.putExtra("GROUP", childSchArray.get(childPosition).keyGrpId);
 					intent.putExtra("NUMBER", childSchArray.get(childPosition).keyNumber);
 					intent.putExtra("MESSAGE", childSchArray.get(childPosition).keyMessage);
@@ -156,6 +179,24 @@ public class SmsSchedulerExplActivity extends Activity {
     protected void onResume() {
     	super.onResume();
     	
+    	mdba.open();
+    	Cursor cur = mdba.fetchAllScheduled();
+    	if(cur.getCount()>0){
+    		explListLayout.setVisibility(LinearLayout.VISIBLE);
+    		blankListLayout.setVisibility(LinearLayout.GONE);
+    	}else{
+    		cur = null;
+    		cur = mdba.fetchAllSent();
+    		if(cur.getCount()>0){
+    			explListLayout.setVisibility(LinearLayout.VISIBLE);
+    			blankListLayout.setVisibility(LinearLayout.GONE);
+    		}else{
+    			explListLayout.setVisibility(LinearLayout.GONE);
+    			blankListLayout.setVisibility(LinearLayout.VISIBLE);
+    		}
+    	}
+    	mdba.close();
+    
     	setExplData();
     	explList.setAdapter(mAdapter);
     	explList.expandGroup(0);
@@ -219,7 +260,26 @@ public class SmsSchedulerExplActivity extends Activity {
 	         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
 	         		 
 					Toast.makeText(this.getApplicationContext(), "Message Deleted", Toast.LENGTH_SHORT).show();
-					break;
+					
+					
+			        Cursor cur = mdba.fetchAllScheduled();
+			        if(cur.getCount()>0){
+			        	explListLayout.setVisibility(LinearLayout.VISIBLE);
+			        	blankListLayout.setVisibility(LinearLayout.GONE);
+			        }else{
+			        	cur = null;
+			        	cur = mdba.fetchAllSent();
+			        	if(cur.getCount()>0){
+			        		explListLayout.setVisibility(LinearLayout.VISIBLE);
+			            	blankListLayout.setVisibility(LinearLayout.GONE);
+			        	}else{
+			        		explListLayout.setVisibility(LinearLayout.GONE);
+			            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
+			        	}
+			        }
+			        mdba.close();
+			        
+			        break;
 					//--------------------------------------------------------------------------------------------------
 					
 			}
@@ -337,13 +397,20 @@ public class SmsSchedulerExplActivity extends Activity {
     	if(schCur.moveToFirst()){
     		z = -1;
     		do{
+    			mdba.open();
+    			Cursor spanCur = mdba.fetchSpanForSms(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
+    			
+    			spanCur.moveToFirst();
+    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
+    			
+    			mdba.close();
     			if(z == -1 || childSchArray.get(z).keyGrpId != schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_GRPID))){
     				z++;
     				ArrayList<Long> tempIds = new ArrayList<Long>();
     				tempIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
     				childSchArray.add(new childSch(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)),
     						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_GRPID)),
-    						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_NUMBER)),
+    						displayName,
     						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
     						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
     						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_DATE)),
@@ -352,7 +419,7 @@ public class SmsSchedulerExplActivity extends Activity {
     						schCur.getInt	(schCur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)),
     						tempIds));
     			}else{
-    				childSchArray.get(z).keyNumber = childSchArray.get(z).keyNumber + ", " + schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_NUMBER));
+    				childSchArray.get(z).keyNumber = childSchArray.get(z).keyNumber + ", " + displayName;
     				childSchArray.get(z).keyIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
     			}
     			
@@ -394,13 +461,19 @@ public class SmsSchedulerExplActivity extends Activity {
     	if(sentCur.moveToFirst()){
     		z = -1;
     		do{
+    			mdba.open();
+    			Cursor spanCur = mdba.fetchSpanForSms(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
+    			
+    			spanCur.moveToFirst();
+    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
+    			
     			if(z == -1 || childSentArray.get(z).keyGrpId != sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_GRPID))){
     				z++;
     				ArrayList<Long> tempIds = new ArrayList<Long>();
     				tempIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
     				childSentArray.add(new childSent(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)),
     						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_GRPID)),
-    						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_NUMBER)),
+    						displayName,
     						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
     						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
     						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_DATE)),
@@ -411,7 +484,8 @@ public class SmsSchedulerExplActivity extends Activity {
     						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_D_MILLIS)),
     						tempIds));
     			}else{
-    				childSentArray.get(z).keyNumber = childSentArray.get(z).keyNumber + ", " + sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_NUMBER));
+    				
+    				childSentArray.get(z).keyNumber = childSentArray.get(z).keyNumber + ", " + displayName;
     				childSentArray.get(z).keyIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
     			}
     			

@@ -57,7 +57,7 @@ import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
 
-public class NewScheduleActivity extends Activity {
+public class EditScheduledSmsActivity extends Activity {
 	
 	//---------References to the widgets-----------------
 	static AutoCompleteTextView 	numbersText;
@@ -76,6 +76,7 @@ public class NewScheduleActivity extends Activity {
 	private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 	
 	private ListView mList;
+	long editedGroup;
 	
 	SmsManager smsManager = SmsManager.getDefault();
 	ArrayList<String> parts = new ArrayList<String>();
@@ -88,7 +89,7 @@ public class NewScheduleActivity extends Activity {
 	private ArrayList<ClickableSpan> clickableSpanArrayList = new ArrayList<ClickableSpan>();
 	//--------------------------------------------------------------------
 	
-	DBAdapter mdba = new DBAdapter(NewScheduleActivity.this);
+	DBAdapter mdba = new DBAdapter(EditScheduledSmsActivity.this);
 	
 	AutoCompleteAdapter myAutoCompleteAdapter;
 	
@@ -159,9 +160,33 @@ public class NewScheduleActivity extends Activity {
 		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		
+		Intent intent = getIntent();
 		
+		numbersText.setText(intent.getStringExtra("NUMBER"));
+		messageText.setText(intent.getStringExtra("MESSAGE"));
+		processDate = new Date(intent.getLongExtra("TIME", 0));
+		editedGroup = intent.getLongExtra("GROUP", 0);
+		
+		Log.i("MSG", "group Id : " + editedGroup);
 		
 		Spans.clear();
+		
+		mdba.open();
+		ArrayList<Long> smsIds = mdba.getIds(editedGroup);
+		Log.i("MSG", "size of smsIds : " + smsIds.size());
+		for(int i = 0; i< smsIds.size(); i++){
+			Cursor spanCur = mdba.fetchSpanForSms(smsIds.get(i));
+			Log.i("MSG", "size of Span cursor : " + spanCur.getCount());
+			spanCur.moveToFirst();
+			Spans.add(new SpannedEntity(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
+					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_TYPE)),
+					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN)),
+					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ENTITY_ID)),
+					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_SMS_ID))));
+		}
+		Log.i("MSG", "size of Spans : " + Spans.size());
+		mdba.close();
+		refreshSpannableString();
 		
 		
 		// Check to see if a recognition activity is present
@@ -188,9 +213,8 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(NewScheduleActivity.this, ContactsTabsActivity.class);
-				intent.putExtra("IDSARRAY", idsString);
-				intent.putExtra("ORIGIN", "new");
+				Intent intent = new Intent(EditScheduledSmsActivity.this, ContactsTabsActivity.class);
+				intent.putExtra("ORIGIN", "edit");
 				startActivityForResult(intent, 2);
 			}
 		});
@@ -216,7 +240,7 @@ public class NewScheduleActivity extends Activity {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				
 				Log.v("cccc", "" + keyCode + "  " + KeyEvent.KEYCODE_COMMA);				
-				if(keyCode == KeyEvent.KEYCODE_DEL){
+				if(keyCode == KeyEvent.KEYCODE_DEL){  
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
 	                 for(int i = 0; i< Spans.size(); i++){
@@ -320,7 +344,7 @@ public class NewScheduleActivity extends Activity {
 		
 		
 		//------------Date Select Button set to current date--------------------
-		Date currentDate = new Date();
+		Date currentDate = processDate;
 		final SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 		dateButton.setText(sdf.format(currentDate));
 		processDate = currentDate; 
@@ -329,7 +353,7 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				dateSelectDialog = new Dialog(NewScheduleActivity.this);
+				dateSelectDialog = new Dialog(EditScheduledSmsActivity.this);
 				dateSelectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dateSelectDialog.setContentView(R.layout.date_input_dialog);
 				
@@ -529,7 +553,7 @@ public class NewScheduleActivity extends Activity {
 			public void onClick(View v) {
 				loadTemplates();
 				TemplateAdapter templateAdapter = new TemplateAdapter();
-				templateDialog = new Dialog(NewScheduleActivity.this);
+				templateDialog = new Dialog(EditScheduledSmsActivity.this);
 				templateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				templateDialog.setContentView(R.layout.templates_dialog);
 				ListView templateList = (ListView) templateDialog.findViewById(R.id.dialog_template_list);
@@ -549,7 +573,7 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(messageText.getText().toString().matches("(''|[' ']*)")){
-					Toast.makeText(NewScheduleActivity.this, "Text is blank. Couldn't add it as Template", Toast.LENGTH_SHORT).show();
+					Toast.makeText(EditScheduledSmsActivity.this, "Text is blank. Couldn't add it as Template", Toast.LENGTH_SHORT).show();
 				}else{
 					mdba.open();
 					Cursor cur = mdba.fetchAllTemplates();
@@ -564,13 +588,13 @@ public class NewScheduleActivity extends Activity {
 					}
 					if(z){
 						if(mdba.addTemplate(messageText.getText().toString()) > 0){
-							Toast.makeText(NewScheduleActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+							Toast.makeText(EditScheduledSmsActivity.this, "Template added", Toast.LENGTH_SHORT).show();
 						}else{
-							Toast.makeText(NewScheduleActivity.this, "Template couldn't be added", Toast.LENGTH_SHORT).show();
+							Toast.makeText(EditScheduledSmsActivity.this, "Template couldn't be added", Toast.LENGTH_SHORT).show();
 						}
 						mdba.close();
 					}else{
-						Toast.makeText(NewScheduleActivity.this, "Template already exists", Toast.LENGTH_SHORT).show();
+						Toast.makeText(EditScheduledSmsActivity.this, "Template already exists", Toast.LENGTH_SHORT).show();
 					}
 					
 				}
@@ -585,15 +609,15 @@ public class NewScheduleActivity extends Activity {
 			public void onClick(View v) {
 				
 				if(numbersText.getText().toString().matches("(''|[' ']*)")){
-					Toast.makeText(NewScheduleActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
+					Toast.makeText(EditScheduledSmsActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
 					numbersText.requestFocus();
 				}else{
 					if(!checkDateValidity(processDate)){
-						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+						Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 					}
 					doSmsScheduling();
 				}
-			NewScheduleActivity.this.finish();
+			EditScheduledSmsActivity.this.finish();
 			}
 		});
 		
@@ -606,7 +630,7 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				NewScheduleActivity.this.finish();
+				EditScheduledSmsActivity.this.finish();
 			}
 		});
 		
@@ -617,7 +641,7 @@ public class NewScheduleActivity extends Activity {
 	//-------------------Adapter for list in the templates dialog--------------------
 	class TemplateAdapter extends ArrayAdapter{
 		TemplateAdapter(){
-			super(NewScheduleActivity.this, R.layout.template_list_row, templatesArray);
+			super(EditScheduledSmsActivity.this, R.layout.template_list_row, templatesArray);
 		}
 		
 		@Override
@@ -729,34 +753,43 @@ public class NewScheduleActivity extends Activity {
 		final SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 		String dateString = sdf.format(cal.getTime());
 		mdba.open();
-		long groupId = mdba.getNextGroupId();
-		//String[] numbers = numbersText.getText().toString().split(",(' ')*");
+		
 		ArrayList<String> numbers = new ArrayList<String>();
 		mdba.open();
 		Log.i("MSG", Spans.size()+"");
-		for(int i = 0; i< Spans.size(); i++){
-			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
-				if(Spans.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
-					numbers.add(SplashActivity.contactsList.get(j).number);
-					long received_id = mdba.scheduleSms(SplashActivity.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
+		
+		if(!(messageText.getText().toString().matches("(''|(' ')+)"))){
+			ArrayList<Long> editedIds = mdba.getIds(editedGroup);
+			for(int i = 0; i< editedIds.size(); i++){
+				mdba.deleteSms(editedIds.get(i), EditScheduledSmsActivity.this);
+			}
+			
+		
+		
+			for(int i = 0; i< Spans.size(); i++){
+				for(int j = 0; j< SplashActivity.contactsList.size(); j++){
+					if(Spans.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+						numbers.add(SplashActivity.contactsList.get(j).number);
+						long received_id = mdba.scheduleSms(SplashActivity.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), editedGroup, cal.getTimeInMillis());
+						if(mdba.getCurrentPiFiretime() == -1){
+							handlePiUpdate(SplashActivity.contactsList.get(j).number, editedGroup, received_id, cal.getTimeInMillis());
+						}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+							handlePiUpdate(SplashActivity.contactsList.get(j).number, editedGroup, received_id, cal.getTimeInMillis());
+						}
+						Spans.get(i).smsId = received_id;
+						Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
+					}
+				}
+				if(Spans.get(i).type == 1){
+					long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), editedGroup, cal.getTimeInMillis());
 					if(mdba.getCurrentPiFiretime() == -1){
-						handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+						handlePiUpdate(Spans.get(i).displayName, editedGroup, received_id, cal.getTimeInMillis());
 					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-						handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+						handlePiUpdate(Spans.get(i).displayName, editedGroup, received_id, cal.getTimeInMillis());
 					}
 					Spans.get(i).smsId = received_id;
 					Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
 				}
-			}
-			if(Spans.get(i).type == 1){
-				long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-				if(mdba.getCurrentPiFiretime() == -1){
-					handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
-				}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-					handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
-				}
-				Spans.get(i).smsId = received_id;
-				Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
 			}
 		}
 		mdba.close();
@@ -778,7 +811,7 @@ public class NewScheduleActivity extends Activity {
 		Cursor cur = mdba.getPiDetails();
 		cur.moveToFirst();
 		
-		Intent intent = new Intent(NewScheduleActivity.this, SMSHandleReceiver.class);
+		Intent intent = new Intent(EditScheduledSmsActivity.this, SMSHandleReceiver.class);
 		intent.setAction(DBAdapter.PRIVATE_SMS_ACTION);
 		
 		PendingIntent pi;
@@ -787,7 +820,7 @@ public class NewScheduleActivity extends Activity {
 			intent.putExtra("NUMBER", " ");
 			intent.putExtra("MESSAGE", " ");
 			
-			pi = PendingIntent.getBroadcast(NewScheduleActivity.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+			pi = PendingIntent.getBroadcast(EditScheduledSmsActivity.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 			pi.cancel();
 			
 		}
@@ -797,7 +830,7 @@ public class NewScheduleActivity extends Activity {
 		
 		Random rand = new Random();
 		int piNumber = rand.nextInt();
-		pi = PendingIntent.getBroadcast(NewScheduleActivity.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		pi = PendingIntent.getBroadcast(EditScheduledSmsActivity.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		mdba.updatePi(piNumber, id, time);
 		
 		AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -839,26 +872,17 @@ public class NewScheduleActivity extends Activity {
 	//--------------------------Setting up the Autocomplete text-----------------------------// 
 	
 	public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
-	  	
-		String text = " ";
-		try{
+		String text;
+		if(constraint.length()>0){
 			text = (String) constraint;
-			text.length();
-		}catch(NullPointerException npe){
-			text = " ";
+		}else{
+			text = "";
 		}
-		
-//		if(constraint.length()>0){
-//			text = (String) constraint;
-//		}else{
-//			text = "";
-//		}
 		
 		shortlist.clear();
 		Log.i("MESSAGE", "f : " + text);
 		
 		positionTrack = 0;
-		
 		if(text.length()>2){
 			
 		
@@ -873,13 +897,6 @@ public class NewScheduleActivity extends Activity {
 		}
 		
 		String text2 = text.substring(positionTrack, text.length());
-		
-		try{
-			String p = text2;
-		}catch(NullPointerException npe){
-			text2 = " ";
-		}
-		
 		
 		if(text2.length()>1){
 		
@@ -900,7 +917,6 @@ public class NewScheduleActivity extends Activity {
 		}
 		}
 		}
-		  
 		return shortlist;
 					
 	}
@@ -1006,15 +1022,13 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	public void refreshSpannableString(){
-		ssb.clear();
-		clickableSpanArrayList.clear();
-//		clickableSpanArrayList = new ArrayList<ClickableSpan>();
+		ssb = new SpannableStringBuilder();
+		clickableSpanArrayList = new ArrayList<ClickableSpan>();
 		spanStartPosition = 0;
 		numbersText.setText("");
 			
 		
 		for(int i = 0; i< Spans.size(); i++){
-			
 			final int _i = i;
 		
 			
@@ -1023,14 +1037,13 @@ public class NewScheduleActivity extends Activity {
 				
 				@Override
 				public void onClick(View widget) {
-							
-						Log.i("MSG", _i + "");
-						if(_i< Spans.size()-1){
-							NewScheduleActivity.Spans.remove(_i);
-							refreshSpannableString();
-						}else{
-							
-						}
+					Log.i("MSG", _i + "");
+					if(_i< Spans.size()-1){
+						Spans.remove(_i);
+						refreshSpannableString();
+					}else{
+						
+					}
 				}
 			
 				@Override
@@ -1040,17 +1053,16 @@ public class NewScheduleActivity extends Activity {
 					ds.setUnderlineText(false);
 				}
 			});
-			try{
+			
     		ssb.append(Spans.get(i).displayName + ", ");
-    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
+    		
+    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), 0);
     		spanStartPosition += Spans.get(i).displayName.length() + 2;
 			
 			numbersText.setText(ssb);
 			
+			
 			numbersText.setSelection(spanStartPosition);
-			}catch(IndexOutOfBoundsException iob){
-				
-			}
 		}
 	}
 	

@@ -55,6 +55,7 @@
 	    android:layout_above="@id/footer"
 	    >
 		<LinearLayout 
+		    android:id="@+id/body"
 		    android:layout_width="fill_parent"
 		    android:layout_height="fill_parent"
 		    android:orientation="vertical"
@@ -73,7 +74,6 @@
 		    		android:layout_height = "wrap_content"
 		    		android:hint="Recipients"
 		    		android:minLines="2"
-		    		
 		    		android:gravity="top"
 		    		android:layout_toLeftOf="@+id/new_add_from_contact_imgbutton"
 		    		>

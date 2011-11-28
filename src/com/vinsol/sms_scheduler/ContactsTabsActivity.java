@@ -38,6 +38,7 @@ public class ContactsTabsActivity extends Activity {
 	
 	ArrayList<SpannedEntity> SpansTemp = new ArrayList<SpannedEntity>();
 	
+	String origin;
 	
 	DBAdapter mdba = new DBAdapter(this);
 	Cursor cur;
@@ -56,16 +57,24 @@ public class ContactsTabsActivity extends Activity {
 		
 		Intent intent = getIntent();
 		idsString = intent.getStringArrayListExtra("IDSARRAY");
+		origin = intent.getStringExtra("ORIGIN");
 		
-		for(int i = 0; i < NewScheduleActivity.Spans.size(); i++){
-			SpansTemp.add(NewScheduleActivity.Spans.get(i));
+		if(origin.equals("new")){
+			for(int i = 0; i < NewScheduleActivity.Spans.size(); i++){
+				SpansTemp.add(NewScheduleActivity.Spans.get(i));
+			}
+		}else if(origin.equals("edit")){
+			for(int i = 0; i < EditScheduledSmsActivity.Spans.size(); i++){
+				SpansTemp.add(EditScheduledSmsActivity.Spans.get(i));
+			}
 		}
+		
 		
 //		for(int i = 0; i< idsString.size(); i++){
 //			ids.add(Long.parseLong(idsString.get(i)));
 //		}
 		
-		Log.i("MSG", NewScheduleActivity.Spans + "");
+		//Log.i("MSG", NewScheduleActivity.Spans + "");
 		
 		//tabHost = (TabHost)findViewById(R.id.tabHost);
 		//tabHost.setup();
@@ -109,7 +118,6 @@ public class ContactsTabsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent();
-				idsString.clear();
 				for(int i = 0; i< ids.size(); i++){
 					idsString.add(String.valueOf(ids.get(i)));
 				}
@@ -129,10 +137,18 @@ public class ContactsTabsActivity extends Activity {
 				intent.putExtra("IDSARRAY", idsString);
 				setResult(2, intent);
 				
-				NewScheduleActivity.Spans.clear();
-				for(int i = 0; i< SpansTemp.size(); i++){
-					NewScheduleActivity.Spans.add(SpansTemp.get(i));
+				if(origin.equals("new")){
+					NewScheduleActivity.Spans.clear();
+					for(int i = 0; i< SpansTemp.size(); i++){
+						NewScheduleActivity.Spans.add(SpansTemp.get(i));
+					}
+				}else if(origin.equals("edit")){
+					EditScheduledSmsActivity.Spans.clear();
+					for(int i = 0; i< SpansTemp.size(); i++){
+						EditScheduledSmsActivity.Spans.add(SpansTemp.get(i));
+					}
 				}
+				
 				
 				
 				ContactsTabsActivity.this.finish();
@@ -161,9 +177,16 @@ public class ContactsTabsActivity extends Activity {
 		intent.putExtra("IDSARRAY", idsString);
 		setResult(2, intent);
 		
-		NewScheduleActivity.Spans.clear();
-		for(int i = 0; i< SpansTemp.size(); i++){
-			NewScheduleActivity.Spans.add(SpansTemp.get(i));
+		if(origin.equals("new")){
+			NewScheduleActivity.Spans.clear();
+			for(int i = 0; i< SpansTemp.size(); i++){
+				NewScheduleActivity.Spans.add(SpansTemp.get(i));
+			}
+		}else if(origin.equals("edit")){
+			EditScheduledSmsActivity.Spans.clear();
+			for(int i = 0; i< SpansTemp.size(); i++){
+				EditScheduledSmsActivity.Spans.add(SpansTemp.get(i));
+			}
 		}
 		
 		ContactsTabsActivity.this.finish();
@@ -195,24 +218,48 @@ public class ContactsTabsActivity extends Activity {
     		nameText.setText(SplashActivity.contactsList.get(position).name);
     		numberText.setText(SplashActivity.contactsList.get(position).number);
     		
-    		for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
-    			if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
-    				contactCheck.setChecked(true);
-    			}
+    		if(origin.equals("new")){
+    			for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
+        			if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
+        				contactCheck.setChecked(true);
+        			}
+        		}
+    		}else if(origin.equals("edit")){
+    			for(int i = 0; i< EditScheduledSmsActivity.Spans.size(); i++){
+        			if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == EditScheduledSmsActivity.Spans.get(i).entityId){
+        				contactCheck.setChecked(true);
+        			}
+        		}
     		}
+    		
+    		
     		contactCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
 						SpannedEntity span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(_position).name, Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id), -1);
-						NewScheduleActivity.Spans.add(span);
+						if(origin.equals("new")){
+							NewScheduleActivity.Spans.add(span);
+						}else if(origin.equals("edit")){
+							EditScheduledSmsActivity.Spans.add(span);
+						}
+						
 					}else{
-						for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
-			    			if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
-			    				NewScheduleActivity.Spans.remove(i);
-			    			}
-			    		}
+						if(origin.equals("new")){
+							for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
+				    			if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
+				    				NewScheduleActivity.Spans.remove(i);
+				    			}
+				    		}
+						}else if(origin.equals("edit")){
+							for(int i = 0; i< EditScheduledSmsActivity.Spans.size(); i++){
+				    			if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == EditScheduledSmsActivity.Spans.get(i).entityId){
+				    				EditScheduledSmsActivity.Spans.remove(i);
+				    			}
+				    		}
+						}
+						
 					}
 				}
 			});

@@ -22,7 +22,7 @@
         <activity android:name = ".Asap" android:label = "Asap" android:screenOrientation="portrait"></activity>
         <activity android:name = ".ManageGroupsActivity" android:label = "Manage Groups" android:screenOrientation="portrait"></activity>
         <activity android:name = ".GroupAddActivity" android:label = "New Group" android:screenOrientation="portrait"></activity>
-            
+        <activity android:name = ".EditScheduledSmsActivity" android:label = "Edit" android:screenOrientation="portrait"></activity>
         <activity android:name = ".SplashActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
