@@ -155,19 +155,40 @@
 			    android:background="@drawable/message_bg"
 		   		>
 			    <!-- char count text -->    
-	    		<TextView
-	    			android:id = "@+id/new_char_count_text"
-	    			android:layout_height = "wrap_content"
-	    			android:layout_width = "wrap_content"
-	    			android:text = "0 (0)"
-	    			android:textSize="70sp"
-	    			android:textStyle="bold"
-	    			android:textColor="#ffe2e1dd"
-	    			android:paddingRight="15dp"
-	    			android:layout_marginTop="5dp"
-	    			android:layout_gravity="center"
-	    			>
-    			</TextView>	
+	    		<RelativeLayout
+	    		    android:layout_height="fill_parent"
+	    		    android:layout_width = "fill_parent">
+	    		    
+	    		    <!-- <TextView
+	    				android:id = "@+id/new_char_count_text"
+	    				android:layout_height = "wrap_content"
+	    				android:layout_width = "wrap_content"
+	    				android:layout_centerInParent="true"
+	    				android:text = "0"
+	    				android:textSize="70sp"
+	    				android:textStyle="bold"
+	    				android:textColor="#ffe2e1dd"
+	    				android:layout_marginTop="5dp"
+	    				android:layout_gravity= "center">
+    				</TextView>	-->
+    			
+	    		    <TextView
+	    				android:id = "@+id/new_char_count_text"
+	    				android:layout_height = "wrap_content"
+	    				android:layout_width = "wrap_content"
+	    				android:text = "(0)"
+	    				android:textSize="20sp"
+	    				android:textStyle="bold"
+	    				android:textColor="#ffe2e1dd"
+	    				android:layout_marginBottom="5dp"
+	    				android:layout_marginRight="5dp"
+	    				android:layout_alignParentRight="true"
+	    				android:layout_alignParentBottom="true"/>
+	    		        
+	    		</RelativeLayout>
+	    		    
+	    		
+	    		
 			    
 				<!-- message edit text -->
 	   		    <EditText

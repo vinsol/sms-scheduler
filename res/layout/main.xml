@@ -62,13 +62,40 @@
 	<LinearLayout
 	    android:id = "@+id/blank_list_layout"
 	    android:layout_height = "fill_parent"
-	    android:layout_width = "fill_parent">
+	    android:layout_width = "fill_parent"
+	    android:orientation="vertical"
+	    android:layout_gravity="center_vertical">
 	    
-	    <Button 
-	        android:id = "@+id/blank_list_add_button"
+	    <RelativeLayout
 	        android:layout_height = "fill_parent"
 	        android:layout_width = "fill_parent"
-	        android:text = "No SMS scheduled\nTap to Schedule an SMS"/>
+	        android:layout_gravity="center_vertical"
+	        android:gravity="center">
+	    
+	    <LinearLayout
+	        android:layout_height = "wrap_content"
+	        android:layout_width = "wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:gravity="center"
+	        android:orientation="vertical">
+	        
+	        <TextView 
+	        	android:text = "No SMS scheduled"
+	        	android:layout_height = "wrap_content"
+	        	android:layout_width = "wrap_content"
+	        	android:gravity="center_vertical"
+	        	android:layout_margin = "10dp"/>
+	    
+	    	<Button 
+	        	android:id = "@+id/blank_list_add_button"
+	        	android:layout_height = "wrap_content"
+	        	android:layout_width = "wrap_content"
+	        	android:text = "Schedule an SMS"/>
+	        
+	    </LinearLayout>
+	    
+	    </RelativeLayout>
+	    
 	    
 	</LinearLayout>
 	    

@@ -64,6 +64,7 @@ public class EditScheduledSmsActivity extends Activity {
 	ImageButton 			addFromContactsImgButton;
 	Button 					dateButton;
 	TextView 				characterCountText;
+	//TextView				messageCountText;
 	EditText 				messageText;
 	ImageButton 			templateImageButton;
 	ImageButton 			speechImageButton;
@@ -152,6 +153,7 @@ public class EditScheduledSmsActivity extends Activity {
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
 		dateButton 					= (Button) 					findViewById(R.id.new_date_button);
 		characterCountText 			= (TextView) 				findViewById(R.id.new_char_count_text);
+		//messageCountText			= (TextView) 				findViewById(R.id.new_msg_count_text);
 		messageText 				= (EditText) 				findViewById(R.id.new_message_space);
 		templateImageButton 		= (ImageButton) 			findViewById(R.id.template_imgbutton);
 		speechImageButton 			= (ImageButton) 			findViewById(R.id.speech_imgbutton);
@@ -377,9 +379,11 @@ public class EditScheduledSmsActivity extends Activity {
 						String temp = sdf.format(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
 						dateLabel.setText(temp);
 						if(checkDateValidity(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()))){
-							dateLabel.setBackgroundColor(Color.rgb(0, 180, 0));
+							dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
+							dateLabel.setText("");
 						}else{
-							dateLabel.setBackgroundColor(Color.rgb(180, 0, 0));
+							dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
+							dateLabel.setText("Date is in Past. Message will be sent immediately");
 						}
 					}
 				});
@@ -393,9 +397,11 @@ public class EditScheduledSmsActivity extends Activity {
 //				String dateString = refDate.toString();
 //				dateLabel.setText(dateString);
 				if(checkDateValidity(refDate)){
-					dateLabel.setBackgroundColor(Color.rgb(0, 180, 0));
+					dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
+					dateLabel.setText("");
 				}else{
-					dateLabel.setBackgroundColor(Color.rgb(180, 0, 0));
+					dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
+					dateLabel.setText("Date is in Past. Message will be sent immediately");
 				}
 				
 				okDateButton.setOnClickListener(new OnClickListener() {
@@ -441,9 +447,11 @@ public class EditScheduledSmsActivity extends Activity {
 						String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute));
 						dateLabel.setText(temp);
 						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
-							dateLabel.setBackgroundColor(Color.rgb(0, 180, 0));
+							dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
+							dateLabel.setText("");
 						}else{
-							dateLabel.setBackgroundColor(Color.rgb(180, 0, 0));
+							dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
+							dateLabel.setText("Date is in Past. Message will be sent immediately");
 						}
 					}
 				});
@@ -478,7 +486,8 @@ public class EditScheduledSmsActivity extends Activity {
 			public void afterTextChanged(Editable s) {
 				int length 		= s.length();
 				parts 		 	= smsManager.divideMessage(s.toString());
-				characterCountText.setText(String.valueOf(length) + " (" + String.valueOf(parts.size()) + ")");
+				characterCountText.setText(String.valueOf(length));
+				//messageCountText.setText(" (" + String.valueOf(parts.size()) + ")");
 			}
 		});
 		
