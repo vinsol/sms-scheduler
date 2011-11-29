@@ -107,6 +107,7 @@ public class ContactsListActivity extends Activity {
 					intent.putExtra("NEWCALL", newCall);
 				}
 				intent.putStringArrayListExtra("IDSLIST", idsStringChanged);
+				intent.putExtra("CANCEL", "no");
 				setResult(10, intent);
 				ContactsListActivity.this.finish();
 			}
@@ -119,6 +120,8 @@ public class ContactsListActivity extends Activity {
 			public void onClick(View v) {
 				Intent intent = new Intent();
 				intent.putStringArrayListExtra("IDSLIST", idsString);
+				intent.putExtra("CANCEL", "yes");
+						
 				if(callingActivity.equals("Group Add Activity")){
 					intent.putExtra("NEWCALL", newCall);
 				}
@@ -137,6 +140,7 @@ public class ContactsListActivity extends Activity {
 	public void onBackPressed() {
 		Intent intent = new Intent();
 		intent.putStringArrayListExtra("IDSLIST", idsString);
+		intent.putExtra("CANCEL", "yes");
 		//intent.putExtra(name, value)
 		setResult(10, intent);
 		ContactsListActivity.this.finish();

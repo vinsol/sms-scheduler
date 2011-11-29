@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,9 +27,12 @@ public class SentReceiver extends BroadcastReceiver{
          { 	
 			
              case Activity.RESULT_OK:
-                 Toast.makeText(context, "Part " + part + "/" + msgSize + " sent to " + number, Toast.LENGTH_SHORT).show();
+            	 mdba.open();
+            	 Cursor cur = mdba.fetchSpanForSms(id);
+            	 cur.moveToFirst();
+            	 String receiverName = cur.getString(cur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
+                 Toast.makeText(context, "Part " + part + "/" + msgSize + " sent to " + receiverName, Toast.LENGTH_SHORT).show();
                  
-                 mdba.open();
                  mdba.increaseSent(id);
                  mdba.close();
                  

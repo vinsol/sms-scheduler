@@ -284,6 +284,11 @@ public class GroupAddActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
+		String isCancelled = data.getStringExtra("CANCEL");
+		if(isCancelled.equals("yes")){
+			GroupAddActivity.this.finish();
+		}
+		
 		ArrayList<String> idsString = new ArrayList<String>();
 		idsString = data.getStringArrayListExtra("IDSLIST");
 		ids.clear();

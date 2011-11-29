@@ -54,6 +54,7 @@ public class DBAdapter{
 	public static final String KEY_S_MILLIS = "sent_milis";
 	public static final String KEY_D_MILLIS = "deliver_milis";
 	public static final String KEY_OPERATED = "operation_done";
+	public static final String KEY_DRAFT = "is_draft";
 	
 	//--------------keys for PI table---------------------------
 	public static final String KEY_PI_ID = "_id";
@@ -91,7 +92,8 @@ public class DBAdapter{
 		DATABASE_SMS_TABLE + " (" + KEY_ID + " integer primary key autoincrement, " + KEY_GRPID + " integer, " + 
 		KEY_NUMBER + " text not null, " + KEY_MESSAGE + " text, " + KEY_DATE + " text, " + KEY_TIME_MILLIS + " long, " 
 		+ KEY_SENT + " integer default 0, "+ KEY_DELIVER + " integer default 0, " + KEY_MSG_PARTS + " integer default 0, " 
-		+ KEY_S_MILLIS + " integer, " + KEY_D_MILLIS + " integer, " + KEY_OPERATED + " integer default 0);";
+		+ KEY_S_MILLIS + " integer, " + KEY_D_MILLIS + " integer, " + KEY_OPERATED + " integer default 0, "
+		+ KEY_DRAFT + " integer default 0);";
 	
 	
 	private static final String DATABASE_CREATE_PI_TABLE = "create table " +
@@ -143,7 +145,7 @@ public class DBAdapter{
 	
 	public Cursor fetchAllScheduled(){
 		
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS}, KEY_SENT + "= 0", null, null, null, KEY_TIME_MILLIS);
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_SENT + "= 0", null, null, null, KEY_TIME_MILLIS);
 		Log.i("MESSAGE", "No of schedules from DBAdapter : " + cur.getCount());
 		return cur;
 	}
@@ -155,7 +157,7 @@ public class DBAdapter{
 	}
 	
 	public Cursor fetchRemainingScheduled(){
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS}, KEY_OPERATED + "=0"/* + KEY_MESSAGE + " NOT LIKE ' '"*/ , null, null, null, KEY_TIME_MILLIS);
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS}, KEY_OPERATED + "=0 AND " + KEY_DRAFT + "=0"/* + KEY_MESSAGE + " NOT LIKE ' '"*/ , null, null, null, KEY_TIME_MILLIS);
 		Log.i("MESSAGE", "No of other schedules from DBAdapter : " + cur.getCount());
 		return cur;
 	}
@@ -185,6 +187,14 @@ public class DBAdapter{
 	
 	
 	
+	
+	
+	public void setAsDraft(long smsId){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_DRAFT, 1);
+		
+		db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + smsId, null);
+	}
 	
 	
 	

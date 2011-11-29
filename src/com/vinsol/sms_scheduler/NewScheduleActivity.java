@@ -207,7 +207,12 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				numbersText.setSelection(spanStartPosition);
+				if(spanStartPosition > 0){
+					numbersText.setSelection(spanStartPosition);
+				}else{
+					numbersText.setSelection(numbersText.getText().toString().length());
+				}
+				
 			}
 		});
 		
@@ -593,15 +598,16 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				if(numbersText.getText().toString().matches("(''|[' ']*)")){
-					Toast.makeText(NewScheduleActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
-					numbersText.requestFocus();
-				}else{
-					if(!checkDateValidity(processDate)){
-						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
-					}
+//				if(numbersText.getText().toString().matches("(''|[' ']*)")){
+////					Toast.makeText(NewScheduleActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
+////					numbersText.requestFocus();
+//					doSmsScheduling();
+//				}else{
+//					if(!checkDateValidity(processDate)){
+//						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+//					}
 					doSmsScheduling();
-				}
+//				}
 			NewScheduleActivity.this.finish();
 			}
 		});
@@ -743,26 +749,49 @@ public class NewScheduleActivity extends Activity {
 		ArrayList<String> numbers = new ArrayList<String>();
 		mdba.open();
 		Log.i("MSG", Spans.size()+"");
+		
+		if(Spans.size()==0){
+			SpannedEntity span = new SpannedEntity(-1, 1, " ", -1, -1);  // for adding as a fake span to create a draft
+			Spans.add(span);
+		}
+		
 		for(int i = 0; i< Spans.size(); i++){
 			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
 				if(Spans.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
 					numbers.add(SplashActivity.contactsList.get(j).number);
 					long received_id = mdba.scheduleSms(SplashActivity.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-					if(mdba.getCurrentPiFiretime() == -1){
-						handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
-					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-						handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+
+					Log.i("MSG", "before if else");
+					
+					if(numbersText.getText().toString().matches("(''|[' ']*)")){
+						mdba.setAsDraft(received_id);
+					}else if(messageText.getText().toString().length() == 0){
+						Log.i("MSG", "inside messageText if else");
+						mdba.setAsDraft(received_id);
+					}else{
+						if(!(numbersText.getText().toString().matches("(''|[' ']*)")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+							if(mdba.getCurrentPiFiretime() == -1){
+								handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+							}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+								handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+							}
+						}
 					}
+					Log.i("MSG", "after if else");
 					Spans.get(i).smsId = received_id;
 					Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
 				}
 			}
 			if(Spans.get(i).type == 1){
 				long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-				if(mdba.getCurrentPiFiretime() == -1){
-					handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
-				}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-					handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
+				if(numbersText.getText().toString().matches("(''|[' ']*)") || messageText.toString().matches("(''|[' ']*)")){
+					mdba.setAsDraft(received_id);
+				}else{
+					if(mdba.getCurrentPiFiretime() == -1){
+						handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
+					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+						handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
+					}
 				}
 				Spans.get(i).smsId = received_id;
 				Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
@@ -1062,5 +1091,33 @@ public class NewScheduleActivity extends Activity {
 			}
 		}
 	}
+	
+	
+	
+	
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		
+		if(!(numbersText.getText().toString().matches("(''|[' ']*)")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+			if(!checkDateValidity(processDate)){
+				Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+				
+			}
+			doSmsScheduling();
+		}else
+			
+		if(!(numbersText.getText().toString().matches("(''|[' ']*)")) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
+			if(!checkDateValidity(processDate)){
+				Toast.makeText(NewScheduleActivity.this, "Messages saved as Draft", Toast.LENGTH_SHORT).show();
+			}
+			doSmsScheduling();
+		}else{
+				
+			}
+		NewScheduleActivity.this.finish();
+	}
+	
 	
 }

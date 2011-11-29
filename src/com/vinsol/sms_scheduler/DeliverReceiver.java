@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,10 +34,13 @@ public class DeliverReceiver extends BroadcastReceiver{
             	
             	if(part==msgSize){
             		mdba.open();
+            		Cursor cur = mdba.fetchSpanForSms(id);
+               	 	cur.moveToFirst();
+               	 	String receiverName = cur.getString(cur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
             		if(mdba.checkDelivery(id)){
-            			Toast.makeText(context, "Message delivered to " + number, Toast.LENGTH_SHORT).show();
+            			Toast.makeText(context, "Message delivered to " + receiverName, Toast.LENGTH_SHORT).show();
             		}else{
-            			Toast.makeText(context, "Message not delivered to " + number, Toast.LENGTH_SHORT).show();
+            			Toast.makeText(context, "Message not delivered to " + receiverName, Toast.LENGTH_SHORT).show();
             		}
             		mdba.close();
             	}

@@ -98,7 +98,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			nextIntent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
 			nextIntent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(DBAdapter.KEY_NUMBER)));
 			nextIntent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)));
-//			int piNumber = (int)Math.random()*100;
+
 			Random rand = new Random();
 			int piNumber = rand.nextInt();
 			Log.i("MESSAGE", "Pi Number : " + piNumber);
