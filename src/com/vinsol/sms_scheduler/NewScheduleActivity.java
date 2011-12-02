@@ -83,6 +83,7 @@ public class NewScheduleActivity extends Activity {
 	ArrayList<String> templatesArray = new ArrayList<String>();
 	
 	//---------------------------------------------------------------
+	static ArrayList<GroupStructure> Groups = new ArrayList<GroupStructure>();
 	static ArrayList<SpannedEntity> Spans = new ArrayList<SpannedEntity>();
 	private SpannableStringBuilder ssb = new SpannableStringBuilder();
 	private int spanStartPosition = 0;
@@ -162,7 +163,7 @@ public class NewScheduleActivity extends Activity {
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		
 		
-		
+		Groups.clear();
 		Spans.clear();
 		
 		

@@ -32,6 +32,7 @@ public class DBAdapter{
 	private static final String DATABASE_GROUP_TABLE = "groupTable";
 	private static final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
 	private static final String DATABASE_SPANS_TABLE = "spanTable";
+	private static final String DATABASE_SPAN_GROUP_REL_TABLE = "span_grp_rel_table";
 	private static final int DATABASE_VERSION = 1;
 	
 	Cursor cur;
@@ -83,6 +84,13 @@ public class DBAdapter{
 	public static final String KEY_SPAN_ENTITY_ID = "span_entity_id";
 	public static final String KEY_SPAN_SMS_ID = "span_sms_id";
 	
+	
+	//-------------------keys for span-groupId relation--------------------
+	public static final String KEY_SPAN_GRP_REL_ID = "_id";
+	public static final String KEY_SPAN_GRP_REL_SPAN_ID = "span_grp_rel_span_id";
+	public static final String KEY_SPAN_GRP_REL_GRP_ID = "span_grp_rel_grp_id";
+	public static final String KEY_SPAN_GRP_REL_GRP_TYPE = "span_grp_rel_grp_type";
+	
 	//------------------------------------------------------------------end of static keys defs-------
 	
 	
@@ -112,14 +120,20 @@ public class DBAdapter{
 	
 	
 	private static final String DATABASE_CREATE_GROUP_CONTACT_RELATION = "create table " +
-	DATABASE_GROUP_CONTACT_RELATION + " (" + KEY_RELATION_ID + " integer primary key autoincrement, " +
-	KEY_GROUP_REL_ID + " integer, " + KEY_CONTACTS_ID + " integer);";
+		DATABASE_GROUP_CONTACT_RELATION + " (" + KEY_RELATION_ID + " integer primary key autoincrement, " +
+		KEY_GROUP_REL_ID + " integer, " + KEY_CONTACTS_ID + " integer);";
 	
 	
 	private static final String DATABASE_CREATE_SPANS_TABLE =  "create table " + 
 		DATABASE_SPANS_TABLE + " (" + KEY_SPAN_ID + " integer primary key autoincrement, " +
 		KEY_SPAN_DN + " text, " + KEY_SPAN_TYPE + " integer, " + KEY_SPAN_ENTITY_ID + " integer, " +
 		KEY_SPAN_SMS_ID + " integer);";
+	
+	
+	private static final String DATABASE_CREATE_SPAN_GROUP_REL_TABLE = "create table " +
+		DATABASE_SPAN_GROUP_REL_TABLE + " (" + KEY_SPAN_GRP_REL_ID + " integer primary key autoincrement, " +
+		KEY_SPAN_GRP_REL_SPAN_ID + " integer, " + KEY_SPAN_GRP_REL_GRP_ID + " integer, " +
+		KEY_SPAN_GRP_REL_GRP_TYPE + " integer);";
 	
 	
 	private SQLiteDatabase db;
@@ -150,9 +164,22 @@ public class DBAdapter{
 		return cur;
 	}
 	
+	public Cursor fetchAllScheduledNoDraft(){
+		
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_SENT + "= 0 AND " + KEY_DRAFT + "=0", null, null, null, KEY_TIME_MILLIS);
+		Log.i("MESSAGE", "No of schedules from DBAdapter : " + cur.getCount());
+		return cur;
+	}
+	
 	public Cursor fetchAllSent(){
 		Cursor cur  = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_TIME_MILLIS, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_S_MILLIS, KEY_D_MILLIS}, KEY_SENT + ">0", null, null, null, KEY_TIME_MILLIS);
 		Log.i("MESSAGE", "No of sents from DBAdapter : " + cur.getCount());
+		return cur;
+	}
+	
+	public Cursor fetchAllDrafts(){
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_DRAFT + "= 1", null, null, null, KEY_TIME_MILLIS);
+		Log.i("MESSAGE", "No of Drafts from DBAdapter : " + cur.getCount());
 		return cur;
 	}
 	
@@ -654,12 +681,49 @@ public class DBAdapter{
 	public void deleteSpan(long smsId){
 		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_SMS_ID + "=" + smsId, null);
 	}
-	
-	
-//	public void deleteSpan(long spanId){
-//		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_ID + "=" + spanId, null);
-//	}
 	//---------------------------------------------------------------end of functions for spans table--------------
+	
+	
+	
+	
+	
+	//--------------------------------functions for span-group-relation table--------------------------------
+	//****************************************************************
+	//****************************************************************
+	//*** Table to log the relation between added spans and groups ***
+	//****************************************************************
+	//****************************************************************
+	
+	public ArrayList<Long> fetchGroupsForSpan(long spanId){
+		Cursor cur = db.query(DATABASE_SPAN_GROUP_REL_TABLE, new String[]{KEY_SPAN_GRP_REL_GRP_ID}, KEY_SPAN_GRP_REL_SPAN_ID + "=" + spanId, null, null, null, null);
+		ArrayList<Long> groupIds = new ArrayList<Long>();
+		if(cur.moveToFirst()){
+			do{
+				groupIds.add(cur.getLong(cur.getColumnIndex(KEY_SPAN_GRP_REL_GRP_ID)));
+			}while(cur.moveToNext());
+		}
+		return groupIds;
+	}
+	
+	
+	public void addSpanGroupRel(long spanId, long groupId, int type){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_SPAN_GRP_REL_SPAN_ID, spanId);
+		cv.put(KEY_SPAN_GRP_REL_GRP_ID, groupId);
+		cv.put(KEY_SPAN_GRP_REL_GRP_TYPE, type);
+		
+		db.insert(DATABASE_SPAN_GROUP_REL_TABLE, null, cv);
+	}
+	
+	
+	public void deleteSpanGroupRel(long spanId, long groupId, int type){
+		db.delete(DATABASE_SPAN_GROUP_REL_TABLE, KEY_SPAN_GRP_REL_SPAN_ID + "=" + spanId + " AND " + KEY_SPAN_GRP_REL_GRP_ID + "=" + groupId + " AND " + KEY_SPAN_GRP_REL_GRP_TYPE + "=" + type, null);
+	}
+	//----------------------------------------------end of functions for span-group-relation table----------------
+	
+	
+	
+	
 	
 	
 	public class MyOpenHelper extends SQLiteOpenHelper{
@@ -676,6 +740,8 @@ public class DBAdapter{
 	        db.execSQL(DATABASE_CREATE_GROUP_TABLE);
 	        db.execSQL(DATABASE_CREATE_GROUP_CONTACT_RELATION);
 	        db.execSQL(DATABASE_CREATE_SPANS_TABLE);
+	        db.execSQL(DATABASE_CREATE_SPAN_GROUP_REL_TABLE);
+	        
 	        
 	        ContentValues initialPi = new ContentValues();
 	        initialPi.put(KEY_PI_ID, 1);

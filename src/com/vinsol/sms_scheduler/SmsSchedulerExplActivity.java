@@ -42,6 +42,7 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	public static ArrayList<childSch> childSchArray = new ArrayList<childSch>();
 	public static ArrayList<childSent> childSentArray = new ArrayList<childSent>();
+	public static ArrayList<childDraft> childDraftArray = new ArrayList<childDraft>();
 	
 	ExpandableListView 		explList;
 	ImageButton				newSmsButton;
@@ -138,17 +139,23 @@ public class SmsSchedulerExplActivity extends Activity {
 			
 			@Override
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
-				if(groupPosition == 0){
+				if(groupPosition == 1){
 					Intent intent = new Intent(SmsSchedulerExplActivity.this, EditScheduledSmsActivity.class);
 					intent.putExtra("GROUP", childSchArray.get(childPosition).keyGrpId);
 					intent.putExtra("NUMBER", childSchArray.get(childPosition).keyNumber);
 					intent.putExtra("MESSAGE", childSchArray.get(childPosition).keyMessage);
 					intent.putExtra("TIME", childSchArray.get(childPosition).keyTimeMilis);
 					startActivity(intent);
-				}else if(groupPosition == 1){
+				}else if(groupPosition == 2){
 					showSentInfoDialog(childPosition);
+				}else if(groupPosition == 0){
+					Intent intent = new Intent(SmsSchedulerExplActivity.this, EditScheduledSmsActivity.class);
+					intent.putExtra("GROUP", childDraftArray.get(childPosition).keyGrpId);
+					intent.putExtra("NUMBER", childDraftArray.get(childPosition).keyNumber);
+					intent.putExtra("MESSAGE", childDraftArray.get(childPosition).keyMessage);
+					intent.putExtra("TIME", childDraftArray.get(childPosition).keyTimeMilis);
+					startActivity(intent);
 				}
-				
 				return false;
 			}
 		});
@@ -243,10 +250,12 @@ public class SmsSchedulerExplActivity extends Activity {
 					//--------------------------------------Delete context option ------------------------------------
 					mdba.open();
 					
-					if(groupPos == 0){
+					if(groupPos == 1){
 						selectedIds = childSchArray.get(childPos).keyIds;	
-					}else if(groupPos == 1){
+					}else if(groupPos == 2){
 						selectedIds = childSentArray.get(childPos).keyIds;
+					}else if(groupPos == 0){
+						selectedIds = childDraftArray.get(childPos).keyIds;
 					}
 					for(int i = 0; i<selectedIds.size(); i++){
 						mdba.deleteSms(selectedIds.get(i), this.getApplicationContext());
@@ -327,13 +336,12 @@ public class SmsSchedulerExplActivity extends Activity {
     			groupHeading.setText(headerData.get(groupPosition).get(NAME));
     			
     			return convertView;
-    			
     		}
 
 
 
 			@Override
-    		public android.view.View getChildView(int groupPosition, int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
+    		public android.view.View getChildView(int groupPosition, final int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
     			final View v = super.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
     			
     			final TextView messageTextView  = (TextView)  v.findViewById(R.id.main_row_message_area);
@@ -343,17 +351,110 @@ public class SmsSchedulerExplActivity extends Activity {
     			
     			Log.i("MESSAGE", "------------------------Value of ChildPosition : " + childSchArray.size());
     			
-    			if(groupPosition == 0) {
+    			if(groupPosition == 1) {
     				messageTextView.setText(childSchArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSchArray.get(childPosition).keyImageRes);
     				dateTextView.setText(childSchArray.get(childPosition).keyDate);
     				receiverTextView.setText(childSchArray.get(childPosition).keyNumber);
-    			} else if(groupPosition == 1) {
+    			} else if(groupPosition == 2) {
     				messageTextView.setText(childSentArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
     				dateTextView.setText(childSentArray.get(childPosition).keyDate);
     				receiverTextView.setText(childSentArray.get(childPosition).keyNumber);
+    			} else if(groupPosition == 0){
+    				messageTextView.setText(childDraftArray.get(childPosition).keyMessage);
+    				statusImageView.setImageResource(childDraftArray.get(childPosition).keyImageRes);
+    				dateTextView.setText(childDraftArray.get(childPosition).keyDate);
+    				receiverTextView.setText(childDraftArray.get(childPosition).keyNumber);
     			}
+    			
+    			
+    			
+    			
+    			if(groupPosition == 1){
+    				statusImageView.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							ArrayList<Long> selectedIds = new ArrayList<Long>();
+							selectedIds = childSchArray.get(childPosition).keyIds;
+							mdba.open();
+							for(int i = 0; i<selectedIds.size(); i++){
+								mdba.deleteSms(selectedIds.get(i), SmsSchedulerExplActivity.this);
+							}
+							Intent mIntent = new Intent();
+			                 
+			                 mIntent.setAction("My special action");
+			                 PendingIntent pi = PendingIntent.getBroadcast(SmsSchedulerExplActivity.this, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+			         		
+			         		 AlarmManager am = (AlarmManager) SmsSchedulerExplActivity.this.getSystemService(SmsSchedulerExplActivity.this.ALARM_SERVICE);
+			         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+			         		 
+							Toast.makeText(SmsSchedulerExplActivity.this, "Message Deleted", Toast.LENGTH_SHORT).show();
+							
+							
+					        Cursor cur = mdba.fetchAllScheduled();
+					        if(cur.getCount()>0){
+					        	explListLayout.setVisibility(LinearLayout.VISIBLE);
+					        	blankListLayout.setVisibility(LinearLayout.GONE);
+					        }else{
+					        	cur = null;
+					        	cur = mdba.fetchAllSent();
+					        	if(cur.getCount()>0){
+					        		explListLayout.setVisibility(LinearLayout.VISIBLE);
+					            	blankListLayout.setVisibility(LinearLayout.GONE);
+					        	}else{
+					        		explListLayout.setVisibility(LinearLayout.GONE);
+					            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
+					        	}
+					        }
+					        mdba.close();
+						}
+					});
+    				
+    			}else if(groupPosition == 0){
+    				statusImageView.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							ArrayList<Long> selectedIds = new ArrayList<Long>();
+							selectedIds = childDraftArray.get(childPosition).keyIds;
+							mdba.open();
+							for(int i = 0; i<selectedIds.size(); i++){
+								mdba.deleteSms(selectedIds.get(i), SmsSchedulerExplActivity.this);
+							}
+							Intent mIntent = new Intent();
+			                 
+			                 mIntent.setAction("My special action");
+			                 PendingIntent pi = PendingIntent.getBroadcast(SmsSchedulerExplActivity.this, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+			         		
+			         		 AlarmManager am = (AlarmManager) SmsSchedulerExplActivity.this.getSystemService(SmsSchedulerExplActivity.this.ALARM_SERVICE);
+			         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+			         		 
+							Toast.makeText(SmsSchedulerExplActivity.this, "Message Deleted", Toast.LENGTH_SHORT).show();
+							
+							
+					        Cursor cur = mdba.fetchAllScheduled();
+					        if(cur.getCount()>0){
+					        	explListLayout.setVisibility(LinearLayout.VISIBLE);
+					        	blankListLayout.setVisibility(LinearLayout.GONE);
+					        }else{
+					        	cur = null;
+					        	cur = mdba.fetchAllSent();
+					        	if(cur.getCount()>0){
+					        		explListLayout.setVisibility(LinearLayout.VISIBLE);
+					            	blankListLayout.setVisibility(LinearLayout.GONE);
+					        	}else{
+					        		explListLayout.setVisibility(LinearLayout.GONE);
+					            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
+					        	}
+					        }
+					        mdba.close();
+						}
+					});
+    				
+    			}
+    			
     			
     			return v;
     		}
@@ -367,13 +468,19 @@ public class SmsSchedulerExplActivity extends Activity {
     	childData.clear();
     	
     	mdba.open();
-    	Cursor schCur  = mdba.fetchAllScheduled();
+    	Cursor schCur  = mdba.fetchAllScheduledNoDraft();
     	Cursor sentCur = mdba.fetchAllSent();
+    	Cursor draftCur = mdba.fetchAllDrafts();
     	mdba.close();
     	
     	
     	//-----------------------Putting group headers for Expandable list---------------------------- 
     	headerData = new ArrayList<HashMap<String, String>>();
+    	
+    	HashMap<String, String> group3 = new HashMap<String, String>();
+    	group3.put(NAME, "Drafts");
+    	headerData.add(group3);
+    	
     	HashMap<String, String> group1 = new HashMap<String, String>();
     	group1.put(NAME, "Scheduled");
     	headerData.add(group1);
@@ -381,7 +488,9 @@ public class SmsSchedulerExplActivity extends Activity {
     	HashMap<String, String> group2 = new HashMap<String, String>();
     	group2.put(NAME, "Sent");
     	headerData.add(group2);
+    	
     	Log.i("MESSAGE", "results : " + schCur.getCount() + " ");
+    	
     	//---------------------------------------------------------------------------------------------
     	
     	
@@ -445,7 +554,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		
     	}
     	
-    	childData.add(groupChildSch);
+    	
     	
     	//-------------------------------------------------------------------------end of scheduled msgs load-------- 
     	
@@ -522,7 +631,7 @@ public class SmsSchedulerExplActivity extends Activity {
 				
 			case 3:
 				childSentArray.get(i).keyImgRes = R.drawable.icon;
-				break;
+				break; 
 				
 			case 4:
 				childSentArray.get(i).keyImgRes = R.drawable.ic_btn_write_sms;
@@ -538,9 +647,75 @@ public class SmsSchedulerExplActivity extends Activity {
     		mdba.close();
     	}
     	
-    	childData.add(groupChildSent);
+    	
     	
     	//--------------------------------------------------------------------------end of sent msgs load-----------
+    	
+    	
+    	
+    	//------------------------Loading Drafts----------------------------------------------------
+    	
+    	ArrayList<HashMap<String, Object>> groupChildDraft = new ArrayList<HashMap<String, Object>>();
+    	z = -1;
+    	childDraftArray.clear();
+    	if(draftCur.moveToFirst()){
+    		z = -1;
+    		do{
+    			mdba.open();
+    			Cursor spanCur = mdba.fetchSpanForSms(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
+    			
+    			spanCur.moveToFirst();
+    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
+    			
+    			mdba.close();
+    			if(z == -1 || childDraftArray.get(z).keyGrpId != draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_GRPID))){
+    				z++;
+    				ArrayList<Long> tempIds = new ArrayList<Long>();
+    				tempIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
+    				childDraftArray.add(new childDraft(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)),
+    						draftCur.getLong	(draftCur.getColumnIndex(DBAdapter.KEY_GRPID)),
+    						displayName,
+    						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+    						draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
+    						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_DATE)),
+    						draftCur.getInt	(draftCur.getColumnIndex(DBAdapter.KEY_SENT)),
+    						draftCur.getInt	(draftCur.getColumnIndex(DBAdapter.KEY_DELIVER)),
+    						draftCur.getInt	(draftCur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)),
+    						tempIds));
+    			}else{
+    				childDraftArray.get(z).keyNumber = childDraftArray.get(z).keyNumber + ", " + displayName;
+    				childDraftArray.get(z).keyIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
+    			}
+    			
+    		}while(draftCur.moveToNext());
+    	}
+    	
+    	Log.i("MESSAGE", z + "");
+    	for(int i = 0; i<= z; i++){
+    		HashMap<String, Object> child = new HashMap<String, Object>();
+    		child.put(NAME, childDraftArray.get(i).keyMessage);
+    		boolean bool = true;
+    		
+//    		if(childDraftArray.get(i).keyNumber!=""){
+    			childDraftArray.get(i).keyImageRes = R.drawable.icon;
+//    		}else{
+//    			childDraftArray.get(i).keyImageRes = R.drawable.ic_btn_write_sms;
+//    		}
+    		
+    		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
+    		child.put(DATE, childDraftArray.get(i).keyDate);
+    		child.put(RECEIVER, childDraftArray.get(i).keyNumber);
+    		groupChildDraft.add(child);
+    		
+    	}
+    	
+    	childData.add(groupChildDraft);
+    	childData.add(groupChildSch);
+    	childData.add(groupChildSent);
+    	
+    	//-------------------------------------------------------------------------end of drafts load--------
+    	
+    	
     	
     	//--------------------------------------------------------------------------end of child load--------------
     	sizeOfChildSchArray = childSchArray.size();
@@ -605,6 +780,35 @@ public class SmsSchedulerExplActivity extends Activity {
 			this.keyMsgParts 	= keymsgparts;
 			this.keySMillis		= keysmillis;
 			this.keyDMillis		= keydmillis;
+			this.keyIds			= keyids;
+		}
+	}
+	
+	
+	
+	class childDraft{
+		long 		keyId;
+		long 		keyGrpId;
+		String 		keyNumber;
+		String 		keyMessage;
+		long		keyTimeMilis;
+		String 		keyDate;
+		int			keySent;
+		int			keyDeliver;
+		int			keyMsgParts;
+		int 		keyImageRes;
+		ArrayList<Long>	keyIds;
+		
+		childDraft(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, ArrayList<Long> keyids){
+			this.keyId 			= keyid;
+			this.keyGrpId 		= keygrpid;
+			this.keyNumber 		= keynumber;
+			this.keyMessage 	= keymessage;
+			this.keyTimeMilis 	= keytimemilis;
+			this.keyDate 		= keydate;
+			this.keySent 		= keysent;
+			this.keyDeliver 	= keydeliver;
+			this.keyMsgParts 	= keymsgparts;
 			this.keyIds			= keyids;
 		}
 	}

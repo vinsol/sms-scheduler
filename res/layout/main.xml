@@ -55,6 +55,8 @@
 			android:background="@drawable/bg"
 			android:cacheColorHint="@color/transparent"
 			android:groupIndicator="@drawable/expander_group">
+			
+		
 		</ExpandableListView>
 	    
 	</LinearLayout>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="56dp" >
+
+    
+    
+    <TextView 
+        android:id = "@+id/group_expl_list_group_row_group_name"
+        android:layout_height = "wrap_content"
+        android:layout_width = "210dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/contact_list_row_contact_pic"
+        android:layout_margin="5dp"
+        android:paddingLeft="40dp"
+        android:paddingTop="7dp"
+        android:text = "Achin"/>
+    
+	
+    <LinearLayout 
+        android:layout_height = "fill_parent"
+        android:layout_width = "50dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_alignParentRight="true">
+        
+        <CheckBox
+            android:id = "@+id/group_expl_list_group_row_group_check"
+            android:layout_height = "wrap_content"
+            android:layout_width = "wrap_content"
+            android:layout_gravity="center_vertical"/>
+        
+    </LinearLayout>
+</RelativeLayout>

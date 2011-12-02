@@ -4,11 +4,15 @@
     android:layout_height = "fill_parent"
     android:layout_width = "fill_parent">
     
-<!--	<TabHost android:layout_width="fill_parent"
+<TabHost android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/tabHost"
     android:layout_above="@+id/contacts_tabs_buttons_layout">
     
+    <RelativeLayout 
+        android:layout_height = "fill_parent"
+    	android:layout_width = "fill_parent">
+    	
     <TabWidget
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
@@ -17,14 +21,14 @@
     <FrameLayout
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:id="@android:id/tabcontent"> -->
+    	android:id="@android:id/tabcontent"
+    	android:layout_below="@android:id/tabs">
      
      	<LinearLayout
      		android:layout_width="fill_parent"
     		android:layout_height="wrap_content"
     		android:id="@+id/contacts_tab"
     		android:orientation="vertical"
-    		android:paddingTop="60px"
     		android:layout_above="@+id/contacts_tabs_buttons_layout">
     		
      		<ListView
@@ -34,24 +38,41 @@
 
      	</LinearLayout>
 
-<!--      	<LinearLayout
+     	<LinearLayout
+     	    android:id = "@+id/groups_tab"
+    		android:layout_width="match_parent"
+    		android:layout_height="match_parent"
+    		android:orientation="vertical" >
+
+    		<ExpandableListView 
+        		android:id = "@android:id/list"
+        		android:layout_height = "fill_parent"
+       			android:layout_width = "fill_parent">
+    		</ExpandableListView>
+
+		</LinearLayout>
+		
+     	<LinearLayout
      		android:layout_width="fill_parent"
-   	 		android:layout_height="fill_parent"
-    		android:id="@+id/private_groups_tab"
+    		android:layout_height="wrap_content"
+    		android:id="@+id/recents_tab"
     		android:orientation="vertical"
-    		android:paddingTop="60px">
-     
-     		<ListView 
-     		    android:id = "@+id/contacts_tabs_private_groups_list"
+    		android:layout_above="@+id/contacts_tabs_buttons_layout">
+    		
+     		<ListView
+     		    android:id = "@+id/contacts_tabs_recents_list"
      		    android:layout_height = "wrap_content"
      		    android:layout_width = "fill_parent"/>
 
      	</LinearLayout>
 
+
       
   	</FrameLayout>
+  	
+    </RelativeLayout>
 
-	</TabHost>  -->
+</TabHost>
 	
 	<LinearLayout
 	    android:id = "@id/contacts_tabs_buttons_layout"

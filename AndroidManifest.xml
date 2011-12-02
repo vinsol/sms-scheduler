@@ -34,12 +34,15 @@
         <activity android:name = ".ContactsTabsActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait">
             
         </activity>
+        <activity android:name = ".GroupsTestActivity" android:label = "Groups Test" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait">
+            
+        </activity>
         
 		<receiver android:name=".SMSHandleReceiver" android:enabled="true"></receiver>
 		<receiver android:name=".SentReceiver" android:enabled="true"></receiver>
 		<receiver android:name="com.vinsol.sms_scheduler.DeliverReceiver" android:enabled="true"></receiver>
 		
-		<receiver android:name=".BootCompleteReceiver" android:enabled="true" android:exported="false"> 
+		<receiver android:name=".BootCompleteReceiver" android:process=":remote" android:enabled="true" android:exported="false"> 
         	<intent-filter>
             	<action android:name="android.intent.action.BOOT_COMPLETED" />
 				<category android:name="android.intent.category.HOME" />

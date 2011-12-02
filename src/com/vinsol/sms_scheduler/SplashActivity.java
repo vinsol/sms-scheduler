@@ -34,7 +34,6 @@ public class SplashActivity extends Activity {
 		
 	}
 	
-	
 	public void loadContactsData(){
 		contactsList.clear();
 		ContentResolver cr = getContentResolver();
@@ -49,7 +48,16 @@ public class SplashActivity extends Activity {
 	    	    	MyContact contact = new MyContact();
 		    		contact.content_uri_id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
 		    		contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+		    		contact.number = " ";
 	    	    	contact.number = phones.getString(phones.getColumnIndex(Phone.NUMBER));
+	    	    	
+	    	    	Cursor cur = managedQuery(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID}, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID + "=" + contact.content_uri_id, null, null);
+	    	    	
+	    	    	if(cur.moveToFirst()){
+	    	    		do{
+	    	    			contact.groupRowId.add(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
+	    	    		}while(cur.moveToNext());
+	    	    	}
 	    	    	
 	    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.content_uri_id));
 		    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
@@ -62,6 +70,10 @@ public class SplashActivity extends Activity {
 		    	    
 		    	    
 		    	    contactsList.add(contact);
+		    	    
+		    	    
+		    	    //Log.i("MSG", contact.groupRowId.size() + "");
+		    	    
 	    	    }
 	    	  }  
 	    	}while(cursor.moveToNext());
@@ -119,6 +131,7 @@ public class SplashActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			Intent intent = new Intent(SplashActivity.this, SmsSchedulerExplActivity.class);
+			//intent.putExtra("ORIGIN", "new");
 			SplashActivity.this.finish();
 			startActivity(intent);
 			

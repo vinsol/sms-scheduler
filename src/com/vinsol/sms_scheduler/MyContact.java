@@ -1,5 +1,7 @@
 package com.vinsol.sms_scheduler;
 
+import java.util.ArrayList;
+
 import android.graphics.Bitmap;
 import android.text.SpannableStringBuilder;
 
@@ -9,10 +11,11 @@ public class MyContact {
 	String name;
 	String number;
 	Bitmap image;
+	ArrayList<Long> groupRowId; 
 	boolean checked = false;
 	
 	public MyContact(){
-		
+		this.groupRowId = new ArrayList<Long>();
 	}
 	
 	@Override

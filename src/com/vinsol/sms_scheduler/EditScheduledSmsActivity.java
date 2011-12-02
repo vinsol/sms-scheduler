@@ -491,6 +491,9 @@ public class EditScheduledSmsActivity extends Activity {
 			}
 		});
 		
+		//-------------------------------------------------------end of character count setup----------
+		
+		
 		
 		//-------------------Setting up the smileys Grid---------------------------------
 		smileysGrid.setAdapter(new SmileysAdapter(this));
@@ -905,36 +908,36 @@ public class EditScheduledSmsActivity extends Activity {
 		if(text.length()>2){
 			
 		
-		for(int i = 0; i< text.length(); i++){
-			if(text.charAt(i) == ','){
+			for(int i = 0; i< text.length(); i++){
+				if(text.charAt(i) == ','){
 				
-				if(text.charAt(i+1) == ' '){
-					positionTrack = i+2;
-				}
+					if(text.charAt(i+1) == ' '){
+						positionTrack = i+2;
+					}
 				
-			}
-		}
-		
-		String text2 = text.substring(positionTrack, text.length());
-		
-		if(text2.length()>1){
-		
-		Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
-		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
-			SplashActivity.contactsList.get(i).number = refineNumber(SplashActivity.contactsList.get(i).number);
-			Matcher m = p.matcher(SplashActivity.contactsList.get(i).name);
-			if(m.find()){
-				shortlist.add(SplashActivity.contactsList.get(i));
-			}
-			else
-			{
-				m = p.matcher(SplashActivity.contactsList.get(i).number);
-				if(m.find()){
-					shortlist.add(SplashActivity.contactsList.get(i));
 				}
 			}
-		}
-		}
+		
+			String text2 = text.substring(positionTrack, text.length());
+		
+			if(text2.length()>1){
+		
+				Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
+				for(int i = 0; i < SplashActivity.contactsList.size(); i++){
+					SplashActivity.contactsList.get(i).number = refineNumber(SplashActivity.contactsList.get(i).number);
+					Matcher m = p.matcher(SplashActivity.contactsList.get(i).name);
+					if(m.find()){
+						shortlist.add(SplashActivity.contactsList.get(i));
+					}
+					else
+					{
+						m = p.matcher(SplashActivity.contactsList.get(i).number);
+						if(m.find()){
+							shortlist.add(SplashActivity.contactsList.get(i));
+						}
+					}
+				}
+			}
 		}
 		return shortlist;
 					
@@ -1040,6 +1043,9 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	
 	
+	
+	
+	
 	public void refreshSpannableString(){
 		ssb = new SpannableStringBuilder();
 		clickableSpanArrayList = new ArrayList<ClickableSpan>();
@@ -1049,41 +1055,47 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		for(int i = 0; i< Spans.size(); i++){
 			final int _i = i;
-		
 			
 			
-			clickableSpanArrayList.add(new ClickableSpan() {
-				
-				@Override
-				public void onClick(View widget) {
-					Log.i("MSG", _i + "");
-					if(_i< Spans.size()-1){
-						Spans.remove(_i);
-						refreshSpannableString();
-					}else{
-						
+			if((Spans.size()==1 && Spans.get(0).displayName.equals(" "))){
+				Spans.remove(0);
+			}else{
+				clickableSpanArrayList.add(new ClickableSpan() {
+					
+					@Override
+					public void onClick(View widget) {
+						Log.i("MSG", _i + "");
+						if(_i< Spans.size()-1){
+							Spans.remove(_i);
+							refreshSpannableString();
+						}else{
+							
+						}
 					}
-				}
-			
-				@Override
-				public void updateDrawState(TextPaint ds) {
-					super.updateDrawState(ds);
-					ds.bgColor = 0Xffb2d6d7;
-					ds.setUnderlineText(false);
-				}
-			});
-			
-    		ssb.append(Spans.get(i).displayName + ", ");
-    		
-    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), 0);
-    		spanStartPosition += Spans.get(i).displayName.length() + 2;
-			
-			numbersText.setText(ssb);
-			
-			
-			numbersText.setSelection(spanStartPosition);
+				
+					@Override
+					public void updateDrawState(TextPaint ds) {
+						super.updateDrawState(ds);
+						ds.bgColor = 0Xffb2d6d7;
+						ds.setUnderlineText(false);
+					}
+				});
+				
+	    		ssb.append(Spans.get(i).displayName + ", ");
+	    		
+	    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), 0);
+	    		spanStartPosition += Spans.get(i).displayName.length() + 2;
+				
+				numbersText.setText(ssb);
+				
+				
+				numbersText.setSelection(spanStartPosition);
+			}
 		}
 	}
+	
+	
+	
 	
 	
 	@Override
