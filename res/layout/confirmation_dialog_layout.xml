@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    android:padding="10dp">
+
+    
+    
+    <TextView 
+        android:id = "@+id/confirmation_dialog_text"
+        android:layout_height = "wrap_content"
+        android:layout_width = "wrap_content"
+        android:layout_margin = "10dp"
+        android:text="question text"
+        />
+    
+    <LinearLayout 
+        android:layout_height = "wrap_content"
+        android:layout_width = "fill_parent"
+        android:orientation="horizontal">
+        
+        <Button
+            android:id = "@+id/confirmation_dialog_yes_button"
+            android:layout_height = "wrap_content"
+            android:layout_width  = "fill_parent"
+            android:layout_weight = "1"
+            android:layout_margin = "5dp"
+            android:text="Yes"/>
+        
+        <Button
+            android:id = "@+id/confirmation_dialog_no_button"
+            android:layout_height = "wrap_content"
+            android:layout_width  = "fill_parent"
+            android:layout_weight = "1"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:text="No"/>
+        
+    </LinearLayout>
+    
+    
+
+</LinearLayout>

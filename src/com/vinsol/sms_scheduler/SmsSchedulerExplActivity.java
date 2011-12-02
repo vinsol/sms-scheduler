@@ -376,39 +376,66 @@ public class SmsSchedulerExplActivity extends Activity {
 						
 						@Override
 						public void onClick(View v) {
-							ArrayList<Long> selectedIds = new ArrayList<Long>();
-							selectedIds = childSchArray.get(childPosition).keyIds;
-							mdba.open();
-							for(int i = 0; i<selectedIds.size(); i++){
-								mdba.deleteSms(selectedIds.get(i), SmsSchedulerExplActivity.this);
-							}
-							Intent mIntent = new Intent();
-			                 
-			                 mIntent.setAction("My special action");
-			                 PendingIntent pi = PendingIntent.getBroadcast(SmsSchedulerExplActivity.this, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-			         		
-			         		 AlarmManager am = (AlarmManager) SmsSchedulerExplActivity.this.getSystemService(SmsSchedulerExplActivity.this.ALARM_SERVICE);
-			         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-			         		 
-							Toast.makeText(SmsSchedulerExplActivity.this, "Message Deleted", Toast.LENGTH_SHORT).show();
+							final Dialog d = new Dialog(SmsSchedulerExplActivity.this);
+							d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+							d.setContentView(R.layout.confirmation_dialog_layout);
+							TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+							Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+							Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 							
+							questionText.setText("Delete this scheduled message?");
 							
-					        Cursor cur = mdba.fetchAllScheduled();
-					        if(cur.getCount()>0){
-					        	explListLayout.setVisibility(LinearLayout.VISIBLE);
-					        	blankListLayout.setVisibility(LinearLayout.GONE);
-					        }else{
-					        	cur = null;
-					        	cur = mdba.fetchAllSent();
-					        	if(cur.getCount()>0){
-					        		explListLayout.setVisibility(LinearLayout.VISIBLE);
-					            	blankListLayout.setVisibility(LinearLayout.GONE);
-					        	}else{
-					        		explListLayout.setVisibility(LinearLayout.GONE);
-					            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
-					        	}
-					        }
-					        mdba.close();
+							yesButton.setOnClickListener(new OnClickListener() {
+								
+								@Override
+								public void onClick(View v) {
+									ArrayList<Long> selectedIds = new ArrayList<Long>();
+									selectedIds = childSchArray.get(childPosition).keyIds;
+									mdba.open();
+									for(int i = 0; i<selectedIds.size(); i++){
+										mdba.deleteSms(selectedIds.get(i), SmsSchedulerExplActivity.this);
+									}
+									Intent mIntent = new Intent();
+					                 
+					                 mIntent.setAction("My special action");
+					                 PendingIntent pi = PendingIntent.getBroadcast(SmsSchedulerExplActivity.this, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+					         		
+					         		 AlarmManager am = (AlarmManager) SmsSchedulerExplActivity.this.getSystemService(SmsSchedulerExplActivity.this.ALARM_SERVICE);
+					         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+					         		 
+									Toast.makeText(SmsSchedulerExplActivity.this, "Message Deleted", Toast.LENGTH_SHORT).show();
+									
+									
+							        Cursor cur = mdba.fetchAllScheduled();
+							        if(cur.getCount()>0){
+							        	explListLayout.setVisibility(LinearLayout.VISIBLE);
+							        	blankListLayout.setVisibility(LinearLayout.GONE);
+							        }else{
+							        	cur = null;
+							        	cur = mdba.fetchAllSent();
+							        	if(cur.getCount()>0){
+							        		explListLayout.setVisibility(LinearLayout.VISIBLE);
+							            	blankListLayout.setVisibility(LinearLayout.GONE);
+							        	}else{
+							        		explListLayout.setVisibility(LinearLayout.GONE);
+							            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
+							        	}
+							        }
+							        mdba.close();
+							        d.cancel();
+								}
+							});
+							
+							noButton.setOnClickListener(new OnClickListener() {
+								
+								@Override
+								public void onClick(View v) {
+									d.cancel();
+								}
+							});
+							
+							d.show();
+							
 						}
 					});
     				
@@ -417,39 +444,65 @@ public class SmsSchedulerExplActivity extends Activity {
 						
 						@Override
 						public void onClick(View v) {
-							ArrayList<Long> selectedIds = new ArrayList<Long>();
-							selectedIds = childDraftArray.get(childPosition).keyIds;
-							mdba.open();
-							for(int i = 0; i<selectedIds.size(); i++){
-								mdba.deleteSms(selectedIds.get(i), SmsSchedulerExplActivity.this);
-							}
-							Intent mIntent = new Intent();
-			                 
-			                 mIntent.setAction("My special action");
-			                 PendingIntent pi = PendingIntent.getBroadcast(SmsSchedulerExplActivity.this, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-			         		
-			         		 AlarmManager am = (AlarmManager) SmsSchedulerExplActivity.this.getSystemService(SmsSchedulerExplActivity.this.ALARM_SERVICE);
-			         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-			         		 
-							Toast.makeText(SmsSchedulerExplActivity.this, "Message Deleted", Toast.LENGTH_SHORT).show();
+							final Dialog d = new Dialog(SmsSchedulerExplActivity.this);
+							d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+							d.setContentView(R.layout.confirmation_dialog_layout);
+							TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+							Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+							Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 							
+							questionText.setText("Delete this draft?");
 							
-					        Cursor cur = mdba.fetchAllScheduled();
-					        if(cur.getCount()>0){
-					        	explListLayout.setVisibility(LinearLayout.VISIBLE);
-					        	blankListLayout.setVisibility(LinearLayout.GONE);
-					        }else{
-					        	cur = null;
-					        	cur = mdba.fetchAllSent();
-					        	if(cur.getCount()>0){
-					        		explListLayout.setVisibility(LinearLayout.VISIBLE);
-					            	blankListLayout.setVisibility(LinearLayout.GONE);
-					        	}else{
-					        		explListLayout.setVisibility(LinearLayout.GONE);
-					            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
-					        	}
-					        }
-					        mdba.close();
+							yesButton.setOnClickListener(new OnClickListener() {
+								
+								@Override
+								public void onClick(View v) {
+									ArrayList<Long> selectedIds = new ArrayList<Long>();
+									selectedIds = childDraftArray.get(childPosition).keyIds;
+									mdba.open();
+									for(int i = 0; i<selectedIds.size(); i++){
+										mdba.deleteSms(selectedIds.get(i), SmsSchedulerExplActivity.this);
+									}
+									Intent mIntent = new Intent();
+					                 
+					                 mIntent.setAction("My special action");
+					                 PendingIntent pi = PendingIntent.getBroadcast(SmsSchedulerExplActivity.this, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+					         		
+					         		 AlarmManager am = (AlarmManager) SmsSchedulerExplActivity.this.getSystemService(SmsSchedulerExplActivity.this.ALARM_SERVICE);
+					         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+					         		 
+									Toast.makeText(SmsSchedulerExplActivity.this, "Message Deleted", Toast.LENGTH_SHORT).show();
+									
+									
+							        Cursor cur = mdba.fetchAllScheduled();
+							        if(cur.getCount()>0){
+							        	explListLayout.setVisibility(LinearLayout.VISIBLE);
+							        	blankListLayout.setVisibility(LinearLayout.GONE);
+							        }else{
+							        	cur = null;
+							        	cur = mdba.fetchAllSent();
+							        	if(cur.getCount()>0){
+							        		explListLayout.setVisibility(LinearLayout.VISIBLE);
+							            	blankListLayout.setVisibility(LinearLayout.GONE);
+							        	}else{
+							        		explListLayout.setVisibility(LinearLayout.GONE);
+							            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
+							        	}
+							        }
+							        mdba.close();
+							        d.cancel();
+								}
+							});
+							
+							noButton.setOnClickListener(new OnClickListener() {
+								
+								@Override
+								public void onClick(View v) {
+									d.cancel();
+								}
+							});
+							
+							d.show();
 						}
 					});
     				
@@ -875,6 +928,7 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	
 	
+	//********* Adapter for the list of recipients and msg status, in the show dialog of sent msgs ***********************
 	class SentDialogNumberListAdapter extends ArrayAdapter{
 		SentDialogNumberListAdapter(){
     		super(SmsSchedulerExplActivity.this, R.layout.sent_details_number_list_row, numbersForSentDialog);
@@ -936,10 +990,4 @@ public class SmsSchedulerExplActivity extends Activity {
     		return row;
     	}
     }
-	
-	
-	
-	
-	
-	
 }
