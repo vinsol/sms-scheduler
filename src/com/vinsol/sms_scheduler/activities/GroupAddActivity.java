@@ -275,9 +275,52 @@ public class GroupAddActivity extends Activity {
 //					}
 //					mdba.open();
 //					Cursor cur = mdba.fetchIdsForGroups(groupId);
-					newGroupContacts.remove(_position);
-					ids.remove(_position);
-					MyAdapter.this.notifyDataSetChanged();
+					if(newGroupContacts.size()==1 && callingState.equals("edit")){
+						
+						final Dialog d = new Dialog(GroupAddActivity.this);
+						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						d.setContentView(R.layout.confirmation_dialog_layout);
+						
+						TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+						Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+						
+						questionText.setText("Deleting last member will Delete the Group");
+						yesButton.setText("Delete");
+						noButton.setText("Cancel");
+						yesButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								
+								newGroupContacts.remove(_position);
+								ids.remove(_position);
+								MyAdapter.this.notifyDataSetChanged();
+								mdba.open();
+								ids2 = mdba.fetchIdsForGroups(groupId);
+								for(int i = 0; i< ids2.size(); i++){
+									mdba.removeContactFromGroup(ids2.get(i), groupId);
+								}
+								mdba.removeGroup(groupId);
+								mdba.close();
+								GroupAddActivity.this.finish();
+							}
+						});
+						
+						noButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								d.cancel();
+							}
+						});
+						
+						d.show();
+					}else{
+						newGroupContacts.remove(_position);
+						ids.remove(_position);
+						MyAdapter.this.notifyDataSetChanged();
+					}
 					
 				}
 			});

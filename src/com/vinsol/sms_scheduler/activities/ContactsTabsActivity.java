@@ -218,38 +218,30 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 				for(int i = 0; i< ids.size(); i++){
 					idsString.add(String.valueOf(ids.get(i)));
 				}
+				
 				intent.putExtra("IDSARRAY", idsString);
 				if(origin.equals("new")){
 					NewScheduleActivity.groupData.clear();
 					NewScheduleActivity.childData.clear();
-//					for(int i = 0; i< groupDataTemp.size(); i++){
-//						HashMap<String, Object> group = new HashMap<String, Object>();
-//						group.put(ConstantsClass.GROUP_ID, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_ID));
-//						group.put(ConstantsClass.GROUP_NAME, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_NAME));
-//						group.put(ConstantsClass.GROUP_IMAGE, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_IMAGE));
-//						group.put(ConstantsClass.GROUP_TYPE, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_TYPE));
-//						group.put(ConstantsClass.GROUP_CHECK, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_CHECK));
-//						
-//						groupDataTemp.add(group);
-//						ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-//						for(int childCount = 0; childCount< NewScheduleActivity.childData.size(); childCount++){
-//							
-//							HashMap<String, Object> childParams = new HashMap<String, Object>();
-//							childParams.put(ConstantsClass.CHILD_CONTACT_ID, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_CONTACT_ID));
-//							childParams.put(ConstantsClass.CHILD_NAME, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_NAME));
-//							childParams.put(ConstantsClass.CHILD_NUMBER, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_NUMBER));
-//							childParams.put(ConstantsClass.CHILD_IMAGE, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_IMAGE));
-//							childParams.put(ConstantsClass.CHILD_CHECK, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_CHECK));
-//							child.add(childParams);
-//						}
-//						childDataTemp.add(child);
-					
-//					}
+
 					NewScheduleActivity.groupData = groupDataTemp;
 					NewScheduleActivity.childData = childDataTemp;
+					
+					NewScheduleActivity.Spans.clear();
+					for(int i = 0; i< SpansTemp.size(); i++){
+						NewScheduleActivity.Spans.add(SpansTemp.get(i));
+					}
 				}else if(origin.equals("edit")){
+					EditScheduledSmsActivity.groupData.clear();
+					EditScheduledSmsActivity.childData.clear();
+					
 					EditScheduledSmsActivity.groupData = groupDataTemp;
 					EditScheduledSmsActivity.childData = childDataTemp;
+					
+					EditScheduledSmsActivity.Spans.clear();
+					for(int i = 0; i< SpansTemp.size(); i++){
+						EditScheduledSmsActivity.Spans.add(SpansTemp.get(i));
+					}
 				}
 					
 				setResult(2, intent);
@@ -264,19 +256,9 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			public void onClick(View v) {
 				Intent intent = new Intent();
 				intent.putExtra("IDSARRAY", idsString);
-				setResult(2, intent);
+	
 				
-				if(origin.equals("new")){
-					NewScheduleActivity.Spans.clear();
-					for(int i = 0; i< SpansTemp.size(); i++){
-						NewScheduleActivity.Spans.add(SpansTemp.get(i));
-					}
-				}else if(origin.equals("edit")){
-					EditScheduledSmsActivity.Spans.clear();
-					for(int i = 0; i< SpansTemp.size(); i++){
-						EditScheduledSmsActivity.Spans.add(SpansTemp.get(i));
-					}
-				}
+				setResult(2, intent);
 				ContactsTabsActivity.this.finish();
 			}
 		});
@@ -349,17 +331,17 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 		intent.putExtra("IDSARRAY", idsString);
 		setResult(2, intent);
 		
-		if(origin.equals("new")){
-			NewScheduleActivity.Spans.clear();
-			for(int i = 0; i< SpansTemp.size(); i++){
-				NewScheduleActivity.Spans.add(SpansTemp.get(i));
-			}
-		}else if(origin.equals("edit")){
-			EditScheduledSmsActivity.Spans.clear();
-			for(int i = 0; i< SpansTemp.size(); i++){
-				EditScheduledSmsActivity.Spans.add(SpansTemp.get(i));
-			}
-		}
+//		if(origin.equals("new")){
+//			NewScheduleActivity.Spans.clear();
+//			for(int i = 0; i< SpansTemp.size(); i++){
+//				NewScheduleActivity.Spans.add(SpansTemp.get(i));
+//			}
+//		}else if(origin.equals("edit")){
+//			EditScheduledSmsActivity.Spans.clear();
+//			for(int i = 0; i< SpansTemp.size(); i++){
+//				EditScheduledSmsActivity.Spans.add(SpansTemp.get(i));
+//			}
+//		}
 		
 		ContactsTabsActivity.this.finish();
 	}
@@ -392,19 +374,12 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     		nameText.setText(SplashActivity.contactsList.get(position).name);
     		numberText.setText(SplashActivity.contactsList.get(position).number);
     		
-    		if(origin.equals("new")){
-    			for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
-        			if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
-        				contactCheck.setChecked(true);
-        			}
+    		
+    		for(int i = 0; i< SpansTemp.size(); i++){
+        		if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
+        			contactCheck.setChecked(true);
         		}
-    		}else if(origin.equals("edit")){
-    			for(int i = 0; i< EditScheduledSmsActivity.Spans.size(); i++){
-        			if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == EditScheduledSmsActivity.Spans.get(i).entityId){
-        				contactCheck.setChecked(true);
-        			}
-        		}
-    		}
+        	}
     		
     		
     		contactCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -415,26 +390,17 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 						SpannedEntity span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(_position).name, Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id), -1);
 						span.groupIds.add((long) -1);
 						span.groupTypes.add(-1);
-						if(origin.equals("new")){
-							NewScheduleActivity.Spans.add(span);
-						}else if(origin.equals("edit")){
-							EditScheduledSmsActivity.Spans.add(span);
-						}
 						
-					}else{
-						if(origin.equals("new")){
-							for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
-				    			if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
-				    				NewScheduleActivity.Spans.remove(i);
-				    			}
+						SpansTemp.add(span);
+						
+					}else{	
+					
+						for(int i = 0; i<SpansTemp.size(); i++){
+				    		if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == SpansTemp.get(i).entityId){
+				    			SpansTemp.remove(i);
 				    		}
-						}else if(origin.equals("edit")){
-							for(int i = 0; i< EditScheduledSmsActivity.Spans.size(); i++){
-				    			if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == EditScheduledSmsActivity.Spans.get(i).entityId){
-				    				EditScheduledSmsActivity.Spans.remove(i);
-				    			}
-				    		}
-						}
+				    	}
+						
 						
 					}
 				}
@@ -802,32 +768,32 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 		childDataTemp.get(groupPosition).get(childPosition).put(ConstantsClass.CHILD_CHECK, true);
 		boolean spanExist = false;
 		
-		if(origin.equals("new")){
-			for(int i = 0; i < NewScheduleActivity.Spans.size(); i++){
+		
+			for(int i = 0; i < SpansTemp.size(); i++){
 				
-				if(NewScheduleActivity.Spans.get(i).entityId == Long.parseLong((String) childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))){
+				if(SpansTemp.get(i).entityId == Long.parseLong((String) childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))){
 					Log.i("MSG", "got a matching span");
 					spanExist = true;
 					try{
-						NewScheduleActivity.Spans.get(i).groupIds.add(Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+						SpansTemp.get(i).groupIds.add(Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
 						
 					}catch (ClassCastException e) {
-						NewScheduleActivity.Spans.get(i).groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+						SpansTemp.get(i).groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
 					}
 					try{
-						NewScheduleActivity.Spans.get(i).groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+						SpansTemp.get(i).groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
 					}catch (ClassCastException e) {
-						NewScheduleActivity.Spans.get(i).groupTypes.add(Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+						SpansTemp.get(i).groupTypes.add(Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
 					}
-					Log.i("MSG", "span id : " + NewScheduleActivity.Spans.get(i) + " , total spans : " + NewScheduleActivity.Spans.size()+ " after group id addition");
+					Log.i("MSG", "span id : " + SpansTemp.get(i) + " , total spans : " + SpansTemp.size()+ " after group id addition");
 					break;
 				}
-				Log.i("MSG", NewScheduleActivity.Spans.size()+"");
+				Log.i("MSG", SpansTemp.size()+"");
 				
 			}
 			if(!spanExist){
 				Log.i("MSG", "got no matching span");
-				Log.i("MSG", NewScheduleActivity.Spans.size()+"");
+				Log.i("MSG", SpansTemp.size()+"");
 				SpannedEntity span = new SpannedEntity(-1, 2, (String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_NAME), Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID)), -1);
 				try{
 					span.groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
@@ -841,54 +807,11 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 					span.groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
 				}
 				
-				NewScheduleActivity.Spans.add(span);
+				SpansTemp.add(span);
 				contactsAdapter.notifyDataSetChanged();
-				Log.i("MSG", NewScheduleActivity.Spans.size()+" after add");
+				Log.i("MSG", SpansTemp.size()+" after add");
 			}
-		}else if(origin.equals("edit")){
-			for(int i = 0; i < EditScheduledSmsActivity.Spans.size(); i++){
-				
-				if(EditScheduledSmsActivity.Spans.get(i).entityId == Long.parseLong((String) childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))){
-					Log.i("MSG", "got a matching span");
-					spanExist = true;
-					try{
-						EditScheduledSmsActivity.Spans.get(i).groupIds.add(Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
-						
-					}catch (ClassCastException e) {
-						EditScheduledSmsActivity.Spans.get(i).groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
-					}
-					try{
-						EditScheduledSmsActivity.Spans.get(i).groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
-					}catch (ClassCastException e) {
-						EditScheduledSmsActivity.Spans.get(i).groupTypes.add(Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
-					}
-					Log.i("MSG", "span id : " + EditScheduledSmsActivity.Spans.get(i) + " , total spans : " + EditScheduledSmsActivity.Spans.size()+ " after group id addition");
-					break;
-				}
-				Log.i("MSG", EditScheduledSmsActivity.Spans.size()+"");
-				
-			}
-			if(!spanExist){
-				Log.i("MSG", "got no matching span");
-				Log.i("MSG", EditScheduledSmsActivity.Spans.size()+"");
-				SpannedEntity span = new SpannedEntity(-1, 2, (String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_NAME), Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID)), -1);
-				try{
-					span.groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
-					
-				}catch (ClassCastException e) {
-					span.groupIds.add(Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
-				}
-				try{
-					span.groupTypes.add(Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
-				}catch(ClassCastException ce){
-					span.groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
-				}
-				
-				EditScheduledSmsActivity.Spans.add(span);
-				contactsAdapter.notifyDataSetChanged();
-				Log.i("MSG", EditScheduledSmsActivity.Spans.size()+" after add");
-			}
-		}
+		
 	}
 	
 	
@@ -900,12 +823,12 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 		Log.i("MSG", "in removing a check");
 		childDataTemp.get(groupPosition).get(childPosition).put(ConstantsClass.CHILD_CHECK, false);
 		
-		if(origin.equals("new")){
-			for(int i = 0; i < NewScheduleActivity.Spans.size(); i++){
-				if(Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))==NewScheduleActivity.Spans.get(i).entityId){
+		
+			for(int i = 0; i < SpansTemp.size(); i++){
+				if(Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
 				Log.i("MSG", "Span found for deletion");
-				for(int j = 0; j< NewScheduleActivity.Spans.get(i).groupIds.size(); j++){
-					Log.i("MSG", NewScheduleActivity.Spans.get(i).groupIds.get(j) + "spans group Id");
+				for(int j = 0; j< SpansTemp.get(i).groupIds.size(); j++){
+					Log.i("MSG", SpansTemp.get(i).groupIds.get(j) + "spans group Id");
 					Log.i("MSG", groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID) + "group to be removed from span");
 					Long groupIdToRemove;
 					int groupTypeToRemove;
@@ -921,14 +844,14 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 						groupTypeToRemove = (Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE);
 					}
 					
-					if(NewScheduleActivity.Spans.get(i).groupIds.get(j) == groupIdToRemove && NewScheduleActivity.Spans.get(i).groupTypes.get(j) == groupTypeToRemove){
+					if(SpansTemp.get(i).groupIds.get(j) == groupIdToRemove && SpansTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
 						Log.i("MSG", "group id found for deletion");
-						NewScheduleActivity.Spans.get(i).groupIds.remove(j);
+						SpansTemp.get(i).groupIds.remove(j);
 						
 						
-						Log.i("MSG", NewScheduleActivity.Spans.get(i).groupIds.size()+ " group size for this span");
-						if(NewScheduleActivity.Spans.get(i).groupIds.size()==0){
-							NewScheduleActivity.Spans.remove(i);
+						Log.i("MSG", SpansTemp.get(i).groupIds.size()+ " group size for this span");
+						if(SpansTemp.get(i).groupIds.size()==0){
+							SpansTemp.remove(i);
 							contactsAdapter.notifyDataSetChanged();
 						}
 						break;
@@ -949,56 +872,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 //				}
 				}
 			}
-		}else if(origin.equals("edit")){
-			for(int i = 0; i < EditScheduledSmsActivity.Spans.size(); i++){
-				if(Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))==EditScheduledSmsActivity.Spans.get(i).entityId){
-				Log.i("MSG", "Span found for deletion");
-				for(int j = 0; j< EditScheduledSmsActivity.Spans.get(i).groupIds.size(); j++){
-					Log.i("MSG", EditScheduledSmsActivity.Spans.get(i).groupIds.get(j) + "spans group Id");
-					Log.i("MSG", groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID) + "group to be removed from span");
-					Long groupIdToRemove;
-					int groupTypeToRemove;
-					try{
-						groupIdToRemove = Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID));
-					}catch (ClassCastException e) {
-						groupIdToRemove = (Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID);
-					}
-					
-					try{
-						groupTypeToRemove = Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE));
-					}catch (ClassCastException e) {
-						groupTypeToRemove = (Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE);
-					}
-					
-					if(EditScheduledSmsActivity.Spans.get(i).groupIds.get(j) == groupIdToRemove && EditScheduledSmsActivity.Spans.get(i).groupTypes.get(j) == groupTypeToRemove){
-						Log.i("MSG", "group id found for deletion");
-						EditScheduledSmsActivity.Spans.get(i).groupIds.remove(j);
-						
-						
-						Log.i("MSG", EditScheduledSmsActivity.Spans.get(i).groupIds.size()+ " group size for this span");
-						if(EditScheduledSmsActivity.Spans.get(i).groupIds.size()==0){
-							EditScheduledSmsActivity.Spans.remove(i);
-							contactsAdapter.notifyDataSetChanged();
-						}
-						break;
-					}
-				}
-//				boolean z = true;
-//				for(int k = 0; k< childDataTemp.get(groupPosition).get(childPosition).size(); k++){
-//					Log.i("MSG", childDataTemp.get(groupPosition).get(childPosition).size() + "size of childdata for group");
-//					Log.i("MSG", (String)groupDataTemp.get(groupPosition).get(NewScheduleActivity.GROUP_NAME));
-//					if((Boolean)childDataTemp.get(groupPosition).get(k).get(NewScheduleActivity.CHILD_CHECK)){
-//						z = false;
-//						break;
-//					}
-//				}
-//				if(z){
-//					groupDataTemp.get(groupPosition).put(NewScheduleActivity.GROUP_CHECK, false);
-//					mAdapter.notifyDataSetChanged();
-//				}
-				}
-			}
-		}
+		
 	}
 	
 	
@@ -1044,19 +918,12 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     		    		nameText.setText(SplashActivity.contactsList.get(i).name);
     		    		numberText.setText(SplashActivity.contactsList.get(i).number);
     		    		
-    		    		if(origin.equals("new")){
-    		    			for(int j = 0; j< NewScheduleActivity.Spans.size(); j++){
-    		        			if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == NewScheduleActivity.Spans.get(j).entityId){
-    		        				contactCheck.setChecked(true);
-    		        			}
+    		    		
+    		    		for(int j = 0; j< SpansTemp.size(); j++){
+    		        		if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == SpansTemp.get(j).entityId){
+    		        			contactCheck.setChecked(true);
     		        		}
-    		    		}else if(origin.equals("edit")){
-    		    			for(int j = 0; j< EditScheduledSmsActivity.Spans.size(); j++){
-    		        			if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == EditScheduledSmsActivity.Spans.get(j).entityId){
-    		        				contactCheck.setChecked(true);
-    		        			}
-    		        		}
-    		    		}
+    		        	}
     		    		break;
     				}
     				
@@ -1094,53 +961,33 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 						}
 						span.groupIds.add((long) -1);
 						span.groupTypes.add(-1);
-						if(origin.equals("new")){
-							NewScheduleActivity.Spans.add(span);
-						}else if(origin.equals("edit")){
-							EditScheduledSmsActivity.Spans.add(span);
-						}
+						
+						SpansTemp.add(span);
+						
 						contactsAdapter.notifyDataSetChanged();
 					}else{
-						if(origin.equals("new")){
+						
 							
-							for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
+							for(int i = 0; i< SpansTemp.size(); i++){
 				    			if(recentContactIds.get(_position)>-1){
-				    				if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
+				    				if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == SpansTemp.get(i).entityId){
 				    					Log.i("MSG", "got into removing a contact");
-				    					Log.i("MSG", "size of Span " + NewScheduleActivity.Spans.size());
-				    					NewScheduleActivity.Spans.remove(i);
-					    				Log.i("MSG", "size of Span " + NewScheduleActivity.Spans.size());
+				    					Log.i("MSG", "size of Span " + SpansTemp.size());
+				    					SpansTemp.remove(i);
+					    				Log.i("MSG", "size of Span " + SpansTemp.size());
 					    				contactsAdapter.notifyDataSetChanged();
 					    				break;
 					    			}
 				    			}else{
-				    				if(NewScheduleActivity.Spans.get(i).displayName.equals(recentContactNumbers.get(_position))){
-				    					NewScheduleActivity.Spans.remove(i);
+				    				if(SpansTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
+				    					SpansTemp.remove(i);
 				    					contactsAdapter.notifyDataSetChanged();
 				    					break;
 				    				}
 				    			}
 								
 				    		}
-						}else if(origin.equals("edit")){
-							for(int i = 0; i< EditScheduledSmsActivity.Spans.size(); i++){
-								if(recentContactIds.get(_position)>-1){
-									if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == EditScheduledSmsActivity.Spans.get(i).entityId){
-					    				EditScheduledSmsActivity.Spans.remove(i);
-					    				contactsAdapter.notifyDataSetChanged();
-					    				break;
-					    			}
-								}else{
-									if(EditScheduledSmsActivity.Spans.get(i).displayName.equals(recentContactNumbers.get(_position))){
-				    					EditScheduledSmsActivity.Spans.remove(i);
-				    					contactsAdapter.notifyDataSetChanged();
-				    					break;
-				    				}
-								}
-				    			
-				    		}
-							
-						}
+						
 						
 					}
 				}
@@ -1149,6 +996,4 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     		return row;
 		}
 	}
-	
-	
 }
