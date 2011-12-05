@@ -1,5 +1,7 @@
 package com.vinsol.sms_scheduler;
 
+import java.util.ArrayList;
+
 public class SpannedEntity {
 
 	long spanId;
@@ -7,6 +9,8 @@ public class SpannedEntity {
 	String displayName;
 	long entityId;
 	long smsId;
+	ArrayList<Long> groupIds = new ArrayList<Long>();
+	ArrayList<Integer> groupTypes = new ArrayList<Integer>();
 	
 	public SpannedEntity(){
 		

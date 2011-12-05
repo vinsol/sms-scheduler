@@ -33,6 +33,7 @@ public class DBAdapter{
 	private static final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
 	private static final String DATABASE_SPANS_TABLE = "spanTable";
 	private static final String DATABASE_SPAN_GROUP_REL_TABLE = "span_grp_rel_table";
+	private static final String DATABASE_RECENTS_TABLE = "recents_table";
 	private static final int DATABASE_VERSION = 1;
 	
 	Cursor cur;
@@ -91,6 +92,13 @@ public class DBAdapter{
 	public static final String KEY_SPAN_GRP_REL_GRP_ID = "span_grp_rel_grp_id";
 	public static final String KEY_SPAN_GRP_REL_GRP_TYPE = "span_grp_rel_grp_type";
 	
+	
+	//------------------keys for recents table-------------------------
+	public static final String KEY_RECENT_CONTACT_ID = "_id";
+	public static final String KEY_RECENT_CONTACT_CONTACT_ID = "contact_id";
+	public static final String KEY_RECENT_CONTACT_NUMBER = "contact_number";
+	
+	
 	//------------------------------------------------------------------end of static keys defs-------
 	
 	
@@ -134,6 +142,12 @@ public class DBAdapter{
 		DATABASE_SPAN_GROUP_REL_TABLE + " (" + KEY_SPAN_GRP_REL_ID + " integer primary key autoincrement, " +
 		KEY_SPAN_GRP_REL_SPAN_ID + " integer, " + KEY_SPAN_GRP_REL_GRP_ID + " integer, " +
 		KEY_SPAN_GRP_REL_GRP_TYPE + " integer);";
+	
+	
+	private static final String DATABASE_CREATE_RECENTS_TABLE = "create table " +
+		DATABASE_RECENTS_TABLE + " (" + KEY_RECENT_CONTACT_ID + " integer primary key autoincrement, " + 
+		KEY_RECENT_CONTACT_CONTACT_ID + " integer, " + KEY_RECENT_CONTACT_NUMBER + " text);";
+	
 	
 	
 	private SQLiteDatabase db;
@@ -706,6 +720,18 @@ public class DBAdapter{
 	}
 	
 	
+	public ArrayList<Long> fetchSpansForGroup(long groupId){
+		Cursor cur = db.query(DATABASE_SPAN_GROUP_REL_TABLE, new String[]{KEY_SPAN_GRP_REL_SPAN_ID}, KEY_SPAN_GRP_REL_GRP_ID + "=" + groupId, null, null, null, null);
+		ArrayList<Long> spanIds = new ArrayList<Long>();
+		if(cur.moveToFirst()){
+			do{
+				spanIds.add(cur.getLong(cur.getColumnIndex(KEY_SPAN_GRP_REL_SPAN_ID)));
+			}while(cur.moveToNext());
+		}
+		return spanIds;
+	}
+	
+	
 	public void addSpanGroupRel(long spanId, long groupId, int type){
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_SPAN_GRP_REL_SPAN_ID, spanId);
@@ -716,11 +742,52 @@ public class DBAdapter{
 	}
 	
 	
+	public void deleteSpanGroupRelsForSpan(long spanId){
+		db.delete(DATABASE_SPAN_GROUP_REL_TABLE, KEY_SPAN_GRP_REL_SPAN_ID + "=" + spanId, null);
+	}
+	
+	
 	public void deleteSpanGroupRel(long spanId, long groupId, int type){
 		db.delete(DATABASE_SPAN_GROUP_REL_TABLE, KEY_SPAN_GRP_REL_SPAN_ID + "=" + spanId + " AND " + KEY_SPAN_GRP_REL_GRP_ID + "=" + groupId + " AND " + KEY_SPAN_GRP_REL_GRP_TYPE + "=" + type, null);
 	}
 	//----------------------------------------------end of functions for span-group-relation table----------------
 	
+	
+	
+	
+	//----------------------------functions for recents table----------------------------------
+	public void addRecentContact(long contactId, String contactNumber){
+		Log.i("MSG", "came in " + contactId);
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_RECENT_CONTACT_CONTACT_ID, contactId);
+		cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);
+		Cursor cur = db.query(DATABASE_RECENTS_TABLE, new String[]{KEY_RECENT_CONTACT_ID, KEY_RECENT_CONTACT_CONTACT_ID, KEY_RECENT_CONTACT_NUMBER}, null, null, null, null, KEY_RECENT_CONTACT_ID);
+		boolean contactExist = false;
+		if(cur.moveToFirst()){
+			do{
+				if((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId) || (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
+					contactExist = true;
+					break;
+				}
+			}while(cur.moveToNext());
+		}
+		if(!contactExist){
+			if(cur.getCount()<20){
+				db.insert(DATABASE_RECENTS_TABLE, null, cv);
+			}else{
+				cur.moveToFirst();
+				long idToDelete = cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_ID));
+				db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + "=" + idToDelete, null);
+				db.insert(DATABASE_RECENTS_TABLE, null, cv);
+			}
+		}
+	}
+	
+	
+	public Cursor fetchAllRecents(){
+		Cursor cur = db.query(DATABASE_RECENTS_TABLE, null, null, null, null, null, KEY_RECENT_CONTACT_ID);
+		return cur;
+	}
 	
 	
 	
@@ -741,6 +808,7 @@ public class DBAdapter{
 	        db.execSQL(DATABASE_CREATE_GROUP_CONTACT_RELATION);
 	        db.execSQL(DATABASE_CREATE_SPANS_TABLE);
 	        db.execSQL(DATABASE_CREATE_SPAN_GROUP_REL_TABLE);
+	        db.execSQL(DATABASE_CREATE_RECENTS_TABLE);
 	        
 	        
 	        ContentValues initialPi = new ContentValues();

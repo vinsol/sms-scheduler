@@ -72,27 +72,36 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 	
 	//----------- Variables relating to Groups Tab-------------------------------
 	ExpandableListView groupExplList;
-	ArrayList<ArrayList<HashMap<String, Object>>> childData = new ArrayList<ArrayList<HashMap<String, Object>>>();
-	ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
+	ArrayList<ArrayList<HashMap<String, Object>>> childDataTemp = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	ArrayList<HashMap<String, Object>> groupDataTemp = new ArrayList<HashMap<String, Object>>();
 	//boolean empty;
 	
-	private final String GROUP_NAME = "group_name";
-	private final String GROUP_CHECK = "group_check";
-	private final String GROUP_IMAGE = "group_image";
-	private final String GROUP_TYPE = "group_type";
-	private final String GROUP_ID = "group_id";
-	
-	private final String CHILD_NAME = "child_name";
-	private final String CHILD_CHECK = "child_check";
-	private final String CHILD_NUMBER = "child_number";
-	private final String CHILD_IMAGE = "child_contact_image";
-	private final String CHILD_CONTACT_ID = "child_contact_id";
+//	private final String GROUP_NAME = "group_name";
+//	private final String GROUP_CHECK = "group_check";
+//	private final String GROUP_IMAGE = "group_image";
+//	private final String GROUP_TYPE = "group_type";
+//	private final String GROUP_ID = "group_id";
+//	
+//	private final String CHILD_NAME = "child_name";
+//	private final String CHILD_CHECK = "child_check";
+//	private final String CHILD_NUMBER = "child_number";
+//	private final String CHILD_IMAGE = "child_contact_image";
+//	private final String CHILD_CONTACT_ID = "child_contact_id";
 
 	SimpleExpandableListAdapter mAdapter;
-	ArrayList<GroupStructure> GroupTemp = new ArrayList<GroupStructure>();
+//	ArrayList<GroupStructure> GroupTemp = new ArrayList<GroupStructure>();
 	//-----------------------------------------------------------------------------
 	
 	
+	
+	
+	//----------------------Variables relating to Recents Tab-----------------------
+	ArrayList<Long> recentIds = new ArrayList<Long>();
+	ArrayList<Long> recentContactIds = new ArrayList<Long>();
+	ArrayList<String> recentContactNumbers = new ArrayList<String>();
+	ListView recentsList;
+	RecentsAdapter recentsAdapter;
+	//------------------------------------------------------------------------------
 	
 	
 	@Override
@@ -133,23 +142,59 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			for(int i = 0; i < NewScheduleActivity.Spans.size(); i++){
 				SpansTemp.add(NewScheduleActivity.Spans.get(i));
 			}
-//			for(int i = 0; i < NewScheduleActivity.Groups.size(); i++){
-//				GroupTemp.add(NewScheduleActivity.Groups.get(i));
-//			}
+			for(int groupCount = 0; groupCount< NewScheduleActivity.groupData.size(); groupCount++){
+				HashMap<String, Object> group = new HashMap<String, Object>();
+				group.put(ConstantsClass.GROUP_ID, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_ID));
+				group.put(ConstantsClass.GROUP_NAME, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_NAME));
+				group.put(ConstantsClass.GROUP_IMAGE, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_IMAGE));
+				group.put(ConstantsClass.GROUP_TYPE, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_TYPE));
+				group.put(ConstantsClass.GROUP_CHECK, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_CHECK));
+				
+				groupDataTemp.add(group);
+				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+				for(int childCount = 0; childCount< NewScheduleActivity.childData.get(groupCount).size(); childCount++){
+					
+					HashMap<String, Object> childParams = new HashMap<String, Object>();
+					childParams.put(ConstantsClass.CHILD_CONTACT_ID, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_CONTACT_ID));
+					childParams.put(ConstantsClass.CHILD_NAME, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_NAME));
+					childParams.put(ConstantsClass.CHILD_NUMBER, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_NUMBER));
+					childParams.put(ConstantsClass.CHILD_IMAGE, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_IMAGE));
+					childParams.put(ConstantsClass.CHILD_CHECK, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_CHECK));
+					child.add(childParams);
+				}
+				childDataTemp.add(child);
+			}
+			
 		}else if(origin.equals("edit")){
 			for(int i = 0; i < EditScheduledSmsActivity.Spans.size(); i++){
 				SpansTemp.add(EditScheduledSmsActivity.Spans.get(i));
 			}
-//			for(int i = 0; i < EditScheduledSmsActivity.Groups.size(); i++){
-//				GroupTemp.add(EditScheduledSmsActivity.Groups.get(i));
-//			}
+			Log.i("MSG", EditScheduledSmsActivity.groupData.size()+"group data size from edit activity");
+			for(int groupCount = 0; groupCount< EditScheduledSmsActivity.groupData.size(); groupCount++){
+				HashMap<String, Object> group = new HashMap<String, Object>();
+				group.put(ConstantsClass.GROUP_ID, EditScheduledSmsActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_ID));
+				group.put(ConstantsClass.GROUP_NAME, EditScheduledSmsActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_NAME));
+				group.put(ConstantsClass.GROUP_IMAGE, EditScheduledSmsActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_IMAGE));
+				group.put(ConstantsClass.GROUP_TYPE, EditScheduledSmsActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_TYPE));
+				group.put(ConstantsClass.GROUP_CHECK, EditScheduledSmsActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_CHECK));
+				
+				groupDataTemp.add(group);
+				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+				Log.i("MSG", EditScheduledSmsActivity.childData.get(groupCount).size()+"child data size from edit activity");
+				for(int childCount = 0; childCount < EditScheduledSmsActivity.childData.get(groupCount).size(); childCount++){
+					
+					HashMap<String, Object> childParams = new HashMap<String, Object>();
+					childParams.put(ConstantsClass.CHILD_CONTACT_ID, EditScheduledSmsActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_CONTACT_ID));
+					childParams.put(ConstantsClass.CHILD_NAME, EditScheduledSmsActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_NAME));
+					childParams.put(ConstantsClass.CHILD_NUMBER, EditScheduledSmsActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_NUMBER));
+					childParams.put(ConstantsClass.CHILD_IMAGE, EditScheduledSmsActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_IMAGE));
+					childParams.put(ConstantsClass.CHILD_CHECK, EditScheduledSmsActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_CHECK));
+					child.add(childParams);
+				}
+				childDataTemp.add(child);
+			}
 		}
-//		if(GroupTemp.size()==0){
-//			empty = true;
-//		}else{
-//			empty = false;
-//		}
-		
+
 		
 		
         doneButton			= (Button) 		findViewById(R.id.contacts_tab_done_button);
@@ -165,6 +210,39 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 					idsString.add(String.valueOf(ids.get(i)));
 				}
 				intent.putExtra("IDSARRAY", idsString);
+				if(origin.equals("new")){
+					NewScheduleActivity.groupData.clear();
+					NewScheduleActivity.childData.clear();
+//					for(int i = 0; i< groupDataTemp.size(); i++){
+//						HashMap<String, Object> group = new HashMap<String, Object>();
+//						group.put(ConstantsClass.GROUP_ID, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_ID));
+//						group.put(ConstantsClass.GROUP_NAME, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_NAME));
+//						group.put(ConstantsClass.GROUP_IMAGE, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_IMAGE));
+//						group.put(ConstantsClass.GROUP_TYPE, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_TYPE));
+//						group.put(ConstantsClass.GROUP_CHECK, NewScheduleActivity.groupData.get(groupCount).get(ConstantsClass.GROUP_CHECK));
+//						
+//						groupDataTemp.add(group);
+//						ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+//						for(int childCount = 0; childCount< NewScheduleActivity.childData.size(); childCount++){
+//							
+//							HashMap<String, Object> childParams = new HashMap<String, Object>();
+//							childParams.put(ConstantsClass.CHILD_CONTACT_ID, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_CONTACT_ID));
+//							childParams.put(ConstantsClass.CHILD_NAME, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_NAME));
+//							childParams.put(ConstantsClass.CHILD_NUMBER, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_NUMBER));
+//							childParams.put(ConstantsClass.CHILD_IMAGE, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_IMAGE));
+//							childParams.put(ConstantsClass.CHILD_CHECK, NewScheduleActivity.childData.get(groupCount).get(childCount).get(ConstantsClass.CHILD_CHECK));
+//							child.add(childParams);
+//						}
+//						childDataTemp.add(child);
+					
+//					}
+					NewScheduleActivity.groupData = groupDataTemp;
+					NewScheduleActivity.childData = childDataTemp;
+				}else if(origin.equals("edit")){
+					EditScheduledSmsActivity.groupData = groupDataTemp;
+					EditScheduledSmsActivity.childData = childDataTemp;
+				}
+					
 				setResult(2, intent);
 				ContactsTabsActivity.this.finish();
 			}
@@ -207,7 +285,6 @@ public class ContactsTabsActivity extends ExpandableListActivity {
         
         //---------------- Setting up the Groups Tab -----------------------------------------------
         groupExplList = (ExpandableListView) findViewById(android.R.id.list);
-		loadGroupsData();
 		customGroupsAdapterSetup();
 		
 		groupExplList.setAdapter(mAdapter);
@@ -215,8 +292,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			
 			@Override
 			public void onGroupExpand(int groupPosition) {
-//				loadGroupsData();
-//				mAdapter.notifyDataSetChanged();
+
 			}
 		});
 		
@@ -224,59 +300,32 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			
 			@Override
 			public void onGroupCollapse(int groupPosition) {
-//				loadGroupsData();
-//				mAdapter.notifyDataSetChanged();
+
 			}
 		});
 		//----------------------------------------------------end of Groups Tab setup-------------------
         
         
+		
+		//--------------------setting up Recents Tab--------------------------------
+		recentIds.clear();
+		recentContactIds.clear();
+		recentContactNumbers.clear();
+		recentsList = (ListView) findViewById(R.id.contacts_tabs_recents_list);
+		mdba.open();
+		Cursor cur = mdba.fetchAllRecents();
+		if(cur.moveToFirst()){
+			do{
+				recentIds.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_ID)));
+				recentContactIds.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_CONTACT_ID)));
+				recentContactNumbers.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_NUMBER)));
+			}while(cur.moveToNext());
+		}
+		recentsAdapter = new RecentsAdapter();
+		recentsList.setAdapter(recentsAdapter);
+		mdba.close();
 	}
 	
-	
-	
-	
-	
-	
-	protected void onRestoreInstanceState(Bundle state) {
-	    super.onRestoreInstanceState(state);
-
-	    // Retrieve list state and list/item positions
-	    mListState = state.getParcelable(LIST_STATE_KEY);
-	    mListPosition = state.getInt(LIST_POSITION_KEY);
-	    mItemPosition = state.getInt(ITEM_POSITION_KEY);
-	}
-
-	protected void onResume() {
-	    super.onResume();
-
-	    // Load data from DB and put it onto the list
-	    loadGroupsData();
-
-	    // Restore list state and list/item positions
-	    ExpandableListView listView = getExpandableListView();
-	    if (mListState != null)
-	        listView.onRestoreInstanceState(mListState);
-	    listView.setSelectionFromTop(mListPosition, mItemPosition);
-	}
-
-	protected void onSaveInstanceState(Bundle state) {
-	    super.onSaveInstanceState(state);
-
-	    // Save list state
-	    ExpandableListView listView = getExpandableListView();
-	    mListState = listView.onSaveInstanceState();
-	    state.putParcelable(LIST_STATE_KEY, mListState);
-
-	    // Save position of first visible item
-	    mListPosition = listView.getFirstVisiblePosition();
-	    state.putInt(LIST_POSITION_KEY, mListPosition);
-
-	    // Save scroll position of item
-	    View itemView = listView.getChildAt(0);
-	    mItemPosition = itemView == null ? 0 : itemView.getTop();
-	    state.putInt(ITEM_POSITION_KEY, mItemPosition);
-	}
 	
 	
 	
@@ -355,6 +404,8 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
 						SpannedEntity span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(_position).name, Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id), -1);
+						span.groupIds.add((long) -1);
+						span.groupTypes.add(-1);
 						if(origin.equals("new")){
 							NewScheduleActivity.Spans.add(span);
 						}else if(origin.equals("edit")){
@@ -387,154 +438,154 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 	
 	
 	
-	public void loadGroupsData(){
-		
-		groupData.clear();
-		childData.clear();
-		
-		//------------------------ Setting up data for native groups ---------------------------
-		String[] projection = new String[] {
-                Groups._ID,
-                Groups.TITLE,
-                Groups.SYSTEM_ID,
-                Groups.NOTES,
-             };
-        Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
-        int count = 0;
-        
-        Cursor groupCursor = managedQuery(groupsUri, projection, null, null, null);
-        Log.i("MSG", GroupTemp.size() + "");
-        if(groupCursor.moveToFirst()){
-        	
-        	do{
-        		HashMap<String, Object> group = new HashMap<String, Object>();
-        		group.put(GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
-        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
-//        		if(empty){
-        			group.put(GROUP_CHECK, false);
-//        		}else{
-//        			group.put(GROUP_CHECK, GroupTemp.get(count).isChecked);
+//	public void loadGroupsData(){
+//		
+//		groupData.clear();
+//		childData.clear();
+//		
+//		//------------------------ Setting up data for native groups ---------------------------
+//		String[] projection = new String[] {
+//                Groups._ID,
+//                Groups.TITLE,
+//                Groups.SYSTEM_ID,
+//                Groups.NOTES,
+//             };
+//        Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
+//        int count = 0;
+//        
+//        Cursor groupCursor = managedQuery(groupsUri, projection, null, null, null);
+//        Log.i("MSG", GroupTemp.size() + "");
+//        if(groupCursor.moveToFirst()){
+//        	
+//        	do{
+//        		HashMap<String, Object> group = new HashMap<String, Object>();
+//        		group.put(GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
+//        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+////        		if(empty){
+//        			group.put(GROUP_CHECK, false);
+////        		}else{
+////        			group.put(GROUP_CHECK, GroupTemp.get(count).isChecked);
+////        		}
+//        		group.put(GROUP_TYPE, 1);
+//        		group.put(GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
+//        		
+//        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+//        		
+////        		GroupStructure groupStructure;
+////        		if(GroupTemp.size() == 0){
+////        			groupStructure = new GroupStructure();
+////        			groupStructure.groupId = groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID));
+////        			groupStructure.isChecked = false;
+////        			ArrayList<Long> ids = new ArrayList<Long>();
+////        			groupStructure.CheckedContactsIds = ids;
+////        			GroupTemp.add(groupStructure);
+////        		}
+//        		
+//        		groupData.add(group);
+//        		
+//        		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
+//        			for(int j = 0; j< SplashActivity.contactsList.get(i).groupRowId.size(); j++){
+//        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SplashActivity.contactsList.get(i).groupRowId.get(j)){
+//        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
+//        					childParameters.put(CHILD_NAME, SplashActivity.contactsList.get(i).name);
+//        					childParameters.put(CHILD_NUMBER, SplashActivity.contactsList.get(i).number);
+//        					childParameters.put(CHILD_IMAGE, SplashActivity.contactsList.get(i).image);
+////        					if(empty){
+//        						childParameters.put(CHILD_CHECK, false);
+////        					}else{
+////        						for(int k = 0; k< GroupTemp.get(count).CheckedContactsIds.size(); k++){
+////        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id)){
+////        								childParameters.put(CHILD_CHECK, true);
+////        							}else{
+////        								childParameters.put(CHILD_CHECK, false);
+////        							}
+////        						}
+////        					}
+//        					childParameters.put(CHILD_CONTACT_ID, SplashActivity.contactsList.get(i).content_uri_id);
+//        					child.add(childParameters);
+//        					
+//        				}
+//        			}
 //        		}
-        		group.put(GROUP_TYPE, 1);
-        		group.put(GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
-        		
-        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-        		
+//        		childData.add(child);
+//        		count++;
+//        	}while(groupCursor.moveToNext());
+//        }
+//        
+//        // ---------------------------------------------------end of setting up native groups data-------------
+//        
+//        
+//        
+//        //---------------------------- Setting up private Groups data ------------------------------------
+//        
+//        mdba.open();
+//        Cursor groupsCursor = mdba.fetchAllGroups();
+//        if(groupsCursor.moveToFirst()){
+//        	do{
+//        		HashMap<String, Object> group = new HashMap<String, Object>();
+//        		group.put(GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
+//        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+////        		if(empty){
+//        			group.put(GROUP_CHECK, false);
+////        		}else{
+////        			group.put(GROUP_CHECK, GroupTemp.get(count).isChecked);
+////        		}
+//        		group.put(GROUP_TYPE, 2);
+//        		group.put(GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+//        		
+//        		groupData.add(group);
 //        		GroupStructure groupStructure;
 //        		if(GroupTemp.size() == 0){
 //        			groupStructure = new GroupStructure();
-//        			groupStructure.groupId = groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID));
+//        			groupStructure.groupId = Long.parseLong(groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
 //        			groupStructure.isChecked = false;
 //        			ArrayList<Long> ids = new ArrayList<Long>();
 //        			groupStructure.CheckedContactsIds = ids;
 //        			GroupTemp.add(groupStructure);
 //        		}
-        		
-        		groupData.add(group);
-        		
-        		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
-        			for(int j = 0; j< SplashActivity.contactsList.get(i).groupRowId.size(); j++){
-        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SplashActivity.contactsList.get(i).groupRowId.get(j)){
-        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-        					childParameters.put(CHILD_NAME, SplashActivity.contactsList.get(i).name);
-        					childParameters.put(CHILD_NUMBER, SplashActivity.contactsList.get(i).number);
-        					childParameters.put(CHILD_IMAGE, SplashActivity.contactsList.get(i).image);
-//        					if(empty){
-        						childParameters.put(CHILD_CHECK, false);
-//        					}else{
-//        						for(int k = 0; k< GroupTemp.get(count).CheckedContactsIds.size(); k++){
-//        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id)){
-//        								childParameters.put(CHILD_CHECK, true);
-//        							}else{
-//        								childParameters.put(CHILD_CHECK, false);
-//        							}
-//        						}
-//        					}
-        					childParameters.put(CHILD_CONTACT_ID, SplashActivity.contactsList.get(i).content_uri_id);
-        					child.add(childParameters);
-        					
-        				}
-        			}
-        		}
-        		childData.add(child);
-        		count++;
-        	}while(groupCursor.moveToNext());
-        }
-        
-        // ---------------------------------------------------end of setting up native groups data-------------
-        
-        
-        
-        //---------------------------- Setting up private Groups data ------------------------------------
-        
-        mdba.open();
-        Cursor groupsCursor = mdba.fetchAllGroups();
-        if(groupsCursor.moveToFirst()){
-        	do{
-        		HashMap<String, Object> group = new HashMap<String, Object>();
-        		group.put(GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
-        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
-//        		if(empty){
-        			group.put(GROUP_CHECK, false);
-//        		}else{
-//        			group.put(GROUP_CHECK, GroupTemp.get(count).isChecked);
+//        		
+//        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+//        		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+//        		
+//        		for(int i = 0; i< contactIds.size(); i++){
+//        			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
+//        				if(contactIds.get(i)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+//        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
+//        					childParameters.put(CHILD_NAME, SplashActivity.contactsList.get(j).name);
+//        					childParameters.put(CHILD_NUMBER, SplashActivity.contactsList.get(j).number);
+//        					childParameters.put(CHILD_CONTACT_ID, SplashActivity.contactsList.get(j).content_uri_id);
+//        					childParameters.put(CHILD_IMAGE, SplashActivity.contactsList.get(j).image);
+////        					if(empty){
+//        						childParameters.put(CHILD_CHECK, false);
+////        					}else{
+////        						for(int k = 0; k< GroupTemp.get(count).CheckedContactsIds.size(); k++){
+////        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+////        								childParameters.put(CHILD_CHECK, true);
+////        							}else{
+////        								childParameters.put(CHILD_CHECK, false);
+////        							}
+////        						}
+////        					}
+//        					
+//        					child.add(childParameters);
+//        				}
+//        			}
 //        		}
-        		group.put(GROUP_TYPE, 2);
-        		group.put(GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
-        		
-        		groupData.add(group);
-        		GroupStructure groupStructure;
-        		if(GroupTemp.size() == 0){
-        			groupStructure = new GroupStructure();
-        			groupStructure.groupId = Long.parseLong(groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
-        			groupStructure.isChecked = false;
-        			ArrayList<Long> ids = new ArrayList<Long>();
-        			groupStructure.CheckedContactsIds = ids;
-        			GroupTemp.add(groupStructure);
-        		}
-        		
-        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-        		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
-        		
-        		for(int i = 0; i< contactIds.size(); i++){
-        			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
-        				if(contactIds.get(i)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
-        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-        					childParameters.put(CHILD_NAME, SplashActivity.contactsList.get(j).name);
-        					childParameters.put(CHILD_NUMBER, SplashActivity.contactsList.get(j).number);
-        					childParameters.put(CHILD_CONTACT_ID, SplashActivity.contactsList.get(j).content_uri_id);
-        					childParameters.put(CHILD_IMAGE, SplashActivity.contactsList.get(j).image);
-//        					if(empty){
-        						childParameters.put(CHILD_CHECK, false);
-//        					}else{
-//        						for(int k = 0; k< GroupTemp.get(count).CheckedContactsIds.size(); k++){
-//        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
-//        								childParameters.put(CHILD_CHECK, true);
-//        							}else{
-//        								childParameters.put(CHILD_CHECK, false);
-//        							}
-//        						}
-//        					}
-        					
-        					child.add(childParameters);
-        				}
-        			}
-        		}
-        		
-        		childData.add(child);
-        		count++;
-        	}while(groupsCursor.moveToNext());
-        }
-        
-        mdba.close();
-
-//        for(int k = 0 ; k < groupData.size(); k++){
-//        	Log.i("MSG", "group");
-//        	for(int n = 0 ; n< childData.get(k).size(); n++){
-//        		Log.i("MSG", "fdsafdsa");
-//        	}
+//        		
+//        		childData.add(child);
+//        		count++;
+//        	}while(groupsCursor.moveToNext());
 //        }
-	}
+//        
+//        mdba.close();
+//
+////        for(int k = 0 ; k < groupData.size(); k++){
+////        	Log.i("MSG", "group");
+////        	for(int n = 0 ; n< childData.get(k).size(); n++){
+////        		Log.i("MSG", "fdsafdsa");
+////        	}
+////        }
+//	}
 	
 	
 	
@@ -545,11 +596,11 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 		
 		mAdapter = new SimpleExpandableListAdapter(
     	    	this,
-    	    	groupData,
+    	    	groupDataTemp,
     	    	android.R.layout.simple_expandable_list_item_1,
-    	    	new String[]{ GROUP_NAME },
+    	    	new String[]{ ConstantsClass.GROUP_NAME },
     	    	new int[] { android.R.id.text1 },
-    	    	childData,
+    	    	childDataTemp,
     	    	0,
     	    	null,
     	    	new int[] {}
@@ -557,7 +608,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			
 			@Override
 			public Object getChild(int groupPosition, int childPosition) {
-			   return childData.get(groupPosition).get(childPosition);
+			   return childDataTemp.get(groupPosition).get(childPosition);
 			}
 			
 			
@@ -565,7 +616,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			public long getChildId(int groupPosition, int childPosition) {
 			   long id = childPosition;
 				for(int i = 0; i<groupPosition; i ++) {
-				   id += childData.get(groupPosition).size(); 
+				   id += childDataTemp.get(groupPosition).size(); 
 			   }
 				return id;
 			}
@@ -573,17 +624,17 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     		
     		@Override
     		public int getChildrenCount(int groupPosition) {
-    		   return childData.get(groupPosition).size();
+    		   return childDataTemp.get(groupPosition).size();
     		}
     		 
     		@Override
     		public Object getGroup(int groupPosition) {
-    		   return childData.get(groupPosition);
+    		   return childDataTemp.get(groupPosition);
     		}
     		 
     		@Override
     		public int getGroupCount() {
-    		   return groupData.size();
+    		   return groupDataTemp.size();
     		}
     		 
     		@Override
@@ -604,8 +655,8 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     			//ImageView groupImage	= (ImageView) convertView.findViewById(R.id.group_expl_list_group_row_dropdown_image);
     			
     			
-    			groupHeading.setText((String)groupData.get(groupPosition).get(GROUP_NAME));
-    			groupCheck.setChecked((Boolean)groupData.get(groupPosition).get(GROUP_CHECK));
+    			groupHeading.setText((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_NAME));
+    			groupCheck.setChecked((Boolean)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_CHECK));
     			//groupImage.setImageBitmap((Bitmap)groupData.get(groupPosition).get(GROUP_IMAGE));
     			
     			groupCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -613,11 +664,21 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 						if(isChecked){
-							groupData.get(groupPosition).put(GROUP_CHECK, true);
-//							GroupTemp.get(groupPosition).isChecked = true;
+							groupDataTemp.get(groupPosition).put(ConstantsClass.GROUP_CHECK, true);
+							for(int i = 0; i< childDataTemp.get(groupPosition).size(); i++){
+								if(!((Boolean)childDataTemp.get(groupPosition).get(i).get(ConstantsClass.CHILD_CHECK))){
+									addCheck(groupPosition, i);
+								}
+							}
+							mAdapter.notifyDataSetChanged();
 						}else{
-							groupData.get(groupPosition).put(GROUP_CHECK, false);
-//							GroupTemp.get(groupPosition).isChecked = false;
+							groupDataTemp.get(groupPosition).put(ConstantsClass.GROUP_CHECK, false);
+							for(int i = 0; i< childDataTemp.get(groupPosition).size(); i++){
+								if((Boolean)childDataTemp.get(groupPosition).get(i).get(ConstantsClass.CHILD_CHECK)){
+									removeCheck(groupPosition, i);
+								}
+							}
+							mAdapter.notifyDataSetChanged();
 						}
 					}
 				});
@@ -644,15 +705,15 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			@Override
     		public android.view.View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
     			
-				HashMap<String, Object> child = childData.get(groupPosition).get(childPosition);
+				HashMap<String, Object> child = childDataTemp.get(groupPosition).get(childPosition);
 				
-				Log.v("sazwqa", "11111111111111111111111111111111111111111111111111111111111");
-				Log.v("sazwqa", "GroupPosition = " + groupPosition);
-				Log.v("sazwqa", "ChildPosition = " + childPosition);
-				Log.v("sazwqa", "contact Name = " + child.get(CHILD_NAME));
-				Log.v("sazwqa", "is Checked = " + child.get(CHILD_CHECK));
-				Log.v("sazwqa", "11111111111111111111111111111111111111111111111111111111111");
-				
+//				Log.v("sazwqa", "11111111111111111111111111111111111111111111111111111111111");
+//				Log.v("sazwqa", "GroupPosition = " + groupPosition);
+//				Log.v("sazwqa", "ChildPosition = " + childPosition);
+//				Log.v("sazwqa", "contact Name = " + child.get(NewScheduleActivity.CHILD_NAME));
+//				Log.v("sazwqa", "is Checked = " + child.get(NewScheduleActivity.CHILD_CHECK));
+//				Log.v("sazwqa", "11111111111111111111111111111111111111111111111111111111111");
+//				
 				
 //    			if(convertView == null){
     				convertView = layoutInflater.inflate(R.layout.contacts_list_row_design, null, false);
@@ -662,44 +723,40 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     			final TextView childNumberText		= (TextView)  convertView.findViewById(R.id.contact_list_row_contact_number);
     			final CheckBox childCheck			= (CheckBox)  convertView.findViewById(R.id.contact_list_row_contact_check);
     			
-    			childNameText.setText((String)childData.get(groupPosition).get(childPosition).get(CHILD_NAME));
-    			childNumberText.setText((String)childData.get(groupPosition).get(childPosition).get(CHILD_NUMBER));
-    			childContactImage.setImageBitmap((Bitmap)childData.get(groupPosition).get(childPosition).get(CHILD_IMAGE));
-    			childCheck.setChecked((Boolean)childData.get(groupPosition).get(childPosition).get(CHILD_CHECK));
+    			childNameText.setText((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_NAME));
+    			childNumberText.setText((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_NUMBER));
+    			childContactImage.setImageBitmap((Bitmap)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_IMAGE));
+    			childCheck.setChecked((Boolean)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CHECK));
     			
     			childCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 					
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+						Log.i("MSG", NewScheduleActivity.Spans.size()+" on entering oncheckchanged");
 						if(isChecked){
-							childData.get(groupPosition).get(childPosition).put(CHILD_CHECK, true);
-//							GroupTemp.get(groupPosition).CheckedContactsIds.add((Long)childData.get(groupPosition).get(childPosition).get(CHILD_CONTACT_ID));
+							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
+							addCheck(groupPosition, childPosition);
+							
+								
 						}else{
-							childData.get(groupPosition).get(childPosition).put(CHILD_CHECK, false);
-//		
-//							for(int k = 0 ; k< GroupTemp.get(groupPosition).CheckedContactsIds.size(); k++){
-//								if(GroupTemp.get(groupPosition).CheckedContactsIds.get(k) == (Long)childData.get(groupPosition).get(childPosition).get(CHILD_CONTACT_ID)){
-//									GroupTemp.get(groupPosition).CheckedContactsIds.remove(k);
-//									break;
-//								}
-//							}
+							removeCheck(groupPosition, childPosition);
 						}
 					}
 				});
-					
-					
     			
-//    			convertView.setOnClickListener(new OnClickListener() {
-//					
-//					@Override
-//					public void onClick(View v) {
-//						if(childCheck.isChecked()){
-//							childCheck.setChecked(false);
-//						}else{
-//							childCheck.setChecked(true);
-//						}
-//					}
-//				});
+    			
+    			
+    			convertView.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						if(childCheck.isChecked()){
+							childCheck.setChecked(false);
+						}else{
+							childCheck.setChecked(true);
+						}
+					}
+				});
     			
     			return convertView;
     		}
@@ -727,5 +784,362 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     }
 	
 	
-
+	
+	
+	
+	
+	public void addCheck(int groupPosition, int childPosition){
+		Log.i("MSG", "entering childcheck is checked true listner");
+		childDataTemp.get(groupPosition).get(childPosition).put(ConstantsClass.CHILD_CHECK, true);
+		boolean spanExist = false;
+		
+		if(origin.equals("new")){
+			for(int i = 0; i < NewScheduleActivity.Spans.size(); i++){
+				
+				if(NewScheduleActivity.Spans.get(i).entityId == Long.parseLong((String) childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))){
+					Log.i("MSG", "got a matching span");
+					spanExist = true;
+					try{
+						NewScheduleActivity.Spans.get(i).groupIds.add(Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+						
+					}catch (ClassCastException e) {
+						NewScheduleActivity.Spans.get(i).groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+					}
+					try{
+						NewScheduleActivity.Spans.get(i).groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+					}catch (ClassCastException e) {
+						NewScheduleActivity.Spans.get(i).groupTypes.add(Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+					}
+					Log.i("MSG", "span id : " + NewScheduleActivity.Spans.get(i) + " , total spans : " + NewScheduleActivity.Spans.size()+ " after group id addition");
+					break;
+				}
+				Log.i("MSG", NewScheduleActivity.Spans.size()+"");
+				
+			}
+			if(!spanExist){
+				Log.i("MSG", "got no matching span");
+				Log.i("MSG", NewScheduleActivity.Spans.size()+"");
+				SpannedEntity span = new SpannedEntity(-1, 2, (String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_NAME), Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID)), -1);
+				try{
+					span.groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+					
+				}catch (ClassCastException e) {
+					span.groupIds.add(Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+				}
+				try{
+					span.groupTypes.add(Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+				}catch(ClassCastException ce){
+					span.groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+				}
+				
+				NewScheduleActivity.Spans.add(span);
+				contactsAdapter.notifyDataSetChanged();
+				Log.i("MSG", NewScheduleActivity.Spans.size()+" after add");
+			}
+		}else if(origin.equals("edit")){
+			for(int i = 0; i < EditScheduledSmsActivity.Spans.size(); i++){
+				
+				if(EditScheduledSmsActivity.Spans.get(i).entityId == Long.parseLong((String) childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))){
+					Log.i("MSG", "got a matching span");
+					spanExist = true;
+					try{
+						EditScheduledSmsActivity.Spans.get(i).groupIds.add(Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+						
+					}catch (ClassCastException e) {
+						EditScheduledSmsActivity.Spans.get(i).groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+					}
+					try{
+						EditScheduledSmsActivity.Spans.get(i).groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+					}catch (ClassCastException e) {
+						EditScheduledSmsActivity.Spans.get(i).groupTypes.add(Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+					}
+					Log.i("MSG", "span id : " + EditScheduledSmsActivity.Spans.get(i) + " , total spans : " + EditScheduledSmsActivity.Spans.size()+ " after group id addition");
+					break;
+				}
+				Log.i("MSG", EditScheduledSmsActivity.Spans.size()+"");
+				
+			}
+			if(!spanExist){
+				Log.i("MSG", "got no matching span");
+				Log.i("MSG", EditScheduledSmsActivity.Spans.size()+"");
+				SpannedEntity span = new SpannedEntity(-1, 2, (String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_NAME), Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID)), -1);
+				try{
+					span.groupIds.add(((Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+					
+				}catch (ClassCastException e) {
+					span.groupIds.add(Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID)));
+				}
+				try{
+					span.groupTypes.add(Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+				}catch(ClassCastException ce){
+					span.groupTypes.add(((Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE)));
+				}
+				
+				EditScheduledSmsActivity.Spans.add(span);
+				contactsAdapter.notifyDataSetChanged();
+				Log.i("MSG", EditScheduledSmsActivity.Spans.size()+" after add");
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	public void removeCheck(int groupPosition, int childPosition){
+		Log.i("MSG", "in removing a check");
+		childDataTemp.get(groupPosition).get(childPosition).put(ConstantsClass.CHILD_CHECK, false);
+		
+		if(origin.equals("new")){
+			for(int i = 0; i < NewScheduleActivity.Spans.size(); i++){
+				if(Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))==NewScheduleActivity.Spans.get(i).entityId){
+				Log.i("MSG", "Span found for deletion");
+				for(int j = 0; j< NewScheduleActivity.Spans.get(i).groupIds.size(); j++){
+					Log.i("MSG", NewScheduleActivity.Spans.get(i).groupIds.get(j) + "spans group Id");
+					Log.i("MSG", groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID) + "group to be removed from span");
+					Long groupIdToRemove;
+					int groupTypeToRemove;
+					try{
+						groupIdToRemove = Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID));
+					}catch (ClassCastException e) {
+						groupIdToRemove = (Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID);
+					}
+					
+					try{
+						groupTypeToRemove = Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE));
+					}catch (ClassCastException e) {
+						groupTypeToRemove = (Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE);
+					}
+					
+					if(NewScheduleActivity.Spans.get(i).groupIds.get(j) == groupIdToRemove && NewScheduleActivity.Spans.get(i).groupTypes.get(j) == groupTypeToRemove){
+						Log.i("MSG", "group id found for deletion");
+						NewScheduleActivity.Spans.get(i).groupIds.remove(j);
+						
+						
+						Log.i("MSG", NewScheduleActivity.Spans.get(i).groupIds.size()+ " group size for this span");
+						if(NewScheduleActivity.Spans.get(i).groupIds.size()==0){
+							NewScheduleActivity.Spans.remove(i);
+							contactsAdapter.notifyDataSetChanged();
+						}
+						break;
+					}
+				}
+//				boolean z = true;
+//				for(int k = 0; k< childDataTemp.get(groupPosition).get(childPosition).size(); k++){
+//					Log.i("MSG", childDataTemp.get(groupPosition).get(childPosition).size() + "size of childdata for group");
+//					Log.i("MSG", (String)groupDataTemp.get(groupPosition).get(NewScheduleActivity.GROUP_NAME));
+//					if((Boolean)childDataTemp.get(groupPosition).get(k).get(NewScheduleActivity.CHILD_CHECK)){
+//						z = false;
+//						break;
+//					}
+//				}
+//				if(z){
+//					groupDataTemp.get(groupPosition).put(NewScheduleActivity.GROUP_CHECK, false);
+//					mAdapter.notifyDataSetChanged();
+//				}
+				}
+			}
+		}else if(origin.equals("edit")){
+			for(int i = 0; i < EditScheduledSmsActivity.Spans.size(); i++){
+				if(Long.parseLong((String)childDataTemp.get(groupPosition).get(childPosition).get(ConstantsClass.CHILD_CONTACT_ID))==EditScheduledSmsActivity.Spans.get(i).entityId){
+				Log.i("MSG", "Span found for deletion");
+				for(int j = 0; j< EditScheduledSmsActivity.Spans.get(i).groupIds.size(); j++){
+					Log.i("MSG", EditScheduledSmsActivity.Spans.get(i).groupIds.get(j) + "spans group Id");
+					Log.i("MSG", groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID) + "group to be removed from span");
+					Long groupIdToRemove;
+					int groupTypeToRemove;
+					try{
+						groupIdToRemove = Long.parseLong((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID));
+					}catch (ClassCastException e) {
+						groupIdToRemove = (Long)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_ID);
+					}
+					
+					try{
+						groupTypeToRemove = Integer.parseInt((String)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE));
+					}catch (ClassCastException e) {
+						groupTypeToRemove = (Integer)groupDataTemp.get(groupPosition).get(ConstantsClass.GROUP_TYPE);
+					}
+					
+					if(EditScheduledSmsActivity.Spans.get(i).groupIds.get(j) == groupIdToRemove && EditScheduledSmsActivity.Spans.get(i).groupTypes.get(j) == groupTypeToRemove){
+						Log.i("MSG", "group id found for deletion");
+						EditScheduledSmsActivity.Spans.get(i).groupIds.remove(j);
+						
+						
+						Log.i("MSG", EditScheduledSmsActivity.Spans.get(i).groupIds.size()+ " group size for this span");
+						if(EditScheduledSmsActivity.Spans.get(i).groupIds.size()==0){
+							EditScheduledSmsActivity.Spans.remove(i);
+							contactsAdapter.notifyDataSetChanged();
+						}
+						break;
+					}
+				}
+//				boolean z = true;
+//				for(int k = 0; k< childDataTemp.get(groupPosition).get(childPosition).size(); k++){
+//					Log.i("MSG", childDataTemp.get(groupPosition).get(childPosition).size() + "size of childdata for group");
+//					Log.i("MSG", (String)groupDataTemp.get(groupPosition).get(NewScheduleActivity.GROUP_NAME));
+//					if((Boolean)childDataTemp.get(groupPosition).get(k).get(NewScheduleActivity.CHILD_CHECK)){
+//						z = false;
+//						break;
+//					}
+//				}
+//				if(z){
+//					groupDataTemp.get(groupPosition).put(NewScheduleActivity.GROUP_CHECK, false);
+//					mAdapter.notifyDataSetChanged();
+//				}
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	class RecentsAdapter extends ArrayAdapter {
+		
+		RecentsAdapter(){
+    		super(ContactsTabsActivity.this, R.layout.contacts_list_row_design, recentIds);
+    	}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			
+			final int _position  = position;
+    		LayoutInflater inflater = getLayoutInflater();
+    		
+    		if(convertView == null){
+    			convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
+    		}
+    		View row = convertView;
+    		
+    		ImageView 	contactImage 	= (ImageView) 	row.findViewById(R.id.contact_list_row_contact_pic);
+    		TextView 	nameText 		= (TextView) 	row.findViewById(R.id.contact_list_row_contact_name);
+    		TextView 	numberText 		= (TextView) 	row.findViewById(R.id.contact_list_row_contact_number);
+    		CheckBox 	contactCheck 	= (CheckBox) 	row.findViewById(R.id.contact_list_row_contact_check);
+			
+    		int i = 0;
+    		
+    		Log.i("MSG", recentIds.size() + " size of recent contacts arraylist");
+    		
+    		if(recentContactIds.get(position)> -1){
+    			Log.i("MSG", recentContactIds.get(position)+ "");
+    			
+    			for(i = 0; i< SplashActivity.contactsList.size(); i++){
+    				if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == recentContactIds.get(position)){
+    					contactImage.setImageBitmap(SplashActivity.contactsList.get(i).image);
+    		    		nameText.setText(SplashActivity.contactsList.get(i).name);
+    		    		numberText.setText(SplashActivity.contactsList.get(i).number);
+    		    		
+    		    		if(origin.equals("new")){
+    		    			for(int j = 0; j< NewScheduleActivity.Spans.size(); j++){
+    		        			if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == NewScheduleActivity.Spans.get(j).entityId){
+    		        				contactCheck.setChecked(true);
+    		        			}
+    		        		}
+    		    		}else if(origin.equals("edit")){
+    		    			for(int j = 0; j< EditScheduledSmsActivity.Spans.size(); j++){
+    		        			if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == EditScheduledSmsActivity.Spans.get(j).entityId){
+    		        				contactCheck.setChecked(true);
+    		        			}
+    		        		}
+    		    		}
+    		    		break;
+    				}
+    				
+    			}
+    		}else{
+    			contactImage.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
+    			nameText.setText(recentContactNumbers.get(position));
+    			numberText.setText("");
+    		}
+    		final int _i = i;
+    		
+    		
+    		
+    		
+    		contactCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked){
+						SpannedEntity span = new SpannedEntity();
+						if(recentContactIds.get(_position)> -1){
+							for(int k = 0; k< SplashActivity.contactsList.size(); k++){
+								if(Long.parseLong(SplashActivity.contactsList.get(k).content_uri_id) == recentContactIds.get(_position)){
+									span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(k).name, Long.parseLong(SplashActivity.contactsList.get(k).content_uri_id), -1);
+									break;
+								}
+							}
+						}else{
+							for(int k = 0; k< SplashActivity.contactsList.size(); k++){
+								if(SplashActivity.contactsList.get(k).name.equals(recentContactNumbers.get(_position))){
+									
+								}
+							}
+							span = new SpannedEntity(-1, 1, recentContactNumbers.get(_position), -1, -1);
+						}
+						span.groupIds.add((long) -1);
+						span.groupTypes.add(-1);
+						if(origin.equals("new")){
+							NewScheduleActivity.Spans.add(span);
+						}else if(origin.equals("edit")){
+							EditScheduledSmsActivity.Spans.add(span);
+						}
+						contactsAdapter.notifyDataSetChanged();
+					}else{
+						if(origin.equals("new")){
+							
+							for(int i = 0; i< NewScheduleActivity.Spans.size(); i++){
+				    			if(recentContactIds.get(_position)>-1){
+				    				if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == NewScheduleActivity.Spans.get(i).entityId){
+				    					Log.i("MSG", "got into removing a contact");
+				    					Log.i("MSG", "size of Span " + NewScheduleActivity.Spans.size());
+				    					NewScheduleActivity.Spans.remove(i);
+					    				Log.i("MSG", "size of Span " + NewScheduleActivity.Spans.size());
+					    				contactsAdapter.notifyDataSetChanged();
+					    				break;
+					    			}
+				    			}else{
+				    				if(NewScheduleActivity.Spans.get(i).displayName.equals(recentContactNumbers.get(_position))){
+				    					NewScheduleActivity.Spans.remove(i);
+				    					contactsAdapter.notifyDataSetChanged();
+				    					break;
+				    				}
+				    			}
+								
+				    		}
+						}else if(origin.equals("edit")){
+							for(int i = 0; i< EditScheduledSmsActivity.Spans.size(); i++){
+								if(recentContactIds.get(_position)>-1){
+									if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == EditScheduledSmsActivity.Spans.get(i).entityId){
+					    				EditScheduledSmsActivity.Spans.remove(i);
+					    				contactsAdapter.notifyDataSetChanged();
+					    				break;
+					    			}
+								}else{
+									if(EditScheduledSmsActivity.Spans.get(i).displayName.equals(recentContactNumbers.get(_position))){
+				    					EditScheduledSmsActivity.Spans.remove(i);
+				    					contactsAdapter.notifyDataSetChanged();
+				    					break;
+				    				}
+								}
+				    			
+				    		}
+							
+						}
+						
+					}
+				}
+			});
+    		
+    		return row;
+		}
+	}
+	
+	
 }

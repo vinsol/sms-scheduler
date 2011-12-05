@@ -299,7 +299,11 @@ public class GroupAddActivity extends Activity {
 		loadContactsForGroups();
 		myAdapter.notifyDataSetChanged();
 		
-		if(callingState.equals("new") && newCall){
+		if(callingState.equals("new") && newCall && (ids.size()==0)){
+			GroupAddActivity.this.finish();
+		}
+		
+		if(callingState.equals("new") && newCall && (ids.size()>0)){
 			final Dialog d = new Dialog(GroupAddActivity.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.new_group_name_dialog_design);

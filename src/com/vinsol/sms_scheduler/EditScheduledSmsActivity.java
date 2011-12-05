@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -18,8 +19,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.Editable;
@@ -73,6 +78,9 @@ public class EditScheduledSmsActivity extends Activity {
 	Button 					cancelButton;
 	GridView				smileysGrid;
 	//--------------------------------------------------------
+	
+	static ArrayList<ArrayList<HashMap<String, Object>>> childData = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	static ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
 	
 	private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 	
@@ -189,7 +197,7 @@ public class EditScheduledSmsActivity extends Activity {
 		Log.i("MSG", "size of Spans : " + Spans.size());
 		mdba.close();
 		refreshSpannableString();
-		
+		loadGroupsData();
 		
 		// Check to see if a recognition activity is present
 		PackageManager pm = getPackageManager();
@@ -252,6 +260,7 @@ public class EditScheduledSmsActivity extends Activity {
 	                	 }
 	                	 if(pos<=len){
 	                		 numbersText.setSelection(pos - Spans.get(i).displayName.length());
+	                		 mdba.deleteSpanGroupRelsForSpan(Spans.get(i).spanId);
 	                		 Spans.remove(i);
 	                		 refreshSpannableString();
 	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
@@ -383,7 +392,7 @@ public class EditScheduledSmsActivity extends Activity {
 							dateLabel.setText("");
 						}else{
 							dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-							dateLabel.setText("Date is in Past. Message will be sent immediately");
+							dateLabel.setText("Past time, message will be sent now");
 						}
 					}
 				});
@@ -401,7 +410,7 @@ public class EditScheduledSmsActivity extends Activity {
 					dateLabel.setText("");
 				}else{
 					dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-					dateLabel.setText("Date is in Past. Message will be sent immediately");
+					dateLabel.setText("Past time, message will be sent now");
 				}
 				
 				okDateButton.setOnClickListener(new OnClickListener() {
@@ -451,7 +460,7 @@ public class EditScheduledSmsActivity extends Activity {
 							dateLabel.setText("");
 						}else{
 							dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-							dateLabel.setText("Date is in Past. Message will be sent immediately");
+							dateLabel.setText("Past time, message will be sent now");
 						}
 					}
 				});
@@ -564,13 +573,18 @@ public class EditScheduledSmsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				loadTemplates();
-				TemplateAdapter templateAdapter = new TemplateAdapter();
-				templateDialog = new Dialog(EditScheduledSmsActivity.this);
-				templateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				templateDialog.setContentView(R.layout.templates_dialog);
-				ListView templateList = (ListView) templateDialog.findViewById(R.id.dialog_template_list);
-				templateList.setAdapter(templateAdapter);
-				templateDialog.show();
+				if(templatesArray.size()>0){
+					TemplateAdapter templateAdapter = new TemplateAdapter();
+					templateDialog = new Dialog(EditScheduledSmsActivity.this);
+					templateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					templateDialog.setContentView(R.layout.templates_dialog);
+					ListView templateList = (ListView) templateDialog.findViewById(R.id.dialog_template_list);
+					templateList.setAdapter(templateAdapter);
+					templateDialog.show();
+				}else{
+					Toast.makeText(EditScheduledSmsActivity.this, "No templates, please add some", Toast.LENGTH_SHORT).show();
+				}
+				
 			}
 		});
 		//----------------------------------------end of template button functionality----------
@@ -825,6 +839,7 @@ public class EditScheduledSmsActivity extends Activity {
 					if(Spans.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
 						numbers.add(SplashActivity.contactsList.get(j).number);
 						long received_id = mdba.scheduleSms(SplashActivity.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), editedGroup, cal.getTimeInMillis());
+						mdba.addRecentContact(Spans.get(i).entityId, "");
 						
 						if(numbersText.getText().toString().matches("(''|[' ']*)")){
 							mdba.setAsDraft(received_id);
@@ -845,6 +860,7 @@ public class EditScheduledSmsActivity extends Activity {
 				if(Spans.get(i).type == 1){
 					
 					long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), editedGroup, cal.getTimeInMillis());
+					mdba.addRecentContact(-1, Spans.get(i).displayName);
 					if(numbersText.getText().toString().matches("(''|[' ']*)") || messageText.toString().matches("(''|[' ']*)")){
 						mdba.setAsDraft(received_id);
 					}else{
@@ -1103,6 +1119,7 @@ public class EditScheduledSmsActivity extends Activity {
 					public void onClick(View widget) {
 						Log.i("MSG", _i + "");
 						if(_i< Spans.size()-1){
+							mdba.deleteSpanGroupRelsForSpan(Spans.get(_i).spanId);
 							Spans.remove(_i);
 							refreshSpannableString();
 						}else{
@@ -1182,6 +1199,140 @@ public class EditScheduledSmsActivity extends Activity {
 		}else{
 			EditScheduledSmsActivity.this.finish();	
 		}
+	}
+	
+	
+	
+	
+	
+public void loadGroupsData(){
+		
+		groupData.clear();
+		childData.clear();
+		
+		//------------------------ Setting up data for native groups ---------------------------
+		String[] projection = new String[] {
+				
+				  Groups._ID,
+	              Groups.TITLE,
+	              Groups.SYSTEM_ID,
+	              Groups.NOTES,
+             };
+        Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
+        int count = 0;
+        
+        Cursor groupCursor = managedQuery(groupsUri, projection, null, null, null);
+        if(groupCursor.moveToFirst()){
+        	mdba.open();
+        	do{
+        		HashMap<String, Object> group = new HashMap<String, Object>();
+        		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
+        		group.put(ConstantsClass.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
+        		group.put(ConstantsClass.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+       			if(spanIdsForGroup.size()==0){
+       				group.put(ConstantsClass.GROUP_CHECK, false);
+       			}else{
+       				group.put(ConstantsClass.GROUP_CHECK, true);
+       			}
+        		
+        		group.put(ConstantsClass.GROUP_TYPE, 1);
+        		group.put(ConstantsClass.GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
+        		
+        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+        	
+        		
+        		groupData.add(group);
+        		
+        		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
+        			for(int j = 0; j< SplashActivity.contactsList.get(i).groupRowId.size(); j++){
+        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SplashActivity.contactsList.get(i).groupRowId.get(j)){
+        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
+        					
+        					childParameters.put(ConstantsClass.CHILD_NAME, SplashActivity.contactsList.get(i).name);
+        					childParameters.put(ConstantsClass.CHILD_NUMBER, SplashActivity.contactsList.get(i).number);
+        					childParameters.put(ConstantsClass.CHILD_IMAGE, SplashActivity.contactsList.get(i).image);
+        					childParameters.put(ConstantsClass.CHILD_CHECK, false);//doubted
+        					for(int k = 0; k< spanIdsForGroup.size(); k ++){
+       							for(int m = 0; m< Spans.size(); m++){
+       								if(Spans.get(m).spanId == spanIdsForGroup.get(k)){
+       									if(Spans.get(m).entityId ==Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id)){
+       										childParameters.put(ConstantsClass.CHILD_CHECK, true);
+       									}
+       								}
+       							}
+       						}
+       						
+        					childParameters.put(ConstantsClass.CHILD_CONTACT_ID, SplashActivity.contactsList.get(i).content_uri_id);
+        					child.add(childParameters);
+        					
+        				}
+        			}
+        		}
+        		childData.add(child);
+        		count++;
+        	}while(groupCursor.moveToNext());
+        	mdba.close();
+        }
+        
+        // ---------------------------------------------------end of setting up native groups data-------------
+        
+        
+        
+        //---------------------------- Setting up private Groups data ------------------------------------
+        
+        mdba.open();
+        Cursor groupsCursor = mdba.fetchAllGroups();
+        if(groupsCursor.moveToFirst()){
+        	do{
+        		HashMap<String, Object> group = new HashMap<String, Object>();
+        		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+        		group.put(ConstantsClass.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
+        		group.put(ConstantsClass.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+        		if(spanIdsForGroup.size()==0){
+       				group.put(ConstantsClass.GROUP_CHECK, false);
+       			}else{
+       				group.put(ConstantsClass.GROUP_CHECK, true);
+       			}
+        		group.put(ConstantsClass.GROUP_TYPE, 2);
+        		group.put(ConstantsClass.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+        		
+        		groupData.add(group);
+        		GroupStructure groupStructure;
+        	
+        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+        		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+        		
+        		for(int i = 0; i< contactIds.size(); i++){
+        			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
+        				if(contactIds.get(i)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
+        					childParameters.put(ConstantsClass.CHILD_NAME, SplashActivity.contactsList.get(j).name);
+        					childParameters.put(ConstantsClass.CHILD_NUMBER, SplashActivity.contactsList.get(j).number);
+        					childParameters.put(ConstantsClass.CHILD_CONTACT_ID, SplashActivity.contactsList.get(j).content_uri_id);
+        					childParameters.put(ConstantsClass.CHILD_IMAGE, SplashActivity.contactsList.get(j).image);
+        					childParameters.put(ConstantsClass.CHILD_CHECK, false);
+        					for(int k = 0; k< spanIdsForGroup.size(); k ++){
+       							for(int m = 0; m< Spans.size(); m++){
+       								if(Spans.get(m).spanId == spanIdsForGroup.get(k)){
+       									if(Spans.get(m).entityId ==Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id)){
+       										childParameters.put(ConstantsClass.CHILD_CHECK, true);
+       									}
+       								}
+       							}
+       						}
+
+        					
+        					child.add(childParameters);
+        				}
+        			}
+        		}
+        		
+        		childData.add(child);
+        		count++;
+        	}while(groupsCursor.moveToNext());
+        }
+        
+        mdba.close();
 	}
 	
 }

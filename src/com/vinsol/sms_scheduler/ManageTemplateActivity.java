@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +36,8 @@ public class ManageTemplateActivity extends Activity{
 	ArrayList<Long>		templatesIdArray = new ArrayList<Long>();
 	
 	
+	InputMethodManager inputMethodManager;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,6 +52,8 @@ public class ManageTemplateActivity extends Activity{
 		
 		loadData();
 		
+		inputMethodManager =(InputMethodManager)getSystemService(ManageTemplateActivity.this.INPUT_METHOD_SERVICE);
+		
 		mAdapter = new MyAdapter();
 		templatesList.setAdapter(mAdapter);
 		
@@ -58,11 +63,18 @@ public class ManageTemplateActivity extends Activity{
 			
 			@Override
 			public void onClick(View v) {
+				
 				if(newTemplateSpaceLayout.getVisibility()==LinearLayout.VISIBLE){
 					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
+					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+					templatesList.requestFocus();
 				}else{
 					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
 					newTemplateBody.setText("");
+					newTemplateBody.requestFocus();
+					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+					
+					
 				}
 			}
 		});
@@ -72,6 +84,7 @@ public class ManageTemplateActivity extends Activity{
 			
 			@Override
 			public void onClick(View v) {
+				inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
 				if(newTemplateBody.getText().toString().equals("")){
 					Toast.makeText(ManageTemplateActivity.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
 				}else{
@@ -92,10 +105,10 @@ public class ManageTemplateActivity extends Activity{
 						mdba.open();
 						long newId = mdba.addTemplate(newTemplateBody.getText().toString());
 						mdba.close();
-//						templatesArray.add(newTemplateBody.getText().toString());
-//						templatesIdArray.add(newId);
-						loadData();
-						templatesList.setAdapter(new MyAdapter());
+						templatesArray.add(newTemplateBody.getText().toString());
+						templatesIdArray.add(newId);
+//						loadData();
+						mAdapter.notifyDataSetChanged();
 						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
 						Toast.makeText(ManageTemplateActivity.this, "Template added", Toast.LENGTH_SHORT).show();
 					}
@@ -109,6 +122,7 @@ public class ManageTemplateActivity extends Activity{
 			
 			@Override
 			public void onClick(View v) {
+				inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
 				newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
 			}
 		});
@@ -128,6 +142,7 @@ public class ManageTemplateActivity extends Activity{
 		templatesIdArray.clear();
 		if(cur.moveToFirst()){
 			do{
+				Log.i("MSG", cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
 				templatesArray.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
 				templatesIdArray.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TEMP_ID)));
 			}while(cur.moveToNext());
@@ -138,15 +153,15 @@ public class ManageTemplateActivity extends Activity{
 	
 	class MyAdapter extends ArrayAdapter{
     	MyAdapter(){
-    		super(ManageTemplateActivity.this, R.layout.template_manage_row, templatesArray);
+    		super(ManageTemplateActivity.this, R.layout.template_manage_row, templatesIdArray);
     	}
     	
     	
     	@Override
-    	public View getView(final int position, View convertView, ViewGroup parent) {
-    		if(convertView!=null){
-    			return convertView;
-    		}
+    	public View getView(int position, View convertView, ViewGroup parent) {
+//    		if(convertView!=null){
+//    			return convertView;
+//    		}
     		final int _position  = position;
     		LayoutInflater inflater = getLayoutInflater();
     		View row = inflater.inflate(R.layout.template_manage_row, parent, false);
@@ -154,7 +169,7 @@ public class ManageTemplateActivity extends Activity{
     		Log.i("MESSAGE", _position + "yo");
     		
     		TextView templateBodyLabel = (TextView)row.findViewById(R.id.template_manage_row_body);
-    		templateBodyLabel.setText(templatesArray.get(_position));
+    		templateBodyLabel.setText(templatesArray.get(position));
     		
     		ImageView deleteTemplateButton = (ImageView)row.findViewById(R.id.template_manage_row_delete_button);
     		deleteTemplateButton.setImageResource(R.drawable.icon);
@@ -162,10 +177,10 @@ public class ManageTemplateActivity extends Activity{
 				
 				@Override
 				public void onClick(View v) {
-					Log.i("MSG", templatesIdArray.get(position) + "");
-					Log.i("MSG", position + "");
+					Log.i("MSG", templatesIdArray.get(_position) + "");
+					Log.i("MSG", _position + "");
 					mdba.open();
-					mdba.removeTemplate(templatesIdArray.get(position));
+					mdba.removeTemplate(templatesIdArray.get(_position));
 					mdba.close();
 					loadData();
 					mAdapter = new MyAdapter();
