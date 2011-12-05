@@ -927,9 +927,9 @@ public class NewScheduleActivity extends Activity {
 				if(Spans.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
 					numbers.add(SplashActivity.contactsList.get(j).number);
 					long received_id = mdba.scheduleSms(SplashActivity.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-					
-					mdba.addRecentContact(Spans.get(i).entityId, "");
-					
+					if(!Spans.get(i).displayName.equals(" ")){
+						mdba.addRecentContact(Spans.get(i).entityId, "");
+					}
 					
 					
 					Log.i("MSG", "before if else");
