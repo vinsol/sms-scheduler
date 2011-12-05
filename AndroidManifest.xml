@@ -6,42 +6,35 @@
     android:versionName="1.0">
     
     <uses-sdk android:minSdkVersion="4" />
+	
 	<uses-permission android:name = "android.permission.SEND_SMS"/>
 	<uses-permission android:name="android.permission.READ_CONTACTS"/>
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 	
-    <application android:icon="@drawable/icon" android:label="SMS Scheduler" android:theme="@android:style/Theme.NoTitleBar">    
-        <activity android:name=".SmsSchedulerExplActivity" android:label="@string/app_name" android:screenOrientation="portrait">
-        	
-		</activity>
-        
-        <activity android:name = ".NewScheduleActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait"></activity>
-        <activity android:name = ".ManageTemplateActivity" android:label = "Manage Templates" android:screenOrientation="portrait"></activity>
-        <activity android:name = "com.vinsol.sms_scheduler.EditSmsActivity" android:label = "Edit SMS" android:screenOrientation="portrait"></activity>
-        <activity android:name = "com.vinsol.sms_scheduler.ContactsListActivity" android:label = "Contacts" android:screenOrientation="portrait"></activity>
-        <activity android:name = ".Asap" android:label = "Asap" android:screenOrientation="portrait"></activity>
-        <activity android:name = ".ManageGroupsActivity" android:label = "Manage Groups" android:screenOrientation="portrait"></activity>
-        <activity android:name = ".GroupAddActivity" android:label = "New Group" android:screenOrientation="portrait"></activity>
-        <activity android:name = ".EditScheduledSmsActivity" android:label = "Edit" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait"></activity>
+    <application android:icon="@drawable/icon" android:label="SMS Scheduler" android:theme="@android:style/Theme.NoTitleBar">
+        <!--  activities -->    
+        <activity android:name=".SmsSchedulerExplActivity" android:label="@string/app_name" android:screenOrientation="portrait" />
+        <activity android:name = ".NewScheduleActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
+        <activity android:name = ".ManageTemplateActivity" android:label = "Manage Templates" android:screenOrientation="portrait" />
+        <activity android:name = "com.vinsol.sms_scheduler.EditSmsActivity" android:label = "Edit SMS" android:screenOrientation="portrait" />
+        <activity android:name = "com.vinsol.sms_scheduler.ContactsListActivity" android:label = "Contacts" android:screenOrientation="portrait" />
+        <activity android:name = ".Asap" android:label = "Asap" android:screenOrientation="portrait" />
+        <activity android:name = ".ManageGroupsActivity" android:label = "Manage Groups" android:screenOrientation="portrait" />
+        <activity android:name = ".GroupAddActivity" android:label = "New Group" android:screenOrientation="portrait" />
+        <activity android:name = ".EditScheduledSmsActivity" android:label = "Edit" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
+        <activity android:name = ".ContactsTabsActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
+        <activity android:name = ".GroupsTestActivity" android:label = "Groups Test" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
         <activity android:name = ".SplashActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <activity android:name = ".ContactsTabsActivity" android:label = "Schedule New SMS" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait">
-            
-        </activity>
-        <activity android:name = ".GroupsTestActivity" android:label = "Groups Test" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait">
-            
-        </activity>
-        
-		<receiver android:name=".SMSHandleReceiver" android:enabled="true"></receiver>
-		<receiver android:name=".SentReceiver" android:enabled="true"></receiver>
-		<receiver android:name="com.vinsol.sms_scheduler.DeliverReceiver" android:enabled="true"></receiver>
-		
+       	<!--  receivers -->
+        <receiver android:name=".SMSHandleReceiver" android:enabled="true" />
+		<receiver android:name=".SentReceiver" android:enabled="true" />
+		<receiver android:name="com.vinsol.sms_scheduler.DeliverReceiver" android:enabled="true" />
 		<receiver android:name=".BootCompleteReceiver" android:process=":remote" android:enabled="true" android:exported="false"> 
         	<intent-filter>
             	<action android:name="android.intent.action.BOOT_COMPLETED" />
