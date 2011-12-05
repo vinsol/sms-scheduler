@@ -27,7 +27,24 @@ public class SplashActivity extends Activity {
 		
 		ContactsAsync contactsAsync = new ContactsAsync();
 		contactsAsync.execute();
+	}
+	
+	class ContactsAsync extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			loadContactsData();
+			return null;
+		}
 		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			Intent intent = new Intent(SplashActivity.this, SmsSchedulerExplActivity.class);
+			//intent.putExtra("ORIGIN", "new");
+			SplashActivity.this.finish();
+			startActivity(intent);
+		}
 	}
 	
 	public void loadContactsData(){
@@ -115,22 +132,4 @@ public class SplashActivity extends Activity {
 //		}
 //	}
 	
-	class ContactsAsync extends AsyncTask<Void, Void, Void>{
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			loadContactsData();
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(Void result) {
-			super.onPostExecute(result);
-			Intent intent = new Intent(SplashActivity.this, SmsSchedulerExplActivity.class);
-			//intent.putExtra("ORIGIN", "new");
-			SplashActivity.this.finish();
-			startActivity(intent);
-			
-		}
-	}
 }
