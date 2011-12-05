@@ -1,6 +1,8 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.receivers;
 
 import java.util.Random;
+
+import com.vinsol.sms_scheduler.DBAdapter;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

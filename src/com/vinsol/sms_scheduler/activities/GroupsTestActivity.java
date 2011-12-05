@@ -1,7 +1,13 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.activities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.R.drawable;
+import com.vinsol.sms_scheduler.R.id;
+import com.vinsol.sms_scheduler.R.layout;
 
 import android.app.Activity;
 import android.content.Context;

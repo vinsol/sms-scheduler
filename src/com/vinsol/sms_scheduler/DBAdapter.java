@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;

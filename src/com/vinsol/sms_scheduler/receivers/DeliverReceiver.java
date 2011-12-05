@@ -1,4 +1,6 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.receivers;
+
+import com.vinsol.sms_scheduler.DBAdapter;
 
 import android.app.Activity;
 import android.app.AlarmManager;

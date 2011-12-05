@@ -1,4 +1,4 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.activities;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,16 +8,15 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.util.Log;
+
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.MyContact;
 
 public class SplashActivity extends Activity {
 
@@ -31,11 +30,29 @@ public class SplashActivity extends Activity {
 		
 		ContactsAsync contactsAsync = new ContactsAsync();
 		contactsAsync.execute();
+	}
+	
+	class ContactsAsync extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			loadContactsData();
+			return null;
+		}
 		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			Intent intent = new Intent(SplashActivity.this, SmsSchedulerExplActivity.class);
+			//intent.putExtra("ORIGIN", "new");
+			SplashActivity.this.finish();
+			startActivity(intent);
+		}
 	}
 	
 	public void loadContactsData(){
-		contactsList.clear();
+		// SAZWQA: NR
+//		contactsList.clear();
 		ContentResolver cr = getContentResolver();
 	    Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 	    if(cursor.moveToFirst()){
@@ -119,22 +136,4 @@ public class SplashActivity extends Activity {
 //		}
 //	}
 	
-	class ContactsAsync extends AsyncTask<Void, Void, Void>{
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			loadContactsData();
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(Void result) {
-			super.onPostExecute(result);
-			Intent intent = new Intent(SplashActivity.this, SmsSchedulerExplActivity.class);
-			//intent.putExtra("ORIGIN", "new");
-			SplashActivity.this.finish();
-			startActivity(intent);
-			
-		}
-	}
 }

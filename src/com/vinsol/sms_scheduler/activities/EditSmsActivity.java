@@ -1,4 +1,4 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.activities;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +8,14 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.R.id;
+import com.vinsol.sms_scheduler.R.layout;
+import com.vinsol.sms_scheduler.models.Person;
+import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -568,7 +576,7 @@ public class EditSmsActivity extends Activity {
            	 	nameFieldColumnIndex = contacts.getColumnIndex(PhoneLookup.DISPLAY_NAME);
            	 	if (nameFieldColumnIndex > -1)
            	 	{
-           	 		aContact.setName(contacts.getString(nameFieldColumnIndex));
+           	 		aContact.personName = contacts.getString(nameFieldColumnIndex);
            	 	}
 
             	PROJECTION = new String[] {Phone.NUMBER};
@@ -579,11 +587,11 @@ public class EditSmsActivity extends Activity {
             			numberFieldColumnIndex = phone.getColumnIndex(Phone.NUMBER);
             			if (numberFieldColumnIndex > -1)
             			{
-            				aContact.setNumber(phone.getString(numberFieldColumnIndex));
+            				aContact.personNumber = phone.getString(numberFieldColumnIndex);
             				phone.moveToNext();
                         	TelephonyManager mTelephonyMgr;
                         	mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-                        	if (!mTelephonyMgr.getLine1Number().contains(aContact.getNumber()))
+                        	if (!mTelephonyMgr.getLine1Number().contains(aContact.personNumber))
                         	{
                         		contactList.add(aContact);
                         	}
@@ -613,16 +621,16 @@ public class EditSmsActivity extends Activity {
 		Log.i("MESSAGE", "f : " + text);
 		Pattern p = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
 		for(int i = 0; i < mContacts.size(); i++){
-			Log.i("MESSAGE", mContacts.get(i).getName());
-			mContacts.get(i).personNumber = refineNumber(mContacts.get(i).getNumber());
-			Matcher m = p.matcher(mContacts.get(i).getName());
+			Log.i("MESSAGE", mContacts.get(i).personName);
+			mContacts.get(i).personNumber = refineNumber(mContacts.get(i).personNumber);
+			Matcher m = p.matcher(mContacts.get(i).personName);
 			if(m.find()){
 				shortlist.add(mContacts.get(i));
 				Log.i("MESSAGE", "shortlist size fins : " + shortlist.size());
 			}
 			else
 			{
-				m = p.matcher(mContacts.get(i).getNumber());
+				m = p.matcher(mContacts.get(i).personNumber);
 				if(m.find()){
 					shortlist.add(mContacts.get(i));
 					
@@ -704,8 +712,8 @@ public class EditSmsActivity extends Activity {
     		View row = inflater.inflate(R.layout.dropdown_row_layout, parent, false);
 			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
 			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
-			nameLabel.setText(shortlist.get(position).getName());
-			numberLabel.setText(shortlist.get(position).getNumber());
+			nameLabel.setText(shortlist.get(position).personName);
+			numberLabel.setText(shortlist.get(position).personNumber);
 			return row;
 		}
 	

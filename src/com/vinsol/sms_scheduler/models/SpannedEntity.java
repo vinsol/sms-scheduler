@@ -1,16 +1,16 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
 public class SpannedEntity {
 
-	long spanId;
-	int type;
-	String displayName;
-	long entityId;
-	long smsId;
-	ArrayList<Long> groupIds = new ArrayList<Long>();
-	ArrayList<Integer> groupTypes = new ArrayList<Integer>();
+	public long spanId;
+	public int type;
+	public String displayName;
+	public long entityId;
+	public long smsId;
+	public ArrayList<Long> groupIds = new ArrayList<Long>();
+	public ArrayList<Integer> groupTypes = new ArrayList<Integer>();
 	
 	public SpannedEntity(){
 		
