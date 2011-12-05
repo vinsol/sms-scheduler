@@ -1,0 +1,10 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item 
+      android:state_pressed="false"
+      android:drawable="@drawable/new_sms_button" 
+    />
+    <item 
+      android:state_pressed="true"
+      android:drawable="@drawable/new_sms_button_pressed" 
+    />
+</selector>

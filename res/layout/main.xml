@@ -8,18 +8,7 @@
 		android:layout_width = "fill_parent"
 		android:layout_height = "wrap_content"
 		android:background="@drawable/header_bg"
-		android:layout_marginBottom="2dp"
 		>
-		<ImageButton
-			android:id = "@+id/main_options_menu_imgbutton"
-			android:layout_width = "48dp"
-			android:layout_height = "48dp"
-			android:layout_alignParentLeft="true"
-			android:layout_marginLeft="5dp"
-			android:layout_marginTop = "5dp"
-			>
-		</ImageButton>
-		
 		<TextView
 		    android:layout_width = "wrap_content" 
 			android:layout_height = "wrap_content"
@@ -27,20 +16,40 @@
 			android:textSize="24sp"
 			android:textColor="@color/white"
 			android:textStyle="bold"
-			android:layout_centerInParent="true"
-			>
-		</TextView>
-			
-		<ImageButton 
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true"
+			android:paddingLeft="5dip"
+		/>
+		<ImageView 
 			android:id = "@+id/main_new_sms_imgbutton"
-			android:layout_height = "48dp"
-			android:layout_width = "48dp"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
 			android:layout_alignParentRight="true"
-			android:layout_marginRight="5dp"
-			android:layout_marginTop = "5dp"
-			android:src="@drawable/ic_btn_write_sms"
-			>
-		</ImageButton>
+			android:layout_margin="5dip"
+			android:src="@drawable/new_sms_button"
+		/>
+		<ImageView 
+			android:id = "@+id/splitter1"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
+			android:layout_toLeftOf="@id/main_new_sms_imgbutton"
+			android:src="@drawable/vertical_seprator"
+		/>
+		<ImageView
+			android:id = "@+id/main_options_menu_imgbutton"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
+			android:layout_toLeftOf="@id/splitter1"
+			android:layout_margin="5dip"
+			android:src="@drawable/option_menu_button"
+		/>
+		<ImageView 
+			android:id = "@+id/splitter2"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
+			android:layout_toLeftOf="@id/main_options_menu_imgbutton"
+			android:src="@drawable/vertical_seprator"
+		/>
 	</RelativeLayout>
 	
 	<LinearLayout 
