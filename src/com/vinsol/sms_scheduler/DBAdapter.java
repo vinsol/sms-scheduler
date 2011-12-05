@@ -1,12 +1,8 @@
 package com.vinsol.sms_scheduler;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
-
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -17,16 +13,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.provider.ContactsContract.Data;
-import android.provider.ContactsContract.PhoneLookup;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 
-
-public class DBAdapter{
+public class DBAdapter {
+	
 	private static final String DATABASE_NAME = "smsDatabase";
 	private static final String DATABASE_SMS_TABLE = "smsTable";
 	private static final String DATABASE_PI_TABLE = "piTable";

@@ -40,8 +40,7 @@ import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 
 public class SmsSchedulerExplActivity extends Activity {
-    /** Called when the activity is first created. */
-	
+    
 	public static ArrayList<childSch> childSchArray = new ArrayList<childSch>();
 	public static ArrayList<childSent> childSentArray = new ArrayList<childSent>();
 	public static ArrayList<childDraft> childDraftArray = new ArrayList<childDraft>();
@@ -112,8 +111,6 @@ public class SmsSchedulerExplActivity extends Activity {
         blankListAddButton	= (Button) findViewById(R.id.blank_list_add_button);
         
         registerForContextMenu(explList);
-        
-        
         
         newSmsButton.setOnClickListener(new OnClickListener() {
 			
