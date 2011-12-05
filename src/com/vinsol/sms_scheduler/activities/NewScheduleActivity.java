@@ -672,10 +672,8 @@ public class NewScheduleActivity extends Activity {
 //						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 //					}
 				if(numbersText.getText().toString().matches("(''|[' ']*)") && messageText.getText().toString().matches("(''|[' ']*)")){
-					Toast.makeText(NewScheduleActivity.this, "Mention Recipients and Message to proceed", Toast.LENGTH_SHORT).show();
+					//Toast.makeText(NewScheduleActivity.this, "Mention Recipients and Message to proceed", Toast.LENGTH_SHORT).show();
 					//NewScheduleActivity.this.finish();
-				}else
-				if(numbersText.getText().toString().matches("(''|[' ']*)") || messageText.getText().toString().matches("(''|[' ']*)")){
 					final Dialog d = new Dialog(NewScheduleActivity.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					d.setContentView(R.layout.confirmation_dialog_layout);
@@ -683,7 +681,42 @@ public class NewScheduleActivity extends Activity {
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 					
-					questionText.setText("Message will be saved as Draft. Want to proceed?");
+					questionText.setText("Nothing to schedule");
+					yesButton.setText("Schedule SMS");
+					noButton.setText("Discard");
+					
+					yesButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							d.cancel();
+							//NewScheduleActivity.this.finish();
+							numbersText.requestFocus();
+						}
+					});
+					
+					noButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							d.cancel();
+							NewScheduleActivity.this.finish();
+						}
+					});
+					
+					d.show();
+				}else
+				if(numbersText.getText().toString().matches("(''|[' ']*)")){
+					final Dialog d = new Dialog(NewScheduleActivity.this);
+					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					d.setContentView(R.layout.confirmation_dialog_layout);
+					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+					
+					questionText.setText("No recipients added!");
+					yesButton.setText("Save as Draft");
+					noButton.setText("Add Recipients");
 					yesButton.setOnClickListener(new OnClickListener() {
 						
 						@Override
@@ -699,12 +732,45 @@ public class NewScheduleActivity extends Activity {
 						@Override
 						public void onClick(View v) {
 							d.cancel();
+							numbersText.requestFocus();
 						}
 					});
 					
 					d.show();
 					
-				}else{
+				}else
+					if(messageText.getText().toString().matches("(''|[' ']*)")){
+						final Dialog d = new Dialog(NewScheduleActivity.this);
+						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						d.setContentView(R.layout.confirmation_dialog_layout);
+						TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+						Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+						
+						questionText.setText("Message is blank!");
+						yesButton.setText("Save as Draft");
+						noButton.setText("Write Message");
+						yesButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								doSmsScheduling();
+								d.cancel();
+								NewScheduleActivity.this.finish();
+							}
+						});
+						
+						noButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								d.cancel();
+								messageText.requestFocus();
+							}
+						});
+						
+						d.show();
+				}else{	
 					doSmsScheduling();
 					NewScheduleActivity.this.finish();
 				}
@@ -1223,40 +1289,11 @@ public class NewScheduleActivity extends Activity {
 		}else
 			
 		if(!(numbersText.getText().toString().matches("(''|[' ']*)")) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			
-			
-				final Dialog d = new Dialog(NewScheduleActivity.this);
-				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				d.setContentView(R.layout.confirmation_dialog_layout);
-				TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-				Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-				Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-				
-				questionText.setText("Message will be saved as Draft. Want to proceed?");
-				yesButton.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						
-						doSmsScheduling();
-						
-						d.cancel();
-						NewScheduleActivity.this.finish();
-					}
-				});
-				
-				noButton.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						d.cancel();
-					}
-				});
-				d.show();
-			
-			//doSmsScheduling();
+			doSmsScheduling();
+			Toast.makeText(NewScheduleActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
+			NewScheduleActivity.this.finish();
 		}else{
-			NewScheduleActivity.this.finish();	
+			NewScheduleActivity.this.finish();
 		}
 	}
 	
