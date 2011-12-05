@@ -1,4 +1,4 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.activities;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -14,6 +14,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.MyContact;
 
 public class SplashActivity extends Activity {
 

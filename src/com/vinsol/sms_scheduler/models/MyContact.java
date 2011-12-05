@@ -1,4 +1,4 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
@@ -7,12 +7,12 @@ import android.text.SpannableStringBuilder;
 
 public class MyContact {
 
-	String content_uri_id;
-	String name;
-	String number;
-	Bitmap image;
-	ArrayList<Long> groupRowId; 
-	boolean checked = false;
+	public String content_uri_id;
+	public String name;
+	public String number;
+	public Bitmap image;
+	public ArrayList<Long> groupRowId; 
+	public boolean checked = false;
 	
 	public MyContact(){
 		this.groupRowId = new ArrayList<Long>();
