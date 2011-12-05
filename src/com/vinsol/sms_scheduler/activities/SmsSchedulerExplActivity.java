@@ -3,13 +3,6 @@ package com.vinsol.sms_scheduler.activities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.R.drawable;
-import com.vinsol.sms_scheduler.R.id;
-import com.vinsol.sms_scheduler.R.layout;
-import com.vinsol.sms_scheduler.R.menu;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -36,7 +29,6 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -44,16 +36,18 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+
 public class SmsSchedulerExplActivity extends Activity {
-    /** Called when the activity is first created. */
-	
+    
 	public static ArrayList<childSch> childSchArray = new ArrayList<childSch>();
 	public static ArrayList<childSent> childSentArray = new ArrayList<childSent>();
 	public static ArrayList<childDraft> childDraftArray = new ArrayList<childDraft>();
 	
 	ExpandableListView 		explList;
-	ImageButton				newSmsButton;
-	ImageButton				optionsImageButton;
+	ImageView				newSmsButton;
+	ImageView				optionsImageButton;
 	
 	LinearLayout explListLayout;
 	LinearLayout blankListLayout;
@@ -109,16 +103,14 @@ public class SmsSchedulerExplActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        newSmsButton 		= (ImageButton) findViewById(R.id.main_new_sms_imgbutton);
+        newSmsButton 		= (ImageView) findViewById(R.id.main_new_sms_imgbutton);
         explList 	 		= (ExpandableListView) findViewById(R.id.main_expandable_list);
-        optionsImageButton 	= (ImageButton) findViewById(R.id.main_options_menu_imgbutton);
+        optionsImageButton 	= (ImageView) findViewById(R.id.main_options_menu_imgbutton);
         explListLayout		= (LinearLayout) findViewById(R.id.expanded_list_layout);
         blankListLayout		= (LinearLayout) findViewById(R.id.blank_list_layout);
         blankListAddButton	= (Button) findViewById(R.id.blank_list_add_button);
         
         registerForContextMenu(explList);
-        
-        
         
         newSmsButton.setOnClickListener(new OnClickListener() {
 			

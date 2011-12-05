@@ -8,98 +8,99 @@
 		android:layout_width = "fill_parent"
 		android:layout_height = "wrap_content"
 		android:background="@drawable/header_bg"
-		android:layout_marginBottom="2dp"
 		>
-		<ImageButton
-			android:id = "@+id/main_options_menu_imgbutton"
-			android:layout_width = "48dp"
-			android:layout_height = "48dp"
-			android:layout_alignParentLeft="true"
-			android:layout_marginLeft="5dp"
-			android:layout_marginTop = "5dp"
-			>
-		</ImageButton>
-		
 		<TextView
 		    android:layout_width = "wrap_content" 
 			android:layout_height = "wrap_content"
 			android:text = "SMS Scheduler"
-			android:textSize="24sp"
+			android:textSize="20sp"
 			android:textColor="@color/white"
 			android:textStyle="bold"
-			android:layout_centerInParent="true"
-			>
-		</TextView>
-			
-		<ImageButton 
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true"
+			android:paddingLeft="5dip"
+		/>
+		<ImageView 
 			android:id = "@+id/main_new_sms_imgbutton"
-			android:layout_height = "48dp"
-			android:layout_width = "48dp"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
 			android:layout_alignParentRight="true"
-			android:layout_marginRight="5dp"
-			android:layout_marginTop = "5dp"
-			android:src="@drawable/ic_btn_write_sms"
-			>
-		</ImageButton>
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="5dip"
+			android:layout_marginRight="5dip"
+			android:src="@drawable/new_sms_button"
+		/>
+		<ImageView 
+			android:id = "@+id/splitter1"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
+			android:layout_toLeftOf="@id/main_new_sms_imgbutton"
+			android:layout_centerVertical="true"
+			android:src="@drawable/vertical_seprator"
+		/>
+		<ImageView
+			android:id = "@+id/main_options_menu_imgbutton"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
+			android:layout_toLeftOf="@id/splitter1"
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="5dip"
+			android:layout_marginRight="5dip"
+			android:src="@drawable/option_menu_button"
+		/>
+		<ImageView 
+			android:id = "@+id/splitter2"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
+			android:layout_toLeftOf="@id/main_options_menu_imgbutton"
+			android:layout_centerVertical="true"
+			android:src="@drawable/vertical_seprator"
+		/>
 	</RelativeLayout>
-	
 	<LinearLayout 
 	    android:id = "@+id/expanded_list_layout"
 	    android:layout_height = "fill_parent"
 	    android:layout_width = "fill_parent">
-	    
 	    <ExpandableListView 
 			android:id = "@+id/main_expandable_list"
 			android:layout_height = "fill_parent"
 			android:layout_width = "fill_parent"
 			android:background="@drawable/bg"
 			android:cacheColorHint="@color/transparent"
-			android:groupIndicator="@drawable/expander_group">
-			
-		
-		</ExpandableListView>
-	    
+			android:groupIndicator="@drawable/expander_group"
+		/>
 	</LinearLayout>
-	
 	<LinearLayout
 	    android:id = "@+id/blank_list_layout"
 	    android:layout_height = "fill_parent"
 	    android:layout_width = "fill_parent"
 	    android:orientation="vertical"
 	    android:layout_gravity="center_vertical">
-	    
 	    <RelativeLayout
 	        android:layout_height = "fill_parent"
 	        android:layout_width = "fill_parent"
 	        android:layout_gravity="center_vertical"
 	        android:gravity="center">
-	    
-	    <LinearLayout
-	        android:layout_height = "wrap_content"
-	        android:layout_width = "wrap_content"
-	        android:layout_gravity="center_vertical"
-	        android:gravity="center"
-	        android:orientation="vertical">
-	        
-	        <TextView 
-	        	android:text = "No SMS scheduled"
-	        	android:layout_height = "wrap_content"
-	        	android:layout_width = "wrap_content"
-	        	android:gravity="center_vertical"
-	        	android:layout_margin = "10dp"/>
-	    
-	    	<Button 
-	        	android:id = "@+id/blank_list_add_button"
-	        	android:layout_height = "wrap_content"
-	        	android:layout_width = "wrap_content"
-	        	android:text = "Schedule an SMS"/>
-	        
-	    </LinearLayout>
-	    
-	    </RelativeLayout>
-	    
-	    
+		    <LinearLayout
+		        android:layout_height = "wrap_content"
+		        android:layout_width = "wrap_content"
+		        android:layout_gravity="center_vertical"
+		        android:gravity="center"
+		        android:orientation="vertical">
+		        <TextView 
+		        	android:text = "No SMS scheduled"
+		        	android:layout_height = "wrap_content"
+		        	android:layout_width = "wrap_content"
+		        	android:gravity="center_vertical"
+		        	android:layout_margin = "10dp"
+	        	/>
+		    	<Button 
+		        	android:id = "@+id/blank_list_add_button"
+		        	android:layout_height = "wrap_content"
+		        	android:layout_width = "wrap_content"
+		        	android:text = "Schedule an SMS"
+	        	/>
+	    	</LinearLayout>
+    	</RelativeLayout>
 	</LinearLayout>
-	    
-	
 </LinearLayout>
