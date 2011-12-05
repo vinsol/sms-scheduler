@@ -3,7 +3,6 @@ package com.vinsol.sms_scheduler.models;
 import java.util.ArrayList;
 
 import android.graphics.Bitmap;
-import android.text.SpannableStringBuilder;
 
 public class MyContact {
 

@@ -51,7 +51,8 @@ public class SplashActivity extends Activity {
 	}
 	
 	public void loadContactsData(){
-		contactsList.clear();
+		// SAZWQA: NR
+//		contactsList.clear();
 		ContentResolver cr = getContentResolver();
 	    Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 	    if(cursor.moveToFirst()){
