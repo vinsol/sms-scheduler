@@ -17,11 +17,11 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class SplashActivity extends Activity {
 
 	static ArrayList<MyContact> contactsList = new ArrayList<MyContact>();
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +53,7 @@ public class SplashActivity extends Activity {
 	public void loadContactsData(){
 		// SAZWQA: NR
 //		contactsList.clear();
+		long t1 = System.currentTimeMillis();
 		ContentResolver cr = getContentResolver();
 	    Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 	    if(cursor.moveToFirst()){
@@ -65,13 +66,15 @@ public class SplashActivity extends Activity {
 	    	    	MyContact contact = new MyContact();
 		    		contact.content_uri_id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
 		    		contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-		    		contact.number = " ";
+		    		// SAZWQA: Why?
+//		    		contact.number = " ";
 	    	    	contact.number = phones.getString(phones.getColumnIndex(Phone.NUMBER));
 	    	    	
 	    	    	Cursor cur = managedQuery(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID}, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID + "=" + contact.content_uri_id, null, null);
 	    	    	
 	    	    	if(cur.moveToFirst()){
 	    	    		do{
+	    	    			// SAZWQA: Should we add a rule that if GROUP_ROW_ID == 0 or it's equal to phone no. don't ADD it?
 	    	    			contact.groupRowId.add(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
 	    	    		}while(cur.moveToNext());
 	    	    	}
@@ -85,9 +88,7 @@ public class SplashActivity extends Activity {
 		    	    	contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
 		    	    }
 		    	    
-		    	    
 		    	    contactsList.add(contact);
-		    	    
 		    	    
 		    	    //Log.i("MSG", contact.groupRowId.size() + "");
 		    	    
@@ -95,6 +96,10 @@ public class SplashActivity extends Activity {
 	    	  }  
 	    	}while(cursor.moveToNext());
 	    }
+	    
+	    Log.d("111111111111111111111111111111111");
+	    Log.d("time taken: " + (System.currentTimeMillis() - t1));
+	    Log.d("111111111111111111111111111111111");
 	}
 	
 	
