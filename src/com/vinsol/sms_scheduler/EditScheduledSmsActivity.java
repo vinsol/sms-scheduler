@@ -514,11 +514,35 @@ public class EditScheduledSmsActivity extends Activity {
 				String beforeString = messageText.getText().toString().substring(0, cursorPos);
 				String afterString = messageText.getText().toString().substring(cursorPos, messageText.length());
 				if(cursorPos!=0){
-					messageText.setText(beforeString + " " + smileys[position] + afterString);
-					messageText.setSelection(cursorPos + smileys[position].length() + 1);
+					if(messageText.getText().toString().charAt(cursorPos-1) == ' '){
+						if(messageText.getText().length()>0){
+							messageText.setText(beforeString + smileys[position] + " " + afterString);
+							messageText.setSelection(cursorPos + smileys[position].length() + 1);
+						}else{
+							messageText.setText(beforeString + smileys[position]);
+							messageText.setSelection(cursorPos + smileys[position].length());
+						}
+						
+					}else{
+						if(afterString.length()>0){
+							messageText.setText((beforeString.length()>0 ? beforeString + " " : "") + smileys[position] + " " + afterString);
+							messageText.setSelection(cursorPos + smileys[position].length() + 2);
+						}else{
+							messageText.setText(beforeString + " " + smileys[position]);
+							messageText.setSelection(cursorPos + smileys[position].length() + 1);
+						}
+						
+					}
+					
 				}else
-					messageText.setText(smileys[position] + afterString);
-					messageText.setSelection(cursorPos + smileys[position].length());
+					if(messageText.getText().length()>0){
+						messageText.setText(smileys[position]);
+						messageText.setSelection(cursorPos + smileys[position].length());
+					}else{
+						messageText.setText(smileys[position] + " " + afterString);
+						messageText.setSelection(cursorPos + smileys[position].length() + 1);
+					}
+					
 				}
 		
 		});

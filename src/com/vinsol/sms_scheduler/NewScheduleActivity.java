@@ -529,9 +529,14 @@ public class NewScheduleActivity extends Activity {
 					}
 					
 				}else
-					if()
-					messageText.setText(smileys[position] + afterString);
-					messageText.setSelection(cursorPos + smileys[position].length());
+					if(messageText.getText().length()>0){
+						messageText.setText(smileys[position]);
+						messageText.setSelection(cursorPos + smileys[position].length());
+					}else{
+						messageText.setText(smileys[position] + " " + afterString);
+						messageText.setSelection(cursorPos + smileys[position].length() + 1);
+					}
+					
 				}
 		
 		});

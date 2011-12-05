@@ -267,7 +267,8 @@ public class GroupAddActivity extends Activity {
 //						mdba.removeContactFromGroup(Long.parseLong(newGroupContacts.get(_position).content_uri_id), groupId);
 //						mdba.close();
 //					}
-					
+//					mdba.open();
+//					Cursor cur = mdba.fetchIdsForGroups(groupId);
 					newGroupContacts.remove(_position);
 					ids.remove(_position);
 					MyAdapter.this.notifyDataSetChanged();
