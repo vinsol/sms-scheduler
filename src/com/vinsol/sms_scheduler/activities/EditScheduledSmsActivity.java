@@ -677,7 +677,7 @@ public class EditScheduledSmsActivity extends Activity {
 //					if(!checkDateValidity(processDate)){
 //						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 //					}
-				if(numbersText.getText().toString().matches("(''|[' ']*)") && messageText.getText().toString().matches("(''|[' ']*)")){
+				if(Spans.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
 					//Toast.makeText(EditScheduledSmsActivity.this, "Mention Recipients and Message to proceed", Toast.LENGTH_SHORT).show();
 					//EditScheduledSmsActivity.this.finish();
 					final Dialog d = new Dialog(EditScheduledSmsActivity.this);
@@ -712,7 +712,7 @@ public class EditScheduledSmsActivity extends Activity {
 					
 					d.show();
 				}else
-				if(numbersText.getText().toString().matches("(''|[' ']*)")){
+				if(Spans.size()==0){
 					final Dialog d = new Dialog(EditScheduledSmsActivity.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					d.setContentView(R.layout.confirmation_dialog_layout);
@@ -919,7 +919,7 @@ public class EditScheduledSmsActivity extends Activity {
 		mdba.open();
 		
 		ArrayList<String> numbers = new ArrayList<String>();
-		mdba.open();
+		
 		Log.i("MSG", Spans.size()+"");
 		
 		
@@ -944,7 +944,7 @@ public class EditScheduledSmsActivity extends Activity {
 							mdba.addRecentContact(Spans.get(i).entityId, "");
 						}
 						
-						if(numbersText.getText().toString().matches("(''|[' ']*)")){
+						if(Spans.size()==0){
 							mdba.setAsDraft(received_id);
 						}else if(messageText.getText().toString().length() == 0){
 							Log.i("MSG", "inside messageText if else");
@@ -964,7 +964,7 @@ public class EditScheduledSmsActivity extends Activity {
 					
 					long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), editedGroup, cal.getTimeInMillis());
 					mdba.addRecentContact(-1, Spans.get(i).displayName);
-					if(numbersText.getText().toString().matches("(''|[' ']*)") || messageText.toString().matches("(''|[' ']*)")){
+					if(Spans.size()==0 || messageText.toString().matches("(''|[' ']*)")){
 						mdba.setAsDraft(received_id);
 					}else{
 						if(mdba.getCurrentPiFiretime() == -1){
@@ -1259,14 +1259,14 @@ public class EditScheduledSmsActivity extends Activity {
 	public void onBackPressed() {
 		//super.onBackPressed();
 		
-		if(!(numbersText.getText().toString().matches("(''|[' ']*)")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+		if(!(Spans.size() == 0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			if(!checkDateValidity(processDate)){
 				Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 			}
 			doSmsScheduling();
 		}else
 			
-		if(!(numbersText.getText().toString().matches("(''|[' ']*)")) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
+		if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			doSmsScheduling();
 			Toast.makeText(EditScheduledSmsActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
 			EditScheduledSmsActivity.this.finish();

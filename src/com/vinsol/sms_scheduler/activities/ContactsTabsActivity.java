@@ -920,18 +920,25 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     		    		
     		    		
     		    		for(int j = 0; j< SpansTemp.size(); j++){
+    		    			
     		        		if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == SpansTemp.get(j).entityId){
     		        			contactCheck.setChecked(true);
     		        		}
     		        	}
     		    		break;
     				}
-    				
     			}
-    		}else{
+    		}else if(recentContactIds.get(position) == -1){
     			contactImage.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
     			nameText.setText(recentContactNumbers.get(position));
     			numberText.setText("");
+    			Log.i("MSG", "size of span : " + SpansTemp.size());
+    			for(int j = 0; j< SpansTemp.size(); j++){
+    				Log.i("MSG", "8888888888888888888888888888888888   entered!");
+    				if(SpansTemp.get(j).displayName.equals(recentContactNumbers.get(position))){
+    					contactCheck.setChecked(true);
+    				}
+    			}
     		}
     		final int _i = i;
     		
@@ -970,7 +977,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 							
 							for(int i = 0; i< SpansTemp.size(); i++){
 				    			if(recentContactIds.get(_position)>-1){
-				    				if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == SpansTemp.get(i).entityId){
+				    				if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
 				    					Log.i("MSG", "got into removing a contact");
 				    					Log.i("MSG", "size of Span " + SpansTemp.size());
 				    					SpansTemp.remove(i);

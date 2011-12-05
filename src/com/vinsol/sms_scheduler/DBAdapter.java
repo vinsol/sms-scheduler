@@ -759,21 +759,27 @@ public class DBAdapter{
 	
 	//----------------------------functions for recents table----------------------------------
 	public void addRecentContact(long contactId, String contactNumber){
-		Log.i("MSG", "came in " + contactId);
-		ContentValues cv = new ContentValues();
-		cv.put(KEY_RECENT_CONTACT_CONTACT_ID, contactId);
-		cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);
+		Log.i("MSG", "came in with " + contactId);
+		
 		Cursor cur = db.query(DATABASE_RECENTS_TABLE, new String[]{KEY_RECENT_CONTACT_ID, KEY_RECENT_CONTACT_CONTACT_ID, KEY_RECENT_CONTACT_NUMBER}, null, null, null, null, KEY_RECENT_CONTACT_ID);
 		boolean contactExist = false;
 		if(cur.moveToFirst()){
 			do{
-				if((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId) || (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
+				if((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId)){// || (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
+					contactExist = true;
+					break;
+				}
+				if(((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID))) == -1) && (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
 					contactExist = true;
 					break;
 				}
 			}while(cur.moveToNext());
 		}
 		if(!contactExist){
+			Log.i("MSG", "came in with " + contactId + " doesn't exist in recents");
+			ContentValues cv = new ContentValues();
+			cv.put(KEY_RECENT_CONTACT_CONTACT_ID, contactId);
+			cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);
 			if(cur.getCount()<20){
 				db.insert(DATABASE_RECENTS_TABLE, null, cv);
 			}else{
@@ -790,6 +796,11 @@ public class DBAdapter{
 		Cursor cur = db.query(DATABASE_RECENTS_TABLE, null, null, null, null, null, KEY_RECENT_CONTACT_ID);
 		return cur;
 	}
+
+	//----------------------------------------------end of functions for recents table-----------------
+	
+	
+	
 	
 	
 	

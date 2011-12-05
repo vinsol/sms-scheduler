@@ -407,12 +407,10 @@ public class NewScheduleActivity extends Activity {
 				//---------------------------------------end of DatePicker setup------
 				
 				
-				//String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
-				//dateLabel.setText(temp);
+				
 				refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
 				refDate = refCal.getTime();
-//				String dateString = refDate.toString();
-//				dateLabel.setText(dateString);
+
 				if(checkDateValidity(refDate)){
 					dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
 					dateLabel.setText("");
@@ -504,7 +502,7 @@ public class NewScheduleActivity extends Activity {
 				int length 		= s.length();
 				parts 		 	= smsManager.divideMessage(s.toString());
 				characterCountText.setText(String.valueOf(length));
-				//messageCountText.setText(" (" + String.valueOf(parts.size()) + ")");
+				
 			}
 		});
 		
@@ -562,31 +560,7 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
-		        // Specify the calling package to identify your application
-		        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
-
-		        // Display an hint to the user about what he should say.
-		        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
-
-		        // Given an hint to the recognizer about what the user is going to say
-		        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-		                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-
-		        // Specify how many results you want to receive. The results will be sorted
-		        // where the first result is the one with higher confidence.
-		        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
-
-		        // Specify the recognition language. This parameter has to be specified only if the
-		        // recognition has to be done in a specific language and not the default one (i.e., the
-		        // system locale). Most of the applications do not have to set this parameter.
-//		        if (!mSupportedLanguageView.getSelectedItem().toString().equals("Default")) {
-//		            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,
-//		                    mSupportedLanguageView.getSelectedItem().toString());
-//		        }
-
-		        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+				
 			}
 		});
 		
@@ -671,7 +645,7 @@ public class NewScheduleActivity extends Activity {
 //					if(!checkDateValidity(processDate)){
 //						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 //					}
-				if(numbersText.getText().toString().matches("(''|[' ']*)") && messageText.getText().toString().matches("(''|[' ']*)")){
+				if(Spans.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
 					//Toast.makeText(NewScheduleActivity.this, "Mention Recipients and Message to proceed", Toast.LENGTH_SHORT).show();
 					//NewScheduleActivity.this.finish();
 					final Dialog d = new Dialog(NewScheduleActivity.this);
@@ -706,7 +680,7 @@ public class NewScheduleActivity extends Activity {
 					
 					d.show();
 				}else
-				if(numbersText.getText().toString().matches("(''|[' ']*)")){
+				if(Spans.size()==0){
 					final Dialog d = new Dialog(NewScheduleActivity.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					d.setContentView(R.layout.confirmation_dialog_layout);
@@ -826,7 +800,7 @@ public class NewScheduleActivity extends Activity {
 		}
 	}
 	
-	//------------------------------------------------------------------end of adapter--------------
+	//---------------------------------------------------end of adapter for template list in dialog--------------
 	
 	
 	
@@ -914,7 +888,7 @@ public class NewScheduleActivity extends Activity {
 		long groupId = mdba.getNextGroupId();
 		//String[] numbers = numbersText.getText().toString().split(",(' ')*");
 		ArrayList<String> numbers = new ArrayList<String>();
-		mdba.open();
+		
 		Log.i("MSG", Spans.size()+"");
 		
 		if(Spans.size()==0){
@@ -928,19 +902,20 @@ public class NewScheduleActivity extends Activity {
 					numbers.add(SplashActivity.contactsList.get(j).number);
 					long received_id = mdba.scheduleSms(SplashActivity.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
 					if(!Spans.get(i).displayName.equals(" ")){
+						Log.i("MESSAGE", "entered to add to recents");
 						mdba.addRecentContact(Spans.get(i).entityId, "");
 					}
 					
 					
 					Log.i("MSG", "before if else");
 					
-					if(numbersText.getText().toString().matches("(''|[' ']*)")){
+					if(Spans.size()==0){
 						mdba.setAsDraft(received_id);
 					}else if(messageText.getText().toString().length() == 0){
 						Log.i("MSG", "inside messageText if else");
 						mdba.setAsDraft(received_id);
 					}else{
-						if(!(numbersText.getText().toString().matches("(''|[' ']*)")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+						if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 							if(mdba.getCurrentPiFiretime() == -1){
 								handlePiUpdate(SplashActivity.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
 							}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
@@ -960,7 +935,7 @@ public class NewScheduleActivity extends Activity {
 				long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
 				mdba.addRecentContact(-1, Spans.get(i).displayName);
 				
-				if(numbersText.getText().toString().matches("(''|[' ']*)") || messageText.toString().matches("(''|[' ']*)")){
+				if(Spans.size()==0 || messageText.toString().matches("(''|[' ']*)")){
 					mdba.setAsDraft(received_id);
 				}else{
 					if(mdba.getCurrentPiFiretime() == -1){
@@ -1281,14 +1256,14 @@ public class NewScheduleActivity extends Activity {
 	public void onBackPressed() {
 		//super.onBackPressed();
 		
-		if(!(numbersText.getText().toString().matches("(''|[' ']*)")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+		if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			if(!checkDateValidity(processDate)){
 				Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 			}
 			doSmsScheduling();
 		}else
 			
-		if(!(numbersText.getText().toString().matches("(''|[' ']*)")) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
+		if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			doSmsScheduling();
 			Toast.makeText(NewScheduleActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
 			NewScheduleActivity.this.finish();
