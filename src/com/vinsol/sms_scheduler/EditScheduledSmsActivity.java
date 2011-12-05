@@ -670,7 +670,7 @@ public class EditScheduledSmsActivity extends Activity {
 					Toast.makeText(EditScheduledSmsActivity.this, "Mention Recipients and Message to proceed", Toast.LENGTH_SHORT).show();
 					//EditScheduledSmsActivity.this.finish();
 				}else
-				if(numbersText.getText().toString().matches("(''|[' ']*)") || messageText.getText().toString().matches("(''|[' ']*)")){
+				if(numbersText.getText().toString().matches("(''|[' ']*)")){
 					final Dialog d = new Dialog(EditScheduledSmsActivity.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					d.setContentView(R.layout.confirmation_dialog_layout);
@@ -678,7 +678,9 @@ public class EditScheduledSmsActivity extends Activity {
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 					
-					questionText.setText("Message will be saved as Draft. Want to proceed?");
+					questionText.setText("No recipients added!");
+					yesButton.setText("Save as Draft");
+					noButton.setText("Add Recipients");
 					yesButton.setOnClickListener(new OnClickListener() {
 						
 						@Override
@@ -694,6 +696,39 @@ public class EditScheduledSmsActivity extends Activity {
 						@Override
 						public void onClick(View v) {
 							d.cancel();
+							numbersText.requestFocus();
+						}
+					});
+					
+					d.show();
+					
+				}else if(messageText.getText().toString().matches("(''|[' ']*)")){
+					final Dialog d = new Dialog(EditScheduledSmsActivity.this);
+					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					d.setContentView(R.layout.confirmation_dialog_layout);
+					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+					
+					questionText.setText("Message is Blank!");
+					yesButton.setText("Save as Draft");
+					noButton.setText("Write Message");
+					yesButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							doSmsScheduling();
+							d.cancel();
+							EditScheduledSmsActivity.this.finish();
+						}
+					});
+					
+					noButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							d.cancel();
+							numbersText.requestFocus();
 						}
 					});
 					
