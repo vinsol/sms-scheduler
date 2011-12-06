@@ -11,16 +11,20 @@
 	<uses-permission android:name="android.permission.READ_CONTACTS"/>
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+	<uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"></uses-permission>
+    <uses-permission android:name="android.permission.VOICE_RECOGNITION"></uses-permission>
+    <uses-permission android:name="android.permission.MIC"></uses-permission>
+
+ 	<uses-feature android:name="android.hardware.microphone" />
 	
     <application android:icon="@drawable/icon" android:label="SMS Scheduler" android:theme="@android:style/Theme.NoTitleBar">
         <!--  activities -->    
         <activity android:name = ".activities.SmsSchedulerExplActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.NewScheduleActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ManageTemplateActivity" android:screenOrientation="portrait" />
-        <activity android:name = ".activities.EditSmsActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ContactsListActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ContactsTabsActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
-        <activity android:name = ".activities.Asap" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ManageGroupsActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.GroupAddActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.EditScheduledSmsActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />

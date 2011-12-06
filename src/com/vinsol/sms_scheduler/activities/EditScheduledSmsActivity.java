@@ -29,6 +29,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -93,7 +94,6 @@ public class EditScheduledSmsActivity extends Activity {
 	static ArrayList<ArrayList<HashMap<String, Object>>> childData = new ArrayList<ArrayList<HashMap<String, Object>>>();
 	static ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
 	
-	private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 	
 	private ListView mList;
 	long editedGroup;
@@ -108,6 +108,15 @@ public class EditScheduledSmsActivity extends Activity {
 	private int spanStartPosition = 0;
 	private ArrayList<ClickableSpan> clickableSpanArrayList = new ArrayList<ClickableSpan>();
 	//--------------------------------------------------------------------
+	
+	
+	//-----------------------Variables related to Voice recognition-------------------
+	 private static final String TAG = "VoiceRecognition";
+
+	 private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+
+    //----------------------------------------------------------------------------------
+	
 	
 	DBAdapter mdba = new DBAdapter(EditScheduledSmsActivity.this);
 	
@@ -211,12 +220,20 @@ public class EditScheduledSmsActivity extends Activity {
 		loadGroupsData();
 		
 		// Check to see if a recognition activity is present
-		PackageManager pm = getPackageManager();
-		List activities = pm.queryIntentActivities(
-		  new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-		if (activities.size() == 0) {
-		  speechImageButton.setEnabled(false);
-		}
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> activities = pm.queryIntentActivities(
+                new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+        if (activities.size() != 0) {
+            speechImageButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					startVoiceRecognitionActivity();
+				}
+			});
+        } else {
+            speechImageButton.setEnabled(false);
+        }
 		//---------------------------------------------------------------------
 		
 		
@@ -546,7 +563,7 @@ public class EditScheduledSmsActivity extends Activity {
 					}
 					
 				}else
-					if(messageText.getText().length()>0){
+					if(messageText.getText().length()==0){
 						messageText.setText(smileys[position]);
 						messageText.setSelection(cursorPos + smileys[position].length());
 					}else{
@@ -1027,10 +1044,29 @@ public class EditScheduledSmsActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
             // Fill the list view with the strings the recognizer thought it could have heard
-            ArrayList<String> matches = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS);
-            mList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-                    matches));
+        	final ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            
+            final Dialog d = new Dialog(EditScheduledSmsActivity.this);
+            d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            d.setContentView(R.layout.voice_matches_dialog);
+            
+            ListView matchesList = (ListView) d.findViewById(R.id.matches_list);
+            matchesList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, matches));
+            
+            matchesList.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					if(messageText.getText().toString().length()==0){
+						messageText.setText(matches.get(position));
+					}else{
+						messageText.setText(messageText.getText().toString() + "\n" + matches.get(position));
+					}
+					d.cancel();
+				}
+			});
+            d.show();
         }
         
         else if(resultCode == 2){
@@ -1408,5 +1444,19 @@ public void loadGroupsData(){
         
         mdba.close();
 	}
+
+
+
+
+	private void startVoiceRecognitionActivity() {
+		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+		intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
+		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+		intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
+
+		startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+}
+
 	
 }
