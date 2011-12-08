@@ -201,6 +201,8 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		Spans.clear();
 		
+		numbersText.setThreshold(1);
+		
 		mdba.open();
 		ArrayList<Long> smsIds = mdba.getIds(editedGroup);
 		Log.i("MSG", "size of smsIds : " + smsIds.size());
@@ -953,6 +955,7 @@ public class EditScheduledSmsActivity extends Activity {
 			}
 		
 			for(int i = 0; i< Spans.size(); i++){
+				if(Spans.get(i).type == 2){
 				for(int j = 0; j< SplashActivity.contactsList.size(); j++){
 					if(Spans.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
 						numbers.add(SplashActivity.contactsList.get(j).number);
@@ -961,9 +964,7 @@ public class EditScheduledSmsActivity extends Activity {
 							mdba.addRecentContact(Spans.get(i).entityId, "");
 						}
 						
-						if(Spans.size()==0){
-							mdba.setAsDraft(received_id);
-						}else if(messageText.getText().toString().length() == 0){
+						if(messageText.getText().toString().length() == 0){
 							Log.i("MSG", "inside messageText if else");
 							mdba.setAsDraft(received_id);
 						}else{
@@ -977,11 +978,12 @@ public class EditScheduledSmsActivity extends Activity {
 						Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
 					}
 				}
+				}else
 				if(Spans.get(i).type == 1){
 					
 					long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), editedGroup, cal.getTimeInMillis());
 					mdba.addRecentContact(-1, Spans.get(i).displayName);
-					if(Spans.size()==0 || messageText.toString().matches("(''|[' ']*)")){
+					if(Spans.size()==0 || messageText.toString().matches("(''|[' ']*)") || Spans.get(i).displayName.equals(" ")){
 						mdba.setAsDraft(received_id);
 					}else{
 						if(mdba.getCurrentPiFiretime() == -1){
@@ -1030,7 +1032,7 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     	alarmManager.set(AlarmManager.RTC_WAKEUP, time, pi);
-    	Toast.makeText(this.getApplicationContext(), "Message Scheduled", Toast.LENGTH_SHORT).show();
+    	
 		
 	}
 	
@@ -1085,34 +1087,13 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	//--------------------------Setting up the Autocomplete text-----------------------------// 
 	
-	public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
-		String text;
-		if(constraint.length()>0){
-			text = (String) constraint;
-		}else{
-			text = "";
-		}
+public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
+	  	
 		
-		shortlist.clear();
-		Log.i("MESSAGE", "f : " + text);
+		String text2 = (String) constraint;
 		
-		positionTrack = 0;
-		if(text.length()>2){
-			
 		
-			for(int i = 0; i< text.length(); i++){
-				if(text.charAt(i) == ','){
-				
-					if(text.charAt(i+1) == ' '){
-						positionTrack = i+2;
-					}
-				
-				}
-			}
-		
-			String text2 = text.substring(positionTrack, text.length());
-		
-			if(text2.length()>1){
+			if(text2.length()>0){
 		
 				Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
 				for(int i = 0; i < SplashActivity.contactsList.size(); i++){
@@ -1130,7 +1111,8 @@ public class EditScheduledSmsActivity extends Activity {
 					}
 				}
 			}
-		}
+//		}
+		  
 		return shortlist;
 					
 	}
@@ -1171,9 +1153,55 @@ public class EditScheduledSmsActivity extends Activity {
 				protected FilterResults performFiltering(CharSequence constraint) {
 					mData.clear();
 					FilterResults filterResults = new FilterResults();
-					mData = shortlistContacts(constraint);
-					filterResults.values = mData;
-					filterResults.count = mData.size();
+					//
+					String text;
+					
+					try{
+						text = (String) constraint;
+						text.length();
+					}catch(NullPointerException npe){
+						text = " ";
+					}
+					
+//					if(constraint.length()>0){
+//						text = (String) constraint;
+//					}else{
+//						text = "";
+//					}
+					
+					shortlist.clear();
+					Log.i("MESSAGE", "f : " + text);
+					
+					positionTrack = 0;
+					
+					if(text.length()>0 && !(text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ',')){
+						
+					
+						for(int i = 0; i< text.length(); i++){
+							if(i<text.length()-2){
+								if(text.charAt(i) == ','){
+							
+									if(text.charAt(i+1) == ' '){
+										positionTrack = i+2;
+									}
+							
+								}
+							}
+						}
+					
+						String text2 = text.substring(positionTrack, text.length());
+					
+						try{
+							String p = text2;
+						}catch(NullPointerException npe){
+							text2 = " ";
+						}
+						mData = shortlistContacts(text2);
+						filterResults.values = mData;
+						filterResults.count = mData.size();
+					}
+					//
+					
 					
 					return filterResults;
 				}
@@ -1181,9 +1209,9 @@ public class EditScheduledSmsActivity extends Activity {
 				@Override
 				protected void publishResults(CharSequence constraints, FilterResults results) {
 					if(results != null && results.count > 0) {
-		                notifyDataSetChanged();
+						notifyDataSetChanged();
 		            }else {
-		                notifyDataSetInvalidated();
+		            	notifyDataSetInvalidated();
 		            }
 					
 				}

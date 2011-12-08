@@ -33,7 +33,6 @@ public class SentReceiver extends BroadcastReceiver{
             	 Cursor cur = mdba.fetchSpanForSms(id);
             	 cur.moveToFirst();
             	 String receiverName = cur.getString(cur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
-                 Toast.makeText(context, "Part " + part + "/" + msgSize + " sent to " + receiverName, Toast.LENGTH_SHORT).show();
                  
                  mdba.increaseSent(id);
                  mdba.close();

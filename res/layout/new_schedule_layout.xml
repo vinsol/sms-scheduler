@@ -3,6 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height = "fill_parent"
 	android:layout_width = "fill_parent"
+	
 	>
 	<!-- Header -->
 	<TextView
@@ -32,16 +33,15 @@
 			android:id="@+id/new_schedule_button"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
-			android:layout_marginRight="3dip"
-			android:background="@drawable/schedule_sms"
+			android:background="@drawable/schedule_sms_button_states"
 			>
 		</Button>
 		<Button 
 			android:id="@+id/new_cancel_button"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
-			android:layout_marginLeft="3dip"
-			android:background="@drawable/cancel"
+			android:paddingLeft="5dp"
+			android:background="@drawable/cancel_button_states"
 			>
 		</Button>
 	</LinearLayout>
@@ -50,7 +50,7 @@
 	<ScrollView 
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:background="@drawable/bg"
+	    android:background="#000000"
 	    android:layout_below="@id/header"
 	    android:layout_above="@id/footer"
 	    >
@@ -83,7 +83,7 @@
 		    		android:id = "@id/new_add_from_contact_imgbutton"
 		    		android:layout_width = "wrap_content"
 		    		android:layout_height = "wrap_content"
-		    		android:background="@drawable/contacts"
+		    		android:background="@drawable/choose_contact_button_states"
 		    		android:layout_alignParentRight="true"
 		    		android:layout_marginLeft="10dp"
 		    		android:layout_centerVertical="true"
@@ -99,6 +99,7 @@
 			   	android:textColor="@color/text_grey"
 			   	android:textSize="20sp"
 			   	android:layout_marginTop="10dp"
+			   	android:background="@drawable/date_time_button_states"
 			   	>
 	    	</Button>
 	    	
@@ -121,7 +122,8 @@
 	    			android:layout_height = "wrap_content"
 	    			android:layout_width = "wrap_content"
 	    			android:layout_margin="2dp"
-	    			android:background="@drawable/template"
+	    			android:paddingTop="2dp"
+	    			android:background="@drawable/template_icon_states"
 	    			>
     			</ImageButton>
 	    		
@@ -131,7 +133,7 @@
 	    			android:layout_height = "wrap_content"
 	    			android:layout_width = "wrap_content"
 	    			android:layout_margin="2dp"
-	    			android:background="@drawable/voice"
+	    			android:background="@drawable/voice_icon_states"
 	    			android:layout_toRightOf="@id/template_imgbutton"
 	    			>
     			</ImageButton>
@@ -142,7 +144,7 @@
 	    			android:layout_height = "wrap_content"
 	    			android:layout_width = "wrap_content"
 	    			android:layout_margin="2dp"
-	    			android:background="@drawable/add_to_template"
+	    			android:background="@drawable/add_to_template_states"
 	    			android:layout_alignParentRight="true"
 	    			>
     			</ImageButton>
@@ -200,7 +202,7 @@
 				android:layout_height= "120dp"
 				android:layout_width = "fill_parent"
 				android:layout_above="@+id/schedule_cancel_button_layout"
-				android:background="#555555"
+				android:background="@drawable/emoticons_bg"
 				android:layout_marginBottom="20dp"
 				>
 				<GridView 

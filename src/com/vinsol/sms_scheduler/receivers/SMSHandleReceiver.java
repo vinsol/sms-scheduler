@@ -116,7 +116,6 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			}else{
 				alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pi);
 			}
-	    	Toast.makeText(context, "Message Scheduled", Toast.LENGTH_SHORT).show();
 		}else{
 			Log.i("MESSAGE", "there are no records, pi to be set to default");
 			mdba.open();

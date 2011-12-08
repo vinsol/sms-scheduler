@@ -38,20 +38,17 @@ public class DeliverReceiver extends BroadcastReceiver{
             		mdba.open();
             		Cursor cur = mdba.fetchSpanForSms(id);
                	 	cur.moveToFirst();
-               	 	String receiverName = cur.getString(cur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
-            		if(mdba.checkDelivery(id)){
-            			Toast.makeText(context, "Message delivered to " + receiverName, Toast.LENGTH_SHORT).show();
-            		}else{
-            			Toast.makeText(context, "Message not delivered to " + receiverName, Toast.LENGTH_SHORT).show();
-            		}
+               	 	String receiverName = cur.getString(cur.getColumnIndex(DBAdapter.KEY_SPAN_DN));          		
+            		Intent mIntent = new Intent();
+                    mIntent.setAction("My special action");
+                    PendingIntent pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            		
+            		AlarmManager am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+            		am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+            		
             		mdba.close();
             	}
-            	Intent mIntent = new Intent();
-                mIntent.setAction("My special action");
-                PendingIntent pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        		
-        		AlarmManager am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
-        		am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+            	
             	
             	
                 break;

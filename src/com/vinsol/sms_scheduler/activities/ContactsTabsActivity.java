@@ -125,14 +125,14 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 
         TabSpec spec1=tabHost.newTabSpec("Tab 1");
         spec1.setContent(R.id.contacts_tab);
-        spec1.setIndicator("Contacts");
+        spec1.setIndicator("Contacts", getResources().getDrawable(R.drawable.contacts_tab_states));
 
         TabSpec spec2=tabHost.newTabSpec("Tab 2");
-        spec2.setIndicator("Groups");
+        spec2.setIndicator("Groups", getResources().getDrawable(R.drawable.groups_tab_states));
         spec2.setContent(R.id.groups_tab);
 
         TabSpec spec3=tabHost.newTabSpec("Tab 3");
-        spec3.setIndicator("Recents");
+        spec3.setIndicator("Recents", getResources().getDrawable(R.drawable.recent_tab_states));
         spec3.setContent(R.id.recents_tab);
 
         tabHost.addTab(spec1);

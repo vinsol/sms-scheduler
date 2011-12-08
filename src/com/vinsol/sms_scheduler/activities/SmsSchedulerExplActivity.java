@@ -593,11 +593,11 @@ public class SmsSchedulerExplActivity extends Activity {
     		child.put(NAME, childSchArray.get(i).keyMessage);
     		boolean bool = true;
     		
-    		if(childSchArray.get(i).keyNumber!=""){
-    			childSchArray.get(i).keyImageRes = R.drawable.icon;
-    		}else{
-    			childSchArray.get(i).keyImageRes = R.drawable.ic_btn_write_sms;
-    		}
+//    		if(childSchArray.get(i).keyNumber!=""){
+    			childSchArray.get(i).keyImageRes = R.drawable.sent_failure_icon;
+//    		}else{
+//    			childSchArray.get(i).keyImageRes = R.drawable.ic_btn_write_sms;
+//    		}
     		
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, childSchArray.get(i).keyDate);
@@ -664,30 +664,23 @@ public class SmsSchedulerExplActivity extends Activity {
     			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == cur.getInt(cur.getColumnIndex(DBAdapter.KEY_MSG_PARTS))){
     				condition = 2;
     			}
-    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_DELIVER))>0 && (condition == 2)){
-    				condition = 3;
-    			}
     			if(mdba.checkDeliver(childSentArray.get(i).keyIds.get(k))){
-    				condition = 4;
+    				condition = 3;
     			}
     		}
     		
     		switch (condition) {
 			case 1:
-				childSentArray.get(i).keyImgRes = R.drawable.icon;
+				childSentArray.get(i).keyImgRes = R.drawable.sent_failure_icon;
 				break;
 				
 			case 2:
-				childSentArray.get(i).keyImgRes = R.drawable.ic_btn_write_sms;
+				childSentArray.get(i).keyImgRes = R.drawable.sending_sms_icon;
 				break;
 				
 			case 3:
-				childSentArray.get(i).keyImgRes = R.drawable.icon;
+				childSentArray.get(i).keyImgRes = R.drawable.sent_success_icon;
 				break; 
-				
-			case 4:
-				childSentArray.get(i).keyImgRes = R.drawable.ic_btn_write_sms;
-				break;
 				
 			default:
 				break;
@@ -749,7 +742,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		boolean bool = true;
     		
 //    		if(childDraftArray.get(i).keyNumber!=""){
-    			childDraftArray.get(i).keyImageRes = R.drawable.icon;
+    			childDraftArray.get(i).keyImageRes = R.drawable.sent_failure_icon;
 //    		}else{
 //    			childDraftArray.get(i).keyImageRes = R.drawable.ic_btn_write_sms;
 //    		}
