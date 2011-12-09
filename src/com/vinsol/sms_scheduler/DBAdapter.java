@@ -586,6 +586,14 @@ public class DBAdapter {
 		}
 	}
 	
+	
+	public void editTemplate(long rowId, String template){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_TEMP_CONTENT, template);
+		db.update(DATABASE_TEMPLATE_TABLE, cv, KEY_TEMP_ID + "=" + rowId, null);
+	}
+	
+	
 	public boolean removeTemplate(long id){
 		try{
 			Log.i("MESSAGE", "id in DB : " + id);

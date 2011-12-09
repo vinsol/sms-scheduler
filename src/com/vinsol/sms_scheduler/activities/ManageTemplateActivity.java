@@ -43,6 +43,8 @@ public class ManageTemplateActivity extends Activity{
 	ArrayList<String> 	templatesArray = new ArrayList<String>();
 	ArrayList<Long>		templatesIdArray = new ArrayList<Long>();
 	
+	boolean isEditing = false;
+	int editRowId = 0;
 	
 	InputMethodManager inputMethodManager;
 	
@@ -80,6 +82,8 @@ public class ManageTemplateActivity extends Activity{
 					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
 					newTemplateBody.setText("");
 					newTemplateBody.requestFocus();
+					newTemplateAddButton.setText("Add");
+					isEditing = false;
 					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 					
 					
@@ -95,8 +99,13 @@ public class ManageTemplateActivity extends Activity{
 				inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
 				if(newTemplateBody.getText().toString().equals("")){
 					Toast.makeText(ManageTemplateActivity.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
+				}else if(isEditing && newTemplateBody.getText().toString().equals(templatesArray.get(editRowId))){
+					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
+					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 				}else{
+					
 					mdba.open();
+				
 					Cursor cur = mdba.fetchAllTemplates();
 					boolean z = true;
 					if(cur.moveToFirst()){
@@ -110,16 +119,23 @@ public class ManageTemplateActivity extends Activity{
 					if(!z){
 						Toast.makeText(ManageTemplateActivity.this, "Template already exists", Toast.LENGTH_SHORT).show();
 					}else{
-						mdba.open();
-						long newId = mdba.addTemplate(newTemplateBody.getText().toString());
-						mdba.close();
-						templatesArray.add(newTemplateBody.getText().toString());
-						templatesIdArray.add(newId);
-//						loadData();
+						
+						if(isEditing){
+							mdba.editTemplate(templatesIdArray.get(editRowId), newTemplateBody.getText().toString());
+						}else{
+							long newId = mdba.addTemplate(newTemplateBody.getText().toString());
+							templatesArray.add(newTemplateBody.getText().toString());
+							templatesIdArray.add(newId);
+						}
+						
+						
+						loadData();
 						mAdapter.notifyDataSetChanged();
 						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
+						inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 						Toast.makeText(ManageTemplateActivity.this, "Template added", Toast.LENGTH_SHORT).show();
 					}
+					mdba.close();
 				}
 			}
 		});
@@ -166,7 +182,7 @@ public class ManageTemplateActivity extends Activity{
     	
     	
     	@Override
-    	public View getView(int position, View convertView, ViewGroup parent) {
+    	public View getView(final int position, View convertView, ViewGroup parent) {
 //    		if(convertView!=null){
 //    			return convertView;
 //    		}
@@ -176,7 +192,7 @@ public class ManageTemplateActivity extends Activity{
     		
     		Log.i("MESSAGE", _position + "yo");
     		
-    		TextView templateBodyLabel = (TextView)row.findViewById(R.id.template_manage_row_body);
+    		final TextView templateBodyLabel = (TextView)row.findViewById(R.id.template_manage_row_body);
     		templateBodyLabel.setText(templatesArray.get(position));
     		
     		ImageView deleteTemplateButton = (ImageView)row.findViewById(R.id.template_manage_row_delete_button);
@@ -225,9 +241,18 @@ public class ManageTemplateActivity extends Activity{
 				
 				@Override
 				public void onClick(View v) {
-					
+					if(newTemplateSpaceLayout.getVisibility()==LinearLayout.GONE){
+						newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
+						newTemplateBody.setText(templateBodyLabel.getText().toString());
+						newTemplateBody.requestFocus();
+						newTemplateAddButton.setText("Edit");
+						editRowId = position;
+						isEditing = true;
+						inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+					}
 				}
 			});
+    		
     		return row;
     	}
     }
