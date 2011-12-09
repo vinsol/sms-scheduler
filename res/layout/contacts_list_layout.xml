@@ -10,7 +10,11 @@
         android:layout_width = "fill_parent"
         android:text = "Select Contacts"
         android:gravity="center_horizontal"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:textColor="#222222"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@drawable/list_header_bg"/>
     
     <ListView 
         android:id = "@+id/contacts_list_main_list"

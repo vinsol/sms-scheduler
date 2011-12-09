@@ -47,7 +47,9 @@
     		<ExpandableListView 
         		android:id = "@android:id/list"
         		android:layout_height = "fill_parent"
-       			android:layout_width = "fill_parent">
+       			android:layout_width = "fill_parent"
+       			android:cacheColorHint="@color/transparent"
+				android:groupIndicator="@drawable/expander_group">
     		</ExpandableListView>
 
 		</LinearLayout>
@@ -86,8 +88,9 @@
 	        android:layout_height="wrap_content"
 	        android:layout_width = "fill_parent"
 	        android:layout_weight="1"
-	        android:text = "Done"
-	        android:layout_margin = "5dp"/>
+	        android:text = ""
+	        android:layout_margin = "5dp"
+	        android:background="@drawable/contacts_done_button_states"/>
 	    
 	    
 	    <Button
@@ -95,10 +98,11 @@
 	        android:layout_height="wrap_content"
 	        android:layout_width = "fill_parent"
 	        android:layout_weight="1"
-	        android:text = "Cancel"
+	        android:text = ""
 	        android:layout_marginTop = "5dp"
 	        android:layout_marginBottom="5dp"
-	        android:layout_marginRight="5dp"/>
+	        android:layout_marginRight="5dp"
+	        android:background="@drawable/contacts_cancel_button_states"/>
 	    
 	</LinearLayout>
 </RelativeLayout>

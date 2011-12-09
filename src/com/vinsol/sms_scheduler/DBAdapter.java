@@ -235,7 +235,7 @@ public class DBAdapter {
 	
 	
 	public int getNextGroupId(){
-		cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_GRPID}, null, null, null, null, null);
+		cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_GRPID}, null, null, null, null, KEY_GRPID + " ASC");
 		if(cur.moveToFirst()){
 			cur.moveToLast();
 			return cur.getInt(cur.getColumnIndex(KEY_GRPID)) + 1;

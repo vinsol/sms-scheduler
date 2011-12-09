@@ -959,11 +959,12 @@ public class NewScheduleActivity extends Activity {
 			}else
 			if(Spans.get(i).type == 1){
 				long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-				mdba.addRecentContact(-1, Spans.get(i).displayName);
+				
 				
 				if(Spans.size()==0 || messageText.toString().matches("(''|[' ']*)") || Spans.get(i).displayName.equals(" ")){
 					mdba.setAsDraft(received_id);
 				}else{
+					mdba.addRecentContact(-1, Spans.get(i).displayName);
 					if(mdba.getCurrentPiFiretime() == -1){
 						handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
 					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
@@ -1161,18 +1162,12 @@ public class NewScheduleActivity extends Activity {
 					
 					positionTrack = 0;
 					
-					if(text.length()>0 && !(text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ',')){
+					if(text.length()>0 && !((text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ','))){
 						
 					
 						for(int i = 0; i< text.length(); i++){
-							if(i<text.length()-2){
-								if(text.charAt(i) == ','){
-							
-									if(text.charAt(i+1) == ' '){
-										positionTrack = i+2;
-									}
-							
-								}
+							if(i<text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' '){
+								positionTrack = i+2;
 							}
 						}
 					

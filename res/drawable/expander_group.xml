@@ -17,7 +17,8 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_expanded="true"
-        android:drawable="@drawable/list_expanded_icon" />
+        android:drawable="@drawable/expander_ic_maximized"
+     	/>
     <item
-        android:drawable="@drawable/list_collapsed_icon" />
+        android:drawable="@drawable/expander_ic_minimized" />
 </selector>

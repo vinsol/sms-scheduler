@@ -290,7 +290,9 @@ public class EditScheduledSmsActivity extends Activity {
 	                	 }
 	                	 if(pos<=len){
 	                		 numbersText.setSelection(pos - Spans.get(i).displayName.length());
+	                		 mdba.open();
 	                		 mdba.deleteSpanGroupRelsForSpan(Spans.get(i).spanId);
+	                		 mdba.close();
 	                		 Spans.remove(i);
 	                		 refreshSpannableString();
 	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
@@ -1174,18 +1176,12 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 					
 					positionTrack = 0;
 					
-					if(text.length()>0 && !(text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ',')){
+					if(text.length()>0 && !((text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ','))){
 						
 					
 						for(int i = 0; i< text.length(); i++){
-							if(i<text.length()-2){
-								if(text.charAt(i) == ','){
-							
-									if(text.charAt(i+1) == ' '){
-										positionTrack = i+2;
-									}
-							
-								}
+							if(i<text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' '){
+								positionTrack = i+2;
 							}
 						}
 					
@@ -1267,50 +1263,60 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 	
 	
 	public void refreshSpannableString(){
-		ssb = new SpannableStringBuilder();
-		clickableSpanArrayList = new ArrayList<ClickableSpan>();
+		ssb.clear();
+		clickableSpanArrayList.clear();
+//		clickableSpanArrayList = new ArrayList<ClickableSpan>();
 		spanStartPosition = 0;
 		numbersText.setText("");
 			
+		if(Spans.get(0).displayName.equals(" ")){
+			Spans.remove(0);
+		}
 		
 		for(int i = 0; i< Spans.size(); i++){
+			
+			
+			
 			final int _i = i;
-			
-			
-			if((Spans.size()==1 && Spans.get(0).displayName.equals(" "))){
-				Spans.remove(0);
-			}else{
-				clickableSpanArrayList.add(new ClickableSpan() {
-					
-					@Override
-					public void onClick(View widget) {
+		
+			clickableSpanArrayList.add(new ClickableSpan() {
+				
+				@Override
+				public void onClick(View widget) {
+							
 						Log.i("MSG", _i + "");
 						if(_i< Spans.size()-1){
-							mdba.deleteSpanGroupRelsForSpan(Spans.get(_i).spanId);
+							for(int j = 0; j< groupData.size(); j++){
+	                			 for(int k = 0; k< childData.get(j).size(); k++){
+	                				 if((Long.parseLong((String)childData.get(j).get(k).get(ConstantsClass.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)childData.get(j).get(k).get(ConstantsClass.CHILD_CHECK)){
+	                					 childData.get(j).get(k).put(ConstantsClass.CHILD_CHECK, false);
+	                				 }
+	                			 }
+	                		 }
 							Spans.remove(_i);
 							refreshSpannableString();
 						}else{
 							
 						}
-					}
+				}
+			
+				@Override
+				public void updateDrawState(TextPaint ds) {
+					super.updateDrawState(ds);
+					//ds.bgColor = 0Xffb2d6d7;
+					ds.setUnderlineText(false);
+				}
+			});
+			try{
+    		ssb.append(Spans.get(i).displayName + ", ");
+    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
+    		spanStartPosition += Spans.get(i).displayName.length() + 2;
+			
+			numbersText.setText(ssb);
+			
+			numbersText.setSelection(spanStartPosition);
+			}catch(IndexOutOfBoundsException iob){
 				
-					@Override
-					public void updateDrawState(TextPaint ds) {
-						super.updateDrawState(ds);
-						ds.bgColor = 0Xffb2d6d7;
-						ds.setUnderlineText(false);
-					}
-				});
-				
-	    		ssb.append(Spans.get(i).displayName + ", ");
-	    		
-	    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), 0);
-	    		spanStartPosition += Spans.get(i).displayName.length() + 2;
-				
-				numbersText.setText(ssb);
-				
-				
-				numbersText.setSelection(spanStartPosition);
 			}
 		}
 	}
@@ -1328,11 +1334,11 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 				Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 			}
 			doSmsScheduling();
+			EditScheduledSmsActivity.this.finish();
 		}else
 			
 		if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			doSmsScheduling();
-			Toast.makeText(EditScheduledSmsActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
 			EditScheduledSmsActivity.this.finish();
 		}else{
 			EditScheduledSmsActivity.this.finish();	
@@ -1343,7 +1349,7 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 	
 	
 	
-public void loadGroupsData(){
+	public void loadGroupsData(){
 		
 		groupData.clear();
 		childData.clear();

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="56dp" >
+    android:layout_height="30dp"
+    android:background="@drawable/list_header_bg" >
 
     
     
@@ -14,12 +15,13 @@
         android:layout_margin="5dp"
         android:paddingLeft="40dp"
         android:paddingTop="7dp"
-        android:text = "Achin"/>
+        android:text = "Achin"
+        android:textColor="#111111"/>
     
 	
     <LinearLayout 
         android:layout_height = "fill_parent"
-        android:layout_width = "50dp"
+        android:layout_width = "45dp"
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:layout_alignParentRight="true">

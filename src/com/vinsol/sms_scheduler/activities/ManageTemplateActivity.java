@@ -9,11 +9,13 @@ import com.vinsol.sms_scheduler.R.id;
 import com.vinsol.sms_scheduler.R.layout;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -29,7 +31,7 @@ import android.widget.Toast;
 
 public class ManageTemplateActivity extends Activity{
 
-	ImageButton 	newTemplateButton;
+	ImageView	 	newTemplateButton;
 	LinearLayout 	newTemplateSpaceLayout;
 	EditText 		newTemplateBody;
 	Button 			newTemplateAddButton;
@@ -49,7 +51,7 @@ public class ManageTemplateActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_template_layout);
 		
-		newTemplateButton 			= (ImageButton) 	findViewById(R.id.new_template_image_button);
+		newTemplateButton 			= (ImageView) 	findViewById(R.id.new_template_image_button);
 		newTemplateSpaceLayout 		= (LinearLayout) 	findViewById(R.id.new_template_input_space);
 		newTemplateBody 			= (EditText) 		findViewById(R.id.new_template_input_edit_text);
 		newTemplateAddButton 		= (Button) 			findViewById(R.id.new_template_add_button);
@@ -178,19 +180,52 @@ public class ManageTemplateActivity extends Activity{
     		templateBodyLabel.setText(templatesArray.get(position));
     		
     		ImageView deleteTemplateButton = (ImageView)row.findViewById(R.id.template_manage_row_delete_button);
-    		deleteTemplateButton.setImageResource(R.drawable.icon);
     		deleteTemplateButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					Log.i("MSG", templatesIdArray.get(_position) + "");
-					Log.i("MSG", _position + "");
-					mdba.open();
-					mdba.removeTemplate(templatesIdArray.get(_position));
-					mdba.close();
-					loadData();
-					mAdapter = new MyAdapter();
-					templatesList.setAdapter(mAdapter);
+					final Dialog d = new Dialog(ManageTemplateActivity.this);
+					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					d.setContentView(R.layout.confirmation_dialog_layout);
+					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+					
+					questionText.setText("Delete this Template?");
+					
+					yesButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							mdba.open();
+							mdba.removeTemplate(templatesIdArray.get(_position));
+							mdba.close();
+							loadData();
+							mAdapter = new MyAdapter();
+							templatesList.setAdapter(mAdapter);
+							d.cancel();
+						}
+					});
+					
+					noButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							d.cancel();
+						}
+					});
+					
+					d.show();
+					
+				}
+			});
+    		
+    		
+    		row.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
 				}
 			});
     		return row;

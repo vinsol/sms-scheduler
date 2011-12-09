@@ -9,6 +9,9 @@ import com.vinsol.sms_scheduler.R.layout;
 import com.vinsol.sms_scheduler.activities.ManageTemplateActivity.MyAdapter;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,12 +19,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ManageGroupsActivity extends Activity {
 
@@ -127,14 +134,42 @@ public class ManageGroupsActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					mdba.open();
-					mdba.removeGroup(grpIdsArray.get(position));
-					mdba.close();
-					grpIdsArray.remove(position);
-					grpNamesArray.remove(position);
-					notifyDataSetChanged();
+					final Dialog d = new Dialog(ManageGroupsActivity.this);
+					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					d.setContentView(R.layout.confirmation_dialog_layout);
+					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+					
+					questionText.setText("Delete this Group?");
+					
+					yesButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							mdba.open();
+							mdba.removeGroup(grpIdsArray.get(position));
+							mdba.close();
+							grpIdsArray.remove(position);
+							grpNamesArray.remove(position);
+							notifyDataSetChanged();
+							d.cancel();
+						}
+					});
+					
+					noButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							d.cancel();
+						}
+					});
+					
+					d.show();
+					
 				}
 			});
+    		
     		row.setOnClickListener(new OnClickListener() {
 				
 				@Override

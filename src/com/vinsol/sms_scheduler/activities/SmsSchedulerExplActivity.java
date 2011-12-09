@@ -12,7 +12,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.renderscript.Font;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -69,6 +74,7 @@ public class SmsSchedulerExplActivity extends Activity {
 	final String IMAGE = "image";
 	final String MESSAGE = "message";
 	final String DATE = "date";
+	final String EXTRA_RECEIVERS = "ext_receivers";
 	final String RECEIVER = "receiver";
 	
 	final int MENU_DELETE = 432142;
@@ -123,6 +129,7 @@ public class SmsSchedulerExplActivity extends Activity {
         
         
         
+        
         blankListAddButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -131,6 +138,7 @@ public class SmsSchedulerExplActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+        
         
         
         
@@ -316,11 +324,11 @@ public class SmsSchedulerExplActivity extends Activity {
     	    	new int[] {}
     	){
     		
-    		@Override
-	    	public View newChildView(boolean isLastChild, ViewGroup parent) {
-	    		
-	    		return layoutInflater.inflate(R.layout.main_row_layout, null, false);
-	    	}
+//    		@Override
+//	    	public View newChildView(boolean isLastChild, ViewGroup parent) {
+//	    		
+//	    		return layoutInflater.inflate(R.layout.main_row_layout, null, false);
+//	    	}
     		
     		
     		
@@ -341,12 +349,16 @@ public class SmsSchedulerExplActivity extends Activity {
 
 			@Override
     		public android.view.View getChildView(int groupPosition, final int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
-    			final View v = super.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
+				
+				convertView = layoutInflater.inflate(R.layout.main_row_layout, null, false);
+				
+				final View v = convertView;
     			
     			final TextView messageTextView  = (TextView)  v.findViewById(R.id.main_row_message_area);
     			final ImageView statusImageView = (ImageView) v.findViewById(R.id.main_row_image_area);
     			final TextView dateTextView		= (TextView)  v.findViewById(R.id.main_row_date_area);
     			final TextView receiverTextView = (TextView)  v.findViewById(R.id.main_row_recepient_area);
+    			final TextView extraReceiversTextView = (TextView) v.findViewById(R.id.main_row_extra_recepient_area);
     			
     			Log.i("MESSAGE", "------------------------Value of ChildPosition : " + childSchArray.size());
     			
@@ -354,17 +366,32 @@ public class SmsSchedulerExplActivity extends Activity {
     				messageTextView.setText(childSchArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSchArray.get(childPosition).keyImageRes);
     				dateTextView.setText(childSchArray.get(childPosition).keyDate);
-    				receiverTextView.setText(childSchArray.get(childPosition).keyNumber);
+    				receiverTextView.setText(numbersLengthRectify(childSchArray.get(childPosition).keyNumber));
+    				extraReceiversTextView.setText(extraReceiversCal(childSchArray.get(childPosition).keyNumber));
     			} else if(groupPosition == 2) {
     				messageTextView.setText(childSentArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
     				dateTextView.setText(childSentArray.get(childPosition).keyDate);
-    				receiverTextView.setText(childSentArray.get(childPosition).keyNumber);
+    				receiverTextView.setText(numbersLengthRectify(childSentArray.get(childPosition).keyNumber));
+    				extraReceiversTextView.setText(extraReceiversCal(childSentArray.get(childPosition).keyNumber));
     			} else if(groupPosition == 0){
-    				messageTextView.setText(childDraftArray.get(childPosition).keyMessage);
+    				Log.i("MSG", "====================================++++++++ " + childDraftArray.get(childPosition).keyMessage);
+    				if(!childDraftArray.get(childPosition).keyMessage.matches("^(''|[' ']*)$")){
+    					messageTextView.setText(childDraftArray.get(childPosition).keyMessage);
+    				}else{
+    					messageTextView.setText("[No Message Written]");
+    					messageTextView.setTextColor(0xff777777);
+    				}
     				statusImageView.setImageResource(childDraftArray.get(childPosition).keyImageRes);
     				dateTextView.setText(childDraftArray.get(childPosition).keyDate);
-    				receiverTextView.setText(childDraftArray.get(childPosition).keyNumber);
+    				if(!childDraftArray.get(childPosition).keyNumber.matches("^(''|[' ']*)$")){
+    					receiverTextView.setText(numbersLengthRectify(childDraftArray.get(childPosition).keyNumber));
+        				extraReceiversTextView.setText(extraReceiversCal(childDraftArray.get(childPosition).keyNumber));
+    				}else{
+    					receiverTextView.setText("[No Recepients Added]");
+    					receiverTextView.setTextColor(0xff777777);
+    				}
+    				
     			}
     			
     			
@@ -506,8 +533,6 @@ public class SmsSchedulerExplActivity extends Activity {
 					});
     				
     			}
-    			
-    			
     			return v;
     		}
     		
@@ -602,6 +627,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, childSchArray.get(i).keyDate);
     		child.put(RECEIVER, childSchArray.get(i).keyNumber);
+    		child.put(EXTRA_RECEIVERS, extraReceiversCal(childSchArray.get(i).keyNumber));
     		groupChildSch.add(child);
     		
     	}
@@ -687,7 +713,9 @@ public class SmsSchedulerExplActivity extends Activity {
 			}
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, childSentArray.get(i).keyDate);
-    		child.put(RECEIVER, childSentArray.get(i).keyNumber);
+    		
+    		child.put(RECEIVER, numbersLengthRectify(childSentArray.get(i).keyNumber));
+    		child.put(EXTRA_RECEIVERS, extraReceiversCal(childSentArray.get(i).keyNumber));
     		groupChildSent.add(child);
     		mdba.close();
     	}
@@ -730,6 +758,7 @@ public class SmsSchedulerExplActivity extends Activity {
     			}else{
     				childDraftArray.get(z).keyNumber = childDraftArray.get(z).keyNumber + ", " + displayName;
     				childDraftArray.get(z).keyIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
+    				//childDraftArray.get(z).keyExtraReceivers = extraReceiversCal(childDraftArray.get)
     			}
     			
     		}while(draftCur.moveToNext());
@@ -749,7 +778,13 @@ public class SmsSchedulerExplActivity extends Activity {
     		
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, childDraftArray.get(i).keyDate);
-    		child.put(RECEIVER, childDraftArray.get(i).keyNumber);
+    		child.put(RECEIVER, numbersLengthRectify(childDraftArray.get(i).keyNumber));
+    		try{
+    			child.put(EXTRA_RECEIVERS, extraReceiversCal(childSentArray.get(i).keyNumber));
+    		}catch (IndexOutOfBoundsException e) {
+    			child.put(EXTRA_RECEIVERS, "");
+			}
+    		
     		groupChildDraft.add(child);
     		
     	}
@@ -781,6 +816,7 @@ public class SmsSchedulerExplActivity extends Activity {
 		int			keyDeliver;
 		int			keyMsgParts;
 		int 		keyImageRes;
+		String 		keyExtraReceivers;
 		ArrayList<Long>	keyIds;
 		
 		childSch(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, ArrayList<Long> keyids){
@@ -811,6 +847,7 @@ public class SmsSchedulerExplActivity extends Activity {
 		long		keySMillis;
 		long		keyDMillis;
 		int			keyImgRes;
+		String 		keyExtraReceivers;
 		ArrayList<Long> keyIds;
 		
 		childSent(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, long keysmillis, long keydmillis, ArrayList<Long> keyids){
@@ -842,6 +879,7 @@ public class SmsSchedulerExplActivity extends Activity {
 		int			keyDeliver;
 		int			keyMsgParts;
 		int 		keyImageRes;
+		String 		keyExtraReceivers;
 		ArrayList<Long>	keyIds;
 		
 		childDraft(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, ArrayList<Long> keyids){
@@ -982,4 +1020,54 @@ public class SmsSchedulerExplActivity extends Activity {
     		return row;
     	}
     }
+	
+	
+	
+	
+	private String numbersLengthRectify(String number){
+		if(number.length()<= 30){
+			return number;
+		}
+		int delimiterCount = 0;
+		int validDelimiterCount = 0;
+		int validLength = 0;
+		for(int i = 0; i< number.length(); i++){
+			if(number.charAt(i)==' ' && number.charAt(i-1)==','){
+				delimiterCount++;
+				if(i<=30){
+					validDelimiterCount++;
+					validLength = i;
+				}
+			}
+		}
+		String validLengthNumber = number.substring(0, validLength);
+		
+		return validLengthNumber;
+	}
+	
+	
+	
+	private String extraReceiversCal(String number){
+		if(number.length()<= 30){
+			return "";
+		}
+		int delimiterCount = 0;
+		int validDelimiterCount = 0;
+		int validLength = 0;
+		for(int i = 0; i< number.length(); i++){
+			if(number.charAt(i)==' ' && number.charAt(i-1)==','){
+				delimiterCount++;
+				if(i<=30){
+					validDelimiterCount++;
+					validLength = i-2;
+				}
+			}
+		}
+		
+		
+		return "+" + (delimiterCount - validDelimiterCount + 1);
+	}
+	
+	
+
 }

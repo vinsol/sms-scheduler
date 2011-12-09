@@ -8,7 +8,7 @@
     	android:layout_height = "60dp"
     	android:layout_width = "fill_parent"
     	android:layout_gravity="center_vertical"
-    	android:background="#999999">
+    	android:background="@drawable/header_bg">
     	
         <ImageButton
     		android:id ="@+id/manage_group_ok_image_button"
@@ -27,8 +27,9 @@
     		android:paddingLeft="20dp"
     		android:paddingTop="5dp"
     		android:layout_margin = "5dp"
-    		android:textSize="25sp"
+    		android:textSize="20sp"
     		android:textColor="#ffffff"
+    		android:gravity="center_vertical"
     		android:text = "Manage Groups"/>
     		
     	<ImageButton
@@ -42,6 +43,10 @@
     	
     </RelativeLayout>
     
+   	<View 
+   	    android:layout_height = "5dp"
+   	    android:layout_width = "fill_parent"
+   	    android:background="#222222"/>
     
     <ListView 
     	android:id = "@+id/group_manager_list"

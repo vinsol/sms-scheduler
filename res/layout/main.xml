@@ -65,7 +65,7 @@
 			android:id = "@+id/main_expandable_list"
 			android:layout_height = "fill_parent"
 			android:layout_width = "fill_parent"
-			android:background="@drawable/bg"
+			android:background="#000000"
 			android:cacheColorHint="@color/transparent"
 			android:groupIndicator="@drawable/expander_group"
 		/>

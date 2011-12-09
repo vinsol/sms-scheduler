@@ -4,7 +4,7 @@
   android:orientation="horizontal"
   android:layout_width="match_parent"
   android:layout_height="36dp"
-  android:background="#777777">
+  android:background="@drawable/list_header_bg">
     
     <ImageView 
     	android:id = "@+id/main_group_colexp_img"

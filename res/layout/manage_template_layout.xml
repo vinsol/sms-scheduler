@@ -6,32 +6,46 @@
   android:layout_height="match_parent">
     
     <RelativeLayout 
-    	android:layout_height = "60dp"
+    	android:layout_height = "40dp"
     	android:layout_width = "fill_parent"
     	android:layout_gravity="center_vertical"
-    	android:background="#999999">
+    	android:background="@drawable/header_bg">
     	
     	<TextView 
     	    android:id = "@+id/manage_template_layout_heading"
     		android:layout_height = "wrap_content"
     		android:layout_width = "wrap_content"
     		android:paddingLeft="20dp"
-    		android:paddingTop="5dp"
     		android:layout_margin = "5dp"
-    		android:textSize="25sp"
+    		android:textSize="20sp"
     		android:textColor="#ffffff"
     		android:text = "Manage Templates"/>
     		
-    	<ImageButton
-    		android:id ="@+id/new_template_image_button"
+    	<ImageView 
+			android:id = "@+id/splitter1"
+			android:layout_height = "wrap_content"
+			android:layout_width = "wrap_content"
+			android:layout_toLeftOf="@+id/new_template_image_button"
+			android:layout_centerVertical="true"
+			android:layout_marginRight="5dp"
+			android:src="@drawable/vertical_seprator"/>
+    	
+    	<ImageView
+    		android:id ="@id/new_template_image_button"
     		android:layout_height = "wrap_content"
     		android:layout_width = "wrap_content"
-    		android:src="@drawable/ic_btn_write_sms"
-    		android:layout_marginTop = "7dp"
+    		android:src="@drawable/add_to_template_states"
+    		android:layout_marginTop = "5dp"
     		android:layout_marginRight="5dp"
     		android:layout_alignParentRight="true"/>
     	
     </RelativeLayout>
+    
+    
+    <View 
+   	    android:layout_height = "5dp"
+   	    android:layout_width = "fill_parent"
+   	    android:background="#222222"/>
     
     
     <LinearLayout 
@@ -39,7 +53,8 @@
     	android:orientation="vertical"
     	android:layout_height = "wrap_content"
     	android:layout_width = "fill_parent"
-    	android:visibility="gone">
+    	android:visibility="gone"
+    	android:background="#777777">
     	
     	<EditText 
     		android:id = "@+id/new_template_input_edit_text"
@@ -70,6 +85,12 @@
     			android:textSize="12sp"/>
     	
     	</LinearLayout>	
+    	
+    	
+    	<View 
+   	    	android:layout_height = "5dp"
+   	    	android:layout_width = "fill_parent"
+   	    	android:background="#222222"/>
     	
     	
     </LinearLayout>

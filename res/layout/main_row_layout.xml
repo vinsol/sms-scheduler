@@ -3,36 +3,57 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
   	android:layout_width="fill_parent"
   	android:layout_height="80dp"
-  	android:background="@color/white"
- 	android:paddingLeft="10dip"
- 	android:paddingRight="10dip"
- 	android:paddingTop="5dip"
+  	android:background="@drawable/list_item_bg"
  	android:paddingBottom="5dip"
  	>
+ 	
+    <ImageView 
+			android:id = "@+id/list_divider"
+			android:layout_height = "wrap_content"
+			android:layout_width = "fill_parent"
+			android:layout_alignParentTop="true"
+			android:src="@drawable/list_divider"
+	/>
  	
     <TextView 
    		android:id = "@+id/main_row_recepient_area"
    		android:layout_height = "wrap_content"
-   		android:layout_width = "240dp"
+   		android:layout_width = "wrap_content"
    		android:text = "Mr.Reveiver"
-   		android:textColor="@color/text_blue"
-   		android:layout_alignParentTop="true"
+   		android:textColor="@color/white"
+   		android:layout_below="@id/list_divider"
    		android:layout_alignParentLeft="true"
    		android:paddingTop="5dip"
    		android:ellipsize="end"
+   		android:maxLines="1"
+   		android:paddingLeft="10dip"
+ 		android:paddingRight="2dip"
    		>
   	</TextView>
+  	
+        
+    <TextView 
+        android:id="@+id/main_row_extra_recepient_area"
+        android:layout_height="wrap_content"
+        android:layout_width = "wrap_content"
+        android:layout_toRightOf="@id/main_row_recepient_area"
+        android:layout_alignBaseline="@id/main_row_recepient_area"
+        android:paddingRight="10dip"
+        android:textColor="#fbec5d"
+        />
    	
         
         
    	<TextView 
   		android:id = "@+id/main_row_date_area"
   		android:layout_height = "wrap_content"
-  		android:layout_width = "240dp"
+  		android:layout_width = "250dp"
   		android:text ="DATE"
-  		android:textColor="@color/text_blue"
+  		android:textColor="#cd7f32"
   		android:layout_below="@id/main_row_recepient_area"
   		android:paddingTop="5dip"
+  		android:paddingLeft="10dip"
+ 		android:paddingRight="10dip"
   		>
  	</TextView>
         
@@ -41,15 +62,16 @@
    	
    	<TextView 
   		android:id = "@+id/main_row_message_area"
-  		android:layout_width = "240dp"
+  		android:layout_width = "250dp"
   		android:layout_height="wrap_content"
   		android:maxLines="1"
-  		android:textColor="@color/text_grey"
+  		android:textColor="#fbec5d"
   		android:textSize="14dip"
-  		android:textStyle="bold"
   		android:ellipsize="end"
   		android:layout_below="@id/main_row_date_area"
   		android:paddingTop="5dip"
+  		android:paddingLeft="10dip"
+ 		android:paddingRight="10dip"
   		>
 	</TextView>
     		
@@ -63,6 +85,7 @@
  		android:layout_alignParentRight="true"
  		android:layout_alignBaseline="@id/main_row_date_area"
  		android:layout_centerVertical="true"
+ 		android:layout_marginRight="10dip"	
  		>
 	</ImageView>
 </RelativeLayout>
