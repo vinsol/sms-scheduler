@@ -618,12 +618,8 @@ public class SmsSchedulerExplActivity extends Activity {
     		child.put(NAME, childSchArray.get(i).keyMessage);
     		boolean bool = true;
     		
-//    		if(childSchArray.get(i).keyNumber!=""){
-    			childSchArray.get(i).keyImageRes = R.drawable.sent_failure_icon;
-//    		}else{
-//    			childSchArray.get(i).keyImageRes = R.drawable.ic_btn_write_sms;
-//    		}
-    		
+
+    		childSchArray.get(i).keyImageRes = R.drawable.delete_image_states;    		
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, childSchArray.get(i).keyDate);
     		child.put(RECEIVER, childSchArray.get(i).keyNumber);
@@ -687,8 +683,13 @@ public class SmsSchedulerExplActivity extends Activity {
     		for(int k = 0; k< childSentArray.get(i).keyIds.size(); k++){
     			Cursor cur = mdba.fetchSmsDetails(childSentArray.get(i).keyIds.get(k));
     			cur.moveToFirst();
-    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == cur.getInt(cur.getColumnIndex(DBAdapter.KEY_MSG_PARTS))){
+    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == 0){
+    				condition = 1;
+    				break;
+    			}
+    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == cur.getInt(cur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)) && !mdba.checkDeliver(childSentArray.get(i).keyIds.get(k))){
     				condition = 2;
+    				break;
     			}
     			if(mdba.checkDeliver(childSentArray.get(i).keyIds.get(k))){
     				condition = 3;
@@ -771,7 +772,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		boolean bool = true;
     		
 //    		if(childDraftArray.get(i).keyNumber!=""){
-    			childDraftArray.get(i).keyImageRes = R.drawable.sent_failure_icon;
+    			childDraftArray.get(i).keyImageRes = R.drawable.delete_image_states;
 //    		}else{
 //    			childDraftArray.get(i).keyImageRes = R.drawable.ic_btn_write_sms;
 //    		}
@@ -988,31 +989,25 @@ public class SmsSchedulerExplActivity extends Activity {
 			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == cur.getInt(cur.getColumnIndex(DBAdapter.KEY_MSG_PARTS))){
 				condition = 2;
 			}
-			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_DELIVER))>0 && (condition == 2)){
+			if(mdba.checkDeliver(currentId)){
 				condition = 3;
 			}
-			if(mdba.checkDeliver(currentId)){
-				condition = 4;
-			}
 			
+			Log.i("MSG", "condition = " + condition);
 			
 			switch (condition) {
 			case 1:
-				statusImage.setImageResource(R.drawable.icon);
+				statusImage.setImageResource(R.drawable.sent_failure_icon);
 				break;
 				
 			case 2:
-				statusImage.setImageResource(R.drawable.ic_btn_write_sms);
+				statusImage.setImageResource(R.drawable.sending_sms_icon);
 				break;
 				
 			case 3:
-				statusImage.setImageResource(R.drawable.icon);
+				statusImage.setImageResource(R.drawable.sent_success_icon);
 				break;
-				
-			case 4:
-				statusImage.setImageResource(R.drawable.ic_btn_write_sms);
-				break;
-				
+					
 			default:
 				break;
 			}

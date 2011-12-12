@@ -68,7 +68,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			isent.setAction(DBAdapter.PRIVATE_SMS_ACTION + id);
 			pisent = PendingIntent.getBroadcast(context, 0, isent, PendingIntent.FLAG_UPDATE_CURRENT);
 			sentIntents.add(pisent);
-			Toast.makeText(context, number, Toast.LENGTH_SHORT).show();
+			
 			Intent ideliver = new Intent(context, DeliverReceiver.class);
 			ideliver.putExtra("PART", i);
 			ideliver.putExtra("SIZE", msgSize);

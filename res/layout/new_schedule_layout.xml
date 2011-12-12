@@ -29,28 +29,36 @@
 		android:gravity="center" 
 		android:layout_alignParentBottom="true"
 		>
+		
 		<Button 
 			android:id="@+id/new_schedule_button"
-			android:layout_width="wrap_content" 
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
+			android:layout_weight = "4"
+			android:layout_marginLeft="5dp"
 			android:background="@drawable/schedule_sms_button_states"
 			>
 		</Button>
+		
 		<Button 
 			android:id="@+id/new_cancel_button"
-			android:layout_width="wrap_content" 
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:paddingLeft="5dp"
+			android:layout_weight="5"
+			android:layout_marginLeft="5dp"
+			android:layout_marginRight="5dp"
 			android:background="@drawable/cancel_button_states"
 			>
 		</Button>
+		
+		
 	</LinearLayout>
 	
 	<!-- body -->
 	<ScrollView 
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:background="#111111"
+	    android:background="#333333"
 	    android:layout_below="@id/header"
 	    android:layout_above="@id/footer"
 	    >

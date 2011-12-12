@@ -387,12 +387,19 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
+						boolean isPresent = false;
+						for(int i = 0; i< SpansTemp.size(); i++){
+							if(SpansTemp.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id)){
+								isPresent = true;
+								break;
+							}
+						}
+						if(!isPresent){
 						SpannedEntity span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(_position).name, Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id), -1);
 						span.groupIds.add((long) -1);
 						span.groupTypes.add(-1);
-						
 						SpansTemp.add(span);
-						
+						}
 					}else{	
 					
 						for(int i = 0; i<SpansTemp.size(); i++){

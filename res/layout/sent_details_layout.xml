@@ -9,44 +9,60 @@
     	android:id= "@+id/sent_details_dialog_number_list"
     	android:layout_height = "wrap_content"
     	android:layout_width = "fill_parent"
-    	android:layout_margin="5dp"
     	/>
     
-    <View 
+    <!-- <View 
     	android:layout_height = "3dp"
     	android:layout_width = "290dp"
     	android:layout_gravity = "center_horizontal"
     	android:background="#333333"/>
     
     <TextView 
-    	android:layout_height = "wrap_content"
-    	android:layout_width = "wrap_content"
-    	android:textSize="22sp"
-    	android:text = "Sent At:"
-    	android:layout_margin="5dp"/>
-    
-    <TextView 
-    	android:id = "@+id/sent_details_dialog_time_label"
     	android:layout_height = "wrap_content"
     	android:layout_width = "fill_parent"
-    	android:layout_gravity="center_horizontal"
-    	android:background="#222222"
-    	android:layout_margin="5dp"/>
+    	android:textSize="20sp"
+    	android:text = "Sent At:"
+    	android:padding="2dp"
+    	android:background="#777777"/> -->
+    	
+    <LinearLayout
+        android:layout_height = "wrap_content"
+        android:layout_width = "fill_parent"
+        android:background="#777777"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="2dp">
     
     
-    <View 
+    	<ImageView 
+    	    android:layout_height = "32dp"
+    	    android:layout_width = "32dp"
+    	    android:src="@drawable/analogclock"/>
+    
+    	<TextView 
+    		android:id = "@+id/sent_details_dialog_time_label"
+    		android:layout_height = "wrap_content"
+    		android:layout_width = "fill_parent"
+    		android:layout_margin="5dp"
+    		android:textSize="16sp"
+    		android:layout_gravity="center_vertical"/>
+    
+    </LinearLayout>
+    <!-- <View 
     	android:layout_height = "3dp"
     	android:layout_width = "290dp"
     	android:layout_gravity = "center_horizontal"
-    	android:background="#333333"/>
+    	android:background="#333333"/> 
     
     	
     <TextView
     	android:layout_height = "wrap_content"
-    	android:layout_width = "wrap_content"
-    	android:textSize="22sp"
+    	android:layout_width = "fill_parent"
+    	android:textSize="20sp"
     	android:text = "Message:"
-    	android:layout_margin="5dp"/>
+    	android:padding="2dp"
+    	android:layout_marginTop="5dp"
+    	android:background="#777777"/> -->
     	
     
     <TextView
@@ -54,6 +70,7 @@
     	android:layout_height = "150dp"
     	android:layout_width = "fill_parent"
     	android:layout_margin="5dp"
+    	android:textSize="16sp"
     	android:editable="false"/>
     
 </LinearLayout>

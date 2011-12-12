@@ -351,9 +351,20 @@ public class NewScheduleActivity extends Activity {
 									start = i+1;
 								}
 							}
-							SpannedEntity span = new SpannedEntity(-1, 1, numbersText.getText().toString().substring(start, pos-1), -1, -1);
-							Spans.add(span);
+							boolean isPresent = false;
+							for(int i = 0; i< Spans.size(); i++){
+								if(Spans.get(i).displayName.equals(numbersText.getText().toString().substring(start, pos-1))){
+									isPresent = true;
+									break;
+								}
+							}
+							if(!isPresent){
+								SpannedEntity span = new SpannedEntity(-1, 1, numbersText.getText().toString().substring(start, pos-1), -1, -1);
+								Spans.add(span);
+								
+							}
 							refreshSpannableString();
+							
 						}
 						
 					}
@@ -373,12 +384,19 @@ public class NewScheduleActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				final SpannedEntity span = new SpannedEntity(-1, 2, shortlist.get(position).name, Long.parseLong(shortlist.get(position).content_uri_id), -1);
-				Spans.add(span);
-				
+				boolean isPresent = false;
+				for(int i = 0; i< Spans.size(); i++){
+					if(Spans.get(i).entityId == Long.parseLong(shortlist.get(position).content_uri_id)){
+						isPresent = true;
+						break;
+					}
+				}
+				if(!isPresent){
+					final SpannedEntity span = new SpannedEntity(-1, 2, shortlist.get(position).name, Long.parseLong(shortlist.get(position).content_uri_id), -1);
+					Spans.add(span);
+					
+				}
 				refreshSpannableString();
-				
-
 			}
 		});
 		
@@ -818,6 +836,7 @@ public class NewScheduleActivity extends Activity {
 					}else{
 						messageText.setText(messageText.getText().toString() + "\n" + templatesArray.get(_position));
 					}
+					messageText.setSelection(messageText.getText().toString().length());
 					templateDialog.cancel();
 				}
 			});

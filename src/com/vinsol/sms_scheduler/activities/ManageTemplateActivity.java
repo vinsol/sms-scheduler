@@ -146,7 +146,9 @@ public class ManageTemplateActivity extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+				if(inputMethodManager.isActive()){
+					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+				}
 				newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
 			}
 		});
