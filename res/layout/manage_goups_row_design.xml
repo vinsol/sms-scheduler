@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:src="@drawable/sent_failure_icon" />
+            android:src="@drawable/delete_image_states" />
         
     </RelativeLayout>
     

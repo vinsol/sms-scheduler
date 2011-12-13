@@ -18,9 +18,14 @@
 
  	<uses-feature android:name="android.hardware.microphone" />
 	
-    <application android:icon="@drawable/icon" android:label="SMS Scheduler" android:theme="@android:style/Theme.NoTitleBar">
+    <application android:name=".activities.SmsApplicationLevelData" android:icon="@drawable/icon" android:label="SMS Scheduler" android:theme="@android:style/Theme.NoTitleBar">
         <!--  activities -->    
-        <activity android:name = ".activities.SmsSchedulerExplActivity" android:screenOrientation="portrait" />
+        <activity android:name = ".activities.SmsSchedulerExplActivity" android:screenOrientation="portrait" >
+                <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name = ".activities.NewScheduleActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ManageTemplateActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ContactsListActivity" android:screenOrientation="portrait" />
@@ -29,12 +34,8 @@
         <activity android:name = ".activities.GroupAddActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.EditScheduledSmsActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
         <activity android:name = ".activities.GroupsTestActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
-        <activity android:name = ".activities.SplashActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        
+        
        	<!--  receivers -->
         <receiver android:name =".receivers.SMSHandleReceiver" android:enabled="true" />
 		<receiver android:name =".receivers.SentReceiver" android:enabled="true" />

@@ -94,15 +94,15 @@ public class GroupsTestActivity extends Activity {
         		
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         		
-        		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
-        			for(int j = 0; j< SplashActivity.contactsList.get(i).groupRowId.size(); j++){
-        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SplashActivity.contactsList.get(i).groupRowId.get(j)){
+        		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
+        			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
+        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsApplicationLevelData.contactsList.get(i).groupRowId.get(j)){
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-        					childParameters.put(CHILD_NAME, SplashActivity.contactsList.get(i).name);
-        					childParameters.put(CHILD_NUMBER, SplashActivity.contactsList.get(i).number);
-        					childParameters.put(CHILD_IMAGE, SplashActivity.contactsList.get(i).image);
+        					childParameters.put(CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
+        					childParameters.put(CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);
+        					childParameters.put(CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(i).image);
         					childParameters.put(CHILD_CHECK, false);
-        					childParameters.put(CHILD_CONTACT_ID, SplashActivity.contactsList.get(i).content_uri_id);
+        					childParameters.put(CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(i).content_uri_id);
         					child.add(childParameters);
         				}
         			}
@@ -135,13 +135,13 @@ public class GroupsTestActivity extends Activity {
         		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
         		for(int i = 0; i< contactIds.size(); i++){
-        			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
-        				if(contactIds.get(i)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+        			for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
+        				if(contactIds.get(i)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-        					childParameters.put(CHILD_NAME, SplashActivity.contactsList.get(j).name);
-        					childParameters.put(CHILD_NUMBER, SplashActivity.contactsList.get(j).number);
-        					childParameters.put(CHILD_CONTACT_ID, SplashActivity.contactsList.get(j).content_uri_id);
-        					childParameters.put(CHILD_IMAGE, SplashActivity.contactsList.get(j).image);
+        					childParameters.put(CHILD_NAME, SmsApplicationLevelData.contactsList.get(j).name);
+        					childParameters.put(CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(j).number);
+        					childParameters.put(CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(j).content_uri_id);
+        					childParameters.put(CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
         					childParameters.put(CHILD_CHECK, false);
         					
         					child.add(childParameters);

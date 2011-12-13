@@ -26,8 +26,12 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -170,12 +174,34 @@ public class EditScheduledSmsActivity extends Activity {
 			":-X"
 	};
 	
+	int toOpen = 0;
+	Dialog dataLoadWaitDialog;
+	IntentFilter dataloadIntentFilter;
+	
+	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent2) {
+//			Toast.makeText(SmsSchedulerExplActivity.this, "Data Loaded", Toast.LENGTH_SHORT).show();
+			if(dataLoadWaitDialog.isShowing()){
+				dataLoadWaitDialog.cancel();
+				if(toOpen == 1){
+					toOpen = 0;
+					Intent intent = new Intent(EditScheduledSmsActivity.this, ContactsTabsActivity.class);
+					intent.putExtra("ORIGIN", "edit");
+					startActivityForResult(intent, 2);
+				}
+			}
+		}
+	};
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.new_schedule_layout);
 		
+		dataLoadWaitDialog = new Dialog(EditScheduledSmsActivity.this);
 		
 		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
@@ -189,6 +215,7 @@ public class EditScheduledSmsActivity extends Activity {
 		scheduleButton 				= (Button) 					findViewById(R.id.new_schedule_button);
 		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
+		
 		
 		Intent intent = getIntent();
 		
@@ -238,12 +265,39 @@ public class EditScheduledSmsActivity extends Activity {
         }
 		//---------------------------------------------------------------------
 		
-		
+        dataloadIntentFilter = new IntentFilter();
+        dataloadIntentFilter.addAction(SmsApplicationLevelData.DIALOG_CONTROL_ACTION);
+        
+        
 		setFunctionalities();
 		
 		myAutoCompleteAdapter = new AutoCompleteAdapter(this);
 		numbersText.setAdapter(myAutoCompleteAdapter);
 	}
+	
+	
+	
+	
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
+	}
+	
+	
+	
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		
+		unregisterReceiver(mDataLoadedReceiver);
+	}
+	
+	
 	
 	
 	
@@ -253,9 +307,27 @@ public class EditScheduledSmsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(EditScheduledSmsActivity.this, ContactsTabsActivity.class);
-				intent.putExtra("ORIGIN", "edit");
-				startActivityForResult(intent, 2);
+				if(SmsApplicationLevelData.isDataLoaded){
+					Intent intent = new Intent(EditScheduledSmsActivity.this, ContactsTabsActivity.class);
+					intent.putExtra("ORIGIN", "edit");
+					startActivityForResult(intent, 2);
+				}else{
+					dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
+					toOpen = 1;
+					
+					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
+						
+						@Override
+						public void onCancel(DialogInterface dialog) {
+							// TODO Auto-generated method stub
+							toOpen = 0;
+							dataLoadWaitDialog.cancel();
+						}
+					});
+					dataLoadWaitDialog.show();
+				}
+				
 			}
 		});
 		
@@ -977,10 +1049,10 @@ public class EditScheduledSmsActivity extends Activity {
 		
 			for(int i = 0; i< Spans.size(); i++){
 				if(Spans.get(i).type == 2){
-				for(int j = 0; j< SplashActivity.contactsList.size(); j++){
-					if(Spans.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
-						numbers.add(SplashActivity.contactsList.get(j).number);
-						long received_id = mdba.scheduleSms(SplashActivity.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), editedGroup, cal.getTimeInMillis());
+				for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
+					if(Spans.get(i).entityId == Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
+						numbers.add(SmsApplicationLevelData.contactsList.get(j).number);
+						long received_id = mdba.scheduleSms(SmsApplicationLevelData.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), editedGroup, cal.getTimeInMillis());
 						if(!Spans.get(i).displayName.equals(" ")){
 							mdba.addRecentContact(Spans.get(i).entityId, "");
 						}
@@ -990,9 +1062,9 @@ public class EditScheduledSmsActivity extends Activity {
 							mdba.setAsDraft(received_id);
 						}else{
 							if(mdba.getCurrentPiFiretime() == -1){
-								handlePiUpdate(SplashActivity.contactsList.get(j).number, editedGroup, received_id, cal.getTimeInMillis());
+								handlePiUpdate(SmsApplicationLevelData.contactsList.get(j).number, editedGroup, received_id, cal.getTimeInMillis());
 							}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-								handlePiUpdate(SplashActivity.contactsList.get(j).number, editedGroup, received_id, cal.getTimeInMillis());
+								handlePiUpdate(SmsApplicationLevelData.contactsList.get(j).number, editedGroup, received_id, cal.getTimeInMillis());
 							}
 						}
 						Spans.get(i).smsId = received_id;
@@ -1117,17 +1189,17 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 			if(text2.length()>0){
 		
 				Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
-				for(int i = 0; i < SplashActivity.contactsList.size(); i++){
-					SplashActivity.contactsList.get(i).number = refineNumber(SplashActivity.contactsList.get(i).number);
-					Matcher m = p.matcher(SplashActivity.contactsList.get(i).name);
+				for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
+					SmsApplicationLevelData.contactsList.get(i).number = refineNumber(SmsApplicationLevelData.contactsList.get(i).number);
+					Matcher m = p.matcher(SmsApplicationLevelData.contactsList.get(i).name);
 					if(m.find()){
-						shortlist.add(SplashActivity.contactsList.get(i));
+						shortlist.add(SmsApplicationLevelData.contactsList.get(i));
 					}
 					else
 					{
-						m = p.matcher(SplashActivity.contactsList.get(i).number);
+						m = p.matcher(SmsApplicationLevelData.contactsList.get(i).number);
 						if(m.find()){
-							shortlist.add(SplashActivity.contactsList.get(i));
+							shortlist.add(SmsApplicationLevelData.contactsList.get(i));
 						}
 					}
 				}
@@ -1174,7 +1246,6 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 				protected FilterResults performFiltering(CharSequence constraint) {
 					mData.clear();
 					FilterResults filterResults = new FilterResults();
-					//
 					String text;
 					
 					try{
@@ -1184,39 +1255,36 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 						text = " ";
 					}
 					
-//					if(constraint.length()>0){
-//						text = (String) constraint;
-//					}else{
-//						text = "";
-//					}
-					
 					shortlist.clear();
 					Log.i("MESSAGE", "f : " + text);
 					
 					positionTrack = 0;
 					
-					if(text.length()>0 && !((text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ','))){
-						
+					Log.i("MSG", text.length()+" length of text");
 					
+					String text2 = text;
+					
+					if(text.length()>0){// && !((text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ','))){
+						
 						for(int i = 0; i< text.length(); i++){
-							if(i<text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' '){
+							if(text.length()>1 && i<text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' '){
 								positionTrack = i+2;
 							}
 						}
-					
-						String text2 = text.substring(positionTrack, text.length());
+
+						text2 = text.substring(positionTrack, text.length()-1);
 					
 						try{
 							String p = text2;
 						}catch(NullPointerException npe){
 							text2 = " ";
 						}
-						mData = shortlistContacts(text2);
-						filterResults.values = mData;
-						filterResults.count = mData.size();
+						if(text2.length()>0){
+							mData = shortlistContacts(text2);
+							filterResults.values = mData;
+							filterResults.count = mData.size();
+						}
 					}
-					//
-					
 					
 					return filterResults;
 				}
@@ -1280,11 +1348,9 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 	
 	
 	
-	
 	public void refreshSpannableString(){
 		ssb.clear();
 		clickableSpanArrayList.clear();
-//		clickableSpanArrayList = new ArrayList<ClickableSpan>();
 		spanStartPosition = 0;
 		numbersText.setText("");
 			
@@ -1406,26 +1472,26 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
         		
         		groupData.add(group);
         		
-        		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
-        			for(int j = 0; j< SplashActivity.contactsList.get(i).groupRowId.size(); j++){
-        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SplashActivity.contactsList.get(i).groupRowId.get(j)){
+        		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
+        			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
+        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsApplicationLevelData.contactsList.get(i).groupRowId.get(j)){
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
         					
-        					childParameters.put(ConstantsClass.CHILD_NAME, SplashActivity.contactsList.get(i).name);
-        					childParameters.put(ConstantsClass.CHILD_NUMBER, SplashActivity.contactsList.get(i).number);
-        					childParameters.put(ConstantsClass.CHILD_IMAGE, SplashActivity.contactsList.get(i).image);
+        					childParameters.put(ConstantsClass.CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
+        					childParameters.put(ConstantsClass.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);
+        					childParameters.put(ConstantsClass.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(i).image);
         					childParameters.put(ConstantsClass.CHILD_CHECK, false);//doubted
         					for(int k = 0; k< spanIdsForGroup.size(); k ++){
        							for(int m = 0; m< Spans.size(); m++){
        								if(Spans.get(m).spanId == spanIdsForGroup.get(k)){
-       									if(Spans.get(m).entityId ==Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id)){
+       									if(Spans.get(m).entityId ==Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id)){
        										childParameters.put(ConstantsClass.CHILD_CHECK, true);
        									}
        								}
        							}
        						}
        						
-        					childParameters.put(ConstantsClass.CHILD_CONTACT_ID, SplashActivity.contactsList.get(i).content_uri_id);
+        					childParameters.put(ConstantsClass.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(i).content_uri_id);
         					child.add(childParameters);
         					
         				}
@@ -1466,18 +1532,18 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
         		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
         		for(int i = 0; i< contactIds.size(); i++){
-        			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
-        				if(contactIds.get(i)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+        			for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
+        				if(contactIds.get(i)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-        					childParameters.put(ConstantsClass.CHILD_NAME, SplashActivity.contactsList.get(j).name);
-        					childParameters.put(ConstantsClass.CHILD_NUMBER, SplashActivity.contactsList.get(j).number);
-        					childParameters.put(ConstantsClass.CHILD_CONTACT_ID, SplashActivity.contactsList.get(j).content_uri_id);
-        					childParameters.put(ConstantsClass.CHILD_IMAGE, SplashActivity.contactsList.get(j).image);
+        					childParameters.put(ConstantsClass.CHILD_NAME, SmsApplicationLevelData.contactsList.get(j).name);
+        					childParameters.put(ConstantsClass.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(j).number);
+        					childParameters.put(ConstantsClass.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(j).content_uri_id);
+        					childParameters.put(ConstantsClass.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
         					childParameters.put(ConstantsClass.CHILD_CHECK, false);
         					for(int k = 0; k< spanIdsForGroup.size(); k ++){
        							for(int m = 0; m< Spans.size(); m++){
        								if(Spans.get(m).spanId == spanIdsForGroup.get(k)){
-       									if(Spans.get(m).entityId ==Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id)){
+       									if(Spans.get(m).entityId ==Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id)){
        										childParameters.put(ConstantsClass.CHILD_CHECK, true);
        									}
        								}

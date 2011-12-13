@@ -226,13 +226,13 @@ public class GroupAddActivity extends Activity {
 		Log.i("MSG", "Ids Size in LoadData : " + ids.size());
 		newGroupContacts.clear();
 		for(int j = 0; j< ids.size(); j++){
-			for(int i = 0; i< SplashActivity.contactsList.size(); i++){
-				if(ids.get(j)==Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id)){
+			for(int i = 0; i< SmsApplicationLevelData.contactsList.size(); i++){
+				if(ids.get(j)==Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id)){
 					MyContact myContact = new MyContact();
-					myContact.content_uri_id = SplashActivity.contactsList.get(i).content_uri_id;
-					myContact.name = SplashActivity.contactsList.get(i).name;
-					myContact.number = SplashActivity.contactsList.get(i).number;
-					myContact.image = SplashActivity.contactsList.get(i).image;
+					myContact.content_uri_id = SmsApplicationLevelData.contactsList.get(i).content_uri_id;
+					myContact.name = SmsApplicationLevelData.contactsList.get(i).name;
+					myContact.number = SmsApplicationLevelData.contactsList.get(i).number;
+					myContact.image = SmsApplicationLevelData.contactsList.get(i).image;
 					newGroupContacts.add(myContact);
 				}
 			}

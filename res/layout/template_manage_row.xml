@@ -15,7 +15,7 @@
     
     <ImageView 
     	android:id = "@+id/template_manage_row_delete_button"
-    	android:src="@drawable/sent_failure_icon"
+    	android:src="@drawable/delete_image_states"
     	android:layout_alignParentRight="true"
     	android:layout_height = "wrap_content"
     	android:layout_width = "wrap_content"

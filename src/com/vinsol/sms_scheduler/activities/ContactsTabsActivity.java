@@ -354,7 +354,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 	class ContactsAdapter extends ArrayAdapter {
 		
 		ContactsAdapter(){
-    		super(ContactsTabsActivity.this, R.layout.contacts_list_row_design, SplashActivity.contactsList);
+    		super(ContactsTabsActivity.this, R.layout.contacts_list_row_design, SmsApplicationLevelData.contactsList);
     	}
 		
 		@Override
@@ -370,13 +370,13 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			
     		
     		
-    		contactImage.setImageBitmap(SplashActivity.contactsList.get(position).image);
-    		nameText.setText(SplashActivity.contactsList.get(position).name);
-    		numberText.setText(SplashActivity.contactsList.get(position).number);
+    		contactImage.setImageBitmap(SmsApplicationLevelData.contactsList.get(position).image);
+    		nameText.setText(SmsApplicationLevelData.contactsList.get(position).name);
+    		numberText.setText(SmsApplicationLevelData.contactsList.get(position).number);
     		
     		
     		for(int i = 0; i< SpansTemp.size(); i++){
-        		if(Long.parseLong(SplashActivity.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
+        		if(Long.parseLong(SmsApplicationLevelData.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
         			contactCheck.setChecked(true);
         		}
         	}
@@ -389,13 +389,13 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 					if(isChecked){
 						boolean isPresent = false;
 						for(int i = 0; i< SpansTemp.size(); i++){
-							if(SpansTemp.get(i).entityId == Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id)){
+							if(SpansTemp.get(i).entityId == Long.parseLong(SmsApplicationLevelData.contactsList.get(_position).content_uri_id)){
 								isPresent = true;
 								break;
 							}
 						}
 						if(!isPresent){
-						SpannedEntity span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(_position).name, Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id), -1);
+						SpannedEntity span = new SpannedEntity(-1, 2, SmsApplicationLevelData.contactsList.get(_position).name, Long.parseLong(SmsApplicationLevelData.contactsList.get(_position).content_uri_id), -1);
 						span.groupIds.add((long) -1);
 						span.groupTypes.add(-1);
 						SpansTemp.add(span);
@@ -403,7 +403,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 					}else{	
 					
 						for(int i = 0; i<SpansTemp.size(); i++){
-				    		if(Long.parseLong(SplashActivity.contactsList.get(_position).content_uri_id) == SpansTemp.get(i).entityId){
+				    		if(Long.parseLong(SmsApplicationLevelData.contactsList.get(_position).content_uri_id) == SpansTemp.get(i).entityId){
 				    			SpansTemp.remove(i);
 				    		}
 				    	}
@@ -465,25 +465,25 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 //        		
 //        		groupData.add(group);
 //        		
-//        		for(int i = 0; i < SplashActivity.contactsList.size(); i++){
-//        			for(int j = 0; j< SplashActivity.contactsList.get(i).groupRowId.size(); j++){
-//        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SplashActivity.contactsList.get(i).groupRowId.get(j)){
+//        		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
+//        			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
+//        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsApplicationLevelData.contactsList.get(i).groupRowId.get(j)){
 //        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-//        					childParameters.put(CHILD_NAME, SplashActivity.contactsList.get(i).name);
-//        					childParameters.put(CHILD_NUMBER, SplashActivity.contactsList.get(i).number);
-//        					childParameters.put(CHILD_IMAGE, SplashActivity.contactsList.get(i).image);
+//        					childParameters.put(CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
+//        					childParameters.put(CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);
+//        					childParameters.put(CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(i).image);
 ////        					if(empty){
 //        						childParameters.put(CHILD_CHECK, false);
 ////        					}else{
 ////        						for(int k = 0; k< GroupTemp.get(count).CheckedContactsIds.size(); k++){
-////        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id)){
+////        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id)){
 ////        								childParameters.put(CHILD_CHECK, true);
 ////        							}else{
 ////        								childParameters.put(CHILD_CHECK, false);
 ////        							}
 ////        						}
 ////        					}
-//        					childParameters.put(CHILD_CONTACT_ID, SplashActivity.contactsList.get(i).content_uri_id);
+//        					childParameters.put(CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(i).content_uri_id);
 //        					child.add(childParameters);
 //        					
 //        				}
@@ -530,18 +530,18 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 //        		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
 //        		
 //        		for(int i = 0; i< contactIds.size(); i++){
-//        			for(int j = 0; j< SplashActivity.contactsList.size(); j++){
-//        				if(contactIds.get(i)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+//        			for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
+//        				if(contactIds.get(i)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
 //        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-//        					childParameters.put(CHILD_NAME, SplashActivity.contactsList.get(j).name);
-//        					childParameters.put(CHILD_NUMBER, SplashActivity.contactsList.get(j).number);
-//        					childParameters.put(CHILD_CONTACT_ID, SplashActivity.contactsList.get(j).content_uri_id);
-//        					childParameters.put(CHILD_IMAGE, SplashActivity.contactsList.get(j).image);
+//        					childParameters.put(CHILD_NAME, SmsApplicationLevelData.contactsList.get(j).name);
+//        					childParameters.put(CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(j).number);
+//        					childParameters.put(CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(j).content_uri_id);
+//        					childParameters.put(CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
 ////        					if(empty){
 //        						childParameters.put(CHILD_CHECK, false);
 ////        					}else{
 ////        						for(int k = 0; k< GroupTemp.get(count).CheckedContactsIds.size(); k++){
-////        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SplashActivity.contactsList.get(j).content_uri_id)){
+////        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
 ////        								childParameters.put(CHILD_CHECK, true);
 ////        							}else{
 ////        								childParameters.put(CHILD_CHECK, false);
@@ -919,16 +919,16 @@ public class ContactsTabsActivity extends ExpandableListActivity {
     		if(recentContactIds.get(position)> -1){
     			Log.i("MSG", recentContactIds.get(position)+ "");
     			
-    			for(i = 0; i< SplashActivity.contactsList.size(); i++){
-    				if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == recentContactIds.get(position)){
-    					contactImage.setImageBitmap(SplashActivity.contactsList.get(i).image);
-    		    		nameText.setText(SplashActivity.contactsList.get(i).name);
-    		    		numberText.setText(SplashActivity.contactsList.get(i).number);
+    			for(i = 0; i< SmsApplicationLevelData.contactsList.size(); i++){
+    				if(Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id) == recentContactIds.get(position)){
+    					contactImage.setImageBitmap(SmsApplicationLevelData.contactsList.get(i).image);
+    		    		nameText.setText(SmsApplicationLevelData.contactsList.get(i).name);
+    		    		numberText.setText(SmsApplicationLevelData.contactsList.get(i).number);
     		    		
     		    		
     		    		for(int j = 0; j< SpansTemp.size(); j++){
     		    			
-    		        		if(Long.parseLong(SplashActivity.contactsList.get(i).content_uri_id) == SpansTemp.get(j).entityId){
+    		        		if(Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id) == SpansTemp.get(j).entityId){
     		        			contactCheck.setChecked(true);
     		        		}
     		        	}
@@ -959,15 +959,15 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 					if(isChecked){
 						SpannedEntity span = new SpannedEntity();
 						if(recentContactIds.get(_position)> -1){
-							for(int k = 0; k< SplashActivity.contactsList.size(); k++){
-								if(Long.parseLong(SplashActivity.contactsList.get(k).content_uri_id) == recentContactIds.get(_position)){
-									span = new SpannedEntity(-1, 2, SplashActivity.contactsList.get(k).name, Long.parseLong(SplashActivity.contactsList.get(k).content_uri_id), -1);
+							for(int k = 0; k< SmsApplicationLevelData.contactsList.size(); k++){
+								if(Long.parseLong(SmsApplicationLevelData.contactsList.get(k).content_uri_id) == recentContactIds.get(_position)){
+									span = new SpannedEntity(-1, 2, SmsApplicationLevelData.contactsList.get(k).name, Long.parseLong(SmsApplicationLevelData.contactsList.get(k).content_uri_id), -1);
 									break;
 								}
 							}
 						}else{
-							for(int k = 0; k< SplashActivity.contactsList.size(); k++){
-								if(SplashActivity.contactsList.get(k).name.equals(recentContactNumbers.get(_position))){
+							for(int k = 0; k< SmsApplicationLevelData.contactsList.size(); k++){
+								if(SmsApplicationLevelData.contactsList.get(k).name.equals(recentContactNumbers.get(_position))){
 									
 								}
 							}

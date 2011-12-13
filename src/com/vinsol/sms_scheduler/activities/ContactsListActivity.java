@@ -64,7 +64,7 @@ public class ContactsListActivity extends Activity {
 		cancelButton = (Button) findViewById(R.id.contacts_list_layout_cancel_button);
 		
 		Intent intent = getIntent();
-		contacts = SplashActivity.contactsList;
+		contacts = SmsApplicationLevelData.contactsList;
 		callingActivity = intent.getStringExtra("ORIGINATOR");
 		
 		

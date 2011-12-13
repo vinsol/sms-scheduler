@@ -1,5 +1,6 @@
 package com.vinsol.sms_scheduler.activities;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,16 +9,20 @@ import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.renderscript.Font;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -43,6 +48,7 @@ import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.MyContact;
 
 public class SmsSchedulerExplActivity extends Activity {
     
@@ -82,7 +88,14 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	Dialog sentInfoDialog;
 	
+	Dialog dataLoadWaitDialog;
+	int toOpen = 0;
+	
+		   
+
 	IntentFilter mIntentFilter;
+	IntentFilter dataloadIntentFilter;
+	
 	private BroadcastReceiver mUpdateReceiver = new BroadcastReceiver() {
 		
 		@Override
@@ -103,11 +116,34 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	
 	
+	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+//			Toast.makeText(SmsSchedulerExplActivity.this, "Data Loaded", Toast.LENGTH_SHORT).show();
+			if(dataLoadWaitDialog.isShowing()){
+				dataLoadWaitDialog.cancel();
+				if(toOpen == 1){
+					toOpen = 0;
+					intent = new Intent(SmsSchedulerExplActivity.this, ManageGroupsActivity.class);
+                    startActivity(intent);
+				}
+			}
+		}
+	};
+	
+	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        if(!SmsApplicationLevelData.isDataLoaded){
+        	ContactsAsync contactsAsync = new ContactsAsync();
+    		contactsAsync.execute();
+        }
+        
         
         newSmsButton 		= (ImageView) findViewById(R.id.main_new_sms_imgbutton);
         explList 	 		= (ExpandableListView) findViewById(R.id.main_expandable_list);
@@ -117,6 +153,8 @@ public class SmsSchedulerExplActivity extends Activity {
         blankListAddButton	= (Button) findViewById(R.id.blank_list_add_button);
         
         registerForContextMenu(explList);
+        
+        dataLoadWaitDialog = new Dialog(SmsSchedulerExplActivity.this);
         
         newSmsButton.setOnClickListener(new OnClickListener() {
 			
@@ -182,6 +220,9 @@ public class SmsSchedulerExplActivity extends Activity {
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction("My special action");
         
+        dataloadIntentFilter = new IntentFilter();
+        dataloadIntentFilter.addAction(SmsApplicationLevelData.DIALOG_CONTROL_ACTION);
+        
         setExplData();
         
         explList.setAdapter(mAdapter);
@@ -216,6 +257,7 @@ public class SmsSchedulerExplActivity extends Activity {
     	explList.expandGroup(0);
     	explList.expandGroup(1);
     	registerReceiver(mUpdateReceiver, mIntentFilter);
+    	registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
     }
     
     
@@ -718,7 +760,6 @@ public class SmsSchedulerExplActivity extends Activity {
     		child.put(RECEIVER, numbersLengthRectify(childSentArray.get(i).keyNumber));
     		child.put(EXTRA_RECEIVERS, extraReceiversCal(childSentArray.get(i).keyNumber));
     		groupChildSent.add(child);
-    		mdba.close();
     	}
     	
     	
@@ -800,6 +841,7 @@ public class SmsSchedulerExplActivity extends Activity {
     	
     	//--------------------------------------------------------------------------end of child load--------------
     	sizeOfChildSchArray = childSchArray.size();
+    	mdba.close();
     }
     
     
@@ -917,9 +959,25 @@ public class SmsSchedulerExplActivity extends Activity {
 	        					startActivity(intent);
 	                            break;
 	        case R.id.group_opt_menu:
-	                            intent = new Intent(SmsSchedulerExplActivity.this, ManageGroupsActivity.class);
-	                            startActivity(intent);
-	        					break;
+	        					if(SmsApplicationLevelData.isDataLoaded){
+	        						intent = new Intent(SmsSchedulerExplActivity.this, ManageGroupsActivity.class);
+		                            startActivity(intent);
+	        					}else{
+	        						dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	        						dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
+	        						toOpen = 1;
+	        						dataLoadWaitDialog.show();
+	        						dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
+										
+										@Override
+										public void onCancel(DialogInterface dialog) {
+											// TODO Auto-generated method stub
+											toOpen = 0;
+											dataLoadWaitDialog.cancel();
+										}
+									});
+	        					}
+	                            break;
 	    }
 	    return true;
 	}
@@ -932,6 +990,7 @@ public class SmsSchedulerExplActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(mUpdateReceiver);
+		unregisterReceiver(mDataLoadedReceiver);
 	}
 	
 	
@@ -1064,5 +1123,82 @@ public class SmsSchedulerExplActivity extends Activity {
 	}
 	
 	
+	
+	
+	//------------------------Contacts Data Load functions---------------------------------------------
+	
+	public void loadContactsData(){
+		// SAZWQA: NR
+//		ScontactsList.clear();
+		if(SmsApplicationLevelData.contactsList.size()==0){
+			long t1 = System.currentTimeMillis();
+			ContentResolver cr = getContentResolver();
+		    Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+		    if(cursor.moveToFirst()){
+		    	do{
+//		    	  if(!(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("0"))){
+		    		String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+		    	    
+		    	    Cursor phones = cr.query(Phone.CONTENT_URI, null, Phone.CONTACT_ID + " = " + id, null, null);
+		    	    if(phones.moveToFirst()){
+		    	    	MyContact contact = new MyContact();
+			    		contact.content_uri_id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+			    		contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+			    		// SAZWQA: Why?
+//			    		contact.number = " ";
+		    	    	contact.number = phones.getString(phones.getColumnIndex(Phone.NUMBER));
+		    	    	
+		    	    	Cursor cur = SmsSchedulerExplActivity.this.managedQuery(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID}, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID + "=" + contact.content_uri_id, null, null);
+		    	    	
+		    	    	if(cur.moveToFirst()){
+		    	    		do{
+		    	    			// SAZWQA: Should we add a rule that if GROUP_ROW_ID == 0 or it's equal to phone no. don't ADD it?
+		    	    			contact.groupRowId.add(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
+		    	    		}while(cur.moveToNext());
+		    	    	}
+		    	    	
+		    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.content_uri_id));
+			    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+			    	    try{
+			    	    	contact.image = BitmapFactory.decodeStream(input);
+			    	    	contact.image.getHeight();
+			    	    } catch (NullPointerException e){
+			    	    	contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
+			    	    }
+			    	    
+			    	    SmsApplicationLevelData.contactsList.add(contact);
+			    	    
+			    	    //Log.i("MSG", contact.groupRowId.size() + "");
+			    	    
+		    	    }
+//		    	  }  
+		    	}while(cursor.moveToNext());
+		    }
+		}
+	}
+	
+	
+	
+	class ContactsAsync extends AsyncTask<Void, Void, Void>{
 
+		@Override
+		protected Void doInBackground(Void... params) {
+			loadContactsData();
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			
+			SmsApplicationLevelData.isDataLoaded = true;
+			Intent mIntent = new Intent();
+			mIntent.setAction(SmsApplicationLevelData.DIALOG_CONTROL_ACTION);
+			
+			PendingIntent pi = PendingIntent.getBroadcast(SmsSchedulerExplActivity.this, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+			
+			AlarmManager am = (AlarmManager) SmsSchedulerExplActivity.this.getSystemService(SmsSchedulerExplActivity.this.ALARM_SERVICE);
+			am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+		}
+	}
 }
