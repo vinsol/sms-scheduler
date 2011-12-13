@@ -488,11 +488,11 @@ public class DBAdapter {
 	
 	
 	
-	public boolean checkDelivery(long id){
-		Log.i("MESSAGE", "sent 		: " + String.valueOf(getSent(id)));
-		Log.i("MESSAGE", "deliver 	: " + String.valueOf(getDelivers(id)));
-		return (getSent(id) == getDelivers(id));
-	}
+//	public boolean checkDelivery(long id){
+//		Log.i("MESSAGE", "sent 		: " + String.valueOf(getSent(id)));
+//		Log.i("MESSAGE", "deliver 	: " + String.valueOf(getDelivers(id)));
+//		return (getSent(id) == getDelivers(id));
+//	}
 	
 	
 	

@@ -132,8 +132,16 @@ public class ManageTemplateActivity extends Activity{
 						loadData();
 						mAdapter.notifyDataSetChanged();
 						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-						inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-						Toast.makeText(ManageTemplateActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+						if(inputMethodManager.isActive()){
+							inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+						}
+						
+						if(isEditing){
+							Toast.makeText(ManageTemplateActivity.this, "Template edited", Toast.LENGTH_SHORT).show();
+						}else{
+							Toast.makeText(ManageTemplateActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+						}
+						
 					}
 					mdba.close();
 				}
