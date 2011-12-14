@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.vinsol.sms_scheduler.ConstantsClass;
+import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.GroupStructure;
@@ -322,16 +322,14 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				if(spanStartPosition > 0){
-					numbersText.setSelection(spanStartPosition);
-				}else{
-					numbersText.setSelection(numbersText.getText().toString().length());
+					if(spanStartPosition > 0){
+						numbersText.setSelection(spanStartPosition);
+					}else if (Spans.size() > 0){
+						numbersText.setSelection(numbersText.getText().toString().length());
 				}
-				
 			}
 		});
-		
-		
+	
 		numbersText.setOnKeyListener(new OnKeyListener() {
 			
 			@Override
@@ -347,11 +345,13 @@ public class NewScheduleActivity extends Activity {
 	                		 len = len + 2;
 	                	 }
 	                	 if(pos<=len){
-	                		 numbersText.setSelection(pos - Spans.get(i).displayName.length());
+	                		 int position = pos - (Spans.get(i).displayName.length());
+	                		 if (position > 0)
+	                			 numbersText.setSelection(position);
 	                		 for(int j = 0; j< groupData.size(); j++){
 	                			 for(int k = 0; k< childData.get(j).size(); k++){
-	                				 if((Long.parseLong((String)childData.get(j).get(k).get(ConstantsClass.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)childData.get(j).get(k).get(ConstantsClass.CHILD_CHECK)){
-	                					 childData.get(j).get(k).put(ConstantsClass.CHILD_CHECK, false);
+	                				 if((Long.parseLong((String)childData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)childData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 childData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
 	                		 }
@@ -1340,20 +1340,16 @@ public class NewScheduleActivity extends Activity {
 				@Override
 				public void onClick(View widget) {
 							
-						Log.i("MSG", _i + "");
-						if(_i< Spans.size()-1){
-							for(int j = 0; j< groupData.size(); j++){
-	                			 for(int k = 0; k< childData.get(j).size(); k++){
-	                				 if((Long.parseLong((String)childData.get(j).get(k).get(ConstantsClass.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)childData.get(j).get(k).get(ConstantsClass.CHILD_CHECK)){
-	                					 childData.get(j).get(k).put(ConstantsClass.CHILD_CHECK, false);
-	                				 }
-	                			 }
-	                		 }
-							Spans.remove(_i);
-							refreshSpannableString();
-						}else{
-							
-						}
+					Log.i("MSG", _i + "");
+					for(int j = 0; j< groupData.size(); j++){
+            			 for(int k = 0; k< childData.get(j).size(); k++){
+            				 if((Long.parseLong((String)childData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)childData.get(j).get(k).get(Constants.CHILD_CHECK)){
+            					 childData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+            				 }
+            			 }
+            		 }
+					Spans.remove(_i);
+					refreshSpannableString();
 				}
 			
 				@Override
@@ -1426,11 +1422,11 @@ public class NewScheduleActivity extends Activity {
         	
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
-        		group.put(ConstantsClass.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
-        		group.put(ConstantsClass.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
-       			group.put(ConstantsClass.GROUP_CHECK, false);
-        		group.put(ConstantsClass.GROUP_TYPE, 1);
-        		group.put(ConstantsClass.GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
+        		group.put(Constants.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
+        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+       			group.put(Constants.GROUP_CHECK, false);
+        		group.put(Constants.GROUP_TYPE, 1);
+        		group.put(Constants.GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
         		
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         	
@@ -1441,11 +1437,11 @@ public class NewScheduleActivity extends Activity {
         			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
         				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsApplicationLevelData.contactsList.get(i).groupRowId.get(j)){
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-        					childParameters.put(ConstantsClass.CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
-        					childParameters.put(ConstantsClass.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);
-        					childParameters.put(ConstantsClass.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(i).image);
-       						childParameters.put(ConstantsClass.CHILD_CHECK, false);
-        					childParameters.put(ConstantsClass.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(i).content_uri_id);
+        					childParameters.put(Constants.CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
+        					childParameters.put(Constants.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);
+        					childParameters.put(Constants.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(i).image);
+       						childParameters.put(Constants.CHILD_CHECK, false);
+        					childParameters.put(Constants.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(i).content_uri_id);
         					child.add(childParameters);
         					
         				}
@@ -1467,11 +1463,11 @@ public class NewScheduleActivity extends Activity {
         if(groupsCursor.moveToFirst()){
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
-        		group.put(ConstantsClass.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
-        		group.put(ConstantsClass.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
-        		group.put(ConstantsClass.GROUP_CHECK, false);
-        		group.put(ConstantsClass.GROUP_TYPE, 2);
-        		group.put(ConstantsClass.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+        		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
+        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+        		group.put(Constants.GROUP_CHECK, false);
+        		group.put(Constants.GROUP_TYPE, 2);
+        		group.put(Constants.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
         		groupData.add(group);
         		GroupStructure groupStructure;
@@ -1483,11 +1479,11 @@ public class NewScheduleActivity extends Activity {
         			for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
         				if(contactIds.get(i)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-        					childParameters.put(ConstantsClass.CHILD_NAME, SmsApplicationLevelData.contactsList.get(j).name);
-        					childParameters.put(ConstantsClass.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(j).number);
-        					childParameters.put(ConstantsClass.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(j).content_uri_id);
-        					childParameters.put(ConstantsClass.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
-        					childParameters.put(ConstantsClass.CHILD_CHECK, false);
+        					childParameters.put(Constants.CHILD_NAME, SmsApplicationLevelData.contactsList.get(j).name);
+        					childParameters.put(Constants.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(j).number);
+        					childParameters.put(Constants.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(j).content_uri_id);
+        					childParameters.put(Constants.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
+        					childParameters.put(Constants.CHILD_CHECK, false);
 
         					
         					child.add(childParameters);

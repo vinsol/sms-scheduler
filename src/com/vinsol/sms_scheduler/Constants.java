@@ -1,6 +1,6 @@
 package com.vinsol.sms_scheduler;
 
-public class ConstantsClass {
+public class Constants {
 
 	public static final String GROUP_NAME = "group_name";
 	public static final String GROUP_CHECK = "group_check";

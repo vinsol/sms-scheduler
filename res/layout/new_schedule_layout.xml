@@ -3,7 +3,6 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height = "fill_parent"
 	android:layout_width = "fill_parent"
-	
 	>
 	<!-- Header -->
 	<TextView
@@ -50,8 +49,6 @@
 			android:background="@drawable/cancel_button_states"
 			>
 		</Button>
-		
-		
 	</LinearLayout>
 	
 	<!-- body -->
@@ -159,49 +156,42 @@
     			</ImageButton>
    			</RelativeLayout>
     		    
-			    
-			
-			    
-	    		
-	    		
-	    		<RelativeLayout
-	    		    android:layout_height="wrap_content"
-	    		    android:layout_width = "fill_parent"
-	    		    android:background="@drawable/message_bg">
-			    
+			<RelativeLayout
+    		    android:layout_height="wrap_content"
+    		    android:layout_width = "fill_parent"
+    		    android:background="@drawable/message_bg"
+    		    >
 				<!-- message edit text -->
-	   		    	<EditText
-						android:id = "@+id/new_message_space" 
-			   			android:layout_width="fill_parent" 
-			   			android:layout_height="wrap_content"
-			   			android:inputType="textMultiLine"
-			   			android:gravity="top"
-			   			android:hint="Type your Message here"
-			   			android:padding="5dp"
-			   			android:layout_below="@id/message_top_layout"
-			   			android:minLines="4"
-			   			android:background="#00000000"
-			   			>
-		   		</EditText>
-		   		<!-- char count text -->    
-	    		
-	    		    
-    			
-	    		    <TextView
-	    				android:id = "@+id/new_char_count_text"
-	    				android:layout_height = "wrap_content"
-	    				android:layout_width = "wrap_content"
-	    				android:text = "0"
-	    				android:textSize="20sp"
-	    				android:textStyle="bold"
-	    				android:textColor="#33333333"
-	    				android:layout_marginBottom="5dp"
-	    				android:layout_marginRight="5dp"
-	    				android:layout_alignParentRight="true"
-	    				android:layout_alignParentBottom="true"/>
-	    		        
-	    		
-	    		 </RelativeLayout>
+   		    	<EditText
+					android:id = "@+id/new_message_space" 
+		   			android:layout_width="fill_parent" 
+		   			android:layout_height="wrap_content"
+		   			android:inputType="textMultiLine"
+		   			android:gravity="top"
+		   			android:hint="Type your Message here"
+		   			android:padding="5dp"
+		   			android:layout_below="@id/message_top_layout"
+		   			android:minLines="4"
+		   			android:background="#00000000"
+		   			>
+	   			</EditText>
+	   			
+	   			<!-- char count text -->    
+	    		<TextView
+	   				android:id = "@+id/new_char_count_text"
+	   				android:layout_height = "wrap_content"
+	   				android:layout_width = "wrap_content"
+	   				android:text = "0"
+	   				android:textSize="20sp"
+	   				android:textStyle="bold"
+	   				android:textColor="#33333333"
+	   				android:layout_marginBottom="5dp"
+	   				android:layout_marginRight="5dp"
+	   				android:layout_alignParentRight="true"
+	   				android:layout_alignParentBottom="true"
+	   				>
+   				</TextView>
+	    	</RelativeLayout>
 	   
    		    
    		    <!-- smiley -->
