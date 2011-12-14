@@ -689,6 +689,8 @@ public class SmsSchedulerExplActivity extends Activity {
     			spanCur.moveToFirst();
     			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
     			
+    			mdba.close();
+    			
     			if(z == -1 || childSentArray.get(z).keyGrpId != sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_GRPID))){
     				z++;
     				ArrayList<Long> tempIds = new ArrayList<Long>();
@@ -735,6 +737,7 @@ public class SmsSchedulerExplActivity extends Activity {
     			}
     		}
     		
+    		
     		switch (condition) {
 			case 1:
 				childSentArray.get(i).keyImgRes = R.drawable.sent_failure_icon;
@@ -757,6 +760,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		child.put(RECEIVER, numbersLengthRectify(childSentArray.get(i).keyNumber));
     		child.put(EXTRA_RECEIVERS, extraReceiversCal(childSentArray.get(i).keyNumber));
     		groupChildSent.add(child);
+    		mdba.close();
     	}
     	
     	

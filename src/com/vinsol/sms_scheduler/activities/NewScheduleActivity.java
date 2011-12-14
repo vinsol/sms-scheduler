@@ -206,6 +206,8 @@ public class NewScheduleActivity extends Activity {
 		setContentView(R.layout.new_schedule_layout);
 		
 		dataLoadWaitDialog = new Dialog(NewScheduleActivity.this);
+		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		
 		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
@@ -284,26 +286,27 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				
+				//Log.i("MSG", "isDataLoaded : " + SmsApplicationLevelData.isDataLoaded);
 				if(SmsApplicationLevelData.isDataLoaded){
+					Log.i("MSG", "entering into if and isDataLoaded : " + SmsApplicationLevelData.isDataLoaded);
 					Intent intent = new Intent(NewScheduleActivity.this, ContactsTabsActivity.class);
 					intent.putExtra("IDSARRAY", idsString);
 					intent.putExtra("ORIGIN", "new");
 					startActivityForResult(intent, 2);
 				}else{
-					dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
 					toOpen = 1;
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
 					
-					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
-						
-						@Override
-						public void onCancel(DialogInterface dialog) {
-							// TODO Auto-generated method stub
-							toOpen = 0;
-							dataLoadWaitDialog.cancel();
-						}
-					});
+//					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
+//						
+//						@Override
+//						public void onCancel(DialogInterface dialog) {
+//							// TODO Auto-generated method stub
+//							Log.i("MSG", "2");
+//							toOpen = 0;
+//							dataLoadWaitDialog.cancel();
+//						}
+//					});
 					dataLoadWaitDialog.show();
 				}
 			}
@@ -603,7 +606,6 @@ public class NewScheduleActivity extends Activity {
 				int length 		= s.length();
 				parts 		 	= smsManager.divideMessage(s.toString());
 				characterCountText.setText(String.valueOf(length));
-				
 			}
 		});
 		
@@ -839,8 +841,8 @@ public class NewScheduleActivity extends Activity {
 							
 							@Override
 							public void onClick(View v) {
-								d.cancel();
 								messageText.requestFocus();
+								d.cancel();
 							}
 						});
 						
@@ -1363,7 +1365,7 @@ public class NewScheduleActivity extends Activity {
 			});
 			try{
     		ssb.append(Spans.get(i).displayName + ", ");
-    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
+    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_INCLUSIVE);
     		spanStartPosition += Spans.get(i).displayName.length() + 2;
 			
 			numbersText.setText(ssb);
@@ -1500,7 +1502,6 @@ public class NewScheduleActivity extends Activity {
         
         mdba.close();
 	}
-	
 	
 	
 	
