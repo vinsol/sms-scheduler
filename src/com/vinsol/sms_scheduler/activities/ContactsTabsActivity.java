@@ -703,10 +703,10 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 			final int _position  = position;
     		LayoutInflater inflater = getLayoutInflater();
     		
-    		if(convertView == null){
-    			convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
-    		}
-    		View row = convertView;
+//    		if(convertView == null){
+//    			convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
+//    		}
+    		View row = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
     		
     		ImageView 	contactImage 	= (ImageView) 	row.findViewById(R.id.contact_list_row_contact_pic);
     		TextView 	nameText 		= (TextView) 	row.findViewById(R.id.contact_list_row_contact_name);

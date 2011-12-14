@@ -195,6 +195,7 @@ public class EditScheduledSmsActivity extends Activity {
 		setContentView(R.layout.new_schedule_layout);
 		
 		dataLoadWaitDialog = new Dialog(EditScheduledSmsActivity.this);
+		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
@@ -306,19 +307,19 @@ public class EditScheduledSmsActivity extends Activity {
 					intent.putExtra("ORIGIN", "edit");
 					startActivityForResult(intent, 2);
 				}else{
-					dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
 					toOpen = 1;
 					
-					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
-						
-						@Override
-						public void onCancel(DialogInterface dialog) {
-							// TODO Auto-generated method stub
-							toOpen = 0;
-							dataLoadWaitDialog.cancel();
-						}
-					});
+//					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
+//						
+//						@Override
+//						public void onCancel(DialogInterface dialog) {
+//							// TODO Auto-generated method stub
+//							toOpen = 0;
+//							dataLoadWaitDialog.cancel();
+//						}
+//					});
 					dataLoadWaitDialog.show();
 				}
 				
