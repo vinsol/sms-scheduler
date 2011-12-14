@@ -6,24 +6,16 @@ import java.util.HashMap;
 import com.vinsol.sms_scheduler.ConstantsClass;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.R.drawable;
-import com.vinsol.sms_scheduler.R.id;
-import com.vinsol.sms_scheduler.R.layout;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
 
-import android.app.Activity;
 import android.app.ExpandableListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.Groups;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,17 +44,6 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 	
 	
 	
-	
-	private static final String LIST_STATE_KEY = "listState";
-	private static final String LIST_POSITION_KEY = "listPosition";
-	private static final String ITEM_POSITION_KEY = "itemPosition";
-
-	private Parcelable mListState = null;
-	private int mListPosition = 0;
-	private int mItemPosition = 0;
-	
-	
-	
 	//---------------- Variables relating to Contacts tab -----------------------
 	ListView nativeContactsList;
 	Button doneButton;
@@ -71,10 +52,10 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 	ContactsAdapter contactsAdapter;
 	String origin;
 	
-	ArrayList<MyContact> selectedIds = new ArrayList<MyContact>();
-	ArrayList<SpannedEntity> SpansTemp = new ArrayList<SpannedEntity>();
-	ArrayList<String> idsString = new ArrayList<String>();
-	ArrayList<Long> ids = new ArrayList<Long>();
+	ArrayList<MyContact> selectedIds 	= new ArrayList<MyContact>();
+	ArrayList<SpannedEntity> SpansTemp 	= new ArrayList<SpannedEntity>();
+	ArrayList<String> idsString 		= new ArrayList<String>();
+	ArrayList<Long> ids 				= new ArrayList<Long>();
 	//---------------------------------------------------------------------------
 	
 	
@@ -83,22 +64,8 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 	ExpandableListView groupExplList;
 	ArrayList<ArrayList<HashMap<String, Object>>> childDataTemp = new ArrayList<ArrayList<HashMap<String, Object>>>();
 	ArrayList<HashMap<String, Object>> groupDataTemp = new ArrayList<HashMap<String, Object>>();
-	//boolean empty;
 	
-//	private final String GROUP_NAME = "group_name";
-//	private final String GROUP_CHECK = "group_check";
-//	private final String GROUP_IMAGE = "group_image";
-//	private final String GROUP_TYPE = "group_type";
-//	private final String GROUP_ID = "group_id";
-//	
-//	private final String CHILD_NAME = "child_name";
-//	private final String CHILD_CHECK = "child_check";
-//	private final String CHILD_NUMBER = "child_number";
-//	private final String CHILD_IMAGE = "child_contact_image";
-//	private final String CHILD_CONTACT_ID = "child_contact_id";
-
 	SimpleExpandableListAdapter mAdapter;
-//	ArrayList<GroupStructure> GroupTemp = new ArrayList<GroupStructure>();
 	//-----------------------------------------------------------------------------
 	
 	
@@ -144,7 +111,6 @@ public class ContactsTabsActivity extends ExpandableListActivity {
         
 		
 		Intent intent = getIntent();
-		//idsString = intent.getStringArrayListExtra("IDSARRAY");
 		origin = intent.getStringExtra("ORIGIN");
 		
 		if(origin.equals("new")){
@@ -266,7 +232,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
         
         
         //------------------Setting up the Contacts Tab ---------------------------------------------
-        nativeContactsList 	= (ListView) 	findViewById(R.id.contacts_tabs_native_contacts_list);
+        nativeContactsList 	= (ListView) findViewById(R.id.contacts_tabs_native_contacts_list);
 		contactsAdapter = new ContactsAdapter();
         nativeContactsList.setAdapter(contactsAdapter);
         //------------------------------------------------------------end of setting up Contacts Tab--------
@@ -331,18 +297,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 		intent.putExtra("IDSARRAY", idsString);
 		setResult(2, intent);
 		
-//		if(origin.equals("new")){
-//			NewScheduleActivity.Spans.clear();
-//			for(int i = 0; i< SpansTemp.size(); i++){
-//				NewScheduleActivity.Spans.add(SpansTemp.get(i));
-//			}
-//		}else if(origin.equals("edit")){
-//			EditScheduledSmsActivity.Spans.clear();
-//			for(int i = 0; i< SpansTemp.size(); i++){
-//				EditScheduledSmsActivity.Spans.add(SpansTemp.get(i));
-//			}
-//		}
-		
+
 		ContactsTabsActivity.this.finish();
 	}
 	
@@ -395,10 +350,10 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 							}
 						}
 						if(!isPresent){
-						SpannedEntity span = new SpannedEntity(-1, 2, SmsApplicationLevelData.contactsList.get(_position).name, Long.parseLong(SmsApplicationLevelData.contactsList.get(_position).content_uri_id), -1);
-						span.groupIds.add((long) -1);
-						span.groupTypes.add(-1);
-						SpansTemp.add(span);
+							SpannedEntity span = new SpannedEntity(-1, 2, SmsApplicationLevelData.contactsList.get(_position).name, Long.parseLong(SmsApplicationLevelData.contactsList.get(_position).content_uri_id), -1);
+							span.groupIds.add((long) -1);
+							span.groupTypes.add(-1);
+							SpansTemp.add(span);
 						}
 					}else{	
 					
@@ -407,8 +362,6 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 				    			SpansTemp.remove(i);
 				    		}
 				    	}
-						
-						
 					}
 				}
 			});
@@ -418,159 +371,7 @@ public class ContactsTabsActivity extends ExpandableListActivity {
 	}
 	//************************************************************** end of ContactsAdapter******************
 	
-	
-	
-//	public void loadGroupsData(){
-//		
-//		groupData.clear();
-//		childData.clear();
-//		
-//		//------------------------ Setting up data for native groups ---------------------------
-//		String[] projection = new String[] {
-//                Groups._ID,
-//                Groups.TITLE,
-//                Groups.SYSTEM_ID,
-//                Groups.NOTES,
-//             };
-//        Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
-//        int count = 0;
-//        
-//        Cursor groupCursor = managedQuery(groupsUri, projection, null, null, null);
-//        Log.i("MSG", GroupTemp.size() + "");
-//        if(groupCursor.moveToFirst()){
-//        	
-//        	do{
-//        		HashMap<String, Object> group = new HashMap<String, Object>();
-//        		group.put(GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
-//        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
-////        		if(empty){
-//        			group.put(GROUP_CHECK, false);
-////        		}else{
-////        			group.put(GROUP_CHECK, GroupTemp.get(count).isChecked);
-////        		}
-//        		group.put(GROUP_TYPE, 1);
-//        		group.put(GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
-//        		
-//        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-//        		
-////        		GroupStructure groupStructure;
-////        		if(GroupTemp.size() == 0){
-////        			groupStructure = new GroupStructure();
-////        			groupStructure.groupId = groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID));
-////        			groupStructure.isChecked = false;
-////        			ArrayList<Long> ids = new ArrayList<Long>();
-////        			groupStructure.CheckedContactsIds = ids;
-////        			GroupTemp.add(groupStructure);
-////        		}
-//        		
-//        		groupData.add(group);
-//        		
-//        		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
-//        			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
-//        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsApplicationLevelData.contactsList.get(i).groupRowId.get(j)){
-//        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-//        					childParameters.put(CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
-//        					childParameters.put(CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);
-//        					childParameters.put(CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(i).image);
-////        					if(empty){
-//        						childParameters.put(CHILD_CHECK, false);
-////        					}else{
-////        						for(int k = 0; k< GroupTemp.get(count).CheckedContactsIds.size(); k++){
-////        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id)){
-////        								childParameters.put(CHILD_CHECK, true);
-////        							}else{
-////        								childParameters.put(CHILD_CHECK, false);
-////        							}
-////        						}
-////        					}
-//        					childParameters.put(CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(i).content_uri_id);
-//        					child.add(childParameters);
-//        					
-//        				}
-//        			}
-//        		}
-//        		childData.add(child);
-//        		count++;
-//        	}while(groupCursor.moveToNext());
-//        }
-//        
-//        // ---------------------------------------------------end of setting up native groups data-------------
-//        
-//        
-//        
-//        //---------------------------- Setting up private Groups data ------------------------------------
-//        
-//        mdba.open();
-//        Cursor groupsCursor = mdba.fetchAllGroups();
-//        if(groupsCursor.moveToFirst()){
-//        	do{
-//        		HashMap<String, Object> group = new HashMap<String, Object>();
-//        		group.put(GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
-//        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
-////        		if(empty){
-//        			group.put(GROUP_CHECK, false);
-////        		}else{
-////        			group.put(GROUP_CHECK, GroupTemp.get(count).isChecked);
-////        		}
-//        		group.put(GROUP_TYPE, 2);
-//        		group.put(GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
-//        		
-//        		groupData.add(group);
-//        		GroupStructure groupStructure;
-//        		if(GroupTemp.size() == 0){
-//        			groupStructure = new GroupStructure();
-//        			groupStructure.groupId = Long.parseLong(groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
-//        			groupStructure.isChecked = false;
-//        			ArrayList<Long> ids = new ArrayList<Long>();
-//        			groupStructure.CheckedContactsIds = ids;
-//        			GroupTemp.add(groupStructure);
-//        		}
-//        		
-//        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-//        		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
-//        		
-//        		for(int i = 0; i< contactIds.size(); i++){
-//        			for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
-//        				if(contactIds.get(i)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
-//        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
-//        					childParameters.put(CHILD_NAME, SmsApplicationLevelData.contactsList.get(j).name);
-//        					childParameters.put(CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(j).number);
-//        					childParameters.put(CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(j).content_uri_id);
-//        					childParameters.put(CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
-////        					if(empty){
-//        						childParameters.put(CHILD_CHECK, false);
-////        					}else{
-////        						for(int k = 0; k< GroupTemp.get(count).CheckedContactsIds.size(); k++){
-////        							if(GroupTemp.get(count).CheckedContactsIds.get(k)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
-////        								childParameters.put(CHILD_CHECK, true);
-////        							}else{
-////        								childParameters.put(CHILD_CHECK, false);
-////        							}
-////        						}
-////        					}
-//        					
-//        					child.add(childParameters);
-//        				}
-//        			}
-//        		}
-//        		
-//        		childData.add(child);
-//        		count++;
-//        	}while(groupsCursor.moveToNext());
-//        }
-//        
-//        mdba.close();
-//
-////        for(int k = 0 ; k < groupData.size(); k++){
-////        	Log.i("MSG", "group");
-////        	for(int n = 0 ; n< childData.get(k).size(); n++){
-////        		Log.i("MSG", "fdsafdsa");
-////        	}
-////        }
-//	}
-	
-	
-	
+
 	
 	public void customGroupsAdapterSetup(){
 		

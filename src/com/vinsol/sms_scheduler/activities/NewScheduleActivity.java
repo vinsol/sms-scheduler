@@ -14,9 +14,6 @@ import java.util.regex.Pattern;
 import com.vinsol.sms_scheduler.ConstantsClass;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.R.drawable;
-import com.vinsol.sms_scheduler.R.id;
-import com.vinsol.sms_scheduler.R.layout;
 import com.vinsol.sms_scheduler.models.GroupStructure;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
@@ -39,7 +36,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
@@ -51,7 +47,6 @@ import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
-import android.provider.ContactsContract.Groups;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,7 +56,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
@@ -74,9 +68,7 @@ import android.widget.Filterable;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
@@ -85,7 +77,7 @@ import android.widget.Toast;
 public class NewScheduleActivity extends Activity {
 	
 	//---------References to the widgets-----------------
-	static AutoCompleteTextView 	numbersText;
+	AutoCompleteTextView 	numbersText;
 	ImageButton 			addFromContactsImgButton;
 	Button 					dateButton;
 	TextView 				characterCountText;
@@ -110,8 +102,6 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	
-	private ListView mList;
-	
 	SmsManager smsManager = SmsManager.getDefault();
 	ArrayList<String> parts = new ArrayList<String>();
 	ArrayList<String> templatesArray = new ArrayList<String>();
@@ -129,7 +119,6 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	//-----------------------Variables related to Voice recognition-------------------
-	 private static final String TAG = "VoiceRecognition";
 
      private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 
@@ -537,7 +526,7 @@ public class NewScheduleActivity extends Activity {
 					public void onClick(View v) {
 						refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
 						refDate = refCal.getTime();
-						String dateStr = refDate.toLocaleString();
+						
 						if(checkDateValidity(refDate)){
 							processDate = refDate;
 							dateSelectDialog.cancel();

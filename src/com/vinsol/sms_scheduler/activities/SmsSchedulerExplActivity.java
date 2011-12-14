@@ -402,8 +402,6 @@ public class SmsSchedulerExplActivity extends Activity {
     			final TextView receiverTextView = (TextView)  v.findViewById(R.id.main_row_recepient_area);
     			final TextView extraReceiversTextView = (TextView) v.findViewById(R.id.main_row_extra_recepient_area);
     			
-    			Log.i("MESSAGE", "------------------------Value of ChildPosition : " + childSchArray.size());
-    			
     			if(groupPosition == 1) {
     				messageTextView.setText(childSchArray.get(childPosition).keyMessage);
     				statusImageView.setImageResource(childSchArray.get(childPosition).keyImageRes);
@@ -417,7 +415,6 @@ public class SmsSchedulerExplActivity extends Activity {
     				receiverTextView.setText(numbersLengthRectify(childSentArray.get(childPosition).keyNumber));
     				extraReceiversTextView.setText(extraReceiversCal(childSentArray.get(childPosition).keyNumber));
     			} else if(groupPosition == 0){
-    				Log.i("MSG", "====================================++++++++ " + childDraftArray.get(childPosition).keyMessage);
     				if(!childDraftArray.get(childPosition).keyMessage.matches("^(''|[' ']*)$")){
     					messageTextView.setText(childDraftArray.get(childPosition).keyMessage);
     				}else{
@@ -782,7 +779,6 @@ public class SmsSchedulerExplActivity extends Activity {
     			spanCur.moveToFirst();
     			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
     			
-    			mdba.close();
     			if(z == -1 || childDraftArray.get(z).keyGrpId != draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_GRPID))){
     				z++;
     				ArrayList<Long> tempIds = new ArrayList<Long>();

@@ -11,20 +11,7 @@
     	android:layout_width = "fill_parent"
     	/>
     
-    <!-- <View 
-    	android:layout_height = "3dp"
-    	android:layout_width = "290dp"
-    	android:layout_gravity = "center_horizontal"
-    	android:background="#333333"/>
     
-    <TextView 
-    	android:layout_height = "wrap_content"
-    	android:layout_width = "fill_parent"
-    	android:textSize="20sp"
-    	android:text = "Sent At:"
-    	android:padding="2dp"
-    	android:background="#777777"/> -->
-    	
     <LinearLayout
         android:layout_height = "wrap_content"
         android:layout_width = "fill_parent"
@@ -48,21 +35,7 @@
     		android:layout_gravity="center_vertical"/>
     
     </LinearLayout>
-    <!-- <View 
-    	android:layout_height = "3dp"
-    	android:layout_width = "290dp"
-    	android:layout_gravity = "center_horizontal"
-    	android:background="#333333"/> 
     
-    	
-    <TextView
-    	android:layout_height = "wrap_content"
-    	android:layout_width = "fill_parent"
-    	android:textSize="20sp"
-    	android:text = "Message:"
-    	android:padding="2dp"
-    	android:layout_marginTop="5dp"
-    	android:background="#777777"/> -->
     	
     <ScrollView 
         android:layout_height="150dp"
@@ -71,12 +44,12 @@
         >
     	
         <TextView
-    	android:id = "@+id/sent_details_dialog_message_space"
-    	android:layout_height = "fill_parent"
-    	android:layout_width = "fill_parent"
-    	android:layout_margin="5dp"
-    	android:textSize="16sp"
-    	android:editable="false"/>
+    		android:id = "@+id/sent_details_dialog_message_space"
+    		android:layout_height = "fill_parent"
+    		android:layout_width = "fill_parent"
+    		android:layout_margin="5dp"
+    		android:textSize="16sp"
+    		android:editable="false"/>
         
     </ScrollView>
     
