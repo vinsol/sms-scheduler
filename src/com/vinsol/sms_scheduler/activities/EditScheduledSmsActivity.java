@@ -137,7 +137,7 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	static ArrayList<SpannedEntity> spannables = new ArrayList<SpannedEntity>();
 	
-	
+	ArrayList<Long> smsIds;
 	ArrayList<Long> ids = new ArrayList<Long>();
 	ArrayList<String> idsString = new ArrayList<String>();
 	
@@ -226,7 +226,7 @@ public class EditScheduledSmsActivity extends Activity {
 		numbersText.setThreshold(1);
 		
 		mdba.open();
-		ArrayList<Long> smsIds = mdba.getIds(editedGroup);
+		smsIds = mdba.getIds(editedGroup);
 		Log.i("MSG", "size of smsIds : " + smsIds.size());
 		for(int i = 0; i< smsIds.size(); i++){
 			Cursor spanCur = mdba.fetchSpanForSms(smsIds.get(i));
@@ -775,119 +775,133 @@ public class EditScheduledSmsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-//				if(numbersText.getText().toString().matches("(''|[' ']*)")){
-////					Toast.makeText(NewScheduleActivity.this, "Invalid Number", Toast.LENGTH_SHORT).show();
-////					numbersText.requestFocus();
-//					doSmsScheduling();
-//				}else{
-//					if(!checkDateValidity(processDate)){
-//						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
-//					}
-				if(Spans.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
-					//Toast.makeText(EditScheduledSmsActivity.this, "Mention Recipients and Message to proceed", Toast.LENGTH_SHORT).show();
-					//EditScheduledSmsActivity.this.finish();
-					final Dialog d = new Dialog(EditScheduledSmsActivity.this);
-					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog_layout);
-					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-					
-					questionText.setText("Nothing to schedule");
-					yesButton.setText("Schedule SMS");
-					noButton.setText("Discard");
-					
-					yesButton.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							d.cancel();
-							//NewScheduleActivity.this.finish();
-							numbersText.requestFocus();
-						}
-					});
-					
-					noButton.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							d.cancel();
-							EditScheduledSmsActivity.this.finish();
-						}
-					});
-					
-					d.show();
-				}else
-				if(Spans.size()==0){
-					final Dialog d = new Dialog(EditScheduledSmsActivity.this);
-					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog_layout);
-					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-					
-					questionText.setText("No recipients added!");
-					yesButton.setText("Save as Draft");
-					noButton.setText("Add Recipients");
-					yesButton.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							doSmsScheduling();
-							d.cancel();
-							EditScheduledSmsActivity.this.finish();
-						}
-					});
-					
-					noButton.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							d.cancel();
-							numbersText.requestFocus();
-						}
-					});
-					
-					d.show();
-					
-				}else if(messageText.getText().toString().matches("(''|[' ']*)")){
-					final Dialog d = new Dialog(EditScheduledSmsActivity.this);
-					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog_layout);
-					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-					
-					questionText.setText("Message is Blank!");
-					yesButton.setText("Save as Draft");
-					noButton.setText("Write Message");
-					yesButton.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							doSmsScheduling();
-							d.cancel();
-							EditScheduledSmsActivity.this.finish();
-						}
-					});
-					
-					noButton.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							d.cancel();
-							numbersText.requestFocus();
-						}
-					});
-					
-					d.show();
-					
-				}else{
-					doSmsScheduling();
+				boolean isSending = false;
+				mdba.open();
+				for(int i = 0; i< smsIds.size(); i++){
+					if(isSending){
+						break;
+					}
+					Cursor cur = mdba.fetchSmsDetails(smsIds.get(i));
+					if(cur.moveToFirst()){
+						do{
+							if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
+								isSending = true;
+								break;
+							}
+						}while(cur.moveToNext());
+					}
+				}
+
+				
+				if(isSending){
+					Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
 					EditScheduledSmsActivity.this.finish();
+				}else{
+					if(Spans.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
+						//Toast.makeText(EditScheduledSmsActivity.this, "Mention Recipients and Message to proceed", Toast.LENGTH_SHORT).show();
+						//EditScheduledSmsActivity.this.finish();
+						final Dialog d = new Dialog(EditScheduledSmsActivity.this);
+						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						d.setContentView(R.layout.confirmation_dialog_layout);
+						TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+						Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+						
+						questionText.setText("Nothing to schedule");
+						yesButton.setText("Schedule SMS");
+						noButton.setText("Discard");
+						
+						yesButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								d.cancel();
+								//NewScheduleActivity.this.finish();
+								numbersText.requestFocus();
+							}
+						});
+						
+						noButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								d.cancel();
+								EditScheduledSmsActivity.this.finish();
+							}
+						});
+						
+						d.show();
+					}else
+					if(Spans.size()==0){
+						final Dialog d = new Dialog(EditScheduledSmsActivity.this);
+						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						d.setContentView(R.layout.confirmation_dialog_layout);
+						TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+						Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+						
+						questionText.setText("No recipients added!");
+						yesButton.setText("Save as Draft");
+						noButton.setText("Add Recipients");
+						yesButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								doSmsScheduling();
+								d.cancel();
+								EditScheduledSmsActivity.this.finish();
+							}
+						});
+						
+						noButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								d.cancel();
+								numbersText.requestFocus();
+							}
+						});
+						
+						d.show();
+						
+					}else if(messageText.getText().toString().matches("(''|[' ']*)")){
+						final Dialog d = new Dialog(EditScheduledSmsActivity.this);
+						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						d.setContentView(R.layout.confirmation_dialog_layout);
+						TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+						Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+						
+						questionText.setText("Message is Blank!");
+						yesButton.setText("Save as Draft");
+						noButton.setText("Write Message");
+						yesButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								doSmsScheduling();
+								d.cancel();
+								EditScheduledSmsActivity.this.finish();
+							}
+						});
+						
+						noButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								d.cancel();
+								numbersText.requestFocus();
+							}
+						});
+						
+						d.show();
+						
+					}else{
+						doSmsScheduling();
+						EditScheduledSmsActivity.this.finish();
+					}
 				}
 				
-			
 			}
 		});
 		
@@ -1409,17 +1423,49 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 	public void onBackPressed() {
 		//super.onBackPressed();
 		
-		if(!(Spans.size() == 0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			if(!checkDateValidity(processDate)){
-				Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+		boolean isSending = false;
+		mdba.open();
+		for(int i = 0; i< smsIds.size(); i++){
+			if(isSending){
+				break;
 			}
-			doSmsScheduling();
-			EditScheduledSmsActivity.this.finish();
+			Cursor cur = mdba.fetchSmsDetails(smsIds.get(i));
+			if(cur.moveToFirst()){
+				do{
+					if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
+						isSending = true;
+						break;
+					}
+				}while(cur.moveToNext());
+			}
+		}
+
+		
+		if(!(Spans.size() == 0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+			
+			
+			if(isSending){
+				Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+				EditScheduledSmsActivity.this.finish();
+			}else{
+				if(!checkDateValidity(processDate)){
+					Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+				}
+				doSmsScheduling();
+				EditScheduledSmsActivity.this.finish();
+			}
+			
 		}else
 			
 		if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			doSmsScheduling();
-			EditScheduledSmsActivity.this.finish();
+			if(isSending){
+				Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+				EditScheduledSmsActivity.this.finish();
+			}else{
+				doSmsScheduling();
+				EditScheduledSmsActivity.this.finish();
+			}
+			
 		}else{
 			EditScheduledSmsActivity.this.finish();	
 		}

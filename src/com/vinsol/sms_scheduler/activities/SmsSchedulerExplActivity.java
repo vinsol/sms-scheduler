@@ -155,6 +155,7 @@ public class SmsSchedulerExplActivity extends Activity {
         registerForContextMenu(explList);
         
         dataLoadWaitDialog = new Dialog(SmsSchedulerExplActivity.this);
+		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         
         newSmsButton.setOnClickListener(new OnClickListener() {
 			
@@ -587,7 +588,6 @@ public class SmsSchedulerExplActivity extends Activity {
     	Cursor schCur  = mdba.fetchAllScheduledNoDraft();
     	Cursor sentCur = mdba.fetchAllSent();
     	Cursor draftCur = mdba.fetchAllDrafts();
-    	mdba.close();
     	
     	
     	//-----------------------Putting group headers for Expandable list---------------------------- 
@@ -622,13 +622,13 @@ public class SmsSchedulerExplActivity extends Activity {
     	if(schCur.moveToFirst()){
     		z = -1;
     		do{
-    			mdba.open();
+    			
     			Cursor spanCur = mdba.fetchSpanForSms(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
     			
     			spanCur.moveToFirst();
     			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
     			
-    			mdba.close();
+    			
     			if(z == -1 || childSchArray.get(z).keyGrpId != schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_GRPID))){
     				z++;
     				ArrayList<Long> tempIds = new ArrayList<Long>();
@@ -683,13 +683,13 @@ public class SmsSchedulerExplActivity extends Activity {
     	if(sentCur.moveToFirst()){
     		z = -1;
     		do{
-    			mdba.open();
+    			
     			Cursor spanCur = mdba.fetchSpanForSms(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
     			
     			spanCur.moveToFirst();
     			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
     			
-    			mdba.close();
+    			
     			
     			if(z == -1 || childSentArray.get(z).keyGrpId != sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_GRPID))){
     				z++;
@@ -720,7 +720,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, childSentArray.get(i).keyMessage);
     		int condition = 1;
-    		mdba.open();
+    		
     		for(int k = 0; k< childSentArray.get(i).keyIds.size(); k++){
     			Cursor cur = mdba.fetchSmsDetails(childSentArray.get(i).keyIds.get(k));
     			cur.moveToFirst();
@@ -760,7 +760,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		child.put(RECEIVER, numbersLengthRectify(childSentArray.get(i).keyNumber));
     		child.put(EXTRA_RECEIVERS, extraReceiversCal(childSentArray.get(i).keyNumber));
     		groupChildSent.add(child);
-    		mdba.close();
+
     	}
     	
     	
@@ -777,7 +777,7 @@ public class SmsSchedulerExplActivity extends Activity {
     	if(draftCur.moveToFirst()){
     		z = -1;
     		do{
-    			mdba.open();
+    			
     			Cursor spanCur = mdba.fetchSpanForSms(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
     			
     			spanCur.moveToFirst();
@@ -963,19 +963,10 @@ public class SmsSchedulerExplActivity extends Activity {
 	        						intent = new Intent(SmsSchedulerExplActivity.this, ManageGroupsActivity.class);
 		                            startActivity(intent);
 	        					}else{
-	        						dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
 	        						dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
 	        						toOpen = 1;
 	        						dataLoadWaitDialog.show();
-	        						dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
-										
-										@Override
-										public void onCancel(DialogInterface dialog) {
-											// TODO Auto-generated method stub
-											toOpen = 0;
-											dataLoadWaitDialog.cancel();
-										}
-									});
 	        					}
 	                            break;
 	    }
@@ -1052,7 +1043,6 @@ public class SmsSchedulerExplActivity extends Activity {
 				condition = 3;
 			}
 			
-			Log.i("MSG", "condition = " + condition);
 			
 			switch (condition) {
 			case 1:
@@ -1077,6 +1067,7 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	
 	
+	//------------------- For displaying appropriate number of recipients in sms listing---------------------
 	
 	private String numbersLengthRectify(String number){
 		if(number.length()<= 30){
@@ -1121,6 +1112,9 @@ public class SmsSchedulerExplActivity extends Activity {
 		
 		return "+" + (delimiterCount - validDelimiterCount + 1);
 	}
+	
+	//----------------------------------------------------------------------------------------
+	
 	
 	
 	
