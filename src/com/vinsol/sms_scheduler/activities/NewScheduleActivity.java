@@ -319,16 +319,14 @@ public class NewScheduleActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				if(spanStartPosition > 0){
-					numbersText.setSelection(spanStartPosition);
-				}else{
-					numbersText.setSelection(numbersText.getText().toString().length());
+					if(spanStartPosition > 0){
+						numbersText.setSelection(spanStartPosition);
+					}else if (Spans.size() > 0){
+						numbersText.setSelection(numbersText.getText().toString().length());
 				}
-				
 			}
 		});
-		
-		
+	
 		numbersText.setOnKeyListener(new OnKeyListener() {
 			
 			@Override
@@ -344,7 +342,9 @@ public class NewScheduleActivity extends Activity {
 	                		 len = len + 2;
 	                	 }
 	                	 if(pos<=len){
-	                		 numbersText.setSelection(pos - Spans.get(i).displayName.length());
+	                		 int position = pos - (Spans.get(i).displayName.length());
+	                		 if (position > 0)
+	                			 numbersText.setSelection(position);
 	                		 for(int j = 0; j< groupData.size(); j++){
 	                			 for(int k = 0; k< childData.get(j).size(); k++){
 	                				 if((Long.parseLong((String)childData.get(j).get(k).get(ConstantsClass.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)childData.get(j).get(k).get(ConstantsClass.CHILD_CHECK)){
@@ -1338,20 +1338,16 @@ public class NewScheduleActivity extends Activity {
 				@Override
 				public void onClick(View widget) {
 							
-						Log.i("MSG", _i + "");
-						if(_i< Spans.size()-1){
-							for(int j = 0; j< groupData.size(); j++){
-	                			 for(int k = 0; k< childData.get(j).size(); k++){
-	                				 if((Long.parseLong((String)childData.get(j).get(k).get(ConstantsClass.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)childData.get(j).get(k).get(ConstantsClass.CHILD_CHECK)){
-	                					 childData.get(j).get(k).put(ConstantsClass.CHILD_CHECK, false);
-	                				 }
-	                			 }
-	                		 }
-							Spans.remove(_i);
-							refreshSpannableString();
-						}else{
-							
-						}
+					Log.i("MSG", _i + "");
+					for(int j = 0; j< groupData.size(); j++){
+            			 for(int k = 0; k< childData.get(j).size(); k++){
+            				 if((Long.parseLong((String)childData.get(j).get(k).get(ConstantsClass.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)childData.get(j).get(k).get(ConstantsClass.CHILD_CHECK)){
+            					 childData.get(j).get(k).put(ConstantsClass.CHILD_CHECK, false);
+            				 }
+            			 }
+            		 }
+					Spans.remove(_i);
+					refreshSpannableString();
 				}
 			
 				@Override
