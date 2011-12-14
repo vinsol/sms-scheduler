@@ -793,7 +793,7 @@ public class DBAdapter {
 	
 	
 	public Cursor fetchAllRecents(){
-		Cursor cur = db.query(DATABASE_RECENTS_TABLE, null, null, null, null, null, KEY_RECENT_CONTACT_ID);
+		Cursor cur = db.query(DATABASE_RECENTS_TABLE, null, null, null, null, null, KEY_RECENT_CONTACT_ID + " DESC");
 		return cur;
 	}
 
