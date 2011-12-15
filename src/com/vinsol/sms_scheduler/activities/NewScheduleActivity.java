@@ -1361,7 +1361,7 @@ public class NewScheduleActivity extends Activity {
 			});
 			try{
     		ssb.append(Spans.get(i).displayName + ", ");
-    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_INCLUSIVE);
+    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
     		spanStartPosition += Spans.get(i).displayName.length() + 2;
 			
 			numbersText.setText(ssb);
