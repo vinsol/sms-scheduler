@@ -388,11 +388,11 @@ public class SmsSchedulerExplActivity extends Activity {
     			TextView groupHeading = (TextView) convertView.findViewById(R.id.group_heading);
     			groupHeading.setText(headerData.get(groupPosition).get(NAME));
     			
-    			if(childData.get(groupPosition).size()==0){
-    				convertView.setVisibility(convertView.GONE);
-    			}else{
-    				convertView.setVisibility(convertView.VISIBLE);
-    			}
+//    			if(childData.get(groupPosition).size()==0){
+//    				convertView.setVisibility(convertView.GONE);
+//    			}else{
+//    				convertView.setVisibility(convertView.VISIBLE);
+//    			}
     			
     			
     			return convertView;

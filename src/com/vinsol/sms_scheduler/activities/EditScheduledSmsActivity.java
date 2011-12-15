@@ -336,7 +336,27 @@ public class EditScheduledSmsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				numbersText.setSelection(numbersText.getText().length());
+				if(SmsApplicationLevelData.isDataLoaded){
+					if(spanStartPosition > 0){
+						numbersText.setSelection(spanStartPosition);
+					}else if (Spans.size() > 0){
+						numbersText.setSelection(numbersText.getText().toString().length());
+					}
+				}else{
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
+					dataLoadWaitDialog.setCancelable(false);
+//					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
+//						
+//						@Override
+//						public void onCancel(DialogInterface dialog) {
+//							// TODO Auto-generated method stub
+//							Log.i("MSG", "2");
+//							toOpen = 0;
+//							dataLoadWaitDialog.cancel();
+//						}
+//					});
+					dataLoadWaitDialog.show();
+				}
 			}
 		});
 		
