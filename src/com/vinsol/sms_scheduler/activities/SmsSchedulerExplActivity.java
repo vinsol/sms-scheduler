@@ -107,6 +107,7 @@ public class SmsSchedulerExplActivity extends Activity {
 			
 			loadData();
 			Log.i("MESSAGE", "==========================" + childSchArray.size());
+			
 			mAdapter.notifyDataSetInvalidated();
 			mAdapter.notifyDataSetChanged();
 			
@@ -257,6 +258,8 @@ public class SmsSchedulerExplActivity extends Activity {
     	explList.setAdapter(mAdapter);
     	explList.expandGroup(0);
     	explList.expandGroup(1);
+    	explList.expandGroup(2);
+    	
     	registerReceiver(mUpdateReceiver, mIntentFilter);
     	registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
     }
@@ -312,11 +315,11 @@ public class SmsSchedulerExplActivity extends Activity {
 					}
 					Intent mIntent = new Intent();
 	                 
-	                 mIntent.setAction("My special action");
-	                 PendingIntent pi = PendingIntent.getBroadcast(this.getApplicationContext(), 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-	         		
-	         		 AlarmManager am = (AlarmManager) this.getApplicationContext().getSystemService(this.getApplicationContext().ALARM_SERVICE);
-	         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+	                mIntent.setAction("My special action");
+	                PendingIntent pi = PendingIntent.getBroadcast(this.getApplicationContext(), 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+	         		 
+	         		AlarmManager am = (AlarmManager) this.getApplicationContext().getSystemService(this.getApplicationContext().ALARM_SERVICE);
+	         		am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
 	         		 
 					Toast.makeText(this.getApplicationContext(), "Message Deleted", Toast.LENGTH_SHORT).show();
 					
@@ -384,6 +387,13 @@ public class SmsSchedulerExplActivity extends Activity {
     			
     			TextView groupHeading = (TextView) convertView.findViewById(R.id.group_heading);
     			groupHeading.setText(headerData.get(groupPosition).get(NAME));
+    			
+    			if(childData.get(groupPosition).size()==0){
+    				convertView.setVisibility(convertView.GONE);
+    			}else{
+    				convertView.setVisibility(convertView.VISIBLE);
+    			}
+    			
     			
     			return convertView;
     		}
@@ -593,17 +603,24 @@ public class SmsSchedulerExplActivity extends Activity {
     	//-----------------------Putting group headers for Expandable list---------------------------- 
     	headerData = new ArrayList<HashMap<String, String>>();
     	
-    	HashMap<String, String> group3 = new HashMap<String, String>();
-    	group3.put(NAME, "Drafts");
-    	headerData.add(group3);
+//    	if(draftCur.getCount()>0){
+    		HashMap<String, String> group3 = new HashMap<String, String>();
+        	group3.put(NAME, "Drafts");
+        	headerData.add(group3);
+//    	}
     	
-    	HashMap<String, String> group1 = new HashMap<String, String>();
-    	group1.put(NAME, "Scheduled");
-    	headerData.add(group1);
+//    	if(schCur.getCount()>0){
+    		HashMap<String, String> group1 = new HashMap<String, String>();
+        	group1.put(NAME, "Scheduled");
+        	headerData.add(group1);
+//    	}
     	
-    	HashMap<String, String> group2 = new HashMap<String, String>();
-    	group2.put(NAME, "Sent");
-    	headerData.add(group2);
+//    	if(sentCur.getCount()>0){
+    		HashMap<String, String> group2 = new HashMap<String, String>();
+        	group2.put(NAME, "Sent");
+        	headerData.add(group2);
+//    	}
+    	
     	
     	Log.i("MESSAGE", "results : " + schCur.getCount() + " ");
     	
