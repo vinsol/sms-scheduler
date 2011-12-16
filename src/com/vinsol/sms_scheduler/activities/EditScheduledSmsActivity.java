@@ -1576,38 +1576,40 @@ public class EditScheduledSmsActivity extends Activity {
 					
 				@Override
 				public void onClick(View v) {
-					if(!(Spans.size() == 0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
-						
-						
-						if(_isSending){
-							Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
-							EditScheduledSmsActivity.this.finish();
-						}else{
-							if(!checkDateValidity(processDate)){
-								Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
-							}
-							doSmsScheduling();
-							d.cancel();
-							EditScheduledSmsActivity.this.finish();
-						}
-						
-					}else
-						
-					if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
-						if(_isSending){
-							Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
-							d.cancel();
-							EditScheduledSmsActivity.this.finish();
-						}else{
-							doSmsScheduling();
-							d.cancel();
-							EditScheduledSmsActivity.this.finish();
-						}
-						
-					}else{
-						
-						EditScheduledSmsActivity.this.finish();	
-					}
+					d.cancel();
+					EditScheduledSmsActivity.this.finish();
+//					if(!(Spans.size() == 0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+//						
+//						
+//						if(_isSending){
+//							Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+//							EditScheduledSmsActivity.this.finish();
+//						}else{
+//							if(!checkDateValidity(processDate)){
+//								Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+//							}
+//							doSmsScheduling();
+//							d.cancel();
+//							EditScheduledSmsActivity.this.finish();
+//						}
+//						
+//					}else
+//						
+//					if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
+//						if(_isSending){
+//							Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+//							d.cancel();
+//							EditScheduledSmsActivity.this.finish();
+//						}else{
+//							doSmsScheduling();
+//							d.cancel();
+//							EditScheduledSmsActivity.this.finish();
+//						}
+//						
+//					}else{
+//						
+//						EditScheduledSmsActivity.this.finish();	
+//					}
 				}
 			});
 			
