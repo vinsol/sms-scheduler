@@ -58,7 +58,6 @@ public class SmsSchedulerExplActivity extends Activity {
 	ImageView				newSmsButton;
 	ImageView				optionsImageButton;
 	
-//	LinearLayout explListLayout;
 	LinearLayout blankListLayout;
 	
 	Button blankListAddButton;
@@ -146,7 +145,6 @@ public class SmsSchedulerExplActivity extends Activity {
         newSmsButton 		= (ImageView) findViewById(R.id.main_new_sms_imgbutton);
         explList 	 		= (ExpandableListView) findViewById(R.id.main_expandable_list);
         optionsImageButton 	= (ImageView) findViewById(R.id.main_options_menu_imgbutton);
-//        explListLayout		= (LinearLayout) findViewById(R.id.expanded_list_layout);
         blankListLayout		= (LinearLayout) findViewById(R.id.blank_list_layout);
         blankListAddButton	= (Button) findViewById(R.id.blank_list_add_button);
         
