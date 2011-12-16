@@ -3,12 +3,15 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/white"
     >
+    <!-- Header -->
     <RelativeLayout
 		android:layout_width = "fill_parent"
 		android:layout_height = "wrap_content"
 		android:background="@drawable/header_bg"
 		>
+		<!-- Header Text -->
 		<TextView
 		    android:layout_width = "wrap_content" 
 			android:layout_height = "wrap_content"
@@ -19,7 +22,9 @@
 			android:layout_alignParentLeft="true"
 			android:layout_centerVertical="true"
 			android:paddingLeft="5dip"
-		/>
+			>
+		</TextView>
+		<!-- new SMS Button -->
 		<ImageView 
 			android:id = "@+id/main_new_sms_imgbutton"
 			android:layout_height = "wrap_content"
@@ -29,7 +34,9 @@
 			android:layout_marginLeft="5dip"
 			android:layout_marginRight="5dip"
 			android:src="@drawable/new_sms_button_states"
-		/>
+			>
+		</ImageView>
+		<!-- vertical splitter -->
 		<ImageView 
 			android:id = "@+id/splitter1"
 			android:layout_height = "wrap_content"
@@ -37,7 +44,9 @@
 			android:layout_toLeftOf="@id/main_new_sms_imgbutton"
 			android:layout_centerVertical="true"
 			android:src="@drawable/vertical_seprator"
-		/>
+			>
+		</ImageView>
+		<!-- Options menu button -->
 		<ImageView
 			android:id = "@+id/main_options_menu_imgbutton"
 			android:layout_height = "wrap_content"
@@ -47,7 +56,9 @@
 			android:layout_marginLeft="5dip"
 			android:layout_marginRight="5dip"
 			android:src="@drawable/option_menu_button_states"
-		/>
+			>
+		</ImageView>
+		<!-- Vertical splitter 2 -->
 		<ImageView 
 			android:id = "@+id/splitter2"
 			android:layout_height = "wrap_content"
@@ -55,52 +66,44 @@
 			android:layout_toLeftOf="@id/main_options_menu_imgbutton"
 			android:layout_centerVertical="true"
 			android:src="@drawable/vertical_seprator"
-		/>
+			>
+		</ImageView>
 	</RelativeLayout>
-	<LinearLayout 
-	    android:id = "@+id/expanded_list_layout"
-	    android:layout_height = "fill_parent"
-	    android:layout_width = "fill_parent">
-	    <ExpandableListView 
-			android:id = "@+id/main_expandable_list"
-			android:layout_height = "fill_parent"
-			android:layout_width = "fill_parent"
-			android:background="#000000"
-			android:cacheColorHint="@color/transparent"
-			android:groupIndicator="@drawable/expander_group"
-		/>
-	</LinearLayout>
+	
+    <!-- Expendable List -->    
+    <ExpandableListView 
+		android:id = "@+id/main_expandable_list"
+		android:layout_height = "fill_parent"
+		android:layout_width = "fill_parent"
+		android:cacheColorHint="@color/transparent"
+		android:groupIndicator="@drawable/expander_group"
+		>
+	</ExpandableListView>
+	
+    <!-- blank list layout -->    
 	<LinearLayout
 	    android:id = "@+id/blank_list_layout"
 	    android:layout_height = "fill_parent"
 	    android:layout_width = "fill_parent"
 	    android:orientation="vertical"
-	    android:layout_gravity="center_vertical">
-	    <RelativeLayout
-	        android:layout_height = "fill_parent"
-	        android:layout_width = "fill_parent"
-	        android:layout_gravity="center_vertical"
-	        android:gravity="center">
-		    <LinearLayout
-		        android:layout_height = "wrap_content"
-		        android:layout_width = "wrap_content"
-		        android:layout_gravity="center_vertical"
-		        android:gravity="center"
-		        android:orientation="vertical">
-		        <TextView 
-		        	android:text = "No SMS scheduled"
-		        	android:layout_height = "wrap_content"
-		        	android:layout_width = "wrap_content"
-		        	android:gravity="center_vertical"
-		        	android:layout_margin = "10dp"
-	        	/>
-		    	<Button 
-		        	android:id = "@+id/blank_list_add_button"
-		        	android:layout_height = "wrap_content"
-		        	android:layout_width = "wrap_content"
-		        	android:text = "Schedule an SMS"
-	        	/>
-	    	</LinearLayout>
-    	</RelativeLayout>
+	    android:layout_gravity="center"
+	    android:gravity="center"
+	    >
+    	<TextView 
+        	android:text = "No SMS scheduled"
+        	android:layout_height = "wrap_content"
+        	android:layout_width = "wrap_content"
+        	android:gravity="center_vertical"
+        	android:layout_margin = "10dp"
+       		android:textColor="@color/black"
+       		>
+     	</TextView>
+    	<Button 
+        	android:id = "@+id/blank_list_add_button"
+        	android:layout_height = "wrap_content"
+        	android:layout_width = "wrap_content"
+        	android:text = "Schedule an SMS"
+       		>
+     	</Button>
 	</LinearLayout>
 </LinearLayout>

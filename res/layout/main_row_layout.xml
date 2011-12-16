@@ -3,24 +3,15 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
   	android:layout_width="fill_parent"
   	android:layout_height="80dp"
-  	android:background="@drawable/list_item_bg"
- 	android:paddingBottom="5dip"
+  	android:paddingBottom="5dip"
  	>
- 	
-    <ImageView 
-			android:id = "@+id/list_divider"
-			android:layout_height = "wrap_content"
-			android:layout_width = "fill_parent"
-			android:layout_alignParentTop="true"
-			android:src="@drawable/list_divider"
-	/>
- 	
+    <!-- recipients -->
     <TextView 
    		android:id = "@+id/main_row_recepient_area"
    		android:layout_height = "wrap_content"
    		android:layout_width = "wrap_content"
    		android:text = "Mr.Reveiver"
-   		android:textColor="@color/white"
+   		android:textColor="@color/black"
    		android:layout_below="@id/list_divider"
    		android:layout_alignParentLeft="true"
    		android:paddingTop="5dip"
@@ -30,8 +21,7 @@
  		android:paddingRight="2dip"
    		>
   	</TextView>
-  	
-        
+  	   
     <TextView 
         android:id="@+id/main_row_extra_recepient_area"
         android:layout_height="wrap_content"
@@ -40,10 +30,10 @@
         android:layout_alignBaseline="@id/main_row_recepient_area"
         android:paddingRight="10dip"
         android:textColor="#fbec5d"
-        />
+        >
+   	</TextView>
    	
-        
-        
+    <!-- Date and Time -->    
    	<TextView 
   		android:id = "@+id/main_row_date_area"
   		android:layout_height = "wrap_content"
@@ -56,10 +46,8 @@
  		android:paddingRight="10dip"
   		>
  	</TextView>
-        
-        
-
-   	
+    
+   	<!-- message -->    
    	<TextView 
   		android:id = "@+id/main_row_message_area"
   		android:layout_width = "250dp"
@@ -74,9 +62,8 @@
  		android:paddingRight="10dip"
   		>
 	</TextView>
-    		
-  
-   	    
+    
+   	<!-- icon -->    		
    	<ImageView 
  		android:id = "@+id/main_row_image_area"
  		android:layout_height="36dp"

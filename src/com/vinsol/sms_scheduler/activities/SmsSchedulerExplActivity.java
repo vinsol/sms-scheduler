@@ -12,8 +12,6 @@ import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -60,7 +58,6 @@ public class SmsSchedulerExplActivity extends Activity {
 	ImageView				newSmsButton;
 	ImageView				optionsImageButton;
 	
-	LinearLayout explListLayout;
 	LinearLayout blankListLayout;
 	
 	Button blankListAddButton;
@@ -149,7 +146,6 @@ public class SmsSchedulerExplActivity extends Activity {
         newSmsButton 		= (ImageView) findViewById(R.id.main_new_sms_imgbutton);
         explList 	 		= (ExpandableListView) findViewById(R.id.main_expandable_list);
         optionsImageButton 	= (ImageView) findViewById(R.id.main_options_menu_imgbutton);
-        explListLayout		= (LinearLayout) findViewById(R.id.expanded_list_layout);
         blankListLayout		= (LinearLayout) findViewById(R.id.blank_list_layout);
         blankListAddButton	= (Button) findViewById(R.id.blank_list_add_button);
         
@@ -239,16 +235,16 @@ public class SmsSchedulerExplActivity extends Activity {
     	mdba.open();
     	Cursor cur = mdba.fetchAllScheduled();
     	if(cur.getCount()>0){
-    		explListLayout.setVisibility(LinearLayout.VISIBLE);
+    		explList.setVisibility(LinearLayout.VISIBLE);
     		blankListLayout.setVisibility(LinearLayout.GONE);
     	}else{
     		cur = null;
     		cur = mdba.fetchAllSent();
     		if(cur.getCount()>0){
-    			explListLayout.setVisibility(LinearLayout.VISIBLE);
+    			explList.setVisibility(LinearLayout.VISIBLE);
     			blankListLayout.setVisibility(LinearLayout.GONE);
     		}else{
-    			explListLayout.setVisibility(LinearLayout.GONE);
+    			explList.setVisibility(LinearLayout.GONE);
     			blankListLayout.setVisibility(LinearLayout.VISIBLE);
     		}
     	}
@@ -326,16 +322,16 @@ public class SmsSchedulerExplActivity extends Activity {
 					
 			        Cursor cur = mdba.fetchAllScheduled();
 			        if(cur.getCount()>0){
-			        	explListLayout.setVisibility(LinearLayout.VISIBLE);
+			        	explList.setVisibility(LinearLayout.VISIBLE);
 			        	blankListLayout.setVisibility(LinearLayout.GONE);
 			        }else{
 			        	cur = null;
 			        	cur = mdba.fetchAllSent();
 			        	if(cur.getCount()>0){
-			        		explListLayout.setVisibility(LinearLayout.VISIBLE);
+			        		explList.setVisibility(LinearLayout.VISIBLE);
 			            	blankListLayout.setVisibility(LinearLayout.GONE);
 			        	}else{
-			        		explListLayout.setVisibility(LinearLayout.GONE);
+			        		explList.setVisibility(LinearLayout.GONE);
 			            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
 			        	}
 			        }
@@ -484,16 +480,16 @@ public class SmsSchedulerExplActivity extends Activity {
 									
 							        Cursor cur = mdba.fetchAllScheduled();
 							        if(cur.getCount()>0){
-							        	explListLayout.setVisibility(LinearLayout.VISIBLE);
+							        	explList.setVisibility(LinearLayout.VISIBLE);
 							        	blankListLayout.setVisibility(LinearLayout.GONE);
 							        }else{
 							        	cur = null;
 							        	cur = mdba.fetchAllSent();
 							        	if(cur.getCount()>0){
-							        		explListLayout.setVisibility(LinearLayout.VISIBLE);
+							        		explList.setVisibility(LinearLayout.VISIBLE);
 							            	blankListLayout.setVisibility(LinearLayout.GONE);
 							        	}else{
-							        		explListLayout.setVisibility(LinearLayout.GONE);
+							        		explList.setVisibility(LinearLayout.GONE);
 							            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
 							        	}
 							        }
@@ -552,16 +548,16 @@ public class SmsSchedulerExplActivity extends Activity {
 									
 							        Cursor cur = mdba.fetchAllScheduled();
 							        if(cur.getCount()>0){
-							        	explListLayout.setVisibility(LinearLayout.VISIBLE);
+							        	explList.setVisibility(LinearLayout.VISIBLE);
 							        	blankListLayout.setVisibility(LinearLayout.GONE);
 							        }else{
 							        	cur = null;
 							        	cur = mdba.fetchAllSent();
 							        	if(cur.getCount()>0){
-							        		explListLayout.setVisibility(LinearLayout.VISIBLE);
+							        		explList.setVisibility(LinearLayout.VISIBLE);
 							            	blankListLayout.setVisibility(LinearLayout.GONE);
 							        	}else{
-							        		explListLayout.setVisibility(LinearLayout.GONE);
+							        		explList.setVisibility(LinearLayout.GONE);
 							            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
 							        	}
 							        }
