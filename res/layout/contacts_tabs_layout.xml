@@ -39,19 +39,67 @@
      	</LinearLayout>
 
      	<LinearLayout
-     	    android:id = "@+id/groups_tab"
+     	    android:id = "@+id/group_tabs"
     		android:layout_width="match_parent"
     		android:layout_height="match_parent"
     		android:orientation="vertical" >
-
-    		<ExpandableListView 
-        		android:id = "@android:id/list"
-        		android:layout_height = "fill_parent"
-       			android:layout_width = "fill_parent"
-       			android:cacheColorHint="@color/transparent"
-				android:groupIndicator="@drawable/expander_group">
-    		</ExpandableListView>
-
+			
+     	    <TabHost android:id="@android:id/tabhost" 
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                    
+                    <LinearLayout android:layout_width="fill_parent" 
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical">
+                        
+                        <TabWidget android:id="@android:id/tabs"
+                            android:layout_width="fill_parent" 
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0"
+                            />
+                        
+                        <FrameLayout android:id="@android:id/tabcontent"
+                            android:layout_width="fill_parent" 
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            >
+                            
+                            <LinearLayout
+     	    					android:id = "@+id/native_groups_tab"
+    							android:layout_width="match_parent"
+    							android:layout_height="match_parent"
+    							android:orientation="vertical" >
+                            
+                                <ExpandableListView 
+        							android:id = "@+id/native_list"
+        							android:layout_height = "fill_parent"
+       								android:layout_width = "fill_parent"
+       								android:cacheColorHint="@color/transparent"
+									android:groupIndicator="@drawable/expander_group">
+    							</ExpandableListView>
+    							
+                            </LinearLayout>
+                            
+                            <LinearLayout
+     	    					android:id = "@+id/private_groups_tab"
+    							android:layout_width="match_parent"
+    							android:layout_height="match_parent"
+    							android:orientation="vertical" >
+                            
+                                <ExpandableListView 
+        							android:id = "@+id/private_list"
+        							android:layout_height = "fill_parent"
+       								android:layout_width = "fill_parent"
+       								android:cacheColorHint="@color/transparent"
+									android:groupIndicator="@drawable/expander_group">
+    							</ExpandableListView>
+    							
+                            </LinearLayout>
+                            
+                        </FrameLayout>
+                    </LinearLayout>               
+                </TabHost>
+                
 		</LinearLayout>
 		
      	<LinearLayout

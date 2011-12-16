@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -100,7 +101,7 @@ public class GroupAddActivity extends Activity {
 				final Dialog d = new Dialog(GroupAddActivity.this);
 				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				d.setContentView(R.layout.new_group_name_dialog_design);
-				final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
+				final EditText 	groupNameEdit 	= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
 				ImageButton groupNameOkButton 	= (ImageButton) d.findViewById(R.id.group_name_dialog_name_ok_button);
 				
 				groupNameEdit.setText(groupName);
@@ -113,9 +114,27 @@ public class GroupAddActivity extends Activity {
 							Toast.makeText(GroupAddActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
 							groupNameEdit.setText("");
 						}else{
-							groupName = groupNameEdit.getText().toString();
-							groupNameButton.setText(groupName);
-							d.cancel();
+							boolean groupNameExists = false;
+							mdba.open();
+							Cursor cur = mdba.fetchAllGroups();
+							if(cur.moveToFirst()){
+								do{
+									if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_GROUP_NAME)).equals(groupNameEdit.getText().toString())){
+										
+										groupNameExists = true;
+										break;
+									}
+								}while(cur.moveToNext());
+							}
+							mdba.close();
+							if(groupNameExists){
+								Toast.makeText(GroupAddActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
+							}else{
+								groupName = groupNameEdit.getText().toString();
+								groupNameButton.setText(groupName);
+								d.cancel();
+							}
+							
 						}
 					}
 				});
@@ -334,51 +353,28 @@ public class GroupAddActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
-		String isCancelled = data.getStringExtra("CANCEL");
-		if(isCancelled.equals("yes")){
+		if(callingState.equals("new")){
 			GroupAddActivity.this.finish();
-		}
-		
-		ArrayList<String> idsString = new ArrayList<String>();
-		idsString = data.getStringArrayListExtra("IDSLIST");
-		ids.clear();
-		
-		for(int i = 0; i< idsString.size(); i++){
-			ids.add(Long.parseLong(idsString.get(i)));
-		}
-		loadContactsForGroups();
-		myAdapter.notifyDataSetChanged();
-		
-		if(callingState.equals("new") && newCall && (ids.size()==0)){
-			GroupAddActivity.this.finish();
-		}
-		
-		if(callingState.equals("new") && newCall && (ids.size()>0)){
-			final Dialog d = new Dialog(GroupAddActivity.this);
-			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			d.setContentView(R.layout.new_group_name_dialog_design);
-			d.setCancelable(false);
-			final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
-			ImageButton groupNameOkButton 	= (ImageButton) d.findViewById(R.id.group_name_dialog_name_ok_button);
+		}else{
+			String isCancelled = data.getStringExtra("CANCEL");
+			if(isCancelled.equals("yes")){
+				GroupAddActivity.this.finish();
+			}
 			
-			groupNameEdit.setText(groupName);
+			ArrayList<String> idsString = new ArrayList<String>();
+			idsString = data.getStringArrayListExtra("IDSLIST");
+			ids.clear();
 			
-			groupNameOkButton.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					if(groupNameEdit.getText().toString().matches("(''|[' ']+)")){
-						Toast.makeText(GroupAddActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
-						groupNameEdit.setText("");
-					}else{
-						groupName = groupNameEdit.getText().toString();
-						groupNameButton.setText(groupName);
-						d.cancel();
-						newCall = false;
-					}
-				}
-			});
-			d.show();
+			for(int i = 0; i< idsString.size(); i++){
+				ids.add(Long.parseLong(idsString.get(i)));
+			}
+			loadContactsForGroups();
+			myAdapter.notifyDataSetChanged();
+			
+			
+			
 		}
+		
+		
 	}
 }

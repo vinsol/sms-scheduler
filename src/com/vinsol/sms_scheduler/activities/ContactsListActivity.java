@@ -10,6 +10,7 @@ import com.vinsol.sms_scheduler.R.layout;
 import com.vinsol.sms_scheduler.models.MyContact;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -24,11 +25,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -45,6 +49,7 @@ public class ContactsListActivity extends Activity {
 	DBAdapter mdba;
 	long groupId;
 	boolean newCall;
+	String groupName = "";
 	
 	ArrayList<MyContact> contacts = new ArrayList<MyContact>();
 	ArrayList<Long> ids = new ArrayList<Long>();
@@ -58,7 +63,7 @@ public class ContactsListActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.contacts_list_layout);
 		
-		DBAdapter mdba = new DBAdapter(this);
+		final DBAdapter mdba = new DBAdapter(this);
 		contactsList = (ListView) findViewById(R.id.contacts_list_main_list);
 		doneButton = (Button) findViewById(R.id.contacts_list_layout_done_button);
 		cancelButton = (Button) findViewById(R.id.contacts_list_layout_cancel_button);
@@ -105,18 +110,65 @@ public class ContactsListActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				Intent intent = new Intent();
+				final Intent intent = new Intent();
 				ArrayList<String> idsStringChanged = new ArrayList<String>();
 				for(int i = 0; i< ids.size(); i++){
 					idsStringChanged.add(String.valueOf(ids.get(i)));
 				}
 				if(callingActivity.equals("Group Add Activity")){
 					intent.putExtra("NEWCALL", newCall);
+					final Dialog d = new Dialog(ContactsListActivity.this);
+					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					d.setContentView(R.layout.new_group_name_dialog_design);
+					d.setCancelable(false);
+					final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
+					ImageButton groupNameOkButton 	= (ImageButton) d.findViewById(R.id.group_name_dialog_name_ok_button);
+					
+					groupNameEdit.setText(groupName);
+					
+					groupNameOkButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							if(groupNameEdit.getText().toString().matches("(''|[' ']+)")){
+								Toast.makeText(ContactsListActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
+								groupNameEdit.setText("");
+							}else{
+								boolean groupNameExists = false;
+								mdba.open();
+								Cursor cur = mdba.fetchAllGroups();
+								if(cur.moveToFirst()){
+									do{
+										if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_GROUP_NAME)).equals(groupNameEdit.getText().toString())){
+											
+											groupNameExists = true;
+											break;
+										}
+									}while(cur.moveToNext());
+								}
+								mdba.close();
+								if(groupNameExists){
+									Toast.makeText(ContactsListActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
+								}else{
+									groupName = groupNameEdit.getText().toString();
+									d.cancel();
+									mdba.open();
+									mdba.createGroup(groupName, ids);
+									mdba.close();
+									setResult(10, intent);
+									ContactsListActivity.this.finish();
+								}
+							}
+						}
+					});
+					d.show();
+				}else{
+					intent.putStringArrayListExtra("IDSLIST", idsStringChanged);
+					intent.putExtra("CANCEL", "no");
+					setResult(10, intent);
+					ContactsListActivity.this.finish();
 				}
-				intent.putStringArrayListExtra("IDSLIST", idsStringChanged);
-				intent.putExtra("CANCEL", "no");
-				setResult(10, intent);
-				ContactsListActivity.this.finish();
+				
 			}
 		});
 		

@@ -23,6 +23,10 @@ public class SentReceiver extends BroadcastReceiver{
 		long id = (long)intent.getLongExtra("ID", 0);
 		int msgSize = (int)intent.getIntExtra("SIZE", 0);
 		String number = intent.getStringExtra("NUMBER");
+		
+		Intent mIntent;
+		PendingIntent pi;
+		AlarmManager am;
 		Log.i("MESSAGE", "ID in SentReceiver : " + id);
 		mdba = new DBAdapter(context);
 		switch (getResultCode())
@@ -38,12 +42,12 @@ public class SentReceiver extends BroadcastReceiver{
                  mdba.close();
                  
                  
-                 Intent mIntent = new Intent();
+                 mIntent = new Intent();
                  mIntent.putExtra("ID", id);
                  mIntent.setAction("My special action");
-                 PendingIntent pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                 pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
          		
-         		 AlarmManager am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+         		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
          		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
          		 
 //         		 mIntent.setAction("update action");
@@ -52,21 +56,56 @@ public class SentReceiver extends BroadcastReceiver{
         		 
                  
                  break;
+                 
              case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                 Toast.makeText(context, "Generic failure",
-                         Toast.LENGTH_SHORT).show();
+            	
+            	 mIntent = new Intent();
+                 mIntent.putExtra("ID", id);
+                 mIntent.setAction("My special action");
+                 pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+         		
+         		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+//                 Toast.makeText(context, "Generic failure",
+//                         Toast.LENGTH_SHORT).show();
                  break;
+                 
              case SmsManager.RESULT_ERROR_NO_SERVICE:
-                 Toast.makeText(context, "No service", 
-                         Toast.LENGTH_SHORT).show();
+            	
+            	 mIntent = new Intent();
+                 mIntent.putExtra("ID", id);
+                 mIntent.setAction("My special action");
+                 pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+         		
+         		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+//                 Toast.makeText(context, "No service", 
+//                         Toast.LENGTH_SHORT).show();
                  break;
+                 
              case SmsManager.RESULT_ERROR_NULL_PDU:
-                 Toast.makeText(context, "Null PDU", 
-                         Toast.LENGTH_SHORT).show();
+            	 mIntent = new Intent();
+                 mIntent.putExtra("ID", id);
+                 mIntent.setAction("My special action");
+                 pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+         		
+         		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+//                 Toast.makeText(context, "Null PDU", 
+//                         Toast.LENGTH_SHORT).show();
                  break;
+                 
              case SmsManager.RESULT_ERROR_RADIO_OFF:
-                 Toast.makeText(context, "Radio off", 
-                         Toast.LENGTH_SHORT).show();
+            	
+            	 mIntent = new Intent();
+                 mIntent.putExtra("ID", id);
+                 mIntent.setAction("My special action");
+                 pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+         		
+         		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+         		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+//                 Toast.makeText(context, "Radio off", 
+//                         Toast.LENGTH_SHORT).show();
                  break;
          }
 	}

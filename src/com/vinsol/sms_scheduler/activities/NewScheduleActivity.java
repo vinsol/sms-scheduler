@@ -93,8 +93,11 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	//-----------For expanded list data of contactsTabActivity------------------------
-	static ArrayList<ArrayList<HashMap<String, Object>>> childData = new ArrayList<ArrayList<HashMap<String, Object>>>();
-	static ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
+	static ArrayList<ArrayList<HashMap<String, Object>>> nativeChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	static ArrayList<HashMap<String, Object>> nativeGroupData = new ArrayList<HashMap<String, Object>>();
+	
+	static ArrayList<ArrayList<HashMap<String, Object>>> privateChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	static ArrayList<HashMap<String, Object>> privateGroupData = new ArrayList<HashMap<String, Object>>();
 	//boolean empty;
 	
 	
@@ -364,13 +367,22 @@ public class NewScheduleActivity extends Activity {
 	                		 int position = pos - (Spans.get(i).displayName.length());
 	                		 if (position > 0)
 	                			 numbersText.setSelection(position);
-	                		 for(int j = 0; j< groupData.size(); j++){
-	                			 for(int k = 0; k< childData.get(j).size(); k++){
-	                				 if((Long.parseLong((String)childData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)childData.get(j).get(k).get(Constants.CHILD_CHECK)){
-	                					 childData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+	                		 for(int j = 0; j< nativeGroupData.size(); j++){
+	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++){
+	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
 	                		 }
+	                		 
+	                		 for(int j = 0; j< privateGroupData.size(); j++){
+	                			 for(int k = 0; k< privateChildData.get(j).size(); k++){
+	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+	                				 }
+	                			 }
+	                		 }
+	                		 
 	                		 Spans.remove(i);
 	                		 refreshSpannableString();
 	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
@@ -1389,10 +1401,10 @@ public class NewScheduleActivity extends Activity {
 				public void onClick(View widget) {
 							
 					Log.i("MSG", _i + "");
-					for(int j = 0; j< groupData.size(); j++){
-            			 for(int k = 0; k< childData.get(j).size(); k++){
-            				 if((Long.parseLong((String)childData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)childData.get(j).get(k).get(Constants.CHILD_CHECK)){
-            					 childData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+					for(int j = 0; j< nativeGroupData.size(); j++){
+            			 for(int k = 0; k< nativeChildData.get(j).size(); k++){
+            				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+            					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
             				 }
             			 }
             		 }
@@ -1429,17 +1441,80 @@ public class NewScheduleActivity extends Activity {
 	public void onBackPressed() {
 		//super.onBackPressed();
 		
+		
+		
 		if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			if(!checkDateValidity(processDate)){
-				Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
-			}
-			doSmsScheduling();
+			final Dialog d = new Dialog(NewScheduleActivity.this);
+			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			d.setContentView(R.layout.confirmation_dialog_layout);
+			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+			
+			questionText.setText("Schedule Message?");
+			yesButton.setText("Yes");
+			noButton.setText("No");
+			yesButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					doSmsScheduling();
+					Toast.makeText(NewScheduleActivity.this, "Message Scheduled", Toast.LENGTH_SHORT).show();
+					if(!checkDateValidity(processDate)){
+						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+					}
+					d.cancel();
+					NewScheduleActivity.this.finish();
+				}
+			});
+			
+			noButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					d.cancel();
+					NewScheduleActivity.this.finish();
+				}
+			});
+			
+			d.show();
+			
+			
 		}else
 			
 		if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			doSmsScheduling();
-			Toast.makeText(NewScheduleActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
-			NewScheduleActivity.this.finish();
+			final Dialog d = new Dialog(NewScheduleActivity.this);
+			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			d.setContentView(R.layout.confirmation_dialog_layout);
+			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+			
+			questionText.setText("Save as Draft?");
+			yesButton.setText("Yes");
+			noButton.setText("No");
+			yesButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					
+					doSmsScheduling();
+					Toast.makeText(NewScheduleActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
+					d.cancel();
+					NewScheduleActivity.this.finish();
+				}
+			});
+			
+			noButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					d.cancel();
+					NewScheduleActivity.this.finish();
+				}
+			});
+			
+			d.show();
 		}else{
 			NewScheduleActivity.this.finish();
 		}
@@ -1451,8 +1526,11 @@ public class NewScheduleActivity extends Activity {
 	
 	public void loadGroupsData(){
 		
-		groupData.clear();
-		childData.clear();
+		nativeGroupData.clear();
+		nativeChildData.clear();
+		
+		privateGroupData.clear();
+		privateChildData.clear();
 		
 		//------------------------ Setting up data for native groups ---------------------------
 		String[] projection = new String[] {
@@ -1479,7 +1557,7 @@ public class NewScheduleActivity extends Activity {
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         	
         		
-        		groupData.add(group);
+        		nativeGroupData.add(group);
         		
         		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
         			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
@@ -1495,7 +1573,7 @@ public class NewScheduleActivity extends Activity {
         				}
         			}
         		}
-        		childData.add(child);
+        		nativeChildData.add(child);
         		count++;
         	}while(groupCursor.moveToNext());
         }
@@ -1517,7 +1595,7 @@ public class NewScheduleActivity extends Activity {
         		group.put(Constants.GROUP_TYPE, 2);
         		group.put(Constants.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
-        		groupData.add(group);
+        		privateGroupData.add(group);
         		GroupStructure groupStructure;
         	
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
@@ -1539,7 +1617,7 @@ public class NewScheduleActivity extends Activity {
         			}
         		}
         		
-        		childData.add(child);
+        		privateChildData.add(child);
         		count++;
         	}while(groupsCursor.moveToNext());
         }

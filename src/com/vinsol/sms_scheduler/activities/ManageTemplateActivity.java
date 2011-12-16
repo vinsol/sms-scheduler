@@ -53,7 +53,7 @@ public class ManageTemplateActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_template_layout);
 		
-		newTemplateButton 			= (ImageView) 	findViewById(R.id.new_template_image_button);
+		newTemplateButton 			= (ImageView) 		findViewById(R.id.new_template_image_button);
 		newTemplateSpaceLayout 		= (LinearLayout) 	findViewById(R.id.new_template_input_space);
 		newTemplateBody 			= (EditText) 		findViewById(R.id.new_template_input_edit_text);
 		newTemplateAddButton 		= (Button) 			findViewById(R.id.new_template_add_button);
@@ -101,7 +101,6 @@ public class ManageTemplateActivity extends Activity{
 					Toast.makeText(ManageTemplateActivity.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
 				}else if(isEditing && newTemplateBody.getText().toString().equals(templatesArray.get(editRowId))){
 					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 				}else{
 					
 					mdba.open();
@@ -132,9 +131,7 @@ public class ManageTemplateActivity extends Activity{
 						loadData();
 						mAdapter.notifyDataSetChanged();
 						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-						if(inputMethodManager.isActive()){
-							inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-						}
+						
 						
 						if(isEditing){
 							Toast.makeText(ManageTemplateActivity.this, "Template edited", Toast.LENGTH_SHORT).show();

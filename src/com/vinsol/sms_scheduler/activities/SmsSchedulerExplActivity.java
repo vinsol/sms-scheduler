@@ -745,7 +745,7 @@ public class SmsSchedulerExplActivity extends Activity {
     				condition = 1;
     				break;
     			}
-    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == cur.getInt(cur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)) && !mdba.checkDeliver(childSentArray.get(i).keyIds.get(k))){
+    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !mdba.checkDeliver(childSentArray.get(i).keyIds.get(k))){
     				condition = 2;
     				break;
     			}
@@ -1053,9 +1053,9 @@ public class SmsSchedulerExplActivity extends Activity {
     		int condition = 1;
     		Cursor cur = mdba.fetchSmsDetails(currentId);
 			cur.moveToFirst();
-			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == cur.getInt(cur.getColumnIndex(DBAdapter.KEY_MSG_PARTS))){
+			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !(mdba.checkDeliver(currentId))){
 				condition = 2;
-			}
+			}else
 			if(mdba.checkDeliver(currentId)){
 				condition = 3;
 			}

@@ -91,8 +91,11 @@ public class EditScheduledSmsActivity extends Activity {
 	GridView				smileysGrid;
 	//--------------------------------------------------------
 	
-	static ArrayList<ArrayList<HashMap<String, Object>>> childData = new ArrayList<ArrayList<HashMap<String, Object>>>();
-	static ArrayList<HashMap<String, Object>> groupData = new ArrayList<HashMap<String, Object>>();
+	static ArrayList<ArrayList<HashMap<String, Object>>> nativeChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	static ArrayList<HashMap<String, Object>> nativeGroupData = new ArrayList<HashMap<String, Object>>();
+	
+	static ArrayList<ArrayList<HashMap<String, Object>>> privateChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	static ArrayList<HashMap<String, Object>> privateGroupData = new ArrayList<HashMap<String, Object>>();
 	
 	long editedGroup;
 	
@@ -102,8 +105,10 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	//---------------------------------------------------------------
 	static ArrayList<SpannedEntity> Spans = new ArrayList<SpannedEntity>();
+	static ArrayList<SpannedEntity> originalSpans = new ArrayList<SpannedEntity>();
 	private SpannableStringBuilder ssb = new SpannableStringBuilder();
 	private int spanStartPosition = 0;
+	static String originalMessage;
 	private ArrayList<ClickableSpan> clickableSpanArrayList = new ArrayList<ClickableSpan>();
 	//--------------------------------------------------------------------
 	
@@ -132,6 +137,7 @@ public class EditScheduledSmsActivity extends Activity {
 	ArrayList<MyContact> shortlist = new ArrayList<MyContact>();
 	
 	boolean smileyVisible = false;
+	boolean isDraft = false;
 	
 	static int positionTrack;
 	
@@ -215,6 +221,7 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		numbersText.setText(intent.getStringExtra("NUMBER"));
 		messageText.setText(intent.getStringExtra("MESSAGE"));
+		originalMessage = intent.getStringExtra("MESSAGE");
 		processDate = new Date(intent.getLongExtra("TIME", 0));
 		characterCountText.setText(String.valueOf(messageText.getText().toString().length()));
 		editedGroup = intent.getLongExtra("GROUP", 0);
@@ -227,7 +234,11 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		mdba.open();
 		smsIds = mdba.getIds(editedGroup);
+		
 		Log.i("MSG", "size of smsIds : " + smsIds.size());
+		
+		originalSpans.clear();
+		
 		for(int i = 0; i< smsIds.size(); i++){
 			Cursor spanCur = mdba.fetchSpanForSms(smsIds.get(i));
 			Log.i("MSG", "size of Span cursor : " + spanCur.getCount());
@@ -237,7 +248,28 @@ public class EditScheduledSmsActivity extends Activity {
 					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN)),
 					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ENTITY_ID)),
 					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_SMS_ID))));
+			
+			originalSpans.add(new SpannedEntity(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
+					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_TYPE)),
+					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN)),
+					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ENTITY_ID)),
+					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_SMS_ID))));
 		}
+		
+		if(Spans.size()==0){
+			isDraft = true;
+		}else if(messageText.getText().toString().equals("")){
+			isDraft = true;
+		}
+		else{
+//			mdba.open();
+//			Cursor smsDetail = mdba.fetchSmsDetails(smsIds.get(0));
+//			if(smsDetail.getInt(smsDetail.getColumnIndex(DBAdapter.KEY_DRAFT))==1){
+//				isDraft = true;
+//			}
+//			mdba.close();
+		}
+		
 		Log.i("MSG", "size of Spans : " + Spans.size());
 		mdba.close();
 		refreshSpannableString();
@@ -453,7 +485,6 @@ public class EditScheduledSmsActivity extends Activity {
 						
 					}
 				}
-				
 			}
 		});
 		
@@ -942,14 +973,18 @@ public class EditScheduledSmsActivity extends Activity {
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 					
-					questionText.setText("Discard the changes?");
-					yesButton.setText("Ok");
-					noButton.setText("Cancel");
+					questionText.setText("Delete this message?");
+					yesButton.setText("Yes");
+					noButton.setText("No");
 					yesButton.setOnClickListener(new OnClickListener() {
 						
 						@Override
 						public void onClick(View v) {
-							d.cancel();
+							for(int i = 0; i<smsIds.size(); i++){
+								mdba.open();
+								mdba.deleteSms(smsIds.get(i), EditScheduledSmsActivity.this);
+								mdba.close();
+							}
 							EditScheduledSmsActivity.this.finish();
 						}
 					});
@@ -1102,7 +1137,7 @@ public class EditScheduledSmsActivity extends Activity {
 			for(int i = 0; i< editedIds.size(); i++){
 				mdba.deleteSms(editedIds.get(i), EditScheduledSmsActivity.this);
 			}
-			
+			Log.i("MSG", "scheduling : deleted the previous record");
 			if(Spans.size()==0){
 				SpannedEntity span = new SpannedEntity(-1, 1, " ", -1, -1);  //for adding a fake span to save as a draft
 				Spans.add(span);
@@ -1151,6 +1186,8 @@ public class EditScheduledSmsActivity extends Activity {
 					Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
 				}
 			}
+			
+			Log.i("MSG", "scheduling : new records created");
 		
 		mdba.close();
 
@@ -1241,7 +1278,7 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	//--------------------------Setting up the Autocomplete text-----------------------------// 
 	
-public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
+	public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 	  	
 		
 		String text2 = (String) constraint;
@@ -1432,10 +1469,18 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 							
 						Log.i("MSG", _i + "");
 						if(_i< Spans.size()-1){
-							for(int j = 0; j< groupData.size(); j++){
-	                			 for(int k = 0; k< childData.get(j).size(); k++){
-	                				 if((Long.parseLong((String)childData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)childData.get(j).get(k).get(Constants.CHILD_CHECK)){
-	                					 childData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+							for(int j = 0; j< nativeGroupData.size(); j++){
+	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++){
+	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+	                				 }
+	                			 }
+	                		 }
+							
+							for(int j = 0; j< privateGroupData.size(); j++){
+	                			 for(int k = 0; k< privateChildData.get(j).size(); k++){
+	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
 	                		 }
@@ -1491,35 +1536,91 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 				}while(cur.moveToNext());
 			}
 		}
-
+		mdba.close();
 		
-		if(!(Spans.size() == 0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			
-			
-			if(isSending){
-				Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
-				EditScheduledSmsActivity.this.finish();
-			}else{
-				if(!checkDateValidity(processDate)){
-					Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
-				}
-				doSmsScheduling();
-				EditScheduledSmsActivity.this.finish();
-			}
-			
-		}else
-			
-		if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			if(isSending){
-				Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
-				EditScheduledSmsActivity.this.finish();
-			}else{
-				doSmsScheduling();
-				EditScheduledSmsActivity.this.finish();
-			}
-			
+		boolean isChanged = false;
+		
+		if(originalSpans.size() != Spans.size()){
+			Log.i("MSG", "Changed : 1");
+			isChanged = true;
+		}else if(!messageText.getText().toString().equals(originalMessage)){
+			Log.i("MSG", "Changed : 2");
+			isChanged = true;
 		}else{
-			EditScheduledSmsActivity.this.finish();	
+			for(int i = 0; i< Spans.size(); i++){
+				if(Spans.get(i).entityId != originalSpans.get(i).entityId){
+					isChanged = true;
+					Log.i("MSG", "Changed : 3");
+					break;
+				}
+			}
+		}
+		
+		Log.i("MSG", "is Changed : " + isChanged );
+		
+		if(!isChanged){
+			EditScheduledSmsActivity.this.finish();
+		}else{
+			final boolean _isSending = isSending; 
+			final Dialog d = new Dialog(EditScheduledSmsActivity.this);
+			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			d.setContentView(R.layout.confirmation_dialog_layout);
+			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+			
+			questionText.setText("Discard Changes?");
+			yesButton.setText("Ok");
+			noButton.setText("Cancel");
+			yesButton.setOnClickListener(new OnClickListener() {
+					
+				@Override
+				public void onClick(View v) {
+					if(!(Spans.size() == 0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+						
+						
+						if(_isSending){
+							Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+							EditScheduledSmsActivity.this.finish();
+						}else{
+							if(!checkDateValidity(processDate)){
+								Toast.makeText(EditScheduledSmsActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+							}
+							doSmsScheduling();
+							d.cancel();
+							EditScheduledSmsActivity.this.finish();
+						}
+						
+					}else
+						
+					if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
+						if(_isSending){
+							Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+							d.cancel();
+							EditScheduledSmsActivity.this.finish();
+						}else{
+							doSmsScheduling();
+							d.cancel();
+							EditScheduledSmsActivity.this.finish();
+						}
+						
+					}else{
+						
+						EditScheduledSmsActivity.this.finish();	
+					}
+				}
+			});
+			
+			noButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					d.cancel();
+					numbersText.requestFocus();
+				}
+			});
+				
+			d.show();
 		}
 	}
 	
@@ -1529,8 +1630,11 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
 	
 	public void loadGroupsData(){
 		
-		groupData.clear();
-		childData.clear();
+		nativeGroupData.clear();
+		nativeChildData.clear();
+		
+		privateGroupData.clear();
+		privateChildData.clear();
 		
 		//------------------------ Setting up data for native groups ---------------------------
 		String[] projection = new String[] {
@@ -1563,7 +1667,7 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         	
         		
-        		groupData.add(group);
+        		nativeGroupData.add(group);
         		
         		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
         			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
@@ -1590,7 +1694,7 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
         				}
         			}
         		}
-        		childData.add(child);
+        		nativeChildData.add(child);
         		count++;
         	}while(groupCursor.moveToNext());
         	mdba.close();
@@ -1618,7 +1722,7 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
         		group.put(Constants.GROUP_TYPE, 2);
         		group.put(Constants.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
-        		groupData.add(group);
+        		privateGroupData.add(group);
         		GroupStructure groupStructure;
         	
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
@@ -1649,7 +1753,7 @@ public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
         			}
         		}
         		
-        		childData.add(child);
+        		privateChildData.add(child);
         		count++;
         	}while(groupsCursor.moveToNext());
         }

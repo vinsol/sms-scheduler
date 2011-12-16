@@ -174,13 +174,13 @@ public class DBAdapter {
 	
 	public Cursor fetchAllScheduledNoDraft(){
 		
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_SENT + "= 0 AND " + KEY_DRAFT + "=0", null, null, null, KEY_TIME_MILLIS);
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_SENT + "= 0 AND " + KEY_DRAFT + "=0 AND " + KEY_OPERATED + "=0", null, null, null, KEY_TIME_MILLIS);
 		Log.i("MESSAGE", "No of schedules from DBAdapter : " + cur.getCount());
 		return cur;
 	}
 	
 	public Cursor fetchAllSent(){
-		Cursor cur  = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_TIME_MILLIS, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_S_MILLIS, KEY_D_MILLIS}, KEY_SENT + ">0", null, null, null, KEY_TIME_MILLIS);
+		Cursor cur  = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_TIME_MILLIS, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_S_MILLIS, KEY_D_MILLIS}, KEY_OPERATED + "=1", null, null, null, KEY_TIME_MILLIS);
 		Log.i("MESSAGE", "No of sents from DBAdapter : " + cur.getCount());
 		return cur;
 	}
@@ -270,6 +270,14 @@ public class DBAdapter {
 		db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + id, null);
 	}
 	
+	
+	
+	
+	public void undoOperated(long id){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_OPERATED, 0);
+		db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + id, null);
+	}
 	
 		
 		
