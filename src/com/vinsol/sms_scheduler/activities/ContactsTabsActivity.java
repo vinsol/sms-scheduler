@@ -3,15 +3,7 @@ package com.vinsol.sms_scheduler.activities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.vinsol.sms_scheduler.Constants;
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.activities.GroupAddActivity.GroupsAddListHolder;
-import com.vinsol.sms_scheduler.models.MyContact;
-import com.vinsol.sms_scheduler.models.SpannedEntity;
-
 import android.app.Activity;
-import android.app.ExpandableListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -26,18 +18,22 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
-import android.widget.SimpleExpandableListAdapter;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.TabHost.TabSpec;
+import android.widget.TextView;
+
+import com.vinsol.sms_scheduler.Constants;
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.models.SpannedEntity;
 
 public class ContactsTabsActivity extends Activity {
 	
@@ -99,7 +95,7 @@ public class ContactsTabsActivity extends Activity {
         tabHost.setup();
 
         TabSpec spec1=tabHost.newTabSpec("Tab 1");
-        spec1.setContent(R.id.contacts_tab);
+        spec1.setContent(R.id.contacts_tabs_native_contacts_list);
         spec1.setIndicator("Contacts", getResources().getDrawable(R.drawable.contacts_tab_states));
 
         TabSpec spec2=tabHost.newTabSpec("Tab 2");
@@ -108,7 +104,7 @@ public class ContactsTabsActivity extends Activity {
 
         TabSpec spec3=tabHost.newTabSpec("Tab 3");
         spec3.setIndicator("Recents", getResources().getDrawable(R.drawable.recent_tab_states));
-        spec3.setContent(R.id.recents_tab);
+        spec3.setContent(R.id.contacts_tabs_recents_list);
 
         tabHost.addTab(spec1);
         tabHost.addTab(spec2);
@@ -324,8 +320,8 @@ public class ContactsTabsActivity extends Activity {
         LinearLayout groupTabs = (LinearLayout)findViewById( R.id.group_tabs );
         TabHost topHost = (TabHost)groupTabs.findViewById( android.R.id.tabhost );
         topHost.setup( );
-        topHost.addTab( topHost.newTabSpec( "native" ).setIndicator( "Native" ).setContent( R.id.native_groups_tab) );
-        topHost.addTab( topHost.newTabSpec( "private" ).setIndicator( "Private" ).setContent( R.id.private_groups_tab ) );
+        topHost.addTab( topHost.newTabSpec( "native" ).setIndicator( "Native" ).setContent( R.id.native_list) );
+        topHost.addTab( topHost.newTabSpec( "private" ).setIndicator( "Private" ).setContent( R.id.private_list ) );
 		
         privateGroupExplList = (ExpandableListView) findViewById(R.id.private_list);
         nativeGroupExplList = (ExpandableListView) groupTabs.findViewById(R.id.native_list);

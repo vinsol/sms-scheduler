@@ -2,155 +2,146 @@
 <RelativeLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height = "fill_parent"
-    android:layout_width = "fill_parent">
+    android:layout_width = "fill_parent"
+    android:background="@color/white"
+    >
     
-<TabHost android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/tabHost"
-    android:layout_above="@+id/contacts_tabs_buttons_layout">
-    
-    <RelativeLayout 
-        android:layout_height = "fill_parent"
-    	android:layout_width = "fill_parent">
-    	
-    <TabWidget
-    	android:layout_width="fill_parent"
-    	android:layout_height="wrap_content"
-    	android:id="@android:id/tabs"/>
-    
-    <FrameLayout
-    	android:layout_width="fill_parent"
+	<TabHost 
+	    android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:id="@android:id/tabcontent"
-    	android:layout_below="@android:id/tabs">
-     
-     	<LinearLayout
-     		android:layout_width="fill_parent"
-    		android:layout_height="wrap_content"
-    		android:id="@+id/contacts_tab"
-    		android:orientation="vertical"
-    		android:layout_above="@+id/contacts_tabs_buttons_layout">
-    		
-     		<ListView
-     		    android:id = "@+id/contacts_tabs_native_contacts_list"
-     		    android:layout_height = "wrap_content"
-     		    android:layout_width = "fill_parent"/>
-
-     	</LinearLayout>
-
-     	<LinearLayout
-     	    android:id = "@+id/group_tabs"
-    		android:layout_width="match_parent"
-    		android:layout_height="match_parent"
-    		android:orientation="vertical" >
-			
-     	    <TabHost android:id="@android:id/tabhost" 
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
-                    
-                    <LinearLayout android:layout_width="fill_parent" 
-                        android:layout_height="fill_parent"
-                        android:orientation="vertical">
-                        
-                        <TabWidget android:id="@android:id/tabs"
-                            android:layout_width="fill_parent" 
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0"
-                            />
-                        
-                        <FrameLayout android:id="@android:id/tabcontent"
-                            android:layout_width="fill_parent" 
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            >
-                            
-                            <LinearLayout
-     	    					android:id = "@+id/native_groups_tab"
-    							android:layout_width="match_parent"
-    							android:layout_height="match_parent"
-    							android:orientation="vertical" >
-                            
-                                <ExpandableListView 
+    	android:id="@+id/tabHost"
+    	android:layout_above="@+id/contacts_tabs_buttons_layout"
+    	>
+    	<RelativeLayout 
+        	android:layout_height = "fill_parent"
+    		android:layout_width = "fill_parent"
+    		>
+    		<TabWidget
+    			android:id="@android:id/tabs"
+    			android:layout_width="fill_parent"
+    			android:layout_height="wrap_content"
+    			>
+   			</TabWidget>
+    
+	    	<FrameLayout
+	    		android:id="@android:id/tabcontent"
+	    		android:layout_width="fill_parent"
+	    		android:layout_height="fill_parent"
+	    		android:layout_below="@android:id/tabs"
+	    		>
+	     
+	    	    <!-- contacts tab -->
+		     	<ListView
+	     		    android:id = "@+id/contacts_tabs_native_contacts_list"
+	     		    android:layout_width="fill_parent"
+	     		    android:layout_height="fill_parent"
+	     		    android:cacheColorHint="@color/transparent"
+	     			android:layout_above="@+id/contacts_tabs_buttons_layout"
+	     		    >
+     		    </ListView>
+		     	
+		     	<!-- group tab -->    
+		     	<LinearLayout
+		     	    android:id = "@+id/group_tabs"
+		    		android:layout_width="match_parent"
+		    		android:layout_height="match_parent"
+		    		android:orientation="vertical" 
+		    		>
+					
+		     	    <TabHost 
+		     	        android:id="@android:id/tabhost" 
+	                    android:layout_width="fill_parent"
+	                    android:layout_height="fill_parent"
+	                    >
+	                    <LinearLayout 
+	                        android:layout_width="fill_parent" 
+	                        android:layout_height="fill_parent"
+	                        android:orientation="vertical"
+	                        >
+	                        
+	                        <TabWidget 
+	                            android:id="@android:id/tabs"
+	                            android:layout_width="fill_parent" 
+	                            android:layout_height="40dip"
+	                            android:layout_weight="0"
+	                            android:gravity="center"
+	                            android:layout_gravity="center"
+	                            >
+                            </TabWidget>
+	                        
+	                        <FrameLayout 
+	                            android:id="@android:id/tabcontent"
+	                            android:layout_width="fill_parent" 
+	                            android:layout_height="wrap_content"
+	                            android:layout_weight="1"
+	                            >
+	                            
+	                            <ExpandableListView 
         							android:id = "@+id/native_list"
         							android:layout_height = "fill_parent"
        								android:layout_width = "fill_parent"
        								android:cacheColorHint="@color/transparent"
-									android:groupIndicator="@drawable/expander_group">
+									android:groupIndicator="@drawable/expander_group"
+									>
     							</ExpandableListView>
-    							
-                            </LinearLayout>
-                            
-                            <LinearLayout
-     	    					android:id = "@+id/private_groups_tab"
-    							android:layout_width="match_parent"
-    							android:layout_height="match_parent"
-    							android:orientation="vertical" >
-                            
-                                <ExpandableListView 
+	    							
+	                            <ExpandableListView 
         							android:id = "@+id/private_list"
         							android:layout_height = "fill_parent"
        								android:layout_width = "fill_parent"
        								android:cacheColorHint="@color/transparent"
-									android:groupIndicator="@drawable/expander_group">
+									android:groupIndicator="@drawable/expander_group"
+									>
     							</ExpandableListView>
-    							
-                            </LinearLayout>
-                            
-                        </FrameLayout>
-                    </LinearLayout>               
-                </TabHost>
-                
-		</LinearLayout>
-		
-     	<LinearLayout
-     		android:layout_width="fill_parent"
-    		android:layout_height="wrap_content"
-    		android:id="@+id/recents_tab"
-    		android:orientation="vertical"
-    		android:layout_above="@+id/contacts_tabs_buttons_layout">
-    		
-     		<ListView
-     		    android:id = "@+id/contacts_tabs_recents_list"
-     		    android:layout_height = "wrap_content"
-     		    android:layout_width = "fill_parent"/>
-
-     	</LinearLayout>
-
-
-      
-  	</FrameLayout>
-  	
-    </RelativeLayout>
-
-</TabHost>
+	                        </FrameLayout>
+	                    </LinearLayout>               
+	                </TabHost>          
+				</LinearLayout>
+				
+		     	<!-- Recents Tab -->
+		     	<ListView
+	     		    android:id = "@+id/contacts_tabs_recents_list"
+	     		    android:layout_height = "wrap_content"
+	     		    android:layout_width = "fill_parent"
+					android:layout_above="@+id/contacts_tabs_buttons_layout"
+					android:cacheColorHint="@color/transparent"
+					>
+	     		</ListView>
+     	  	</FrameLayout>
+	    </RelativeLayout>
+	</TabHost>
 	
+	<!-- footer  -->    
 	<LinearLayout
 	    android:id = "@id/contacts_tabs_buttons_layout"
 	    android:layout_height = "wrap_content"
 	    android:layout_width = "fill_parent"
 	    android:orientation="horizontal"
-	    android:layout_alignParentBottom="true">
+	    android:layout_alignParentBottom="true"
+	    android:background="@drawable/footer_bg"
+	    android:gravity="center"
+	    >
 	    
 	    <Button
 	        android:id = "@+id/contacts_tab_done_button"
+	        android:layout_width = "0dip"
 	        android:layout_height="wrap_content"
-	        android:layout_width = "fill_parent"
 	        android:layout_weight="1"
-	        android:text = ""
 	        android:layout_margin = "5dp"
-	        android:background="@drawable/contacts_done_button_states"/>
-	    
+	        android:background="@drawable/contacts_done_button_states"
+	        >
+    	</Button>
 	    
 	    <Button
 	        android:id = "@+id/contacts_tab_cancel_button"
+	        android:layout_width = "0dip"
 	        android:layout_height="wrap_content"
-	        android:layout_width = "fill_parent"
 	        android:layout_weight="1"
-	        android:text = ""
 	        android:layout_marginTop = "5dp"
 	        android:layout_marginBottom="5dp"
 	        android:layout_marginRight="5dp"
-	        android:background="@drawable/contacts_cancel_button_states"/>
-	    
+	        android:background="@drawable/contacts_cancel_button_states"
+	        >
+    	</Button>
 	</LinearLayout>
 </RelativeLayout>
