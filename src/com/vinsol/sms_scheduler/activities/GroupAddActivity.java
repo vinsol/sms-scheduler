@@ -33,11 +33,12 @@ import android.widget.Toast;
 public class GroupAddActivity extends Activity {
 
 	
-	ImageButton doneImageButton;
-	ImageButton addContactsImageButton;
-	//TextView groupNameLabel;
-	Button groupNameButton;
+	Button addContactsButton;
+	TextView groupNameLabel;
 	ListView groupContactsList;
+	Button saveGroupButton;
+	Button deleteGroupButton;
+	
 	
 	DBAdapter mdba = new DBAdapter(GroupAddActivity.this);
 	
@@ -56,16 +57,18 @@ public class GroupAddActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.group_add_edit_layout);
+		setContentView(R.layout.group_edit_layout);
 		
 		Intent intent = getIntent();
 		callingState = intent.getStringExtra("STATE");
 		
-		doneImageButton 		= (ImageButton) findViewById(R.id.group_add_edit_done_image_button);
-		addContactsImageButton 	= (ImageButton) findViewById(R.id.group_add_edit_add_contact_image_button);
-		//groupNameLabel 		= (TextView) 	findViewById(R.id.group_add_edit_name_label);
-		groupContactsList 		= (ListView) 	findViewById(R.id.group_add_edit_list);
-		groupNameButton			= (Button) findViewById(R.id.group_add_edit_name_label);
+		groupNameLabel 		= (TextView) 	findViewById(R.id.group_name_label);
+		addContactsButton 	= (Button) findViewById(R.id.add_contacts_button);
+		
+		groupContactsList 	= (ListView) 	findViewById(R.id.group_members_listing);
+		
+		saveGroupButton 	= (Button) findViewById(R.id.save_group_button);
+		deleteGroupButton   = (Button) findViewById(R.id.delete_group_button);
 		
 		//groupNameButton.setText("");
 		
@@ -88,13 +91,13 @@ public class GroupAddActivity extends Activity {
 			ids2 = mdba.fetchIdsForGroups(groupId);
 			mdba.close();
 			Log.i("MSG", "Ids Size : " + ids.size());
-			groupNameButton.setText(groupName);
+			groupNameLabel.setText(groupName);
 		}
 		
 		
 		
 		
-		groupNameButton.setOnClickListener(new OnClickListener() {
+		groupNameLabel.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -131,7 +134,7 @@ public class GroupAddActivity extends Activity {
 								Toast.makeText(GroupAddActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
 							}else{
 								groupName = groupNameEdit.getText().toString();
-								groupNameButton.setText(groupName);
+								groupNameLabel.setText(groupName);
 								d.cancel();
 							}
 							
@@ -144,7 +147,7 @@ public class GroupAddActivity extends Activity {
 		
 		
 		
-		addContactsImageButton.setOnClickListener(new OnClickListener() {
+		addContactsButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -165,7 +168,7 @@ public class GroupAddActivity extends Activity {
 		});
 		
 		
-		doneImageButton.setOnClickListener(new OnClickListener() {
+		saveGroupButton.setOnClickListener(new OnClickListener() {
 			
 		  
 			@Override

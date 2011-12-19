@@ -1,65 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:background="@color/white"
+    >
 
+    <!-- header -->
     <RelativeLayout 
-    	android:layout_height = "60dp"
+        android:id="@+id/header"
     	android:layout_width = "fill_parent"
+    	android:layout_height = "wrap_content"
     	android:layout_gravity="center_vertical"
-    	android:background="#999999">
-    	
-        <ImageButton
-    		android:id ="@+id/group_add_edit_done_image_button"
-    		android:layout_height = "wrap_content"
-    		android:layout_width = "wrap_content"
-    		android:src="@drawable/ic_btn_write_sms"
-    		android:layout_marginTop = "7dp"
-    		android:layout_marginLeft="5dp"
-    		android:layout_alignParentLeft="true"/>
+    	android:background="@drawable/header_bg"
+    	>
         
-        <Button 
-            android:id = "@+id/group_add_edit_name_label"
+        <TextView 
+            android:id = "@+id/group_name_label"
     		android:layout_height = "wrap_content"
     		android:layout_width = "wrap_content"
-    		android:layout_toRightOf="@id/group_add_edit_done_image_button"
     		android:layout_toLeftOf="@+id/group_add_edit_add_contact_image_button"
-    		android:layout_margin = "7dp"
     		android:textSize="20sp"
-    		android:textColor="#444444"
-    		android:text = "Set Name"
-    		android:gravity="center_horizontal"/>
-        
-    	<!--<TextView 
-    	    android:id = "@+id/group_add_edit_name_label"
-    		android:layout_height = "wrap_content"
-    		android:layout_width = "wrap_content"
-    		android:layout_toRightOf="@id/group_add_edit_done_image_button"
-    		android:layout_toLeftOf="@+id/group_add_edit_add_contact_image_button"
-    		android:paddingLeft="20dp"
-    		android:paddingTop="5dp"
-    		android:layout_margin = "5dp"
-    		android:textSize="20sp"
-    		android:textColor="#ffffff"
-    		android:text = ""
-    		android:gravity="center_horizontal"/>-->
+    		android:textColor="@color/white"
+    		android:singleLine="true"
+    		android:ellipsize="end"
+    		android:layout_centerInParent="true"
+    		>
+    	</TextView>
     		
-    	<ImageButton
-    		android:id ="@id/group_add_edit_add_contact_image_button"
+    	<Button
+    		android:id ="@+id/add_contacts_button"
     		android:layout_height = "wrap_content"
     		android:layout_width = "wrap_content"
-    		android:src="@android:drawable/ic_input_add"
+    		android:background="@android:drawable/ic_input_add"
     		android:layout_marginTop = "7dp"
     		android:layout_marginRight="5dp"
-    		android:layout_alignParentRight="true"/>
-    	
+    		android:layout_alignParentRight="true"
+    		>
+   		</Button>
     </RelativeLayout>
     
     
+    <!-- footer -->    
+	<LinearLayout 
+		android:id="@+id/footer"
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:background="@drawable/footer_bg" 
+		android:orientation="horizontal"
+		android:gravity="center" 
+		android:layout_alignParentBottom="true"
+		>
+		
+		<!-- Save Group -->
+		<Button 
+			android:id ="@+id/save_group_button"
+    		android:layout_width="0dip"
+			android:layout_height="wrap_content"
+			android:layout_weight = "1"
+			android:layout_margin="5dp"
+			android:background="@drawable/save_group_footer_states"
+			>
+		</Button>
+		
+		<!-- delete Group -->    	
+		<Button 
+			android:id="@+id/delete_group_button"
+			android:layout_width="0dip"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:layout_margin="5dip"
+			android:background="@drawable/delete_footer_states"
+			>
+		</Button>
+	</LinearLayout>
+    
+        
     <ListView 
-    	android:id = "@+id/group_add_edit_list"
-    	android:layout_height = "wrap_content"
-    	android:layout_width = "fill_parent"/>
-
-</LinearLayout>
+    	android:id = "@+id/group_members_listing"
+    	android:layout_height = "fill_parent"
+    	android:layout_width = "fill_parent"
+    	android:cacheColorHint="@color/transparent"
+    	android:layout_below="@id/header"
+    	android:layout_above="@id/footer"	
+    	>
+	</ListView>
+</RelativeLayout>
