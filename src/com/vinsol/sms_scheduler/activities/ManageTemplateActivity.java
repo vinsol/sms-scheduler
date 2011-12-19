@@ -190,20 +190,23 @@ public class ManageTemplateActivity extends Activity{
     	
     	@Override
     	public View getView(final int position, View convertView, ViewGroup parent) {
-//    		if(convertView!=null){
-//    			return convertView;
-//    		}
+    		final TemplateViewHolder holder;
+    		if(convertView==null){
+    			LayoutInflater inflater = getLayoutInflater();
+    			convertView = inflater.inflate(R.layout.template_manage_row, parent, false);
+    			holder = new TemplateViewHolder();
+    			holder.templateBodyLabel = (TextView)convertView.findViewById(R.id.template_manage_row_body);
+    			holder.deleteTemplateButton = (ImageView)convertView.findViewById(R.id.template_manage_row_delete_button);
+    			convertView.setTag(holder);
+    		}else{
+    			holder = (TemplateViewHolder) convertView.getTag();
+    		}
     		final int _position  = position;
-    		LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.template_manage_row, parent, false);
     		
-    		Log.i("MESSAGE", _position + "yo");
+    		holder.templateBodyLabel.setText(templatesArray.get(position));
     		
-    		final TextView templateBodyLabel = (TextView)row.findViewById(R.id.template_manage_row_body);
-    		templateBodyLabel.setText(templatesArray.get(position));
     		
-    		ImageView deleteTemplateButton = (ImageView)row.findViewById(R.id.template_manage_row_delete_button);
-    		deleteTemplateButton.setOnClickListener(new OnClickListener() {
+    		holder.deleteTemplateButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
@@ -244,13 +247,13 @@ public class ManageTemplateActivity extends Activity{
 			});
     		
     		
-    		row.setOnClickListener(new OnClickListener() {
+    		convertView.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					if(newTemplateSpaceLayout.getVisibility()==LinearLayout.GONE){
 						newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
-						newTemplateBody.setText(templateBodyLabel.getText().toString());
+						newTemplateBody.setText(holder.templateBodyLabel.getText().toString());
 						newTemplateBody.requestFocus();
 						newTemplateAddButton.setText("Edit");
 						editRowId = position;
@@ -260,7 +263,15 @@ public class ManageTemplateActivity extends Activity{
 				}
 			});
     		
-    		return row;
+    		return convertView;
     	}
     }
+	
+	
+	
+	
+	static class TemplateViewHolder{
+		TextView templateBodyLabel;
+		ImageView deleteTemplateButton;
+	}
 }

@@ -269,20 +269,27 @@ public class GroupAddActivity extends Activity {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.group_add_edit_row_design, parent, false);
+			GroupsAddListHolder holder;
+			if(convertView==null){
+				LayoutInflater inflater = getLayoutInflater();
+	    		convertView = inflater.inflate(R.layout.group_add_edit_row_design, parent, false);
+	    		holder = new GroupsAddListHolder();
+	    		holder.contactImage 			= (ImageView) 	convertView.findViewById(R.id.group_add_edit_row_contact_pic);
+	    		holder.contactName 				= (TextView) 	convertView.findViewById(R.id.group_add_edit_row_contact_name);
+	    		holder.contactNumber 			= (TextView) 	convertView.findViewById(R.id.group_add_edit_row_contact_number);
+	    		holder.contactRemoveButton 		= (ImageView) 	convertView.findViewById(R.id.group_add_edit_row_delete_button);
+	    		convertView.setTag(holder);
+			}else{
+				holder = (GroupsAddListHolder) convertView.getTag();
+			}
+			
     		final int _position = position;
     		
-    		ImageView contactImage 			= (ImageView) 	row.findViewById(R.id.group_add_edit_row_contact_pic);
-    		TextView contactName 			= (TextView) 	row.findViewById(R.id.group_add_edit_row_contact_name);
-    		TextView contactNumber 			= (TextView) 	row.findViewById(R.id.group_add_edit_row_contact_number);
-    		ImageView contactRemoveButton 	= (ImageView) 	row.findViewById(R.id.group_add_edit_row_delete_button);
+    		holder.contactImage.setImageBitmap(newGroupContacts.get(position).image);
+    		holder.contactName.setText(newGroupContacts.get(position).name);
+    		holder.contactNumber.setText(newGroupContacts.get(position).number);
     		
-    		contactImage.setImageBitmap(newGroupContacts.get(position).image);
-    		contactName.setText(newGroupContacts.get(position).name);
-    		contactNumber.setText(newGroupContacts.get(position).number);
-    		
-    		contactRemoveButton.setOnClickListener(new OnClickListener() {
+    		holder.contactRemoveButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
@@ -344,7 +351,7 @@ public class GroupAddActivity extends Activity {
 				}
 			});
     		
-			return row;
+			return convertView;
 		}
 	}
 	
@@ -377,4 +384,15 @@ public class GroupAddActivity extends Activity {
 		
 		
 	}
+	
+	
+	
+	static class GroupsAddListHolder{
+		ImageView 	contactImage;
+		TextView 	contactName;
+		TextView 	contactNumber;
+		ImageView 	contactRemoveButton;
+	}
+	
+	
 }

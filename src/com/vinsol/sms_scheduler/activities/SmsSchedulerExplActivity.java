@@ -376,20 +376,19 @@ public class SmsSchedulerExplActivity extends Activity {
     		
     		@Override
 			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    			GroupListHolder holder;
     			if(convertView == null) {
     				LayoutInflater li = getLayoutInflater();
-        			convertView = li.inflate(R.layout.expandable_list_group_view, null);	
+        			convertView = li.inflate(R.layout.expandable_list_group_view, null);
+        			holder = new GroupListHolder();
+        			holder.groupHeading = (TextView) convertView.findViewById(R.id.group_heading);
+        			convertView.setTag(holder);
+    			}else{
+    				holder = (GroupListHolder) convertView.getTag();
     			}
     			
-    			TextView groupHeading = (TextView) convertView.findViewById(R.id.group_heading);
-    			groupHeading.setText(headerData.get(groupPosition).get(NAME));
     			
-//    			if(childData.get(groupPosition).size()==0){
-//    				convertView.setVisibility(convertView.GONE);
-//    			}else{
-//    				convertView.setVisibility(convertView.VISIBLE);
-//    			}
-    			
+    			holder.groupHeading.setText(headerData.get(groupPosition).get(NAME));
     			
     			return convertView;
     		}
@@ -398,44 +397,47 @@ public class SmsSchedulerExplActivity extends Activity {
 
 			@Override
     		public android.view.View getChildView(int groupPosition, final int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
+				ChildRowHolder holder;
+				if(convertView==null){
+					convertView = layoutInflater.inflate(R.layout.main_row_layout, null, false);
+					holder = new ChildRowHolder();
+					holder.messageTextView  		= (TextView)  convertView.findViewById(R.id.main_row_message_area);
+	    			holder.statusImageView 			= (ImageView) convertView.findViewById(R.id.main_row_image_area);
+	    			holder.dateTextView				= (TextView)  convertView.findViewById(R.id.main_row_date_area);
+	    			holder.receiverTextView 		= (TextView)  convertView.findViewById(R.id.main_row_recepient_area);
+	    			holder.extraReceiversTextView 	= (TextView)  convertView.findViewById(R.id.main_row_extra_recepient_area);
+	    			convertView.setTag(holder);
+				}else{
+					holder = (ChildRowHolder) convertView.getTag();
+				}
 				
-				convertView = layoutInflater.inflate(R.layout.main_row_layout, null, false);
-				
-				final View v = convertView;
-    			
-    			final TextView messageTextView  = (TextView)  v.findViewById(R.id.main_row_message_area);
-    			final ImageView statusImageView = (ImageView) v.findViewById(R.id.main_row_image_area);
-    			final TextView dateTextView		= (TextView)  v.findViewById(R.id.main_row_date_area);
-    			final TextView receiverTextView = (TextView)  v.findViewById(R.id.main_row_recepient_area);
-    			final TextView extraReceiversTextView = (TextView) v.findViewById(R.id.main_row_extra_recepient_area);
-    			
     			if(groupPosition == 1) {
-    				messageTextView.setText(childSchArray.get(childPosition).keyMessage);
-    				statusImageView.setImageResource(childSchArray.get(childPosition).keyImageRes);
-    				dateTextView.setText(childSchArray.get(childPosition).keyDate);
-    				receiverTextView.setText(numbersLengthRectify(childSchArray.get(childPosition).keyNumber));
-    				extraReceiversTextView.setText(extraReceiversCal(childSchArray.get(childPosition).keyNumber));
+    				holder.messageTextView.setText(childSchArray.get(childPosition).keyMessage);
+    				holder.statusImageView.setImageResource(childSchArray.get(childPosition).keyImageRes);
+    				holder.dateTextView.setText(childSchArray.get(childPosition).keyDate);
+    				holder.receiverTextView.setText(numbersLengthRectify(childSchArray.get(childPosition).keyNumber));
+    				holder.extraReceiversTextView.setText(extraReceiversCal(childSchArray.get(childPosition).keyNumber));
     			} else if(groupPosition == 2) {
-    				messageTextView.setText(childSentArray.get(childPosition).keyMessage);
-    				statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
-    				dateTextView.setText(childSentArray.get(childPosition).keyDate);
-    				receiverTextView.setText(numbersLengthRectify(childSentArray.get(childPosition).keyNumber));
-    				extraReceiversTextView.setText(extraReceiversCal(childSentArray.get(childPosition).keyNumber));
+    				holder.messageTextView.setText(childSentArray.get(childPosition).keyMessage);
+    				holder.statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
+    				holder.dateTextView.setText(childSentArray.get(childPosition).keyDate);
+    				holder.receiverTextView.setText(numbersLengthRectify(childSentArray.get(childPosition).keyNumber));
+    				holder.extraReceiversTextView.setText(extraReceiversCal(childSentArray.get(childPosition).keyNumber));
     			} else if(groupPosition == 0){
     				if(!childDraftArray.get(childPosition).keyMessage.matches("^(''|[' ']*)$")){
-    					messageTextView.setText(childDraftArray.get(childPosition).keyMessage);
+    					holder.messageTextView.setText(childDraftArray.get(childPosition).keyMessage);
     				}else{
-    					messageTextView.setText("[No Message Written]");
-    					messageTextView.setTextColor(0xff777777);
+    					holder.messageTextView.setText("[No Message Written]");
+    					holder.messageTextView.setTextColor(0xff777777);
     				}
-    				statusImageView.setImageResource(childDraftArray.get(childPosition).keyImageRes);
-    				dateTextView.setText(childDraftArray.get(childPosition).keyDate);
+    				holder.statusImageView.setImageResource(childDraftArray.get(childPosition).keyImageRes);
+    				holder.dateTextView.setText(childDraftArray.get(childPosition).keyDate);
     				if(!childDraftArray.get(childPosition).keyNumber.matches("^(''|[' ']*)$")){
-    					receiverTextView.setText(numbersLengthRectify(childDraftArray.get(childPosition).keyNumber));
-        				extraReceiversTextView.setText(extraReceiversCal(childDraftArray.get(childPosition).keyNumber));
+    					holder.receiverTextView.setText(numbersLengthRectify(childDraftArray.get(childPosition).keyNumber));
+        				holder.extraReceiversTextView.setText(extraReceiversCal(childDraftArray.get(childPosition).keyNumber));
     				}else{
-    					receiverTextView.setText("[No Recepients Added]");
-    					receiverTextView.setTextColor(0xff777777);
+    					holder.receiverTextView.setText("[No Recepients Added]");
+    					holder.receiverTextView.setTextColor(0xff777777);
     				}
     				
     			}
@@ -444,7 +446,7 @@ public class SmsSchedulerExplActivity extends Activity {
     			
     			
     			if(groupPosition == 1){
-    				statusImageView.setOnClickListener(new OnClickListener() {
+    				holder.statusImageView.setOnClickListener(new OnClickListener() {
 						
 						@Override
 						public void onClick(View v) {
@@ -512,7 +514,7 @@ public class SmsSchedulerExplActivity extends Activity {
 					});
     				
     			}else if(groupPosition == 0){
-    				statusImageView.setOnClickListener(new OnClickListener() {
+    				holder.statusImageView.setOnClickListener(new OnClickListener() {
 						
 						@Override
 						public void onClick(View v) {
@@ -579,7 +581,7 @@ public class SmsSchedulerExplActivity extends Activity {
 					});
     				
     			}
-    			return v;
+    			return convertView;
     		}
     		
     	};
@@ -1207,5 +1209,23 @@ public class SmsSchedulerExplActivity extends Activity {
 			AlarmManager am = (AlarmManager) SmsSchedulerExplActivity.this.getSystemService(SmsSchedulerExplActivity.this.ALARM_SERVICE);
 			am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
 		}
+	}
+	
+	
+	
+	
+	
+	
+	class GroupListHolder{
+		TextView groupHeading;
+	}
+	
+	
+	class ChildRowHolder{
+		TextView messageTextView;
+		ImageView statusImageView;
+		TextView dateTextView;
+		TextView receiverTextView;
+		TextView extraReceiversTextView;
 	}
 }
