@@ -118,19 +118,25 @@ public class ManageGroupsActivity extends Activity {
     	
     	@Override
     	public View getView(final int position, View convertView, ViewGroup parent) {
-//    		if(convertView!=null){
-//    			return convertView;
-//    		}
+    		ManageGroupsListHolder holder;
+    		if(convertView == null){
+    			LayoutInflater inflater = getLayoutInflater();
+        		convertView = inflater.inflate(R.layout.manage_goups_row_design, parent, false);
+        		holder = new ManageGroupsListHolder();
+        		holder.groupNameLabel = (TextView) convertView.findViewById(R.id.manage_groups_row_group_name);
+        		holder.groupDeleteButton = (ImageView) convertView.findViewById(R.id.manage_groups_row_group_delete_image);
+        		convertView.setTag(holder);
+    		}else{
+    			holder = (ManageGroupsListHolder) convertView.getTag();
+    		}
     		final int _position  = position;
-    		LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.manage_goups_row_design, parent, false);
     		
-    		TextView groupNameLabel = (TextView) row.findViewById(R.id.manage_groups_row_group_name);
-    		ImageView groupDeleteButton = (ImageView) row.findViewById(R.id.manage_groups_row_group_delete_image);
     		
-    		groupNameLabel.setText(grpNamesArray.get(position));
     		
-    		groupDeleteButton.setOnClickListener(new OnClickListener() {
+    		
+    		holder.groupNameLabel.setText(grpNamesArray.get(position));
+    		
+    		holder.groupDeleteButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
@@ -170,7 +176,7 @@ public class ManageGroupsActivity extends Activity {
 				}
 			});
     		
-    		row.setOnClickListener(new OnClickListener() {
+    		convertView.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
@@ -190,8 +196,15 @@ public class ManageGroupsActivity extends Activity {
 					startActivity(intent);
 				}
 			});
-    		return row;
+    		return convertView;
     	}
     }
+	
+	
+	static class ManageGroupsListHolder{
+		TextView groupNameLabel;
+		ImageView groupDeleteButton;
+	}
+	
 	
 }

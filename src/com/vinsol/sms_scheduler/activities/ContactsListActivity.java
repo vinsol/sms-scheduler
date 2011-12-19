@@ -216,56 +216,100 @@ public class ContactsListActivity extends Activity {
     	
     	@Override
     	public View getView(final int position, View convertView, ViewGroup parent) {
-//    		if(convertView!=null){
-//    			return convertView;
-//    		}
+    		final ContactsAddListHolder holder;
+    		if(convertView==null){
+    			LayoutInflater inflater = getLayoutInflater();
+        		convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
+        		holder = new ContactsAddListHolder();
+        		holder.contactImage 	= (ImageView) 	convertView.findViewById(R.id.contact_list_row_contact_pic);
+        		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_name);
+        		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_number);
+        		holder.contactCheck 	= (CheckBox) 	convertView.findViewById(R.id.contact_list_row_contact_check);
+        		convertView.setTag(holder);
+    		}else{
+    			holder = (ContactsAddListHolder) convertView.getTag();
+    		}
     		final int _position  = position;
-    		LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
     		
-    		ImageView contactImage 	= (ImageView) 	row.findViewById(R.id.contact_list_row_contact_pic);
-    		TextView nameText 		= (TextView) 	row.findViewById(R.id.contact_list_row_contact_name);
-    		TextView numberText 	= (TextView) 	row.findViewById(R.id.contact_list_row_contact_number);
-    		CheckBox contactCheck 	= (CheckBox) 	row.findViewById(R.id.contact_list_row_contact_check);
+    		holder.contactImage.setImageBitmap(contacts.get(position).image);
+    		holder.nameText.setText(contacts.get(position).name);
+    		holder.numberText.setText(contacts.get(position).number);
     		
-    		contactImage.setImageBitmap(contacts.get(position).image);
-    		nameText.setText(contacts.get(position).name);
-    		numberText.setText(contacts.get(position).number);
+    		holder.contactCheck.setChecked(contacts.get(position).checked);
     		
-    		contactCheck.setChecked(contacts.get(position).checked);
-    		contactCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+    		holder.contactCheck.setOnClickListener(new OnClickListener() {
 				
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				public void onClick(View v) {
+					Log.i("MSG", "position : " + position);
 					
-						if(isChecked){
-//							if(callingActivity.equals("Group Edit Activity")){
-//								mdba.open();
-//								mdba.addContactToGroup(Long.parseLong(contacts.get(_position).content_uri_id), groupId);
-//								mdba.close();
-//							}
-							ids.add(Long.parseLong(contacts.get(_position).content_uri_id));
-							contacts.get(_position).checked = true;	
-						}else{
-							for(int i = 0; i< ids.size(); i++){
-								if(ids.get(i) == Long.parseLong(contacts.get(_position).content_uri_id)){
-//									if(callingActivity.equals("Group Edit Activity")){
-//										mdba.open();
-//										mdba.removeContactFromGroup(Long.parseLong(contacts.get(_position).content_uri_id), groupId);
-//										mdba.close();
-//									}
-									ids.remove(i);
-									contacts.get(_position).checked = false;
-								}
+					if(holder.contactCheck.isChecked()){
+						ids.add(Long.parseLong(contacts.get(_position).content_uri_id));
+						contacts.get(_position).checked = true;	
+					}else{
+						for(int i = 0; i< ids.size(); i++){
+							if(ids.get(i) == Long.parseLong(contacts.get(_position).content_uri_id)){
+								ids.remove(i);
+								contacts.get(_position).checked = false;
 							}
 						}
-					
-					
-					MyAdapter.this.notifyDataSetChanged();
+					}
 				}
 			});
     		
-    		return row;
+//    		contactCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+//				
+//				@Override
+//				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//						Log.i("MSG", "position : " + position);
+//						
+//						if(isChecked){
+//							ids.add(Long.parseLong(contacts.get(_position).content_uri_id));
+//							contacts.get(_position).checked = true;	
+//						}else{
+//							for(int i = 0; i< ids.size(); i++){
+//								if(ids.get(i) == Long.parseLong(contacts.get(_position).content_uri_id)){
+//									ids.remove(i);
+//									contacts.get(_position).checked = false;
+//								}
+//							}
+//						}
+//					MyAdapter.this.notifyDataSetChanged();
+//				}
+//			});
+    		
+    		convertView.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(holder.contactCheck.isChecked()){
+						ids.add(Long.parseLong(contacts.get(_position).content_uri_id));
+						contacts.get(_position).checked = true;	
+					}else{
+						for(int i = 0; i< ids.size(); i++){
+							if(ids.get(i) == Long.parseLong(contacts.get(_position).content_uri_id)){
+								ids.remove(i);
+								contacts.get(_position).checked = false;
+							}
+						}
+					}
+				}
+			});
+    		
+    		return convertView;
     	}
     }
+	
+	
+	
+	
+	class ContactsAddListHolder{
+		ImageView contactImage;
+		TextView nameText;
+		TextView numberText;
+		CheckBox contactCheck;
+	}
+	
+	
+	
 }
