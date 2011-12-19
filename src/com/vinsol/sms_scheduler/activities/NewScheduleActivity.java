@@ -787,8 +787,12 @@ public class NewScheduleActivity extends Activity {
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 					
 					questionText.setText("Nothing to schedule");
-					yesButton.setText("Schedule SMS");
-					noButton.setText("Discard");
+//					yesButton.setText("Schedule SMS");
+//					noButton.setText("Discard");
+					
+					yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.schedule_sms));
+					noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.discard));
+					
 					
 					yesButton.setOnClickListener(new OnClickListener() {
 						

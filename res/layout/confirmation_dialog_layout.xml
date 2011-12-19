@@ -3,43 +3,43 @@
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:orientation="vertical" 
-    android:padding="10dp">
-
-    
-    
+    android:padding="10dp"
+    android:background="@drawable/dialog_bg"
+    >
     <TextView 
         android:id = "@+id/confirmation_dialog_text"
         android:layout_height = "wrap_content"
         android:layout_width = "wrap_content"
         android:layout_margin = "10dp"
+        android:layout_marginLeft="5dip"
         android:text="question text"
-        android:textSize="20sp"/>
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        >
+    </TextView>
     
     <LinearLayout 
         android:layout_height = "wrap_content"
         android:layout_width = "fill_parent"
-        android:orientation="horizontal">
-        
+        android:orientation="horizontal"
+        >
         <Button
             android:id = "@+id/confirmation_dialog_yes_button"
             android:layout_height = "wrap_content"
-            android:layout_width  = "fill_parent"
+            android:layout_width  = "0dip"
             android:layout_weight = "1"
             android:layout_margin = "5dp"
-            android:text="Yes"/>
-        
+            android:background="@drawable/yes"
+            >
+        </Button>
         <Button
             android:id = "@+id/confirmation_dialog_no_button"
             android:layout_height = "wrap_content"
-            android:layout_width  = "fill_parent"
+            android:layout_width  = "0dip"
             android:layout_weight = "1"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:text="No"/>
-        
+            android:layout_margin="5dp"
+            android:background="@drawable/no"
+            >
+        </Button>
     </LinearLayout>
-    
-    
-
 </LinearLayout>
