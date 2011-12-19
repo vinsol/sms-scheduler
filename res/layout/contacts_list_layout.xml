@@ -35,7 +35,7 @@
             android:layout_height = "wrap_content"
             android:layout_weight = "1"
             android:layout_margin = "5dp"
-            android:background="@drawable/done_states"
+            android:background="@drawable/done_footer_states"
             >
         </Button>
         

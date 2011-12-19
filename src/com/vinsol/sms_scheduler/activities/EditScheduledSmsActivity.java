@@ -845,8 +845,8 @@ public class EditScheduledSmsActivity extends Activity {
 						
 						questionText.setText("Nothing to schedule");
 						
-						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_schedule_button_states));
-						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_no_button_states));
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.schedule_dialog_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
@@ -879,8 +879,8 @@ public class EditScheduledSmsActivity extends Activity {
 						
 						questionText.setText("No recipients added!");
 						
-						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_save_as_draft_button_states));
-						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_add_recipients_button_states));
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.save_as_draft_dialog_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_recipients_dialog_states));
 						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
@@ -913,8 +913,8 @@ public class EditScheduledSmsActivity extends Activity {
 						
 						questionText.setText("Message is Blank!");
 						
-						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_save_as_draft_button_states));
-						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_write_message_button_states));
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.save_as_draft_dialog_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.write_message_dialog_states));
 						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
@@ -967,8 +967,8 @@ public class EditScheduledSmsActivity extends Activity {
 //					yesButton.setText("Yes");
 //					noButton.setText("No");
 					
-					yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_yes_button_states));
-					noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_no_button_states));
+					yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.yes_dialog_states));
+					noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.no_dialog_states));
 					
 					yesButton.setOnClickListener(new OnClickListener() {
 						
@@ -1565,8 +1565,8 @@ public class EditScheduledSmsActivity extends Activity {
 			
 			questionText.setText("Discard Changes?");
 			
-			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_ok_button_states));
-			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confimation_cancel_button_states));
+			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ok_dialog_states));
+			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 			
 			yesButton.setOnClickListener(new OnClickListener() {
 					
@@ -1652,7 +1652,7 @@ public class EditScheduledSmsActivity extends Activity {
         		HashMap<String, Object> group = new HashMap<String, Object>();
         		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
         		group.put(Constants.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
-        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
        			if(spanIdsForGroup.size()==0){
        				group.put(Constants.GROUP_CHECK, false);
        			}else{
@@ -1711,7 +1711,7 @@ public class EditScheduledSmsActivity extends Activity {
         		HashMap<String, Object> group = new HashMap<String, Object>();
         		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
-        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
         		if(spanIdsForGroup.size()==0){
        				group.put(Constants.GROUP_CHECK, false);
        			}else{
