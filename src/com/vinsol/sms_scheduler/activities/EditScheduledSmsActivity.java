@@ -11,29 +11,18 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.vinsol.sms_scheduler.Constants;
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.models.GroupStructure;
-import com.vinsol.sms_scheduler.models.MyContact;
-import com.vinsol.sms_scheduler.models.SpannedEntity;
-import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -73,6 +62,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
+
+import com.vinsol.sms_scheduler.Constants;
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.GroupStructure;
+import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.models.SpannedEntity;
+import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 
 public class EditScheduledSmsActivity extends Activity {
 	
@@ -538,7 +535,7 @@ public class EditScheduledSmsActivity extends Activity {
 				
 				final DatePicker datePicker   	= (DatePicker)  dateSelectDialog.findViewById(R.id.new_date_picker);
 				final TimePicker timePicker   	= (TimePicker)  dateSelectDialog.findViewById(R.id.new_time_picker);
-				final TextView dateLabel 		= (TextView) 	dateSelectDialog.findViewById(R.id.new_date_label);
+				final View dateLabel 		    = dateSelectDialog.findViewById(R.id.new_date_label);
 				Button okDateButton 			= (Button) 		dateSelectDialog.findViewById(R.id.new_date_dialog_ok_button);
 				Button cancelDateButton 		= (Button) 		dateSelectDialog.findViewById(R.id.new_date_dialog_cancel_button);
 				
@@ -553,32 +550,24 @@ public class EditScheduledSmsActivity extends Activity {
 					
 					@Override
 					public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-						String temp = sdf.format(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
-						dateLabel.setText(temp);
 						if(checkDateValidity(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()))){
-							dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
-							dateLabel.setText("");
+							dateLabel.setVisibility(View.INVISIBLE);
 						}else{
-							dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-							dateLabel.setText("Past time, message will be sent now");
+							dateLabel.setVisibility(View.VISIBLE);
 						}
 					}
 				});
 				//---------------------------------------end of DatePicker setup------
 				
 				
-				String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
-				dateLabel.setText(temp);
 				refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
 				refDate = refCal.getTime();
 //				String dateString = refDate.toString();
 //				dateLabel.setText(dateString);
 				if(checkDateValidity(refDate)){
-					dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
-					dateLabel.setText("");
+					dateLabel.setVisibility(View.INVISIBLE);
 				}else{
-					dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-					dateLabel.setText("Past time, message will be sent now");
+					dateLabel.setVisibility(View.VISIBLE);
 				}
 				
 				okDateButton.setOnClickListener(new OnClickListener() {
@@ -621,14 +610,10 @@ public class EditScheduledSmsActivity extends Activity {
 					
 					@Override
 					public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-						String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute));
-						dateLabel.setText(temp);
 						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
-							dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
-							dateLabel.setText("");
-						}else{
-							dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-							dateLabel.setText("Past time, message will be sent now");
+							dateLabel.setVisibility(View.INVISIBLE);
+						} else {
+							dateLabel.setVisibility(View.VISIBLE);
 						}
 					}
 				});
