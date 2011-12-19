@@ -29,7 +29,7 @@
             android:layout_width  = "0dip"
             android:layout_weight = "1"
             android:layout_margin = "5dp"
-            android:background="@drawable/yes"
+            android:background="@drawable/yes_dialog_states"
             >
         </Button>
         <Button
@@ -38,7 +38,7 @@
             android:layout_width  = "0dip"
             android:layout_weight = "1"
             android:layout_margin="5dp"
-            android:background="@drawable/no"
+            android:background="@drawable/no_dialog_states"
             >
         </Button>
     </LinearLayout>

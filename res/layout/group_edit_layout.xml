@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    >
+
+    <!-- header -->
+    <RelativeLayout 
+        android:id="@+id/header"
+    	android:layout_width = "fill_parent"
+    	android:layout_height = "wrap_content"
+    	android:layout_gravity="center_vertical"
+    	android:background="@drawable/header_bg"
+    	>
+        
+        <TextView 
+            android:id = "@+id/group_name_label"
+    		android:layout_height = "wrap_content"
+    		android:layout_width = "wrap_content"
+    		android:layout_toLeftOf="@+id/group_add_edit_add_contact_image_button"
+    		android:textSize="20sp"
+    		android:textColor="@color/white"
+    		android:singleLine="true"
+    		android:ellipsize="end"
+    		android:layout_centerInParent="true"
+    		>
+    	</TextView>
+    		
+    	<Button
+    		android:id ="@+id/add_contacts_button"
+    		android:layout_height = "wrap_content"
+    		android:layout_width = "wrap_content"
+    		android:background="@android:drawable/ic_input_add"
+    		android:layout_marginTop = "7dp"
+    		android:layout_marginRight="5dp"
+    		android:layout_alignParentRight="true"
+    		>
+   		</Button>
+    </RelativeLayout>
+    
+    
+    <!-- footer -->    
+	<LinearLayout 
+		android:id="@+id/footer"
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:background="@drawable/footer_bg" 
+		android:orientation="horizontal"
+		android:gravity="center" 
+		android:layout_alignParentBottom="true"
+		>
+		
+		<!-- Save Group -->
+		<Button 
+			android:id ="@+id/save_group_button"
+    		android:layout_width="0dip"
+			android:layout_height="wrap_content"
+			android:layout_weight = "1"
+			android:layout_margin="5dp"
+			android:background="@drawable/save_group_footer_states"
+			>
+		</Button>
+		
+		<!-- delete Group -->    	
+		<Button 
+			android:id="@+id/delete_group_button"
+			android:layout_width="0dip"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:layout_margin="5dip"
+			android:background="@drawable/delete_footer_states"
+			>
+		</Button>
+	</LinearLayout>
+    
+        
+    <ListView 
+    	android:id = "@+id/group_members_listing"
+    	android:layout_height = "fill_parent"
+    	android:layout_width = "fill_parent"
+    	android:cacheColorHint="@color/transparent"
+    	android:layout_below="@id/header"
+    	android:layout_above="@id/footer"	
+    	>
+	</ListView>
+</RelativeLayout>

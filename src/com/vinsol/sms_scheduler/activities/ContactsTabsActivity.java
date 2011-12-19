@@ -445,7 +445,7 @@ public class ContactsTabsActivity extends Activity {
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ContactsListHolder holder;
-			if(convertView==null){
+			if(convertView == null) {
 				LayoutInflater inflater = getLayoutInflater();
 	    		convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
 	    		holder = new ContactsListHolder();
@@ -454,7 +454,7 @@ public class ContactsTabsActivity extends Activity {
 	    		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_number);
 	    		holder.contactCheck     = (CheckBox) convertView.findViewById(R.id.contact_list_row_contact_check);
 	    		convertView.setTag(holder);
-			}else{
+			} else {
 				holder = (ContactsListHolder) convertView.getTag();
 			}
 //			final int _position  = position;

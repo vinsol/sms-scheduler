@@ -31,7 +31,7 @@
         <activity android:name = ".activities.ContactsListActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ContactsTabsActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ManageGroupsActivity" android:screenOrientation="portrait" />
-        <activity android:name = ".activities.GroupAddActivity" android:screenOrientation="portrait" />
+        <activity android:name = ".activities.GroupEditActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.EditScheduledSmsActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
         <activity android:name = ".activities.GroupsTestActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
         

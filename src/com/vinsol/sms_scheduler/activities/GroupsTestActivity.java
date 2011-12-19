@@ -85,7 +85,7 @@ public class GroupsTestActivity extends Activity {
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
         		group.put(GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
-        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
         		group.put(GROUP_CHECK, false);
         		group.put(GROUP_TYPE, 1);
         		group.put(GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
@@ -125,7 +125,7 @@ public class GroupsTestActivity extends Activity {
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
         		group.put(GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
-        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+        		group.put(GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
         		group.put(GROUP_CHECK, false);
         		group.put(GROUP_TYPE, 2);
         		

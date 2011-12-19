@@ -35,7 +35,7 @@
 			android:layout_height="wrap_content"
 			android:layout_weight = "4"
 			android:layout_marginLeft="5dp"
-			android:background="@drawable/schedule_sms_button_states"
+			android:background="@drawable/schedule_footer_states"
 			>
 		</Button>
 		
@@ -46,7 +46,7 @@
 			android:layout_weight="5"
 			android:layout_marginLeft="5dp"
 			android:layout_marginRight="5dp"
-			android:background="@drawable/cancel_button_states"
+			android:background="@drawable/cancel_footer_states"
 			>
 		</Button>
 	</LinearLayout>

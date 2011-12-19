@@ -11,29 +11,18 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.vinsol.sms_scheduler.Constants;
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.models.GroupStructure;
-import com.vinsol.sms_scheduler.models.MyContact;
-import com.vinsol.sms_scheduler.models.SpannedEntity;
-import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -73,6 +62,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
+
+import com.vinsol.sms_scheduler.Constants;
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.GroupStructure;
+import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.models.SpannedEntity;
+import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 
 public class EditScheduledSmsActivity extends Activity {
 	
@@ -538,7 +535,7 @@ public class EditScheduledSmsActivity extends Activity {
 				
 				final DatePicker datePicker   	= (DatePicker)  dateSelectDialog.findViewById(R.id.new_date_picker);
 				final TimePicker timePicker   	= (TimePicker)  dateSelectDialog.findViewById(R.id.new_time_picker);
-				final TextView dateLabel 		= (TextView) 	dateSelectDialog.findViewById(R.id.new_date_label);
+				final View dateLabel 		    = dateSelectDialog.findViewById(R.id.new_date_label);
 				Button okDateButton 			= (Button) 		dateSelectDialog.findViewById(R.id.new_date_dialog_ok_button);
 				Button cancelDateButton 		= (Button) 		dateSelectDialog.findViewById(R.id.new_date_dialog_cancel_button);
 				
@@ -553,32 +550,24 @@ public class EditScheduledSmsActivity extends Activity {
 					
 					@Override
 					public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-						String temp = sdf.format(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
-						dateLabel.setText(temp);
 						if(checkDateValidity(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()))){
-							dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
-							dateLabel.setText("");
+							dateLabel.setVisibility(View.INVISIBLE);
 						}else{
-							dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-							dateLabel.setText("Past time, message will be sent now");
+							dateLabel.setVisibility(View.VISIBLE);
 						}
 					}
 				});
 				//---------------------------------------end of DatePicker setup------
 				
 				
-				String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
-				dateLabel.setText(temp);
 				refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
 				refDate = refCal.getTime();
 //				String dateString = refDate.toString();
 //				dateLabel.setText(dateString);
 				if(checkDateValidity(refDate)){
-					dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
-					dateLabel.setText("");
+					dateLabel.setVisibility(View.INVISIBLE);
 				}else{
-					dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-					dateLabel.setText("Past time, message will be sent now");
+					dateLabel.setVisibility(View.VISIBLE);
 				}
 				
 				okDateButton.setOnClickListener(new OnClickListener() {
@@ -621,14 +610,10 @@ public class EditScheduledSmsActivity extends Activity {
 					
 					@Override
 					public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-						String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute));
-						dateLabel.setText(temp);
 						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
-							dateLabel.setBackgroundColor(Color.rgb(0, 0, 0));
-							dateLabel.setText("");
-						}else{
-							dateLabel.setBackgroundColor(Color.rgb(180, 180, 0));
-							dateLabel.setText("Past time, message will be sent now");
+							dateLabel.setVisibility(View.INVISIBLE);
+						} else {
+							dateLabel.setVisibility(View.VISIBLE);
 						}
 					}
 				});
@@ -860,8 +845,8 @@ public class EditScheduledSmsActivity extends Activity {
 						
 						questionText.setText("Nothing to schedule");
 						
-						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_schedule_button_states));
-						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_no_button_states));
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.schedule_dialog_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
@@ -894,8 +879,8 @@ public class EditScheduledSmsActivity extends Activity {
 						
 						questionText.setText("No recipients added!");
 						
-						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_save_as_draft_button_states));
-						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_add_recipients_button_states));
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.save_as_draft_dialog_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_recipients_dialog_states));
 						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
@@ -928,8 +913,8 @@ public class EditScheduledSmsActivity extends Activity {
 						
 						questionText.setText("Message is Blank!");
 						
-						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_save_as_draft_button_states));
-						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_write_message_button_states));
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.save_as_draft_dialog_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.write_message_dialog_states));
 						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
@@ -982,8 +967,8 @@ public class EditScheduledSmsActivity extends Activity {
 //					yesButton.setText("Yes");
 //					noButton.setText("No");
 					
-					yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_yes_button_states));
-					noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_no_button_states));
+					yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.yes_dialog_states));
+					noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.no_dialog_states));
 					
 					yesButton.setOnClickListener(new OnClickListener() {
 						
@@ -1580,8 +1565,8 @@ public class EditScheduledSmsActivity extends Activity {
 			
 			questionText.setText("Discard Changes?");
 			
-			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_ok_button_states));
-			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confimation_cancel_button_states));
+			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ok_dialog_states));
+			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 			
 			yesButton.setOnClickListener(new OnClickListener() {
 					
@@ -1667,7 +1652,7 @@ public class EditScheduledSmsActivity extends Activity {
         		HashMap<String, Object> group = new HashMap<String, Object>();
         		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
         		group.put(Constants.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
-        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
        			if(spanIdsForGroup.size()==0){
        				group.put(Constants.GROUP_CHECK, false);
        			}else{
@@ -1726,7 +1711,7 @@ public class EditScheduledSmsActivity extends Activity {
         		HashMap<String, Object> group = new HashMap<String, Object>();
         		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
-        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.dropdown));
+        		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
         		if(spanIdsForGroup.size()==0){
        				group.put(Constants.GROUP_CHECK, false);
        			}else{
