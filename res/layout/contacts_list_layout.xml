@@ -1,55 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-
+    android:background="@color/white"
+    >
+    <!-- header -->
     <TextView 
         android:id = "@+id/contacts_list_label"
-        android:layout_height = "wrap_content"
         android:layout_width = "fill_parent"
+        android:layout_height = "wrap_content"
         android:text = "Select Contacts"
-        android:gravity="center_horizontal"
-        android:textSize="20sp"
-        android:textColor="#222222"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:background="@drawable/list_header_bg"/>
+        android:textSize="22sp"
+        android:textColor="@color/white"
+		android:textStyle="bold"
+		android:background="@drawable/header_bg"
+		android:gravity="center"
+		>
+    </TextView>
     
-    <ListView 
-        android:id = "@+id/contacts_list_main_list"
-        android:layout_height = "wrap_content"
-        android:layout_width = "fill_parent"
-        android:layout_above="@+id/contact_list_main_buttons_layout"
-        android:layout_below="@id/contacts_list_label">
-        
-    </ListView>
-	
+    <!-- footer -->    
     <LinearLayout
-        android:id = "@id/contact_list_main_buttons_layout"
-        android:layout_height = "wrap_content"
+        android:id = "@+id/contact_list_main_buttons_layout"
         android:layout_width = "fill_parent"
+        android:layout_height = "wrap_content"
         android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
-        
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/footer_bg"
+        android:gravity="center"
+        >    
         <Button 
             android:id = "@+id/contacts_list_layout_done_button"
+            android:layout_width = "0dip"
             android:layout_height = "wrap_content"
-            android:layout_width = "fill_parent"
             android:layout_weight = "1"
             android:layout_margin = "5dp"
-            android:text="Done"/>
+            android:background="@drawable/done_states"
+            >
+        </Button>
         
         <Button 
             android:id = "@+id/contacts_list_layout_cancel_button"
+            android:layout_width = "0dip"
             android:layout_height = "wrap_content"
-            android:layout_width = "fill_parent"
             android:layout_weight = "1"
-            android:layout_marginRight = "5dp"
-            android:layout_marginTop = "5dp"
-            android:layout_marginBottom="5dp"
-            android:text="Cancel"/>
-        
+            android:layout_margin="5dip"
+            android:background="@drawable/cancel_footer_states"
+            >
+        </Button>
     </LinearLayout>
+            
         
+    <ListView 
+        android:id = "@+id/contacts_list_main_list"
+        android:layout_width = "fill_parent"
+        android:layout_height = "fill_parent" 
+        android:layout_above="@id/contact_list_main_buttons_layout"
+        android:layout_below="@id/contacts_list_label"
+        android:cacheColorHint="@color/transparent"
+        >
+    </ListView>
 </RelativeLayout>
