@@ -859,8 +859,9 @@ public class EditScheduledSmsActivity extends Activity {
 						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 						
 						questionText.setText("Nothing to schedule");
-						yesButton.setText("Schedule SMS");
-						noButton.setText("Discard");
+						
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_schedule_button_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_no_button_states));
 						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
@@ -892,8 +893,10 @@ public class EditScheduledSmsActivity extends Activity {
 						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 						
 						questionText.setText("No recipients added!");
-						yesButton.setText("Save as Draft");
-						noButton.setText("Add Recipients");
+						
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_save_as_draft_button_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_add_recipients_button_states));
+						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
 							@Override
@@ -924,8 +927,10 @@ public class EditScheduledSmsActivity extends Activity {
 						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 						
 						questionText.setText("Message is Blank!");
-						yesButton.setText("Save as Draft");
-						noButton.setText("Write Message");
+						
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_save_as_draft_button_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_write_message_button_states));
+						
 						yesButton.setOnClickListener(new OnClickListener() {
 							
 							@Override
@@ -974,8 +979,12 @@ public class EditScheduledSmsActivity extends Activity {
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 					
 					questionText.setText("Delete this message?");
-					yesButton.setText("Yes");
-					noButton.setText("No");
+//					yesButton.setText("Yes");
+//					noButton.setText("No");
+					
+					yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_yes_button_states));
+					noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_no_button_states));
+					
 					yesButton.setOnClickListener(new OnClickListener() {
 						
 						@Override
@@ -1570,8 +1579,10 @@ public class EditScheduledSmsActivity extends Activity {
 			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 			
 			questionText.setText("Discard Changes?");
-			yesButton.setText("Ok");
-			noButton.setText("Cancel");
+			
+			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confirmation_ok_button_states));
+			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.confimation_cancel_button_states));
+			
 			yesButton.setOnClickListener(new OnClickListener() {
 					
 				@Override
