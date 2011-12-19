@@ -10,7 +10,7 @@
 	    android:layout_width = "fill_parent" 
 		android:layout_height = "wrap_content"
 		android:text = "Schedule SMS"
-		android:textSize="24sp"
+		android:textSize="22sp"
 		android:textColor="@color/white"
 		android:textStyle="bold"
 		android:background="@drawable/header_bg"
@@ -23,7 +23,7 @@
 		android:id="@+id/footer"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
-		android:background="@drawable/header_bg" 
+		android:background="@drawable/footer_bg" 
 		android:orientation="horizontal"
 		android:gravity="center" 
 		android:layout_alignParentBottom="true"
@@ -55,7 +55,7 @@
 	<ScrollView 
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:background="#333333"
+	    android:background="@color/white"
 	    android:layout_below="@id/header"
 	    android:layout_above="@id/footer"
 	    >
