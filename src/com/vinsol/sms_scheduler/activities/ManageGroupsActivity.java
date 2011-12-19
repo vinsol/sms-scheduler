@@ -74,7 +74,7 @@ public class ManageGroupsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ManageGroupsActivity.this, GroupAddActivity.class);
+				Intent intent = new Intent(ManageGroupsActivity.this, GroupEditActivity.class);
 				intent.putExtra("STATE", "new");
 				startActivity(intent);
 			}
@@ -188,7 +188,7 @@ public class ManageGroupsActivity extends Activity {
 //					for(int i = 0; i< ids.size(); i++){
 //						idsString.add(String.valueOf(ids.get(i)));
 //					}
-					Intent intent = new Intent(ManageGroupsActivity.this, GroupAddActivity.class);
+					Intent intent = new Intent(ManageGroupsActivity.this, GroupEditActivity.class);
 					intent.putExtra("STATE", "edit");
 					intent.putExtra("GROUPNAME", grpNamesArray.get(position));
 					intent.putExtra("GROUPID", grpIdsArray.get(position));

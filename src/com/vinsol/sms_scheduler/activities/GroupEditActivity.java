@@ -30,7 +30,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class GroupAddActivity extends Activity {
+public class GroupEditActivity extends Activity {
 
 	
 	Button addContactsButton;
@@ -40,7 +40,7 @@ public class GroupAddActivity extends Activity {
 	Button deleteGroupButton;
 	
 	
-	DBAdapter mdba = new DBAdapter(GroupAddActivity.this);
+	DBAdapter mdba = new DBAdapter(GroupEditActivity.this);
 	
 	MyAdapter myAdapter;
 	
@@ -74,7 +74,7 @@ public class GroupAddActivity extends Activity {
 		
 		if(callingState.equals("new") && ids.size()==0){
 			ArrayList<String> idsString = new ArrayList<String>();
-			intent = new Intent(GroupAddActivity.this, ContactsListActivity.class);
+			intent = new Intent(GroupEditActivity.this, ContactsListActivity.class);
 			intent.putStringArrayListExtra("IDARRAY", idsString);
 			intent.putExtra("ORIGINATOR", "Group Add Activity");
 			intent.putExtra("NEWCALL", newCall);
@@ -101,7 +101,7 @@ public class GroupAddActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				final Dialog d = new Dialog(GroupAddActivity.this);
+				final Dialog d = new Dialog(GroupEditActivity.this);
 				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				d.setContentView(R.layout.new_group_name_dialog_design);
 				final EditText 	groupNameEdit 	= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
@@ -114,7 +114,7 @@ public class GroupAddActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						if(groupNameEdit.getText().toString().matches("(''|[' ']+)")){
-							Toast.makeText(GroupAddActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
+							Toast.makeText(GroupEditActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
 							groupNameEdit.setText("");
 						}else{
 							boolean groupNameExists = false;
@@ -131,7 +131,7 @@ public class GroupAddActivity extends Activity {
 							}
 							mdba.close();
 							if(groupNameExists){
-								Toast.makeText(GroupAddActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
+								Toast.makeText(GroupEditActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
 							}else{
 								groupName = groupNameEdit.getText().toString();
 								groupNameLabel.setText(groupName);
@@ -151,7 +151,7 @@ public class GroupAddActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(GroupAddActivity.this, ContactsListActivity.class);
+				Intent intent = new Intent(GroupEditActivity.this, ContactsListActivity.class);
 				if(callingState.equals("new")){
 					intent.putExtra("ORIGINATOR", "Group Add Activity");
 				}else if(callingState.equals("edit")){
@@ -180,7 +180,7 @@ public class GroupAddActivity extends Activity {
 					Log.i("MSG", "Size of Ids : " + ids.size());
 					mdba.createGroup(groupName, ids);
 					mdba.close();
-					GroupAddActivity.this.finish();
+					GroupEditActivity.this.finish();
 				
 				
 				
@@ -195,7 +195,7 @@ public class GroupAddActivity extends Activity {
 					}
 					mdba.setGroupName(groupName, groupId);
 					mdba.close();
-					GroupAddActivity.this.finish();
+					GroupEditActivity.this.finish();
 				}
 				
 				
@@ -218,7 +218,7 @@ public class GroupAddActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		if(callingState.equals("new")){
-			GroupAddActivity.this.finish();
+			GroupEditActivity.this.finish();
 		}else if(callingState.equals("edit")){
 			mdba.open();
 			ids = mdba.fetchIdsForGroups(groupId);
@@ -229,7 +229,7 @@ public class GroupAddActivity extends Activity {
 				mdba.addContactToGroup(ids2.get(i), groupId);
 			}
 			mdba.close();
-			GroupAddActivity.this.finish();
+			GroupEditActivity.this.finish();
 		}
 		super.onBackPressed();
 	}
@@ -267,7 +267,7 @@ public class GroupAddActivity extends Activity {
 	
 	class MyAdapter extends ArrayAdapter{
 		MyAdapter(){
-    		super(GroupAddActivity.this, R.layout.group_add_edit_row_design, ids);
+    		super(GroupEditActivity.this, R.layout.group_add_edit_row_design, ids);
     	}
 		
 		@Override
@@ -306,7 +306,7 @@ public class GroupAddActivity extends Activity {
 //					Cursor cur = mdba.fetchIdsForGroups(groupId);
 					if(newGroupContacts.size()==1 && callingState.equals("edit")){
 						
-						final Dialog d = new Dialog(GroupAddActivity.this);
+						final Dialog d = new Dialog(GroupEditActivity.this);
 						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 						d.setContentView(R.layout.confirmation_dialog_layout);
 						
@@ -332,7 +332,7 @@ public class GroupAddActivity extends Activity {
 								}
 								mdba.removeGroup(groupId);
 								mdba.close();
-								GroupAddActivity.this.finish();
+								GroupEditActivity.this.finish();
 							}
 						});
 						
@@ -364,11 +364,11 @@ public class GroupAddActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 		
 		if(callingState.equals("new")){
-			GroupAddActivity.this.finish();
+			GroupEditActivity.this.finish();
 		}else{
 			String isCancelled = data.getStringExtra("CANCEL");
 			if(isCancelled.equals("yes")){
-				GroupAddActivity.this.finish();
+				GroupEditActivity.this.finish();
 			}
 			
 			ArrayList<String> idsString = new ArrayList<String>();
