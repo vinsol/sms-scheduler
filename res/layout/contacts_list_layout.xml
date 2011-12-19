@@ -57,6 +57,7 @@
         android:layout_height = "fill_parent" 
         android:layout_above="@id/contact_list_main_buttons_layout"
         android:layout_below="@id/contacts_list_label"
+        android:cacheColorHint="@color/transparent"
         >
     </ListView>
 </RelativeLayout>

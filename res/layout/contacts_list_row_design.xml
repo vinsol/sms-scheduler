@@ -1,58 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="56dp"
-    android:background="@drawable/list_item_bg" >
-	
-    <ImageView 
-			android:id = "@+id/list_divider"
-			android:layout_height = "wrap_content"
-			android:layout_width = "fill_parent"
-			android:layout_alignParentTop="true"
-			android:src="@drawable/list_divider"
-	/>
-    
+    >
+    <!-- Contact Image -->
     <ImageView 
         android:id = "@+id/contact_list_row_contact_pic"
         android:layout_height = "40dp"
         android:layout_width = "40dp"
         android:layout_alignParentLeft="true"
         android:layout_margin = "10dp"
-        android:src="@drawable/contacts"/>
+        >
+    </ImageView>
     
+    <!--  Check Box -->    
+    <CheckBox
+        android:id = "@+id/contact_list_row_contact_check"
+        android:layout_height = "wrap_content"
+        android:layout_width = "wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dip"
+        >
+    </CheckBox>    
+    
+    <!-- Contact Name -->
     <TextView 
         android:id = "@+id/contact_list_row_contact_name"
+        android:layout_width = "fill_parent"
         android:layout_height = "wrap_content"
-        android:layout_width = "210dp"
-        android:layout_below="@id/list_divider"
-        android:layout_toRightOf="@id/contact_list_row_contact_pic"
+    	android:layout_toRightOf="@id/contact_list_row_contact_pic"
+        android:layout_toLeftOf="@id/contact_list_row_contact_check"
         android:layout_margin="5dp"
-        android:text = "Achin"/>
+        android:text = "Achin"
+        android:singleLine="true"
+		android:ellipsize="end"
+        >
+    </TextView>
     
+    <!-- Contact Number -->    
     <TextView 
         android:id = "@+id/contact_list_row_contact_number"
+        android:layout_width = "fill_parent"
         android:layout_height = "wrap_content"
-        android:layout_width = "210dp"
         android:layout_toRightOf="@id/contact_list_row_contact_pic"
+        android:layout_toLeftOf="@id/contact_list_row_contact_check"
         android:layout_below="@id/contact_list_row_contact_name"
         android:layout_marginLeft = "5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
         android:text = "9811173722"
-        android:textColor="#fbec5d"/>
-	
-    <LinearLayout 
-        android:layout_height = "fill_parent"
-        android:layout_width = "50dp"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:layout_alignParentRight="true">
-        
-        <CheckBox
-            android:id = "@+id/contact_list_row_contact_check"
-            android:layout_height = "wrap_content"
-            android:layout_width = "wrap_content"
-            android:layout_gravity="center_vertical"/>
-        
-    </LinearLayout>
+        android:textColor="#fbec5d"
+        >
+    </TextView>
 </RelativeLayout>

@@ -1,43 +1,31 @@
 package com.vinsol.sms_scheduler.activities;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.R.id;
-import com.vinsol.sms_scheduler.R.layout;
-import com.vinsol.sms_scheduler.models.MyContact;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.MyContact;
 
 public class ContactsListActivity extends Activity {
 
@@ -217,7 +205,7 @@ public class ContactsListActivity extends Activity {
     	@Override
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		final ContactsAddListHolder holder;
-    		if(convertView==null){
+    		if(convertView == null) {
     			LayoutInflater inflater = getLayoutInflater();
         		convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
         		holder = new ContactsAddListHolder();
@@ -226,7 +214,7 @@ public class ContactsListActivity extends Activity {
         		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_number);
         		holder.contactCheck 	= (CheckBox) 	convertView.findViewById(R.id.contact_list_row_contact_check);
         		convertView.setTag(holder);
-    		}else{
+    		} else {
     			holder = (ContactsAddListHolder) convertView.getTag();
     		}
     		final int _position  = position;
