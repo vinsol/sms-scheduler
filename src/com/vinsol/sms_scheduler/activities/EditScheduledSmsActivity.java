@@ -274,7 +274,7 @@ public class EditScheduledSmsActivity extends Activity {
 		if(!isDraft){
 			headerText.setText("Edit SMS");
 			
-//			scheduleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.))
+			scheduleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_footer_states));
 		}
 		
 		Log.i("MSG", "size of Spans : " + Spans.size());
