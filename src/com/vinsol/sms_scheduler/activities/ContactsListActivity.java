@@ -110,7 +110,7 @@ public class ContactsListActivity extends Activity {
 					d.setContentView(R.layout.new_group_name_dialog_design);
 					d.setCancelable(false);
 					final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
-					ImageButton groupNameOkButton 	= (ImageButton) d.findViewById(R.id.group_name_dialog_name_ok_button);
+					Button groupNameOkButton 	= (Button) d.findViewById(R.id.group_name_dialog_name_ok_button);
 					
 					groupNameEdit.setText(groupName);
 					

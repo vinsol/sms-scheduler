@@ -1,25 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="15dp">
-	
-    <EditText
-        android:id = "@+id/group_name_dialog_name_label" 
-        android:layout_height="wrap_content"
-        android:layout_width = "fill_parent"
-      	android:maxLines="1"
-        android:layout_margin="10dp"
-        android:hint = "Enter Group Name"/>
-    
-    <ImageButton 
-        android:id = "@+id/group_name_dialog_name_ok_button"
-        android:layout_height = "wrap_content"
-        android:layout_width = "fill_parent"
-        android:text = "ok"
-        android:src="@android:drawable/ic_input_add"
-        android:layout_margin="10dp"/>
-    
+    android:orientation="vertical" 
+    >
 
+    <EditText
+        android:id="@+id/group_name_dialog_name_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="Enter Group Name"
+        android:maxLines="1" 
+        >
+    </EditText>
+
+    <!-- footer -->    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/footer_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" 
+        >
+        <Button
+            android:id="@+id/group_name_dialog_name_ok_button"
+        	android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="2.5dip"
+            android:layout_weight="1"
+            android:background="@drawable/ok_dialog_states" 
+            >
+        </Button>
+
+        <Button
+            android:id="@+id/group_name_dialog_name_cancel_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2.5dip"
+            android:layout_marginRight="5dip"
+            android:layout_weight="1"
+            android:background="@drawable/cancel_dialog_states" 
+            >
+        </Button>
+    </LinearLayout>
 </LinearLayout>
