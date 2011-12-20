@@ -81,6 +81,15 @@ public class GroupEditActivity extends Activity {
 			startActivityForResult(intent, 1);
 		}
 		
+		if(callingState.equals("newc") && ids.size()==0){
+			ArrayList<String> idsString = new ArrayList<String>();
+			intent = new Intent(GroupEditActivity.this, ContactsListActivity.class);
+			intent.putStringArrayListExtra("IDARRAY", idsString);
+			intent.putExtra("ORIGINATOR", "Group Add Activity From Contacts");
+			intent.putExtra("NEWCALL", newCall);
+			startActivityForResult(intent, 1);
+		}
+		
 		if(callingState.equals("edit")){
 			Log.i("MSG", "Ids Size : ");
 			groupId = intent.getLongExtra("GROUPID", 0);

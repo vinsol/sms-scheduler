@@ -82,7 +82,7 @@ public class ContactsListActivity extends Activity {
 			if(callingActivity.equals("Group Edit Activity")){
 				doneButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 				groupId = intent.getLongExtra("GROUPID", 0);
-			}else if(callingActivity.equals("Group Add Activity")){
+			}else if(callingActivity.equals("Group Add Activity") || callingActivity.equals("Group Add Activity From Contacts")){
 				newCall = intent.getBooleanExtra("NEWCALL", true);
 			}
 			Log.i("MSG", "Contacts size : " + String.valueOf(contacts.size()));

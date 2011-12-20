@@ -94,15 +94,60 @@
 									android:groupIndicator="@drawable/expander_group"
 									>
     							</ExpandableListView>
-	    							
-	                            <ExpandableListView 
-        							android:id = "@+id/private_list"
-        							android:layout_height = "fill_parent"
-       								android:layout_width = "fill_parent"
-       								android:cacheColorHint="@color/transparent"
-									android:groupIndicator="@drawable/expander_group"
-									>
-    							</ExpandableListView>
+	    						
+	                           	<LinearLayout 
+	                                android:id = "@+id/private_list_parent_layout"
+	                                android:layout_height = "wrap_content"
+	                                android:layout_width = "fill_parent"
+	                                >
+	                                
+	                           	    <LinearLayout 
+	                                	android:id = "@+id/list_layout"
+	                               		android:layout_height = "wrap_content"
+	                                	android:layout_width = "fill_parent"
+	                                >
+	                                
+	                                	<ExpandableListView 
+        									android:id = "@+id/private_list"
+        									android:layout_height = "fill_parent"
+       										android:layout_width = "fill_parent"
+       										android:cacheColorHint="@color/transparent"
+											android:groupIndicator="@drawable/expander_group"
+										>
+    									</ExpandableListView>
+	                                
+	                            	</LinearLayout>
+	                            
+	                            	<LinearLayout 
+	                                	android:id = "@+id/blank_layout"
+	                                	android:layout_height = "fill_parent"
+	                                	android:layout_width = "fill_parent"
+	                                	android:orientation="vertical"
+	   									android:layout_gravity="center"
+	    								android:gravity="center">
+        
+        								<TextView 
+        									android:text = "No Groups"
+        									android:layout_height = "wrap_content"
+        									android:layout_width = "wrap_content"
+        									android:gravity="center_vertical"
+        									android:layout_margin = "10dp"
+       										android:textColor="@color/black"
+       									>
+     									</TextView>
+    									<Button 
+        									android:id = "@+id/blank_list_add_button"
+        									android:layout_height = "wrap_content"
+        									android:layout_width = "wrap_content"
+        									android:text = "Create a Group"
+       									>
+     									</Button>
+	                                
+	                            	</LinearLayout>
+	                           	
+	                           	</LinearLayout>
+	                                
+	                                
 	                        </FrameLayout>
 	                    </LinearLayout>               
 	                </TabHost>          
