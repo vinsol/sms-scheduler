@@ -27,7 +27,6 @@ public class ManageGroupsActivity extends Activity {
 
 	
 	ImageButton addGroupImageButton;
-	TextView manageGroupsHeading;
 	ListView groupsList;
 	
 	
@@ -44,7 +43,6 @@ public class ManageGroupsActivity extends Activity {
 		setContentView(R.layout.manage_group_layout);
 	
 		addGroupImageButton = (ImageButton) findViewById(R.id.manage_group_add_group_image_button);
-		manageGroupsHeading = (TextView) 	findViewById(R.id.manage_template_layout_heading);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
 		
 		

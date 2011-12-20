@@ -2,12 +2,6 @@ package com.vinsol.sms_scheduler.activities;
 
 import java.util.ArrayList;
 
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.R.drawable;
-import com.vinsol.sms_scheduler.R.id;
-import com.vinsol.sms_scheduler.R.layout;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.database.Cursor;
@@ -15,19 +9,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
 
 public class ManageTemplateActivity extends Activity{
 
@@ -82,7 +78,7 @@ public class ManageTemplateActivity extends Activity{
 					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
 					newTemplateBody.setText("");
 					newTemplateBody.requestFocus();
-					newTemplateAddButton.setText("Add");
+					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 					isEditing = false;
 					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 					
@@ -255,7 +251,7 @@ public class ManageTemplateActivity extends Activity{
 						newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
 						newTemplateBody.setText(holder.templateBodyLabel.getText().toString());
 						newTemplateBody.requestFocus();
-						newTemplateAddButton.setText("Edit");
+						newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_footer_states));
 						editRowId = position;
 						isEditing = true;
 						inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
