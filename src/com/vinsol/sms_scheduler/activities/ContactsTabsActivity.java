@@ -320,13 +320,14 @@ public class ContactsTabsActivity extends Activity {
         
         LinearLayout groupTabs = (LinearLayout)findViewById( R.id.group_tabs );
         mtabHost = (TabHost)groupTabs.findViewById( android.R.id.tabhost );
-        mtabHost.setup( );
-
-        mtabHost.addTab( mtabHost.newTabSpec( "native" ).setIndicator( "Native" ).setContent( R.id.native_list) );
-
-        mtabHost.addTab( mtabHost.newTabSpec( "private" ).setIndicator( "Private" ).setContent( R.id.private_list ) );
-		
         
+
+        mtabHost.setup( );
+        mtabHost.getTabWidget().setDividerDrawable(R.drawable.vertical_seprator);
+        
+        setupTab(new TextView(this), "Native");
+    	setupTab(new TextView(this), "Private");
+
         
         ///////
         privateGroupExplList = (ExpandableListView) findViewById(R.id.private_list);
@@ -402,9 +403,13 @@ public class ContactsTabsActivity extends Activity {
 	
 	private void setupTab(final View view, final String tag) {
 		View tabview = createTabView(mtabHost.getContext(), tag);
-	        TabSpec setContent = mtabHost.newTabSpec(tag).setIndicator(tabview).setContent(new TabContentFactory() {
-			public View createTabContent(String tag) {return view;}
-		});
+		TabSpec setContent = null;
+		if(tag.equals("Native")){
+			setContent = mtabHost.newTabSpec(tag).setIndicator(tabview).setContent(R.id.native_list);
+		}else if(tag.equals("Private")){
+			setContent = mtabHost.newTabSpec(tag).setIndicator(tabview).setContent(R.id.private_list);
+		}
+	        
 		mtabHost.addTab(setContent);
 	}
 
@@ -445,7 +450,7 @@ public class ContactsTabsActivity extends Activity {
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ContactsListHolder holder;
-			if(convertView == null) {
+			if(convertView==null){
 				LayoutInflater inflater = getLayoutInflater();
 	    		convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
 	    		holder = new ContactsListHolder();
@@ -454,7 +459,7 @@ public class ContactsTabsActivity extends Activity {
 	    		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_number);
 	    		holder.contactCheck     = (CheckBox) convertView.findViewById(R.id.contact_list_row_contact_check);
 	    		convertView.setTag(holder);
-			} else {
+			}else{
 				holder = (ContactsListHolder) convertView.getTag();
 			}
 //			final int _position  = position;

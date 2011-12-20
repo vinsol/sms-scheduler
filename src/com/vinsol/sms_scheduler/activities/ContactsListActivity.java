@@ -121,7 +121,9 @@ public class ContactsListActivity extends Activity {
 							if(groupNameEdit.getText().toString().matches("(''|[' ']+)")){
 								Toast.makeText(ContactsListActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
 								groupNameEdit.setText("");
-							}else{
+							}
+							
+							else{
 								boolean groupNameExists = false;
 								mdba.open();
 								Cursor cur = mdba.fetchAllGroups();
@@ -140,11 +142,16 @@ public class ContactsListActivity extends Activity {
 								}else{
 									groupName = groupNameEdit.getText().toString();
 									d.cancel();
-									mdba.open();
-									mdba.createGroup(groupName, ids);
-									mdba.close();
-									setResult(10, intent);
-									ContactsListActivity.this.finish();
+									if(ids.size() == 0){
+										Toast.makeText(ContactsListActivity.this, "Cannot create blank group. Chooes some contacts", Toast.LENGTH_LONG).show();
+									}else{
+										mdba.open();
+										mdba.createGroup(groupName, ids);
+										mdba.close();
+										setResult(10, intent);
+										ContactsListActivity.this.finish();
+									}
+									
 								}
 							}
 						}
@@ -167,7 +174,7 @@ public class ContactsListActivity extends Activity {
 			public void onClick(View v) {
 				Intent intent = new Intent();
 				intent.putStringArrayListExtra("IDSLIST", idsString);
-				intent.putExtra("CANCEL", "yes");
+				intent.putExtra("CANCEL", "back");
 						
 				if(callingActivity.equals("Group Add Activity")){
 					intent.putExtra("NEWCALL", newCall);
@@ -187,7 +194,7 @@ public class ContactsListActivity extends Activity {
 	public void onBackPressed() {
 		Intent intent = new Intent();
 		intent.putStringArrayListExtra("IDSLIST", idsString);
-		intent.putExtra("CANCEL", "yes");
+		intent.putExtra("CANCEL", "back");
 		//intent.putExtra(name, value)
 		setResult(10, intent);
 		ContactsListActivity.this.finish();

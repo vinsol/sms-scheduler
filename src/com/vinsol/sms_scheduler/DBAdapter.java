@@ -198,7 +198,7 @@ public class DBAdapter {
 	}
 	
 	public Cursor fetchSmsDetails(long id){
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_TIME_MILLIS}, KEY_ID + "=" + id, null, null, null, null);
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_TIME_MILLIS, KEY_DRAFT}, KEY_ID + "=" + id, null, null, null, null);
 		return cur;
 	}
 	
