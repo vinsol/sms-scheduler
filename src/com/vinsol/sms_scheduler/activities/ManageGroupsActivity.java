@@ -38,6 +38,9 @@ public class ManageGroupsActivity extends Activity {
 	TextView manageGroupsHeading;
 	ListView groupsList;
 	
+	LinearLayout listLayout;
+	LinearLayout blankLayout;
+	
 	
 	DBAdapter mdba = new DBAdapter(this);
 	Cursor cur;
@@ -55,6 +58,8 @@ public class ManageGroupsActivity extends Activity {
 		addGroupImageButton = (ImageButton) findViewById(R.id.manage_group_add_group_image_button);
 		manageGroupsHeading = (TextView) 	findViewById(R.id.manage_template_layout_heading);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
+		listLayout			= (LinearLayout) findViewById(R.id.group_manager_list_layout);
+		blankLayout			= (LinearLayout) findViewById(R.id.group_manager_blank_layout);
 		
 		
 		loadGroupsData();

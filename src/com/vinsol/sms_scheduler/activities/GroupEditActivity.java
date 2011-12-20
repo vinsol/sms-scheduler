@@ -111,6 +111,7 @@ public class GroupEditActivity extends Activity {
 						@Override
 						public void onClick(View v) {
 							mdba.open();
+							Log.i("MSG", "Group to delete : " + groupId);
 							mdba.removeGroup(groupId);
 							mdba.close();
 							d.cancel();
@@ -150,9 +151,9 @@ public class GroupEditActivity extends Activity {
 					
 					@Override
 					public void onClick(View v) {
-						if(groupNameEdit.getText().toString().matches("(''|[' ']+)")){
+						if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
 							Toast.makeText(GroupEditActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
-							groupNameEdit.setText("");
+							groupNameEdit.setText(groupName);
 						
 							
 						}else{
@@ -266,11 +267,15 @@ public class GroupEditActivity extends Activity {
 		}else if(callingState.equals("edit")){
 			boolean isChanged = false;
 			if(ids.size() != ids2.size()){
+				Log.i("MSG", "mode 1");
 				isChanged = true;
 			}else{
 				for(int i = 0; i< ids.size(); i++){
-					if (ids.get(i) != ids2.get(i)){
+					
+					if (!ids.get(i).equals(ids2.get(i))){
+						Log.i("MSG", "IDS :" + ids.get(i) + ", IDS2 :" + ids2.get(i) );
 						isChanged = true;
+						Log.i("MSG", "mode 2");
 						break;
 					}
 				}

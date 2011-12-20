@@ -105,58 +105,63 @@ public class ContactsListActivity extends Activity {
 				}
 				if(callingActivity.equals("Group Add Activity")){
 					intent.putExtra("NEWCALL", newCall);
-					final Dialog d = new Dialog(ContactsListActivity.this);
-					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.new_group_name_dialog_design);
-					d.setCancelable(false);
-					final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
-					ImageButton groupNameOkButton 	= (ImageButton) d.findViewById(R.id.group_name_dialog_name_ok_button);
-					
-					groupNameEdit.setText(groupName);
-					
-					groupNameOkButton.setOnClickListener(new OnClickListener() {
+					if(groupName.equals("")){
+						final Dialog d = new Dialog(ContactsListActivity.this);
+						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						d.setContentView(R.layout.new_group_name_dialog_design);
+						//d.setCancelable(false);
+						final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
+						ImageButton groupNameOkButton 	= (ImageButton) d.findViewById(R.id.group_name_dialog_name_ok_button);
 						
-						@Override
-						public void onClick(View v) {
-							if(groupNameEdit.getText().toString().matches("(''|[' ']+)")){
-								Toast.makeText(ContactsListActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
-								groupNameEdit.setText("");
-							}
+						groupNameEdit.setText(groupName);
+						
+						groupNameOkButton.setOnClickListener(new OnClickListener() {
 							
-							else{
-								boolean groupNameExists = false;
-								mdba.open();
-								Cursor cur = mdba.fetchAllGroups();
-								if(cur.moveToFirst()){
-									do{
-										if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_GROUP_NAME)).equals(groupNameEdit.getText().toString())){
-											
-											groupNameExists = true;
-											break;
-										}
-									}while(cur.moveToNext());
+							@Override
+							public void onClick(View v) {
+								Log.i("MSG", "GroupName : " + groupName);
+								if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
+									Toast.makeText(ContactsListActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
+									groupNameEdit.setText("");
 								}
-								mdba.close();
-								if(groupNameExists){
-									Toast.makeText(ContactsListActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
-								}else{
-									groupName = groupNameEdit.getText().toString();
-									d.cancel();
-									if(ids.size() == 0){
-										Toast.makeText(ContactsListActivity.this, "Cannot create blank group. Chooes some contacts", Toast.LENGTH_LONG).show();
-									}else{
-										mdba.open();
-										mdba.createGroup(groupName, ids);
-										mdba.close();
-										setResult(10, intent);
-										ContactsListActivity.this.finish();
+								
+								else{
+									boolean groupNameExists = false;
+									mdba.open();
+									Cursor cur = mdba.fetchAllGroups();
+									if(cur.moveToFirst()){
+										do{
+											if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_GROUP_NAME)).equals(groupNameEdit.getText().toString())){
+												
+												groupNameExists = true;
+												break;
+											}
+										}while(cur.moveToNext());
 									}
-									
+									mdba.close();
+									if(groupNameExists){
+										Toast.makeText(ContactsListActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
+									}else{
+										groupName = groupNameEdit.getText().toString();
+										d.cancel();
+									}
 								}
 							}
+						});
+						d.show();
+					}else{
+						if(ids.size() == 0){
+							Toast.makeText(ContactsListActivity.this, "Cannot create blank group. Chooes some contacts", Toast.LENGTH_LONG).show();
+						}else{
+							mdba.open();
+							mdba.createGroup(groupName, ids);
+							mdba.close();
+							setResult(10, intent);
+							ContactsListActivity.this.finish();
 						}
-					});
-					d.show();
+					}
+					
+					
 				}else{
 					intent.putStringArrayListExtra("IDSLIST", idsStringChanged);
 					intent.putExtra("CANCEL", "no");

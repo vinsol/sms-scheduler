@@ -412,45 +412,45 @@ public class DBAdapter {
 	
 	
 	
-	public boolean removeGroup(int grp, Context _context){
-		try{
-			Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_NUMBER}, KEY_GRPID + "=" + grp, null, null, null, null);
-			Cursor cur2 = db.query(DATABASE_PI_TABLE, null, KEY_PI_ID + "= 1", null, null, null, null);
-			cur2.moveToFirst();
-			if(cur2.getLong(cur2.getColumnIndex(DBAdapter.KEY_TIME))>0){
-				long setId = cur2.getLong(cur2.getColumnIndex(KEY_SMS_ID));
-				if(cur.moveToFirst()){
-					do{
-						if(setId == cur.getLong(cur.getColumnIndex(KEY_ID))){
-							Intent cancelIntent = new Intent(_context, SMSHandleReceiver.class);
-							cancelIntent.setAction(PRIVATE_SMS_ACTION);
-							PendingIntent cancelPi = PendingIntent.getBroadcast(_context, (int)cur.getLong(cur.getColumnIndex(KEY_ID)), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-							cancelPi.cancel();
-						}
-					}while(cur.moveToNext());
-				}
-				cur = fetchAllScheduled();
-				if(cur.moveToFirst()){
-					Intent nextIntent = new Intent(context, SMSHandleReceiver.class);
-					
-					nextIntent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
-					nextIntent.putExtra("NUMBER", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_NUMBER)));
-					nextIntent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)));
-					int piNumber = (int)Math.random()*10000;
-					PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-					updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
-					
-				}else{
-					updatePi(0, -1, -1);
-				}
-			}
-			
-			db.delete(DATABASE_SMS_TABLE, KEY_GRPID + "=" + grp, null);
-			return true;
-		}catch(SQLiteException ex){
-			return false;
-		}
-	}
+//	public boolean removeGroup(int grp, Context _context){
+//		try{
+//			Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_NUMBER}, KEY_GRPID + "=" + grp, null, null, null, null);
+//			Cursor cur2 = db.query(DATABASE_PI_TABLE, null, KEY_PI_ID + "= 1", null, null, null, null);
+//			cur2.moveToFirst();
+//			if(cur2.getLong(cur2.getColumnIndex(DBAdapter.KEY_TIME))>0){
+//				long setId = cur2.getLong(cur2.getColumnIndex(KEY_SMS_ID));
+//				if(cur.moveToFirst()){
+//					do{
+//						if(setId == cur.getLong(cur.getColumnIndex(KEY_ID))){
+//							Intent cancelIntent = new Intent(_context, SMSHandleReceiver.class);
+//							cancelIntent.setAction(PRIVATE_SMS_ACTION);
+//							PendingIntent cancelPi = PendingIntent.getBroadcast(_context, (int)cur.getLong(cur.getColumnIndex(KEY_ID)), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//							cancelPi.cancel();
+//						}
+//					}while(cur.moveToNext());
+//				}
+//				cur = fetchAllScheduled();
+//				if(cur.moveToFirst()){
+//					Intent nextIntent = new Intent(context, SMSHandleReceiver.class);
+//					
+//					nextIntent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
+//					nextIntent.putExtra("NUMBER", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_NUMBER)));
+//					nextIntent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)));
+//					int piNumber = (int)Math.random()*10000;
+//					PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//					updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
+//					
+//				}else{
+//					updatePi(0, -1, -1);
+//				}
+//			}
+//			
+//			db.delete(DATABASE_SMS_TABLE, KEY_GRPID + "=" + grp, null);
+//			return true;
+//		}catch(SQLiteException ex){
+//			return false;
+//		}
+//	}
 	
 	
 	
@@ -669,8 +669,9 @@ public class DBAdapter {
 	
 	
 	public void removeGroup(long groupId){
-		db.delete(DATABASE_GROUP_CONTACT_RELATION, groupId + "=" + groupId, null);
-		db.delete(DATABASE_GROUP_TABLE, groupId + "=" + groupId, null);
+		Log.i("MSG", "group to remove : " + groupId);
+		db.delete(DATABASE_GROUP_CONTACT_RELATION, KEY_GROUP_REL_ID + "=" + groupId, null);
+		db.delete(DATABASE_GROUP_TABLE, KEY_GROUP_ID + "=" + groupId, null);
 	}
 	
 	

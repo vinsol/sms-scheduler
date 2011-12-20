@@ -47,11 +47,47 @@
    	    android:layout_height = "5dp"
    	    android:layout_width = "fill_parent"
    	    android:background="#222222"/>
-    
-    <ListView 
+   	
+   	
+   	
+    <LinearLayout 
+        android:id = "@+id/group_manager_list_layout"
+        android:layout_height = "wrap_content"
+        android:layout_width = "fill_parent">
+        
+        <ListView 
     	android:id = "@+id/group_manager_list"
     	android:layout_height = "wrap_content"
     	android:layout_width = "fill_parent"/>
+        
+    </LinearLayout>
     
+    
+    
+    <LinearLayout 
+        android:id = "@+id/group_manager_blank_layout"
+        android:layout_height = "wrap_content"
+        android:layout_width = "fill_parent"
+        android:orientation="vertical"
+	    android:layout_gravity="center"
+	    android:gravity="center">
+        
+        <TextView 
+        	android:text = "No Groups"
+        	android:layout_height = "wrap_content"
+        	android:layout_width = "wrap_content"
+        	android:gravity="center_vertical"
+        	android:layout_margin = "10dp"
+       		android:textColor="@color/black"
+       		>
+     	</TextView>
+    	<Button 
+        	android:id = "@+id/blank_list_add_button"
+        	android:layout_height = "wrap_content"
+        	android:layout_width = "wrap_content"
+        	android:text = "Create a Group"
+       		>
+     	</Button>
+    </LinearLayout>
 
 </LinearLayout>
