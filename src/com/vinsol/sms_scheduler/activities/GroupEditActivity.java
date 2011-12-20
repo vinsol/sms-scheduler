@@ -410,9 +410,9 @@ public class GroupEditActivity extends Activity {
 						Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 						
-						questionText.setText("Deleting last member will Delete the Group");
-						yesButton.setText("Delete");
-						noButton.setText("Cancel");
+						questionText.setText("Deleting last member will delete the group");
+						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_dialog_states));
+						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 						yesButton.setOnClickListener(new OnClickListener() {
 							
 							@Override
