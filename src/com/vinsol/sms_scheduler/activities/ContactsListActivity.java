@@ -294,10 +294,12 @@ public class ContactsListActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					if(holder.contactCheck.isChecked()){
+					if(!holder.contactCheck.isChecked()){
+						holder.contactCheck.setChecked(true);
 						ids.add(Long.parseLong(contacts.get(_position).content_uri_id));
 						contacts.get(_position).checked = true;	
 					}else{
+						holder.contactCheck.setChecked(false);
 						for(int i = 0; i< ids.size(); i++){
 							if(ids.get(i) == Long.parseLong(contacts.get(_position).content_uri_id)){
 								ids.remove(i);
