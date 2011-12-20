@@ -83,6 +83,7 @@
     	android:cacheColorHint="@color/transparent"
     	android:layout_below="@id/header"
     	android:layout_above="@id/footer"	
+    	android:divider="@drawable/list_divider"
     	>
 	</ListView>
 </RelativeLayout>

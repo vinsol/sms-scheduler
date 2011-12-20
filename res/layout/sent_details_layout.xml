@@ -9,6 +9,7 @@
     	android:id= "@+id/sent_details_dialog_number_list"
     	android:layout_height = "wrap_content"
     	android:layout_width = "fill_parent"
+    	android:divider="@drawable/list_divider"
     	/>
     
     

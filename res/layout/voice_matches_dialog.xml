@@ -17,6 +17,7 @@
         android:id = "@+id/matches_list"
         android:layout_height = "fill_parent"
         android:layout_width = "fill_parent"
+        android:divider="@drawable/list_divider"
         >
 	</ListView>
 </LinearLayout>

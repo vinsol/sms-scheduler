@@ -54,7 +54,10 @@
     		android:id = "@+id/group_manager_list"
     		android:layout_height = "fill_parent"
     		android:layout_width = "fill_parent"
-    		android:cacheColorHint="@color/transparent"/>
+    		android:cacheColorHint="@color/transparent"
+    		android:divider="@drawable/list_divider"
+    		>
+   		</ListView>
         
     </LinearLayout>
     

@@ -37,6 +37,7 @@
 	     		    android:layout_height="fill_parent"
 	     		    android:cacheColorHint="@color/transparent"
 	     			android:layout_above="@+id/contacts_tabs_buttons_layout"
+	     			android:divider="@drawable/list_divider"
 	     		    >
      		    </ListView>
 		     	
@@ -92,6 +93,7 @@
        								android:layout_width = "fill_parent"
        								android:cacheColorHint="@color/transparent"
 									android:groupIndicator="@drawable/expander_group"
+									android:childDivider="@drawable/list_divider"
 									>
     							</ExpandableListView>
 	    						
@@ -105,17 +107,16 @@
 	                                	android:id = "@+id/list_layout"
 	                               		android:layout_height = "wrap_content"
 	                                	android:layout_width = "fill_parent"
-	                                >
-	                                
+	                                	>
 	                                	<ExpandableListView 
         									android:id = "@+id/private_list"
         									android:layout_height = "fill_parent"
        										android:layout_width = "fill_parent"
        										android:cacheColorHint="@color/transparent"
 											android:groupIndicator="@drawable/expander_group"
-										>
+											android:childDivider="@drawable/list_divider"
+											>
     									</ExpandableListView>
-	                                
 	                            	</LinearLayout>
 	                            
 	                            	<LinearLayout 
@@ -160,7 +161,8 @@
 	     		    android:layout_width = "fill_parent"
 					android:layout_above="@+id/contacts_tabs_buttons_layout"
 					android:cacheColorHint="@color/transparent"
-					>
+					android:divider="@drawable/list_divider"
+        			>
 	     		</ListView>
      	  	</FrameLayout>
 	    </RelativeLayout>

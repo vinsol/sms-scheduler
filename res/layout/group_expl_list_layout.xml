@@ -11,6 +11,7 @@
         android:layout_width = "fill_parent"
         android:layout_height = "fill_parent"
         android:cacheColorHint="@color/transparent"
+		android:childDivider="@drawable/list_divider"							
         >
     </ExpandableListView>
 </LinearLayout>
