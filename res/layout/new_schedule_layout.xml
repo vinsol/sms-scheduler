@@ -31,9 +31,9 @@
 		
 		<Button 
 			android:id="@+id/new_schedule_button"
-			android:layout_width="fill_parent"
+			android:layout_width="0dip"
 			android:layout_height="wrap_content"
-			android:layout_weight = "4"
+			android:layout_weight = "1"
 			android:layout_marginLeft="5dp"
 			android:background="@drawable/schedule_footer_states"
 			>
@@ -41,9 +41,9 @@
 		
 		<Button 
 			android:id="@+id/new_cancel_button"
-			android:layout_width="fill_parent"
+			android:layout_width="0dip"
 			android:layout_height="wrap_content"
-			android:layout_weight="5"
+			android:layout_weight="1"
 			android:layout_marginLeft="5dp"
 			android:layout_marginRight="5dp"
 			android:background="@drawable/cancel_footer_states"
@@ -101,8 +101,8 @@
 			   	android:id = "@+id/new_date_button"
 			   	android:layout_width = "fill_parent"
 			   	android:layout_height = "wrap_content"
-			   	android:textColor="#222222"
-			   	android:textSize="20sp"
+			   	android:textColor="@color/text_grey"
+			   	android:textSize="18sp"
 			   	android:layout_marginTop="10dp"
 			   	android:background="@drawable/date_time_button_states"
 			   	>
