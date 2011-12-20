@@ -54,12 +54,13 @@ public class ManageGroupsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_group_layout);
 		
-		okImageButton 		= (ImageButton) findViewById(R.id.manage_group_ok_image_button);
+		//okImageButton 		= (ImageButton) findViewById(R.id.manage_group_ok_image_button);
 		addGroupImageButton = (ImageButton) findViewById(R.id.manage_group_add_group_image_button);
 		manageGroupsHeading = (TextView) 	findViewById(R.id.manage_template_layout_heading);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
 		listLayout			= (LinearLayout) findViewById(R.id.group_manager_list_layout);
 		blankLayout			= (LinearLayout) findViewById(R.id.group_manager_blank_layout);
+		
 		
 		
 		loadGroupsData();
