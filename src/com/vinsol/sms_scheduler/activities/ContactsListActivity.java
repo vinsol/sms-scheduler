@@ -106,13 +106,14 @@ public class ContactsListActivity extends Activity {
 				}
 				if(callingActivity.equals("Group Add Activity")){
 					intent.putExtra("NEWCALL", newCall);
+
 					if(groupName.equals("")){
 						final Dialog d = new Dialog(ContactsListActivity.this);
 						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 						d.setContentView(R.layout.new_group_name_dialog_design);
 						//d.setCancelable(false);
 						final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
-						ImageButton groupNameOkButton 	= (ImageButton) d.findViewById(R.id.group_name_dialog_name_ok_button);
+						Button groupNameOkButton 	= (Button) d.findViewById(R.id.group_name_dialog_name_ok_button);
 						
 						groupNameEdit.setText(groupName);
 						

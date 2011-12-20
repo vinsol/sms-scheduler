@@ -55,7 +55,6 @@ public class ManageGroupsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_group_layout);
 		
-		//okImageButton 		= (ImageButton) findViewById(R.id.manage_group_ok_image_button);
 		addGroupImageButton = (ImageButton) findViewById(R.id.manage_group_add_group_image_button);
 		manageGroupsHeading = (TextView) 	findViewById(R.id.manage_template_layout_heading);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
@@ -63,21 +62,13 @@ public class ManageGroupsActivity extends Activity {
 		blankLayout			= (LinearLayout)findViewById(R.id.group_manager_blank_layout);
 		blankListAddButton = (Button) 		findViewById(R.id.blank_list_add_button);
 		
-//		mdba.open();
-//		cur = mdba.fetchAllGroups();
-//		if(cur.getCount()==0){
-//			listLayout.setVisibility(LinearLayout.GONE);
-//			blankLayout.setVisibility(LinearLayout.VISIBLE);
-//		}else{
-//			listLayout.setVisibility(LinearLayout.VISIBLE);
-//			blankLayout.setVisibility(LinearLayout.GONE);
-//		}
-//		mdba.close();
+
 		loadGroupsData();
 		
 		myAdapter = new MyAdapter();
 		groupsList.setAdapter(myAdapter);
 		
+
 		blankListAddButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -88,14 +79,7 @@ public class ManageGroupsActivity extends Activity {
 			}
 		});
 		
-//		okImageButton.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				ManageGroupsActivity.this.finish();
-//			}
-//		});
-		
+
 		addGroupImageButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
