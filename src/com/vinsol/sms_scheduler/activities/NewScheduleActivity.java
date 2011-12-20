@@ -295,7 +295,7 @@ public class NewScheduleActivity extends Activity {
 					startActivityForResult(intent, 2);
 				}else{
 					toOpen = 1;
-					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					
 //					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
 //						
@@ -329,7 +329,7 @@ public class NewScheduleActivity extends Activity {
 						numbersText.setSelection(numbersText.getText().toString().length());
 					}
 				}else{
-					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 //					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
 //						

@@ -979,7 +979,7 @@ public class SmsSchedulerExplActivity extends Activity {
 		                            startActivity(intent);
 	        					}else{
 
-	        						dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
+	        						dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 	        						toOpen = 1;
 	        						dataLoadWaitDialog.show();
 	        					}

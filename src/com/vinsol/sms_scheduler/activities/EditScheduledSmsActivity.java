@@ -347,7 +347,7 @@ public class EditScheduledSmsActivity extends Activity {
 					startActivityForResult(intent, 2);
 				}else{
 					
-					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					toOpen = 1;
 					
 //					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
@@ -382,7 +382,7 @@ public class EditScheduledSmsActivity extends Activity {
 						numbersText.setSelection(numbersText.getText().toString().length());
 					}
 				}else{
-					dataLoadWaitDialog.setContentView(R.layout.wait_dialogue_layout);
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 //					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
 //						
