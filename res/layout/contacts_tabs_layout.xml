@@ -62,19 +62,29 @@
 	                        <TabWidget 
 	                            android:id="@android:id/tabs"
 	                            android:layout_width="fill_parent" 
-	                            android:layout_height="40dip"
+	                            android:layout_height="wrap_content"
 	                            android:layout_weight="0"
-	                            android:gravity="center"
+	                            android:gravity="center_vertical"
 	                            android:layout_gravity="center"
 	                            >
                             </TabWidget>
 	                        
+	                        <ImageView 
+									android:id = "@+id/list_divider"
+									android:layout_height = "1dp"
+									android:layout_width = "fill_parent"
+									android:layout_alignParentTop="true"
+									android:src="@drawable/list_divider"
+							/>
+	                            
 	                        <FrameLayout 
 	                            android:id="@android:id/tabcontent"
 	                            android:layout_width="fill_parent" 
 	                            android:layout_height="wrap_content"
 	                            android:layout_weight="1"
 	                            >
+	                            
+	                            
 	                            
 	                            <ExpandableListView 
         							android:id = "@+id/native_list"

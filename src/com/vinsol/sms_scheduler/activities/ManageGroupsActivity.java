@@ -2,32 +2,44 @@ package com.vinsol.sms_scheduler.activities;
 
 import java.util.ArrayList;
 
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.R.id;
+import com.vinsol.sms_scheduler.R.layout;
+import com.vinsol.sms_scheduler.activities.ManageTemplateActivity.MyAdapter;
+
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
+import android.widget.Toast;
 
 public class ManageGroupsActivity extends Activity {
 
 	
+	ImageButton okImageButton;
 	ImageButton addGroupImageButton;
+	TextView manageGroupsHeading;
 	ListView groupsList;
+	
+	LinearLayout listLayout;
+	LinearLayout blankLayout;
 	
 	
 	DBAdapter mdba = new DBAdapter(this);
@@ -41,9 +53,13 @@ public class ManageGroupsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_group_layout);
-	
+		
 		addGroupImageButton = (ImageButton) findViewById(R.id.manage_group_add_group_image_button);
+		manageGroupsHeading = (TextView) 	findViewById(R.id.manage_template_layout_heading);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
+		listLayout			= (LinearLayout) findViewById(R.id.group_manager_list_layout);
+		blankLayout			= (LinearLayout) findViewById(R.id.group_manager_blank_layout);
+		
 		
 		
 		loadGroupsData();

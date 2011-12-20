@@ -74,6 +74,7 @@ import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 public class EditScheduledSmsActivity extends Activity {
 	
 	//---------References to the widgets-----------------
+	TextView 				headerText;
 	AutoCompleteTextView 	numbersText;
 	ImageButton 			addFromContactsImgButton;
 	Button 					dateButton;
@@ -200,6 +201,7 @@ public class EditScheduledSmsActivity extends Activity {
 		dataLoadWaitDialog = new Dialog(EditScheduledSmsActivity.this);
 		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
+		headerText					= (TextView) 				findViewById(R.id.header);
 		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
 		dateButton 					= (Button) 					findViewById(R.id.new_date_button);
@@ -222,6 +224,7 @@ public class EditScheduledSmsActivity extends Activity {
 		processDate = new Date(intent.getLongExtra("TIME", 0));
 		characterCountText.setText(String.valueOf(messageText.getText().toString().length()));
 		editedGroup = intent.getLongExtra("GROUP", 0);
+		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
 		
 		Log.i("MSG", "group Id : " + editedGroup);
 		
@@ -259,12 +262,19 @@ public class EditScheduledSmsActivity extends Activity {
 			isDraft = true;
 		}
 		else{
-//			mdba.open();
-//			Cursor smsDetail = mdba.fetchSmsDetails(smsIds.get(0));
-//			if(smsDetail.getInt(smsDetail.getColumnIndex(DBAdapter.KEY_DRAFT))==1){
-//				isDraft = true;
-//			}
-//			mdba.close();
+			mdba.open();
+			Cursor smsDetail = mdba.fetchSmsDetails(Spans.get(0).smsId);
+			smsDetail.moveToFirst();
+			if(smsDetail.getInt(smsDetail.getColumnIndex(DBAdapter.KEY_DRAFT))==1){
+				isDraft = true;
+			}
+			mdba.close();
+		}
+		
+		if(!isDraft){
+			headerText.setText("Edit SMS");
+			
+//			scheduleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.))
 		}
 		
 		Log.i("MSG", "size of Spans : " + Spans.size());

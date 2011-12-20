@@ -38,6 +38,7 @@ import com.vinsol.sms_scheduler.models.SpannedEntity;
 public class ContactsTabsActivity extends Activity {
 	
 	TabHost tabHost;
+	TabHost mtabHost;
 	DBAdapter mdba = new DBAdapter(this);
 	Cursor cur;
 	
@@ -318,11 +319,17 @@ public class ContactsTabsActivity extends Activity {
         
         
         LinearLayout groupTabs = (LinearLayout)findViewById( R.id.group_tabs );
-        TabHost topHost = (TabHost)groupTabs.findViewById( android.R.id.tabhost );
-        topHost.setup( );
-        topHost.addTab( topHost.newTabSpec( "native" ).setIndicator( "Native" ).setContent( R.id.native_list) );
-        topHost.addTab( topHost.newTabSpec( "private" ).setIndicator( "Private" ).setContent( R.id.private_list ) );
-		
+        mtabHost = (TabHost)groupTabs.findViewById( android.R.id.tabhost );
+        
+
+        mtabHost.setup( );
+        mtabHost.getTabWidget().setDividerDrawable(R.drawable.vertical_seprator);
+        
+        setupTab(new TextView(this), "Native");
+    	setupTab(new TextView(this), "Private");
+
+        
+        ///////
         privateGroupExplList = (ExpandableListView) findViewById(R.id.private_list);
         nativeGroupExplList = (ExpandableListView) groupTabs.findViewById(R.id.native_list);
         
@@ -394,6 +401,28 @@ public class ContactsTabsActivity extends Activity {
 	
 	
 	
+	private void setupTab(final View view, final String tag) {
+		View tabview = createTabView(mtabHost.getContext(), tag);
+		TabSpec setContent = null;
+		if(tag.equals("Native")){
+			setContent = mtabHost.newTabSpec(tag).setIndicator(tabview).setContent(R.id.native_list);
+		}else if(tag.equals("Private")){
+			setContent = mtabHost.newTabSpec(tag).setIndicator(tabview).setContent(R.id.private_list);
+		}
+	        
+		mtabHost.addTab(setContent);
+	}
+
+	private static View createTabView(final Context context, final String text) {
+		View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
+		TextView tv = (TextView) view.findViewById(R.id.tabsText);
+		tv.setText(text);
+		return view;
+	}
+	
+	
+	
+	
 	
 	@Override
 	public void onBackPressed() {
@@ -421,7 +450,7 @@ public class ContactsTabsActivity extends Activity {
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ContactsListHolder holder;
-			if(convertView == null) {
+			if(convertView==null){
 				LayoutInflater inflater = getLayoutInflater();
 	    		convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
 	    		holder = new ContactsListHolder();
@@ -430,7 +459,7 @@ public class ContactsTabsActivity extends Activity {
 	    		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_number);
 	    		holder.contactCheck     = (CheckBox) convertView.findViewById(R.id.contact_list_row_contact_check);
 	    		convertView.setTag(holder);
-			} else {
+			}else{
 				holder = (ContactsListHolder) convertView.getTag();
 			}
 //			final int _position  = position;
