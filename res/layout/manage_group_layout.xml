@@ -1,57 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@color/white"
+    >
 
-    <RelativeLayout 
-    	android:layout_height = "60dp"
-    	android:layout_width = "fill_parent"
-    	android:layout_gravity="center_vertical"
-    	android:background="@drawable/header_bg">
-    	
+    <!-- header -->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/header_bg" 
+        >
+        <TextView
+            android:id="@+id/manage_group_layout_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Manage Groups"
+            android:textColor="@color/white"
+            android:textSize="20sp" 
+        	android:textStyle="bold"
+            >
+        </TextView>
+
         <ImageButton
-    		android:id ="@+id/manage_group_ok_image_button"
-    		android:layout_height = "wrap_content"
-    		android:layout_width = "wrap_content"
-    		android:src="@drawable/ic_btn_write_sms"
-    		android:layout_marginTop = "7dp"
-    		android:layout_marginLeft="5dp"
-    		android:layout_alignParentLeft="true"/>
-        
-    	<TextView 
-    	    android:id = "@+id/manage_group_layout_heading"
-    		android:layout_height = "wrap_content"
-    		android:layout_width = "wrap_content"
-    		android:layout_toRightOf="@id/manage_group_ok_image_button"
-    		android:paddingLeft="20dp"
-    		android:paddingTop="5dp"
-    		android:layout_margin = "5dp"
-    		android:textSize="20sp"
-    		android:textColor="#ffffff"
-    		android:gravity="center_vertical"
-    		android:text = "Manage Groups"/>
-    		
-    	<ImageButton
-    		android:id ="@+id/manage_group_add_group_image_button"
-    		android:layout_height = "wrap_content"
-    		android:layout_width = "wrap_content"
-    		android:src="@drawable/ic_btn_write_sms"
-    		android:layout_marginTop = "7dp"
-    		android:layout_marginRight="5dp"
-    		android:layout_alignParentRight="true"/>
-    	
+            android:id="@+id/manage_group_add_group_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_btn_write_sms" 
+            >
+    	</ImageButton>
     </RelativeLayout>
-    
-   	<View 
-   	    android:layout_height = "5dp"
-   	    android:layout_width = "fill_parent"
-   	    android:background="#222222"/>
-    
-    <ListView 
-    	android:id = "@+id/group_manager_list"
-    	android:layout_height = "wrap_content"
-    	android:layout_width = "fill_parent"/>
-    
 
+    <ListView
+        android:id="@+id/group_manager_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:cacheColorHint="@color/transparent" 
+        >
+    </ListView>
 </LinearLayout>

@@ -2,38 +2,30 @@ package com.vinsol.sms_scheduler.activities;
 
 import java.util.ArrayList;
 
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.R.id;
-import com.vinsol.sms_scheduler.R.layout;
-import com.vinsol.sms_scheduler.activities.ManageTemplateActivity.MyAdapter;
-
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
 
 public class ManageGroupsActivity extends Activity {
 
 	
-	ImageButton okImageButton;
 	ImageButton addGroupImageButton;
 	TextView manageGroupsHeading;
 	ListView groupsList;
@@ -50,8 +42,7 @@ public class ManageGroupsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_group_layout);
-		
-		okImageButton 		= (ImageButton) findViewById(R.id.manage_group_ok_image_button);
+	
 		addGroupImageButton = (ImageButton) findViewById(R.id.manage_group_add_group_image_button);
 		manageGroupsHeading = (TextView) 	findViewById(R.id.manage_template_layout_heading);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
@@ -61,14 +52,6 @@ public class ManageGroupsActivity extends Activity {
 		
 		myAdapter = new MyAdapter();
 		groupsList.setAdapter(myAdapter);
-		
-		okImageButton.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				ManageGroupsActivity.this.finish();
-			}
-		});
 		
 		addGroupImageButton.setOnClickListener(new OnClickListener() {
 			
