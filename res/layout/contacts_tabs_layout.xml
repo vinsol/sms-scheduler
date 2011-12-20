@@ -99,7 +99,7 @@
 	    						
 	                           	<LinearLayout 
 	                                android:id = "@+id/private_list_parent_layout"
-	                                android:layout_height = "wrap_content"
+	                                android:layout_height = "fill_parent"
 	                                android:layout_width = "fill_parent"
 	                                >
 	                                
@@ -133,6 +133,7 @@
         									android:layout_width = "wrap_content"
         									android:gravity="center_vertical"
         									android:layout_margin = "10dp"
+        									android:textSize="18sp"
        										android:textColor="@color/black"
        									>
      									</TextView>
@@ -140,7 +141,8 @@
         									android:id = "@+id/blank_list_add_button"
         									android:layout_height = "wrap_content"
         									android:layout_width = "wrap_content"
-        									android:text = "Create a Group"
+        									android:text = ""
+        									android:background="@drawable/add_a_group_button_states"
        									>
      									</Button>
 	                                

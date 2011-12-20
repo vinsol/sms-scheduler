@@ -1050,7 +1050,8 @@ public class ContactsTabsActivity extends Activity {
 					
 					@Override
 					public void onClick(View v) {
-						if(holder.childCheck.isChecked()){
+						if(!holder.childCheck.isChecked()){
+							holder.childCheck.setChecked(true);
 							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
 							privateAddCheck(groupPosition, childPosition);
 							boolean areAllSelected = true;
@@ -1066,6 +1067,7 @@ public class ContactsTabsActivity extends Activity {
 							}
 								
 						}else{
+							holder.childCheck.setChecked(false);
 							privateRemoveCheck(groupPosition, childPosition);
 							
 							boolean areAllDeselected = true;
@@ -1559,6 +1561,17 @@ public class ContactsTabsActivity extends Activity {
 	
 	public void reloadPrivateGroupData(){
 		mdba.open();
+		
+		privateChildDataTemp.clear();
+		privateGroupDataTemp.clear();
+		
+		if(origin.equals("new")){
+			NewScheduleActivity.privateGroupData.clear();
+			NewScheduleActivity.privateChildData.clear();
+		}else{
+			EditScheduledSmsActivity.privateGroupData.clear();
+			EditScheduledSmsActivity.privateChildData.clear();
+		}
         Cursor groupsCursor = mdba.fetchAllGroups();
         if(groupsCursor.moveToFirst()){
         	do{

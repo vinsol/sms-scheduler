@@ -5,5 +5,6 @@
     <color name="transparent">#00000000</color>
     <color name="text_grey">#ff4d4d4d</color>
     <color name="text_blue">#ff00539f</color>
-	<color name="warning_yellow">#fffbffb6</color>    
+	<color name="warning_yellow">#fffbffb6</color>  
+	<color name="listing_text">#222222</color>  
 </resources>

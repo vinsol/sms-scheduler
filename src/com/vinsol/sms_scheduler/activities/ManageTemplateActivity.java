@@ -33,6 +33,9 @@ public class ManageTemplateActivity extends Activity{
 	Button 			newTemplateAddButton;
 	Button 			newTemplateCancelButton;
 	ListView 		templatesList;
+	LinearLayout	listLayout;
+	LinearLayout	blankLayout;
+	Button			addATemplateButton;
 	
 	MyAdapter mAdapter;
 	DBAdapter mdba = new DBAdapter(ManageTemplateActivity.this);
@@ -55,6 +58,9 @@ public class ManageTemplateActivity extends Activity{
 		newTemplateAddButton 		= (Button) 			findViewById(R.id.new_template_add_button);
 		newTemplateCancelButton 	= (Button) 			findViewById(R.id.new_template_cancel_button);
 		templatesList				= (ListView)		findViewById(R.id.template_manager_list);
+		listLayout					= (LinearLayout) 	findViewById(R.id.list_layout);
+		blankLayout					= (LinearLayout) 	findViewById(R.id.blank_layout);
+		addATemplateButton			= (Button) 			findViewById(R.id.blank_list_add_template_button);
 		
 		loadData();
 		
@@ -63,6 +69,27 @@ public class ManageTemplateActivity extends Activity{
 		mAdapter = new MyAdapter();
 		templatesList.setAdapter(mAdapter);
 		
+		
+		addATemplateButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				listLayout.setVisibility(LinearLayout.VISIBLE);
+				blankLayout.setVisibility(LinearLayout.GONE);
+				if(newTemplateSpaceLayout.getVisibility()==LinearLayout.VISIBLE){
+					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
+					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+					templatesList.requestFocus();
+				}else{
+					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
+					newTemplateBody.setText("");
+					newTemplateBody.requestFocus();
+					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
+					isEditing = false;
+					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+				}	
+			}
+		});
 		
 		
 		newTemplateButton.setOnClickListener(new OnClickListener() {
@@ -151,6 +178,16 @@ public class ManageTemplateActivity extends Activity{
 					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 				}
 				newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
+				mdba.open();
+				Cursor cur = mdba.fetchAllTemplates();
+				mdba.close();
+				if(cur.getCount()==0){
+					listLayout.setVisibility(LinearLayout.GONE);
+					blankLayout.setVisibility(LinearLayout.VISIBLE);
+				}else{
+					listLayout.setVisibility(LinearLayout.VISIBLE);
+					blankLayout.setVisibility(LinearLayout.GONE);
+				}
 			}
 		});
 		
@@ -160,9 +197,34 @@ public class ManageTemplateActivity extends Activity{
 	
 	
 	
+	@Override
+	protected void onResume() {
+		mdba.open();
+		Cursor cur = mdba.fetchAllTemplates();
+		mdba.close();
+		if(cur.getCount()==0){
+			listLayout.setVisibility(LinearLayout.GONE);
+			blankLayout.setVisibility(LinearLayout.VISIBLE);
+		}else{
+			listLayout.setVisibility(LinearLayout.VISIBLE);
+			blankLayout.setVisibility(LinearLayout.GONE);
+		}
+		super.onResume();
+	}
+	
+	
+	
+	
 	public void loadData(){
 		mdba.open();
 		Cursor cur = mdba.fetchAllTemplates();
+		if(cur.getCount()==0){
+			listLayout.setVisibility(LinearLayout.GONE);
+			blankLayout.setVisibility(LinearLayout.VISIBLE);
+		}else{
+			listLayout.setVisibility(LinearLayout.VISIBLE);
+			blankLayout.setVisibility(LinearLayout.GONE);
+		}
 		mdba.close();
 		
 		templatesArray.clear();
@@ -225,6 +287,7 @@ public class ManageTemplateActivity extends Activity{
 							loadData();
 							mAdapter = new MyAdapter();
 							templatesList.setAdapter(mAdapter);
+							
 							d.cancel();
 						}
 					});
