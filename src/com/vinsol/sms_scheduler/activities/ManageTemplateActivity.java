@@ -180,7 +180,7 @@ public class ManageTemplateActivity extends Activity{
 	
 	class MyAdapter extends ArrayAdapter{
     	MyAdapter(){
-    		super(ManageTemplateActivity.this, R.layout.template_manage_row, templatesIdArray);
+    		super(ManageTemplateActivity.this, R.layout.manage_goups_row_design, templatesIdArray);
     	}
     	
     	
@@ -189,10 +189,10 @@ public class ManageTemplateActivity extends Activity{
     		final TemplateViewHolder holder;
     		if(convertView==null){
     			LayoutInflater inflater = getLayoutInflater();
-    			convertView = inflater.inflate(R.layout.template_manage_row, parent, false);
+    			convertView = inflater.inflate(R.layout.manage_goups_row_design, parent, false);
     			holder = new TemplateViewHolder();
-    			holder.templateBodyLabel = (TextView)convertView.findViewById(R.id.template_manage_row_body);
-    			holder.deleteTemplateButton = (ImageView)convertView.findViewById(R.id.template_manage_row_delete_button);
+    			holder.templateBodyLabel = (TextView)convertView.findViewById(R.id.manage_groups_row_group_name);
+    			holder.deleteTemplateButton = (ImageView)convertView.findViewById(R.id.manage_groups_row_group_delete_image);
     			convertView.setTag(holder);
     		}else{
     			holder = (TemplateViewHolder) convertView.getTag();

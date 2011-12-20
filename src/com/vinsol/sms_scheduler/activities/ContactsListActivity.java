@@ -114,6 +114,7 @@ public class ContactsListActivity extends Activity {
 						//d.setCancelable(false);
 						final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
 						Button groupNameOkButton 	= (Button) d.findViewById(R.id.group_name_dialog_name_ok_button);
+						Button groupNameCancelButton= (Button) d.findViewById(R.id.group_name_dialog_name_cancel_button);
 						
 						groupNameEdit.setText(groupName);
 						
@@ -150,6 +151,15 @@ public class ContactsListActivity extends Activity {
 								}
 							}
 						});
+						
+						groupNameCancelButton.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								d.cancel();
+							}
+						});
+						
 						d.show();
 					}else{
 						if(ids.size() == 0){
