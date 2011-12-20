@@ -145,7 +145,7 @@
         	android:layout_height = "wrap_content"
         	android:layout_width = "wrap_content"
         	android:text = ""
-        	android:background="@drawable/add_a_group_button_states"
+        	android:background="@drawable/add_template_button_states"
        	>
      	</Button>
         
