@@ -844,19 +844,19 @@ public class DBAdapter {
 	        
 	        ContentValues initialTemplates = new ContentValues();
 	        
-	        initialTemplates.put(KEY_TEMP_CONTENT, "Happy Birthday");
+	        initialTemplates.put(KEY_TEMP_CONTENT, "I'm in a meeting. I'll contact you later.");
 	        db.insert(DATABASE_TEMPLATE_TABLE, null, initialTemplates);
 	        
-	        initialTemplates.put(KEY_TEMP_CONTENT, "Where are you?");
+	        initialTemplates.put(KEY_TEMP_CONTENT, "I'm driving now. I'll contact you later.");
 	        db.insert(DATABASE_TEMPLATE_TABLE, null, initialTemplates);
 	        
-	        initialTemplates.put(KEY_TEMP_CONTENT, "I'm busy. Will call you back in a moment");
+	        initialTemplates.put(KEY_TEMP_CONTENT, "I'm busy. Will give you a call later.");
 	        db.insert(DATABASE_TEMPLATE_TABLE, null, initialTemplates);
 	        
-	        initialTemplates.put(KEY_TEMP_CONTENT, "My throat is itching, lets have some BEER!!!");
+	        initialTemplates.put(KEY_TEMP_CONTENT, "Sorry, I'm going to be late.");
 	        db.insert(DATABASE_TEMPLATE_TABLE, null, initialTemplates);
 	        
-	        initialTemplates.put(KEY_TEMP_CONTENT, "Are you coming to the Dope Show???");
+	        initialTemplates.put(KEY_TEMP_CONTENT, "Have a nice day!");
 	        db.insert(DATABASE_TEMPLATE_TABLE, null, initialTemplates);
 		}
 		

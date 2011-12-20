@@ -135,7 +135,6 @@ public class ContactsListActivity extends Activity {
 									if(cur.moveToFirst()){
 										do{
 											if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_GROUP_NAME)).equals(groupNameEdit.getText().toString())){
-												
 												groupNameExists = true;
 												break;
 											}
@@ -146,7 +145,12 @@ public class ContactsListActivity extends Activity {
 										Toast.makeText(ContactsListActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
 									}else{
 										groupName = groupNameEdit.getText().toString();
+										mdba.open();
+										mdba.createGroup(groupName, ids);
+										mdba.close();
+										setResult(10, intent);
 										d.cancel();
+										ContactsListActivity.this.finish();
 									}
 								}
 							}
