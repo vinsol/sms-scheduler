@@ -267,15 +267,11 @@ public class GroupEditActivity extends Activity {
 		}else if(callingState.equals("edit")){
 			boolean isChanged = false;
 			if(ids.size() != ids2.size()){
-				Log.i("MSG", "mode 1");
 				isChanged = true;
 			}else{
 				for(int i = 0; i< ids.size(); i++){
-					
 					if (!ids.get(i).equals(ids2.get(i))){
-						Log.i("MSG", "IDS :" + ids.get(i) + ", IDS2 :" + ids2.get(i) );
 						isChanged = true;
-						Log.i("MSG", "mode 2");
 						break;
 					}
 				}

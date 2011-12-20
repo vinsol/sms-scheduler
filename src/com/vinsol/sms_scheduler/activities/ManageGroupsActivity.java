@@ -37,6 +37,7 @@ public class ManageGroupsActivity extends Activity {
 	ImageButton addGroupImageButton;
 	TextView manageGroupsHeading;
 	ListView groupsList;
+	Button blankListAddButton;
 	
 	LinearLayout listLayout;
 	LinearLayout blankLayout;
@@ -58,23 +59,42 @@ public class ManageGroupsActivity extends Activity {
 		addGroupImageButton = (ImageButton) findViewById(R.id.manage_group_add_group_image_button);
 		manageGroupsHeading = (TextView) 	findViewById(R.id.manage_template_layout_heading);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
-		listLayout			= (LinearLayout) findViewById(R.id.group_manager_list_layout);
-		blankLayout			= (LinearLayout) findViewById(R.id.group_manager_blank_layout);
+		listLayout			= (LinearLayout)findViewById(R.id.group_manager_list_layout);
+		blankLayout			= (LinearLayout)findViewById(R.id.group_manager_blank_layout);
+		blankListAddButton = (Button) 		findViewById(R.id.blank_list_add_button);
 		
-		
-		
+//		mdba.open();
+//		cur = mdba.fetchAllGroups();
+//		if(cur.getCount()==0){
+//			listLayout.setVisibility(LinearLayout.GONE);
+//			blankLayout.setVisibility(LinearLayout.VISIBLE);
+//		}else{
+//			listLayout.setVisibility(LinearLayout.VISIBLE);
+//			blankLayout.setVisibility(LinearLayout.GONE);
+//		}
+//		mdba.close();
 		loadGroupsData();
 		
 		myAdapter = new MyAdapter();
 		groupsList.setAdapter(myAdapter);
 		
-		okImageButton.setOnClickListener(new OnClickListener() {
+		blankListAddButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				ManageGroupsActivity.this.finish();
+				Intent intent = new Intent(ManageGroupsActivity.this, GroupEditActivity.class);
+				intent.putExtra("STATE", "new");
+				startActivity(intent);
 			}
 		});
+		
+//		okImageButton.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				ManageGroupsActivity.this.finish();
+//			}
+//		});
 		
 		addGroupImageButton.setOnClickListener(new OnClickListener() {
 			
@@ -91,7 +111,16 @@ public class ManageGroupsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+		mdba.open();
+		cur = mdba.fetchAllGroups();
+		if(cur.getCount()==0){
+			listLayout.setVisibility(LinearLayout.GONE);
+			blankLayout.setVisibility(LinearLayout.VISIBLE);
+		}else{
+			listLayout.setVisibility(LinearLayout.VISIBLE);
+			blankLayout.setVisibility(LinearLayout.GONE);
+		}
+		mdba.close();
 		loadGroupsData();
 		myAdapter.notifyDataSetChanged();
 	}
@@ -166,6 +195,13 @@ public class ManageGroupsActivity extends Activity {
 							grpNamesArray.remove(position);
 							notifyDataSetChanged();
 							d.cancel();
+							mdba.open();
+							cur = mdba.fetchAllGroups();
+							if(cur.getCount()==0){
+								listLayout.setVisibility(LinearLayout.GONE);
+								blankLayout.setVisibility(LinearLayout.VISIBLE);
+							}
+							mdba.close();
 						}
 					});
 					

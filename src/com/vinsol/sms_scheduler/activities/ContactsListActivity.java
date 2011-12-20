@@ -80,6 +80,7 @@ public class ContactsListActivity extends Activity {
 			}
 			
 			if(callingActivity.equals("Group Edit Activity")){
+				doneButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 				groupId = intent.getLongExtra("GROUPID", 0);
 			}else if(callingActivity.equals("Group Add Activity")){
 				newCall = intent.getBooleanExtra("NEWCALL", true);
