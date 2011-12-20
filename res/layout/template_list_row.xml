@@ -1,30 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="320dp"
-  android:layout_height="wrap_content"
-  android:background="@drawable/list_item_bg">
-    
-    <ImageView 
-			android:id = "@+id/list_divider"
-			android:layout_height = "wrap_content"
-			android:layout_width = "fill_parent"
-			android:layout_alignParentTop="true"
-			android:src="@drawable/list_divider"
-	/>
-    
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    >
     <TextView
-    	android:id = "@+id/template_content_space"
-    	android:layout_height = "45dp"
-    	android:layout_width = "fill_parent"
-    	android:ellipsize="end"
-    	android:maxLines="2"
-    	android:layout_marginLeft="5dp"
-    	android:layout_marginRight="5dp"
-    	android:layout_marginTop="2dp"
-    	android:layout_marginBottom="2dp"
-    	android:textSize="18sp"/>
-    
+        android:id="@+id/template_content_space"
+        android:layout_width="fill_parent"
+        android:layout_height="55dip"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textSize="18sp" 
+        android:textColor="@color/black"
+        android:gravity="center_vertical"
+        >
+    </TextView>
 </LinearLayout>

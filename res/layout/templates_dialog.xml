@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="300dp"
-  android:layout_height="wrap_content"
-  android:layout_gravity="center_horizontal"
-  android:background="#222222">
-    
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical" 
+    >
+
     <TextView
-   		android:layout_height= "40dp"
-   		android:layout_width = "320dp"
-   		android:paddingTop="2dp"
-   		android:paddingBottom="2dp"
-   		android:gravity="center"
-   		android:text = "Templates"
-   		android:textSize = "20sp"
-   		android:textColor="#000000"
-   		android:paddingRight = "2dp"
-   		android:background="@drawable/footer_bg"/>
-   		
-   	<View 
-   		android:layout_height="5dp"
-   		android:layout_width = "280dp"
-   		android:layout_gravity="center_horizontal"
-   		android:background="#222222"/>
-   		
-   	<ListView 
-   		android:id = "@+id/dialog_template_list"
-   		android:layout_height = "wrap_content"
-   		android:layout_width = "fill_parent"/>
-   		
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/header_bg"
+        android:gravity="center"
+        android:text="Templates"
+        android:textColor="@color/white"
+        android:textSize="20sp" 
+        android:textStyle="bold"
+        >
+    </TextView>
+
+    <ListView
+        android:id="@+id/dialog_template_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        android:cacheColorHint="@color/transparent"
+        >
+    </ListView>
 </LinearLayout>
