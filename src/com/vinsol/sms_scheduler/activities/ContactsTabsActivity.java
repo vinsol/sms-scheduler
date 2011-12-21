@@ -1410,7 +1410,7 @@ public class ContactsTabsActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					if(holder.contactCheck.isChecked()){
+					if(!holder.contactCheck.isChecked()){
 						holder.contactCheck.setChecked(true);
 						SpannedEntity span = new SpannedEntity();
 						if(recentContactIds.get(_position)> -1){
