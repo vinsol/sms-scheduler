@@ -1038,7 +1038,7 @@ public class SmsSchedulerExplActivity extends Activity {
     	@Override
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		SentDialogListHolder holder;
-    		if(convertView != null) {
+    		if(convertView == null) {
     			LayoutInflater inflater = getLayoutInflater();
         		convertView = inflater.inflate(R.layout.sent_details_number_list_row, parent, false);
         		holder = new SentDialogListHolder();
