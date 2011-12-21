@@ -1174,16 +1174,15 @@ public class NewScheduleActivity extends Activity {
             d.setContentView(R.layout.voice_matches_dialog);
             
             ListView matchesList = (ListView) d.findViewById(R.id.matches_list);
-            matchesList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, matches));
+            matchesList.setAdapter(new ArrayAdapter<String>(this, R.layout.simple_list_item, matches));
             
             matchesList.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int position, long arg3) {
-					if(messageText.getText().toString().length()==0){
+				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+					if(messageText.getText().toString().length()==0) {
 						messageText.setText(matches.get(position));
-					}else{
+					} else {
 						messageText.setText(messageText.getText().toString() + "\n" + matches.get(position));
 					}
 					d.cancel();

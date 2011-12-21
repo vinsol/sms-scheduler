@@ -4,12 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
+    android:background="@color/white"
     >
 
     <TextView 
         android:layout_height="wrap_content"
         android:layout_width = "fill_parent"
+        android:background="@drawable/header_bg"
         android:text="Matches"
+        android:textColor="@color/white"
+        android:textSize="18dip"
+        android:textStyle="bold"
+        android:gravity="center"
         >
     </TextView>
     
@@ -18,6 +24,7 @@
         android:layout_height = "fill_parent"
         android:layout_width = "fill_parent"
         android:divider="@drawable/list_divider"
+        android:cacheColorHint="@color/transparent"
         >
 	</ListView>
 </LinearLayout>

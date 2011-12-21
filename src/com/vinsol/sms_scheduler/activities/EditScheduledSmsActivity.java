@@ -1248,7 +1248,7 @@ public class EditScheduledSmsActivity extends Activity {
             d.setContentView(R.layout.voice_matches_dialog);
             
             ListView matchesList = (ListView) d.findViewById(R.id.matches_list);
-            matchesList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, matches));
+            matchesList.setAdapter(new ArrayAdapter<String>(this, R.layout.simple_list_item, matches));
             
             matchesList.setOnItemClickListener(new OnItemClickListener() {
 
