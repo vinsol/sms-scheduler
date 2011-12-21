@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" 
     android:background="@color/white"
+    android:minHeight="400dip"
     >
     
     <!-- header showing date and time of delivered message -->
@@ -43,13 +44,14 @@
         android:layout_height="wrap_content"
         android:textSize="16sp" 
         android:textColor="@color/black"
-        android:maxHeight="120dip"
-        android:paddingLeft="10dip"
+        android:maxHeight="180dip"
+        android:padding="10dip"
         android:paddingRight="10dip"
         android:layout_marginBottom="5dip" 
         android:scrollbars="vertical"
         android:fadingEdge="none"
-        android:background="@drawable/show_message_bg"
+        android:background="@drawable/dialog_bg"
+        android:gravity="center_vertical"
         >
     </TextView>
     
@@ -59,6 +61,7 @@
         android:layout_height="fill_parent"
         android:divider="@drawable/list_divider"
         android:cacheColorHint="@color/transparent" 
+        android:minHeight="180dip"
         >
     </ListView>
 </LinearLayout>

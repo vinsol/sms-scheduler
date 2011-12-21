@@ -1048,14 +1048,8 @@ public class SmsSchedulerExplActivity extends Activity {
     		}else{
     			holder = (SentDialogListHolder) convertView.getTag();
     		}
-    		final int _position  = position;
-    		
-    		
-    		
-    		
+
     		holder.numberLabel.setText(numbersForSentDialog[position]);
-    		
-    		
     		
     		long currentId = idsForSentDialog.get(position);
     		
