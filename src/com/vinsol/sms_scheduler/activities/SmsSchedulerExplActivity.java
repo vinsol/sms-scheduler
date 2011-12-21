@@ -1029,6 +1029,7 @@ public class SmsSchedulerExplActivity extends Activity {
 	
 	//********* Adapter for the list of recipients and msg status, in the show dialog of sent msgs ***********************
 	class SentDialogNumberListAdapter extends ArrayAdapter{
+		
 		SentDialogNumberListAdapter(){
     		super(SmsSchedulerExplActivity.this, R.layout.sent_details_number_list_row, numbersForSentDialog);
     	}
@@ -1036,18 +1037,25 @@ public class SmsSchedulerExplActivity extends Activity {
     	
     	@Override
     	public View getView(final int position, View convertView, ViewGroup parent) {
+    		SentDialogListHolder holder;
     		if(convertView != null) {
-    			return convertView;
+    			LayoutInflater inflater = getLayoutInflater();
+        		convertView = inflater.inflate(R.layout.sent_details_number_list_row, parent, false);
+        		holder = new SentDialogListHolder();
+        		holder.numberLabel = (TextView)convertView.findViewById(R.id.sent_details_number_list_number_text);
+        		holder.statusImage = (ImageView)convertView.findViewById(R.id.sent_details_number_list_status_image);
+        		convertView.setTag(holder);
+    		}else{
+    			holder = (SentDialogListHolder) convertView.getTag();
     		}
     		final int _position  = position;
-    		LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.sent_details_number_list_row, parent, false);
     		
     		
-    		TextView numberLabel = (TextView)row.findViewById(R.id.sent_details_number_list_number_text);
-    		numberLabel.setText(numbersForSentDialog[position]);
     		
-    		ImageView statusImage = (ImageView)row.findViewById(R.id.sent_details_number_list_status_image);
+    		
+    		holder.numberLabel.setText(numbersForSentDialog[position]);
+    		
+    		
     		
     		long currentId = idsForSentDialog.get(position);
     		
@@ -1064,22 +1072,22 @@ public class SmsSchedulerExplActivity extends Activity {
 			
 			switch (condition) {
 			case 1:
-				statusImage.setImageResource(R.drawable.sent_failure_icon);
+				holder.statusImage.setImageResource(R.drawable.sent_failure_icon);
 				break;
 				
 			case 2:
-				statusImage.setImageResource(R.drawable.sending_sms_icon);
+				holder.statusImage.setImageResource(R.drawable.sending_sms_icon);
 				break;
 				
 			case 3:
-				statusImage.setImageResource(R.drawable.sent_success_icon);
+				holder.statusImage.setImageResource(R.drawable.sent_success_icon);
 				break;
 					
 			default:
 				break;
 			}
     		
-    		return row;
+    		return convertView;
     	}
     }
 	
@@ -1230,5 +1238,11 @@ public class SmsSchedulerExplActivity extends Activity {
 		TextView dateTextView;
 		TextView receiverTextView;
 		TextView extraReceiversTextView;
+	}
+	
+	
+	class SentDialogListHolder{
+		TextView numberLabel;
+		ImageView statusImage;
 	}
 }
