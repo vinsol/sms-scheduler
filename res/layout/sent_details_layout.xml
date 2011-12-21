@@ -1,58 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="300dp"
-  android:layout_height="match_parent">
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@color/white"
+    >
     
-    <ListView 
-    	android:id= "@+id/sent_details_dialog_number_list"
-    	android:layout_height = "wrap_content"
-    	android:layout_width = "fill_parent"
-    	android:divider="@drawable/list_divider"
-    	/>
-    
-    
+    <!-- header showing date and time of delivered message -->
     <LinearLayout
-        android:layout_height = "wrap_content"
-        android:layout_width = "fill_parent"
-        android:background="#777777"
-        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/header_bg"
         android:gravity="center_vertical"
-        android:padding="2dp">
-    
-    
-    	<ImageView 
-    	    android:layout_height = "32dp"
-    	    android:layout_width = "32dp"
-    	    android:src="@drawable/analogclock"/>
-    
-    	<TextView 
-    		android:id = "@+id/sent_details_dialog_time_label"
-    		android:layout_height = "wrap_content"
-    		android:layout_width = "fill_parent"
-    		android:layout_margin="5dp"
-    		android:textSize="16sp"
-    		android:layout_gravity="center_vertical"/>
-    
+        android:orientation="horizontal"
+        android:padding="2dp" 
+        >
+        
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/analogclock" 
+            >
+        </ImageView>
+
+        <TextView
+            android:id="@+id/sent_details_dialog_time_label"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:textSize="16sp" 
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            >
+       	</TextView>
     </LinearLayout>
     
-    	
-    <ScrollView 
-        android:layout_height="150dp"
+    <TextView
+        android:id="@+id/sent_details_dialog_message_space"
         android:layout_width="fill_parent"
-        android:padding="5dp"
+        android:layout_height="wrap_content"
+        android:textSize="16sp" 
+        android:textColor="@color/black"
+        android:maxHeight="120dip"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:layout_marginBottom="5dip" 
+        android:scrollbars="vertical"
+        android:fadingEdge="none"
         >
-    	
-        <TextView
-    		android:id = "@+id/sent_details_dialog_message_space"
-    		android:layout_height = "fill_parent"
-    		android:layout_width = "fill_parent"
-    		android:layout_margin="5dp"
-    		android:textSize="16sp"
-    		android:editable="false"/>
-        
-    </ScrollView>
+    </TextView>
     
-    
+    <ListView
+        android:id="@+id/sent_details_dialog_number_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="@drawable/list_divider"
+        android:cacheColorHint="@color/transparent" 
+        >
+    </ListView>
 </LinearLayout>

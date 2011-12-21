@@ -21,6 +21,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.text.method.MovementMethod;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -1015,6 +1017,7 @@ public class SmsSchedulerExplActivity extends Activity {
 		idsForSentDialog = mdba.getIds(childSentArray.get(childPos).keyGrpId);
 		timeLabel.setText(childSentArray.get(childPos).keyDate);
 		messageSpace.setText(childSentArray.get(childPos).keyMessage);
+		messageSpace.setMovementMethod(new ScrollingMovementMethod());
 		SentDialogNumberListAdapter sentDialogAdapter = new SentDialogNumberListAdapter();
 		numbersList.setAdapter(sentDialogAdapter);
 		
@@ -1033,7 +1036,7 @@ public class SmsSchedulerExplActivity extends Activity {
     	
     	@Override
     	public View getView(final int position, View convertView, ViewGroup parent) {
-    		if(convertView!=null){
+    		if(convertView != null) {
     			return convertView;
     		}
     		final int _position  = position;
