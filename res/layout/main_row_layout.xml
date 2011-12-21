@@ -29,7 +29,7 @@
         android:layout_toRightOf="@id/main_row_recepient_area"
         android:layout_alignBaseline="@id/main_row_recepient_area"
         android:paddingRight="10dip"
-        android:textColor="#fbec5d"
+        android:textColor="@color/listing_text"
         >
    	</TextView>
    	
