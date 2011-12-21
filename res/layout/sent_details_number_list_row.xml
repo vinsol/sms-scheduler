@@ -1,40 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="fill_parent"
-  android:layout_height="match_parent"
-  android:gravity="center_vertical"
-  android:paddingLeft = "2dp"
-  android:paddingRight = "2dp"
-  android:paddingBottom = "2dp"
-  android:background="#222222">
-    
-    <ImageView 
-			android:id = "@+id/list_divider"
-			android:layout_height = "wrap_content"
-			android:layout_width = "fill_parent"
-			android:layout_alignParentTop="true"
-			android:src="@drawable/list_divider"
-	/>
-    
-    <ImageView 
-    	android:id = "@+id/sent_details_number_list_status_image"
-    	android:layout_height = "28dp"
-    	android:layout_width = "28dp"
-    	android:paddingRight="5dp"
-    	android:paddingTop = "5dp"
-    	android:layout_alignParentRight="true"
-    	/>
-    	
-    <TextView 
-    	android:id = "@+id/sent_details_number_list_number_text"
-    	android:layout_height = "wrap_content"
-    	android:layout_width = "wrap_content"
-    	android:layout_alignParentLeft="true"
-    	android:paddingLeft="5dp"
-    	android:paddingTop="5dp"
-    	android:gravity="center_vertical"
-    	android:layout_toLeftOf="@id/sent_details_number_list_status_image"/>
-    
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:padding="5dp" 
+    android:layout_marginTop="10dip"
+    android:layout_marginBottom="10dip"
+    >
+
+    <ImageView
+        android:id="@+id/sent_details_number_list_status_image"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_alignParentRight="true"
+        >
+   	</ImageView>
+
+    <TextView
+        android:id="@+id/sent_details_number_list_number_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/sent_details_number_list_status_image"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+		android:ellipsize="end"
+        >
+    </TextView>
 </RelativeLayout>
