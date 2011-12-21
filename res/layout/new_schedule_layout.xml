@@ -14,7 +14,8 @@
 		android:textColor="@color/white"
 		android:textStyle="bold"
 		android:background="@drawable/header_bg"
-		android:gravity="center"
+		android:gravity="center_vertical"
+		android:paddingLeft="10dip"
 		>
 	</TextView>
     
@@ -34,7 +35,7 @@
 			android:layout_width="0dip"
 			android:layout_height="wrap_content"
 			android:layout_weight = "1"
-			android:layout_marginLeft="5dp"
+			android:layout_marginLeft="10dp"
 			android:background="@drawable/schedule_footer_states"
 			>
 		</Button>
@@ -45,7 +46,7 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:layout_marginLeft="5dp"
-			android:layout_marginRight="5dp"
+			android:layout_marginRight="10dp"
 			android:background="@drawable/cancel_footer_states"
 			>
 		</Button>
@@ -103,7 +104,7 @@
 			   	android:layout_height = "wrap_content"
 			   	android:textColor="@color/text_grey"
 			   	android:textSize="18sp"
-			   	android:layout_marginTop="10dp"
+			   	android:layout_marginTop="3dp"
 			   	android:background="@drawable/date_time_button_states"
 			   	>
 	    	</Button>
@@ -140,9 +141,7 @@
 					android:layout_width = "wrap_content"
 					android:layout_toRightOf="@id/template_imgbutton"
 					android:layout_centerVertical="true"
-					android:layout_marginTop="2dip"
-					android:layout_marginBottom="2dip"
-					android:src="@drawable/vertical_seprator"
+					android:src="@drawable/vertical_divider_for_message_header"
 					>
 				</ImageView>    
 				    
@@ -165,9 +164,7 @@
 					android:layout_width = "wrap_content"
 					android:layout_toRightOf="@id/speech_imgbutton"
 					android:layout_centerVertical="true"
-					android:layout_marginTop="2dip"
-					android:layout_marginBottom="2dip"
-					android:src="@drawable/vertical_seprator"
+					android:src="@drawable/vertical_divider_for_message_header"
 					>
 				</ImageView>        
 	    		
@@ -189,9 +186,7 @@
 					android:layout_width = "wrap_content"
 					android:layout_toLeftOf="@id/add_template_imgbutton"
 					android:layout_centerVertical="true"
-					android:layout_marginTop="2dip"
-					android:layout_marginBottom="2dip"
-					android:src="@drawable/vertical_seprator"
+					android:src="@drawable/vertical_divider_for_message_header"
 					>
 				</ImageView>        
    			</RelativeLayout>
@@ -212,7 +207,7 @@
 		   			android:padding="5dp"
 		   			android:layout_below="@id/message_top_layout"
 		   			android:minLines="4"
-		   			android:background="#00000000"
+		   			android:background="@drawable/message_bg"
 		   			>
 	   			</EditText>
 	   			
@@ -224,9 +219,9 @@
 	   				android:text = "0"
 	   				android:textSize="20sp"
 	   				android:textStyle="bold"
-	   				android:textColor="#33333333"
-	   				android:layout_marginBottom="5dp"
-	   				android:layout_marginRight="5dp"
+	   				android:textColor="@color/char_count_grey"
+	   				android:paddingBottom="5dp"
+	   				android:paddingRight="5dp"
 	   				android:layout_alignParentRight="true"
 	   				android:layout_alignParentBottom="true"
 	   				>
@@ -242,7 +237,7 @@
 				android:layout_width = "fill_parent"
 				android:layout_above="@+id/schedule_cancel_button_layout"
 				android:background="@drawable/emoticons_bg"
-				android:layout_marginBottom="20dp"
+				android:layout_marginBottom="10dp"
 				>
 				<GridView 
 		    		android:id = "@+id/smileysGrid"
