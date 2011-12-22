@@ -51,7 +51,6 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -67,7 +66,6 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.activities.ContactsListActivity.ContactsAddListHolder;
 import com.vinsol.sms_scheduler.models.GroupStructure;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
@@ -246,25 +244,19 @@ public class NewScheduleActivity extends Activity {
 	
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
 	}
 	
-	
-	
-	
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
-		
 		unregisterReceiver(mDataLoadedReceiver);
 	}
 	
 	
 	
-	public void setFunctionalities(){
+	public void setFunctionalities() {
 		
 		addFromContactsImgButton.setOnClickListener(new OnClickListener() {
 			
@@ -295,24 +287,18 @@ public class NewScheduleActivity extends Activity {
 				}
 			}
 		});
-		
-		
-		
-		
-		
-		
-		
+
 		numbersText.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				if(SmsApplicationLevelData.isDataLoaded){
-					if(spanStartPosition > 0){
+				if(SmsApplicationLevelData.isDataLoaded) {
+					if(spanStartPosition > 0) {
 						numbersText.setSelection(spanStartPosition);
-					}else if (Spans.size() > 0){
+					}else if (Spans.size() > 0) {
 						numbersText.setSelection(numbersText.getText().toString().length());
 					}
-				}else{
+				} else {
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 //					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
@@ -336,15 +322,15 @@ public class NewScheduleActivity extends Activity {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				
 				Log.v("cccc", "" + keyCode + "  " + KeyEvent.KEYCODE_COMMA);				
-				if(keyCode == KeyEvent.KEYCODE_DEL){
+				if(keyCode == KeyEvent.KEYCODE_DEL) {
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
-	                 for(int i = 0; i< Spans.size(); i++){
+	                 for(int i = 0; i< Spans.size(); i++) {
 	                	 len = len + Spans.get(i).displayName.length();
-	                	 if(i!=0){
+	                	 if(i!=0) {
 	                		 len = len + 2;
 	                	 }
-	                	 if(pos<=len){
+	                	 if(pos<=len) {
 	                		 int position = pos - (Spans.get(i).displayName.length());
 	                		 if (position > 0)
 	                			 numbersText.setSelection(position);
@@ -376,32 +362,21 @@ public class NewScheduleActivity extends Activity {
 				return false;
 			}
 		});
-		
-		
-		
-		
-		
+
 		numbersText.addTextChangedListener(new TextWatcher() {
 			
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 			
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 			
 			@Override
 			public void afterTextChanged(Editable s) {
 				int pos = numbersText.getSelectionStart();
 				Log.i("MSG", pos + "");
-				if(pos>1){
-					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' '){
+				if(pos>1) {
+					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' ') {
 						if(numbersText.getText().toString().charAt(pos-2)== '0' ||
 								numbersText.getText().toString().charAt(pos-2)== '1' ||
 								numbersText.getText().toString().charAt(pos-2)== '2' ||
@@ -434,17 +409,11 @@ public class NewScheduleActivity extends Activity {
 							}
 							refreshSpannableString();
 							
-						}
-						
+						}		
 					}
-				}
-				
+				}	
 			}
 		});
-		
-		
-		
-		
 		
 		numbersText.setLongClickable(false);
 		numbersText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -468,12 +437,6 @@ public class NewScheduleActivity extends Activity {
 				refreshSpannableString();
 			}
 		});
-		
-		
-		
-		
-		
-		
 		
 		//------------Date Select Button set to current date--------------------
 		Date currentDate = new Date();
@@ -557,12 +520,6 @@ public class NewScheduleActivity extends Activity {
 					}
 				});
 
-				
-				
-				
-				
-				
-				
 				//---Setting TimePicker value change listner--------
 				timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
 					
@@ -655,26 +612,8 @@ public class NewScheduleActivity extends Activity {
 		
 		});
 		//-----------------------------------------------end of smiley Grid set up--------
-		
-		
-		
-		
-		
-		//-------------------------functionality of speech input button-----------------------------
-//		dspeechImageButton.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				
-//			}
-//		});
-//		
-		
-		
-		
-		
-		
-		
+			
+
 		//---------------functionality of template button-----------------------
 		templateImageButton.setOnClickListener(new OnClickListener() {
 			
@@ -863,10 +802,6 @@ public class NewScheduleActivity extends Activity {
 			}
 		});
 		
-		
-		
-		
-		
 		//--------------------------functionality for Cancel Button--------------------------
 		cancelButton.setOnClickListener(new OnClickListener() {
 			
@@ -909,16 +844,8 @@ public class NewScheduleActivity extends Activity {
 				
 			}
 		});
-		
 	}
-	
-	
-	
 		
-	
-	
-	
-	
 	//------------------function to fetch template data from database----------------------------
 	public void loadTemplates(){
 		mdba.open();
@@ -946,9 +873,6 @@ public class NewScheduleActivity extends Activity {
 			return true;
 		}
 	}
-	
-	
-	
 	
 	//--------------------function to Scheduling a new sms------------------------------------
 	public void doSmsScheduling(){
@@ -1158,7 +1082,6 @@ public class NewScheduleActivity extends Activity {
 	public void refreshSpannableString() {
 		ssb.clear();
 		clickableSpanArrayList.clear();
-//		clickableSpanArrayList = new ArrayList<ClickableSpan>();
 		spanStartPosition = 0;
 		numbersText.setText("");
 			
@@ -1289,10 +1212,6 @@ public class NewScheduleActivity extends Activity {
 			NewScheduleActivity.this.finish();
 		}
 	}
-	
-	
-	
-	
 	
 	public void loadGroupsData(){
 		
