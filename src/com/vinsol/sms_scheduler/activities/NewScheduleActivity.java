@@ -30,18 +30,14 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
-import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
-import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -50,8 +46,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -60,8 +54,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.Constants;
@@ -79,7 +71,6 @@ public class NewScheduleActivity extends Activity {
 	ImageButton 			addFromContactsImgButton;
 	Button 					dateButton;
 	TextView 				characterCountText;
-	//TextView				messageCountText;
 	EditText 				messageText;
 	ImageButton 			templateImageButton;
 	ImageButton 			speechImageButton;
@@ -96,19 +87,15 @@ public class NewScheduleActivity extends Activity {
 	
 	static ArrayList<ArrayList<HashMap<String, Object>>> privateChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
 	static ArrayList<HashMap<String, Object>> privateGroupData = new ArrayList<HashMap<String, Object>>();
-	//boolean empty;
 	
 	
 	//-----------------------------------------------------------------------------
-	
-	
-	
 	SmsManager smsManager = SmsManager.getDefault();
 	ArrayList<String> parts = new ArrayList<String>();
 	ArrayList<String> templatesArray = new ArrayList<String>();
 	
+	
 	//---------------------------------------------------------------
-	//static ArrayList<GroupStructure> Groups = new ArrayList<GroupStructure>();
 	static ArrayList<SpannedEntity> Spans = new ArrayList<SpannedEntity>();
 	private SpannableStringBuilder ssb = new SpannableStringBuilder();
 	private int spanStartPosition = 0;
@@ -116,14 +103,9 @@ public class NewScheduleActivity extends Activity {
 	//--------------------------------------------------------------------
 	
 	
-	
-	
-	
 	//-----------------------Variables related to Voice recognition-------------------
-
-     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
-
-     //----------------------------------------------------------------------------------
+	private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+	//----------------------------------------------------------------------------------
 	
      
     
@@ -145,17 +127,12 @@ public class NewScheduleActivity extends Activity {
 	
 	boolean smileyVisible = false;
 	
-	static int positionTrack;
-	
-	static ArrayList<SpannedEntity> spannables = new ArrayList<SpannedEntity>();
-	
-	
 	ArrayList<Long> ids = new ArrayList<Long>();
 	ArrayList<String> idsString = new ArrayList<String>();
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	
-	static int [] images = {
+	int [] images = {
 					 R.drawable.emoticon_01, R.drawable.emoticon_02,
 					 R.drawable.emoticon_03, R.drawable.emoticon_04,
 					 R.drawable.emoticon_05, R.drawable.emoticon_06,
@@ -164,7 +141,7 @@ public class NewScheduleActivity extends Activity {
 					 R.drawable.emoticon_11, R.drawable.emoticon_12,
 					};
 	
-	static String [] smileys = {
+	String [] smileys = {
 			":-)",
 			":-D",
 			"B-D",
@@ -187,8 +164,7 @@ public class NewScheduleActivity extends Activity {
 		
 		@Override
 		public void onReceive(Context context, Intent intent2) {
-//			Toast.makeText(SmsSchedulerExplActivity.this, "Data Loaded", Toast.LENGTH_SHORT).show();
-			if(dataLoadWaitDialog.isShowing()){
+			if(dataLoadWaitDialog.isShowing()) {
 				dataLoadWaitDialog.cancel();
 				if(toOpen == 1){
 					Intent intent = new Intent(NewScheduleActivity.this, ContactsTabsActivity.class);
@@ -214,7 +190,6 @@ public class NewScheduleActivity extends Activity {
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
 		dateButton 					= (Button) 					findViewById(R.id.new_date_button);
 		characterCountText 			= (TextView) 				findViewById(R.id.new_char_count_text);
-		//messageCountText			= (TextView) 				findViewById(R.id.new_msg_count_text);
 		messageText 				= (EditText) 				findViewById(R.id.new_message_space);
 		templateImageButton 		= (ImageButton) 			findViewById(R.id.template_imgbutton);
 		speechImageButton 			= (ImageButton) 			findViewById(R.id.speech_imgbutton);
@@ -224,7 +199,6 @@ public class NewScheduleActivity extends Activity {
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		
 		
-		//Groups.clear();
 		Spans.clear();
 		
 		numbersText.setThreshold(1);
@@ -263,25 +237,19 @@ public class NewScheduleActivity extends Activity {
 	
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
 	}
 	
-	
-	
-	
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
-		
 		unregisterReceiver(mDataLoadedReceiver);
 	}
 	
 	
 	
-	public void setFunctionalities(){
+	public void setFunctionalities() {
 		
 		addFromContactsImgButton.setOnClickListener(new OnClickListener() {
 			
@@ -312,24 +280,18 @@ public class NewScheduleActivity extends Activity {
 				}
 			}
 		});
-		
-		
-		
-		
-		
-		
-		
+
 		numbersText.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				if(SmsApplicationLevelData.isDataLoaded){
-					if(spanStartPosition > 0){
+				if(SmsApplicationLevelData.isDataLoaded) {
+					if(spanStartPosition > 0) {
 						numbersText.setSelection(spanStartPosition);
-					}else if (Spans.size() > 0){
+					}else if (Spans.size() > 0) {
 						numbersText.setSelection(numbersText.getText().toString().length());
 					}
-				}else{
+				} else {
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 //					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
@@ -347,21 +309,21 @@ public class NewScheduleActivity extends Activity {
 			}
 		});
 	
-		numbersText.setOnKeyListener(new OnKeyListener() {
+		numbersText.setOnKeyListener(new View.OnKeyListener() {
 			
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				
 				Log.v("cccc", "" + keyCode + "  " + KeyEvent.KEYCODE_COMMA);				
-				if(keyCode == KeyEvent.KEYCODE_DEL){
+				if(keyCode == KeyEvent.KEYCODE_DEL) {
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
-	                 for(int i = 0; i< Spans.size(); i++){
+	                 for(int i = 0; i< Spans.size(); i++) {
 	                	 len = len + Spans.get(i).displayName.length();
-	                	 if(i!=0){
+	                	 if(i!=0) {
 	                		 len = len + 2;
 	                	 }
-	                	 if(pos<=len){
+	                	 if(pos<=len) {
 	                		 int position = pos - (Spans.get(i).displayName.length());
 	                		 if (position > 0)
 	                			 numbersText.setSelection(position);
@@ -393,32 +355,21 @@ public class NewScheduleActivity extends Activity {
 				return false;
 			}
 		});
-		
-		
-		
-		
-		
-		numbersText.addTextChangedListener(new TextWatcher() {
+
+		numbersText.addTextChangedListener(new android.text.TextWatcher() {
 			
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 			
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 			
 			@Override
-			public void afterTextChanged(Editable s) {
+			public void afterTextChanged(android.text.Editable s) {
 				int pos = numbersText.getSelectionStart();
 				Log.i("MSG", pos + "");
-				if(pos>1){
-					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' '){
+				if(pos>1) {
+					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' ') {
 						if(numbersText.getText().toString().charAt(pos-2)== '0' ||
 								numbersText.getText().toString().charAt(pos-2)== '1' ||
 								numbersText.getText().toString().charAt(pos-2)== '2' ||
@@ -451,20 +402,14 @@ public class NewScheduleActivity extends Activity {
 							}
 							refreshSpannableString();
 							
-						}
-						
+						}		
 					}
-				}
-				
+				}	
 			}
 		});
 		
-		
-		
-		
-		
 		numbersText.setLongClickable(false);
-		numbersText.setMovementMethod(LinkMovementMethod.getInstance());
+		numbersText.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
 		
 		numbersText.setOnItemClickListener(new OnItemClickListener() {
 
@@ -486,12 +431,6 @@ public class NewScheduleActivity extends Activity {
 			}
 		});
 		
-		
-		
-		
-		
-		
-		
 		//------------Date Select Button set to current date--------------------
 		Date currentDate = new Date();
 		final SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
@@ -506,8 +445,8 @@ public class NewScheduleActivity extends Activity {
 				dateSelectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dateSelectDialog.setContentView(R.layout.date_input_dialog);
 				
-				final DatePicker datePicker   	= (DatePicker)  dateSelectDialog.findViewById(R.id.new_date_picker);
-				final TimePicker timePicker   	= (TimePicker)  dateSelectDialog.findViewById(R.id.new_time_picker);
+				final android.widget.DatePicker datePicker   	= (android.widget.DatePicker)  dateSelectDialog.findViewById(R.id.new_date_picker);
+				final android.widget.TimePicker timePicker   	= (android.widget.TimePicker)  dateSelectDialog.findViewById(R.id.new_time_picker);
 				final View dateLabel 		    = dateSelectDialog.findViewById(R.id.new_date_label);
 				Button okDateButton 			= (Button) 		dateSelectDialog.findViewById(R.id.new_date_dialog_ok_button);
 				Button cancelDateButton 		= (Button) 		dateSelectDialog.findViewById(R.id.new_date_dialog_cancel_button);
@@ -519,10 +458,10 @@ public class NewScheduleActivity extends Activity {
 				final int mYear = processDate.getYear() + 1900;
 				final int mMonth = processDate.getMonth();
 				final int mDay = processDate.getDate();
-				datePicker.init(mYear, mMonth, mDay, new OnDateChangedListener() {
+				datePicker.init(mYear, mMonth, mDay, new android.widget.DatePicker.OnDateChangedListener() {
 					
 					@Override
-					public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+					public void onDateChanged(android.widget.DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 						//String temp = sdf.format(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()));
 						//dateLabel.setText(temp);
 						if(checkDateValidity(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()))){
@@ -574,17 +513,11 @@ public class NewScheduleActivity extends Activity {
 					}
 				});
 
-				
-				
-				
-				
-				
-				
 				//---Setting TimePicker value change listner--------
-				timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
+				timePicker.setOnTimeChangedListener(new android.widget.TimePicker.OnTimeChangedListener() {
 					
 					@Override
-					public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+					public void onTimeChanged(android.widget.TimePicker view, int hourOfDay, int minute) {
 						String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute));
 						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
 							dateLabel.setVisibility(View.INVISIBLE);
@@ -607,7 +540,7 @@ public class NewScheduleActivity extends Activity {
 		
 		
 		//------------setting functionality of character count-------------------
-		messageText.addTextChangedListener(new TextWatcher() {
+		messageText.addTextChangedListener(new android.text.TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -621,7 +554,7 @@ public class NewScheduleActivity extends Activity {
 			}
 			
 			@Override
-			public void afterTextChanged(Editable s) {
+			public void afterTextChanged(android.text.Editable s) {
 				int length 		= s.length();
 				parts 		 	= smsManager.divideMessage(s.toString());
 				characterCountText.setText(String.valueOf(length));
@@ -672,26 +605,8 @@ public class NewScheduleActivity extends Activity {
 		
 		});
 		//-----------------------------------------------end of smiley Grid set up--------
-		
-		
-		
-		
-		
-		//-------------------------functionality of speech input button-----------------------------
-//		dspeechImageButton.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				
-//			}
-//		});
-//		
-		
-		
-		
-		
-		
-		
+			
+
 		//---------------functionality of template button-----------------------
 		templateImageButton.setOnClickListener(new OnClickListener() {
 			
@@ -839,8 +754,7 @@ public class NewScheduleActivity extends Activity {
 					
 					d.show();
 					
-				}else
-					if(messageText.getText().toString().matches("(''|[' ']*)")){
+				}else if(messageText.getText().toString().matches("(''|[' ']*)")){
 						final Dialog d = new Dialog(NewScheduleActivity.this);
 						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 						d.setContentView(R.layout.confirmation_dialog_layout);
@@ -880,17 +794,11 @@ public class NewScheduleActivity extends Activity {
 					//doSmsScheduling();
 //					NewScheduleActivity.this.finish();
 				}
-				
-			
 			}
 		});
 		
-		
-		
-		
-		
 		//--------------------------functionality for Cancel Button--------------------------
-		cancelButton.setOnClickListener(new OnClickListener() {
+		cancelButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -931,90 +839,8 @@ public class NewScheduleActivity extends Activity {
 				
 			}
 		});
-		
 	}
-	
-	
-	
-	//-------------------Adapter for list in the templates dialog--------------------
-	class TemplateAdapter extends ArrayAdapter{
-		TemplateAdapter(){
-			super(NewScheduleActivity.this, R.layout.template_list_row, templatesArray);
-		}
 		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			final int _position = position;
-			LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.template_list_row, parent, false);
-    		TextView templateText = (TextView) row.findViewById(R.id.template_content_space);
-    		templateText.setText(templatesArray.get(position));
-    		row.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					if(messageText.getText().toString().equals("")){
-						messageText.setText(templatesArray.get(_position));
-					}else{
-						messageText.setText(messageText.getText().toString() + "\n" + templatesArray.get(_position));
-					}
-					messageText.setSelection(messageText.getText().toString().length());
-					templateDialog.cancel();
-				}
-			});
-    		
-			return row;
-		}
-	}
-	
-	//---------------------------------------------------end of adapter for template list in dialog--------------
-	
-	
-	
-	
-	//-------------------Adapter for smileys Grid------------------------------------------
-	public class SmileysAdapter extends BaseAdapter {
-	    private Context mContext;
-
-	    public SmileysAdapter(Context c) {
-	        mContext = c;
-	    }
-
-	    public int getCount() {
-	        return images.length;
-	    }
-
-	    public Object getItem(int position) {
-	        return null;
-	    }
-
-	    public long getItemId(int position) {
-	        return 0;
-	    }
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			//pos = position;
-			ImageView imageView;
-			if(convertView==null){
-				imageView = new ImageView(mContext);
-	            imageView.setLayoutParams(new GridView.LayoutParams(50, 50));
-	            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-	            imageView.setPadding(8, 8, 8, 8);
-			}else{
-				imageView = (ImageView) convertView;
-			}
-			
-			imageView.setImageResource(images[position]);
-			return imageView;
-		}
-	} // ...End of ImageAdapter...
-	
-	
-	
-	
-	
-	
 	//------------------function to fetch template data from database----------------------------
 	public void loadTemplates(){
 		mdba.open();
@@ -1042,9 +868,6 @@ public class NewScheduleActivity extends Activity {
 			return true;
 		}
 	}
-	
-	
-	
 	
 	//--------------------function to Scheduling a new sms------------------------------------
 	public void doSmsScheduling(){
@@ -1163,12 +986,6 @@ public class NewScheduleActivity extends Activity {
 		
 	}
 	
-	
-	
-	
-	
-	
-	
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
@@ -1200,7 +1017,7 @@ public class NewScheduleActivity extends Activity {
             
         }
         
-        else if(resultCode == 2){
+        else if(resultCode == 2) {
         	idsString.clear();
         	refreshSpannableString();
 
@@ -1209,157 +1026,32 @@ public class NewScheduleActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 	
-
+	//--------------------------Setting up the Auto-complete text-----------------------------// 
 	
-	
-	
-	
-	//--------------------------Setting up the Autocomplete text-----------------------------// 
-	
-	public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
-	  	
+	public ArrayList<MyContact> shortlistContacts(CharSequence constraint) {
 		
 		String text2 = (String) constraint;
-		
-		
-			if(text2.length()>0){
-		
-				Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
-				for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
-					SmsApplicationLevelData.contactsList.get(i).number = refineNumber(SmsApplicationLevelData.contactsList.get(i).number);
-					Matcher m = p.matcher(SmsApplicationLevelData.contactsList.get(i).name);
-					if(m.find()){
+			
+		if(text2.length() > 0) {
+	
+			Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
+			for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++) {
+				SmsApplicationLevelData.contactsList.get(i).number = refineNumber(SmsApplicationLevelData.contactsList.get(i).number);
+				Matcher m = p.matcher(SmsApplicationLevelData.contactsList.get(i).name);
+				if(m.find()) {
+					shortlist.add(SmsApplicationLevelData.contactsList.get(i));
+				} else {
+					m = p.matcher(SmsApplicationLevelData.contactsList.get(i).number);
+					if(m.find()) {
 						shortlist.add(SmsApplicationLevelData.contactsList.get(i));
-					}
-					else
-					{
-						m = p.matcher(SmsApplicationLevelData.contactsList.get(i).number);
-						if(m.find()){
-							shortlist.add(SmsApplicationLevelData.contactsList.get(i));
-						}
 					}
 				}
 			}
-//		}
-		  
-		return shortlist;
-					
+		}
+		return shortlist;			
 	}
-	
-	
-	
-	
-	
-	
-	
-	//--------------------------Adapter for Autocomplete text----------------------------
-	class AutoCompleteAdapter extends ArrayAdapter<MyContact> implements Filterable{
-    	
-    	private ArrayList<MyContact> mData;
-    	
-		public AutoCompleteAdapter(Context context) {
-			super(context, android.R.layout.simple_dropdown_item_1line);
-			mData = new ArrayList<MyContact>();
-		}
-			
-		@Override
-		public int getCount() {
-			return mData.size();
-		}
 		
-		@Override
-		public MyContact getItem(int position) {
-			return mData.get(position);
-		}
-		
-		
-		@Override
-		public Filter getFilter() {
-			Filter myFilter = new Filter(){
-			
-				
-				@Override
-				protected FilterResults performFiltering(CharSequence constraint) {
-					mData.clear();
-					FilterResults filterResults = new FilterResults();
-					//
-					String text;
-					
-					try{
-						text = (String) constraint;
-						text.length();
-					}catch(NullPointerException npe){
-						text = " ";
-					}
-					
-//					if(constraint.length()>0){
-//						text = (String) constraint;
-//					}else{
-//						text = "";
-//					}
-					
-					shortlist.clear();
-					Log.i("MESSAGE", "f : " + text);
-					
-					positionTrack = 0;
-					
-					if(text.length()>0 && !((text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ','))){
-						
-					
-						for(int i = 0; i< text.length(); i++){
-							if(i<text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' '){
-								positionTrack = i+2;
-							}
-						}
-					
-						String text2 = text.substring(positionTrack, text.length());
-					
-						try{
-							String p = text2;
-						}catch(NullPointerException npe){
-							text2 = " ";
-						}
-						mData = shortlistContacts(text2);
-						filterResults.values = mData;
-						filterResults.count = mData.size();
-					}
-					//
-					
-					
-					return filterResults;
-				}
-
-				@Override
-				protected void publishResults(CharSequence constraints, FilterResults results) {
-					if(results != null && results.count > 0) {
-						notifyDataSetChanged();
-		            }else {
-		            	notifyDataSetInvalidated();
-		            }
-					
-				}
-			};
-			
-			return myFilter;
-		}
-		
-		public View getView(int position, View convertView, ViewGroup parent){
-			
-			LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.dropdown_row_layout, parent, false);
-			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
-			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
-			nameLabel.setText(shortlist.get(position).name);
-			numberLabel.setText(shortlist.get(position).number);
-			return row;
-		}
-	
-	}
-	
-	
-	
-	
-	public String refineNumber(String number){
+	public String refineNumber(String number) {
 		if(number.matches("[0-9]+")){
 			return number;
 		}
@@ -1383,13 +1075,9 @@ public class NewScheduleActivity extends Activity {
 		//}
 	}
 	
-	
-	
-	
-	public void refreshSpannableString(){
+	public void refreshSpannableString() {
 		ssb.clear();
 		clickableSpanArrayList.clear();
-//		clickableSpanArrayList = new ArrayList<ClickableSpan>();
 		spanStartPosition = 0;
 		numbersText.setText("");
 			
@@ -1435,16 +1123,10 @@ public class NewScheduleActivity extends Activity {
 			}
 		}
 	}
-	
-	
-	
-	
-	
+		
 	@Override
 	public void onBackPressed() {
 		//super.onBackPressed();
-		
-		
 		
 		if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			final Dialog d = new Dialog(NewScheduleActivity.this);
@@ -1503,8 +1185,7 @@ public class NewScheduleActivity extends Activity {
 			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.yes_dialog_states));
 			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.no_dialog_states));
 			
-			yesButton.setOnClickListener(new OnClickListener() {
-				
+			yesButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					d.cancel();
@@ -1530,10 +1211,6 @@ public class NewScheduleActivity extends Activity {
 			NewScheduleActivity.this.finish();
 		}
 	}
-	
-	
-	
-	
 	
 	public void loadGroupsData(){
 		
@@ -1655,7 +1332,6 @@ public class NewScheduleActivity extends Activity {
 	}
 	
 	
-	
 	private void startVoiceRecognitionActivity() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
@@ -1665,7 +1341,6 @@ public class NewScheduleActivity extends Activity {
 
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
-	
 	
 	
 	
@@ -1698,6 +1373,174 @@ public class NewScheduleActivity extends Activity {
 			dialog.cancel();
 			NewScheduleActivity.this.finish();
 			super.onPostExecute(result);
+		}
+	}
+
+//----------------------------------------------------------------------------------------------------------	
+	//-----------------------------------
+	//Adapter for Auto-complete text
+	//-----------------------------------
+	class AutoCompleteAdapter extends ArrayAdapter<MyContact> implements Filterable {
+    	
+    	private ArrayList<MyContact> mData;
+    	
+		public AutoCompleteAdapter(Context context) {
+			super(context, android.R.layout.simple_dropdown_item_1line);
+			mData = new ArrayList<MyContact>();
+		}
+			
+		@Override
+		public int getCount() {
+			return mData.size();
+		}
+		
+		@Override
+		public MyContact getItem(int position) {
+			return mData.get(position);
+		}
+		
+		@Override
+		public Filter getFilter() {
+			Filter myFilter = new Filter() {
+					
+				@Override
+				protected FilterResults performFiltering(CharSequence constraint) {
+					mData.clear();
+					
+					FilterResults filterResults = new FilterResults();
+					String text= constraint == null ? " " : constraint.toString();
+										
+					shortlist.clear();
+					
+					int positionTrack = 0;
+					
+					if(text.length() > 0) {
+				
+						positionTrack = text.lastIndexOf(",");
+						positionTrack += 1; //if -1 then it will become 0 otherwise will point to character after ',' 
+						
+						String textForFiltering = text.substring(positionTrack, text.length()).trim();
+					
+						mData = shortlistContacts(textForFiltering);
+						filterResults.values = mData;
+						filterResults.count = mData.size();
+					}
+					
+					return filterResults;
+				}
+
+				@Override
+				protected void publishResults(CharSequence constraints, FilterResults results) {
+					if(results != null && results.count > 0) {
+						notifyDataSetChanged();
+		            }else {
+		            	notifyDataSetInvalidated();
+		            }		
+				}
+			};
+			
+			return myFilter;
+		}
+		
+		public View getView(int position, View convertView, ViewGroup parent) {
+			
+			final AutoCompleteListHolder holder;
+			if(convertView == null) {
+        		convertView = getLayoutInflater().inflate(R.layout.dropdown_row_layout, parent, false);
+        		holder = new AutoCompleteListHolder();
+        		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.row_name_label);
+        		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.row_number_label);
+        		
+        		convertView.setTag(holder);
+    		} else {
+    			holder = (AutoCompleteListHolder) convertView.getTag();
+    		}
+    		
+    		holder.nameText.setText(shortlist.get(position).name);
+    		holder.numberText.setText(shortlist.get(position).number);
+    		
+    		return convertView;
+		}
+	}
+	
+	//-----------------------------------
+	//Holder for Auto-complete text
+	//-----------------------------------	
+	class AutoCompleteListHolder {
+		TextView nameText;
+		TextView numberText;
+	}
+	
+	//------------------------------------------------
+	//Adapter for list in the templates dialog
+	//------------------------------------------------
+	class TemplateAdapter extends ArrayAdapter {
+		TemplateAdapter() {
+			super(NewScheduleActivity.this, R.layout.template_list_row, templatesArray);
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			final int _position = position;
+			LayoutInflater inflater = getLayoutInflater();
+    		View row = inflater.inflate(R.layout.template_list_row, parent, false);
+    		TextView templateText = (TextView) row.findViewById(R.id.template_content_space);
+    		templateText.setText(templatesArray.get(position));
+    		row.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(messageText.getText().toString().equals("")){
+						messageText.setText(templatesArray.get(_position));
+					}else{
+						messageText.setText(messageText.getText().toString() + "\n" + templatesArray.get(_position));
+					}
+					messageText.setSelection(messageText.getText().toString().length());
+					templateDialog.cancel();
+				}
+			});
+    		
+			return row;
+		}
+	}
+	
+	//------------------------------------------
+	//Adapter for smileys Grid
+	//------------------------------------------
+	class SmileysAdapter extends BaseAdapter {
+	    private Context mContext;
+
+	    public SmileysAdapter(Context c) {
+	        mContext = c;
+	    }
+
+	    public int getCount() {
+	        return images.length;
+	    }
+
+	    public Object getItem(int position) {
+	        return null;
+	    }
+
+	    public long getItemId(int position) {
+	        return 0;
+	    }
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			//pos = position;
+			ImageView imageView;
+			if(convertView==null) {
+				imageView = new ImageView(mContext);
+	            imageView.setLayoutParams(new GridView.LayoutParams(50, 50));
+	            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+	            imageView.setPadding(8, 8, 8, 8);
+			}else {
+				imageView = (ImageView) convertView;
+			}
+			
+			imageView.setImageResource(images[position]);
+			return imageView;
 		}
 	}
 }
