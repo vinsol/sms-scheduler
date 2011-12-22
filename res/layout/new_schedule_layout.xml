@@ -72,7 +72,7 @@
 			<RelativeLayout 
 		    	android:layout_width = "fill_parent"
 		    	android:layout_height = "wrap_content"
-		    	android:layout_marginTop="10dp"
+		    	android:layout_marginTop="6dp"
 		    	>
 		    	<AutoCompleteTextView
 		    		android:id = "@+id/new_numbers_text"
@@ -82,6 +82,7 @@
 		    		android:minLines="2"
 		    		android:gravity="top"
 		    		android:layout_toLeftOf="@+id/new_add_from_contact_imgbutton"
+		    		android:layout_marginTop="4dip"
 		    		>
 	    		</AutoCompleteTextView>
 		    		
