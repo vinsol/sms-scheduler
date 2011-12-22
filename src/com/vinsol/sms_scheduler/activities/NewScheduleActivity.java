@@ -914,81 +914,7 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	
-	//-------------------Adapter for list in the templates dialog--------------------
-	class TemplateAdapter extends ArrayAdapter{
-		TemplateAdapter(){
-			super(NewScheduleActivity.this, R.layout.template_list_row, templatesArray);
-		}
 		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			final int _position = position;
-			LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.template_list_row, parent, false);
-    		TextView templateText = (TextView) row.findViewById(R.id.template_content_space);
-    		templateText.setText(templatesArray.get(position));
-    		row.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					if(messageText.getText().toString().equals("")){
-						messageText.setText(templatesArray.get(_position));
-					}else{
-						messageText.setText(messageText.getText().toString() + "\n" + templatesArray.get(_position));
-					}
-					messageText.setSelection(messageText.getText().toString().length());
-					templateDialog.cancel();
-				}
-			});
-    		
-			return row;
-		}
-	}
-	
-	//---------------------------------------------------end of adapter for template list in dialog--------------
-	
-	
-	
-	
-	//-------------------Adapter for smileys Grid------------------------------------------
-	public class SmileysAdapter extends BaseAdapter {
-	    private Context mContext;
-
-	    public SmileysAdapter(Context c) {
-	        mContext = c;
-	    }
-
-	    public int getCount() {
-	        return images.length;
-	    }
-
-	    public Object getItem(int position) {
-	        return null;
-	    }
-
-	    public long getItemId(int position) {
-	        return 0;
-	    }
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			//pos = position;
-			ImageView imageView;
-			if(convertView==null){
-				imageView = new ImageView(mContext);
-	            imageView.setLayoutParams(new GridView.LayoutParams(50, 50));
-	            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-	            imageView.setPadding(8, 8, 8, 8);
-			}else{
-				imageView = (ImageView) convertView;
-			}
-			
-			imageView.setImageResource(images[position]);
-			return imageView;
-		}
-	} // ...End of ImageAdapter...
-	
-	
 	
 	
 	
@@ -1141,12 +1067,6 @@ public class NewScheduleActivity extends Activity {
 		
 	}
 	
-	
-	
-	
-	
-	
-	
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
@@ -1177,7 +1097,7 @@ public class NewScheduleActivity extends Activity {
             
         }
         
-        else if(resultCode == 2){
+        else if(resultCode == 2) {
         	idsString.clear();
         	refreshSpannableString();
 
@@ -1185,11 +1105,6 @@ public class NewScheduleActivity extends Activity {
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-	
-
-	
-	
-	
 	
 	//--------------------------Setting up the Auto-complete text-----------------------------// 
 	
@@ -1215,103 +1130,8 @@ public class NewScheduleActivity extends Activity {
 		}
 		return shortlist;			
 	}
-	
-	
-	//-----------------------------------
-	//Adapter for Auto-complete text
-	//-----------------------------------
-	class AutoCompleteAdapter extends ArrayAdapter<MyContact> implements Filterable {
-    	
-    	private ArrayList<MyContact> mData;
-    	
-		public AutoCompleteAdapter(Context context) {
-			super(context, android.R.layout.simple_dropdown_item_1line);
-			mData = new ArrayList<MyContact>();
-		}
-			
-		@Override
-		public int getCount() {
-			return mData.size();
-		}
 		
-		@Override
-		public MyContact getItem(int position) {
-			return mData.get(position);
-		}
-		
-		@Override
-		public Filter getFilter() {
-			Filter myFilter = new Filter() {
-					
-				@Override
-				protected FilterResults performFiltering(CharSequence constraint) {
-					mData.clear();
-					
-					FilterResults filterResults = new FilterResults();
-					String text= constraint == null ? " " : constraint.toString();
-										
-					shortlist.clear();
-					
-					int positionTrack = 0;
-					
-					if(text.length() > 0) {
-				
-						positionTrack = text.lastIndexOf(",");
-						positionTrack += 1; //if -1 then it will become 0 otherwise will point to character after ',' 
-						
-						String textForFiltering = text.substring(positionTrack, text.length()).trim();
-					
-						mData = shortlistContacts(textForFiltering);
-						filterResults.values = mData;
-						filterResults.count = mData.size();
-					}
-					
-					return filterResults;
-				}
-
-				@Override
-				protected void publishResults(CharSequence constraints, FilterResults results) {
-					if(results != null && results.count > 0) {
-						notifyDataSetChanged();
-		            }else {
-		            	notifyDataSetInvalidated();
-		            }		
-				}
-			};
-			
-			return myFilter;
-		}
-		
-		public View getView(int position, View convertView, ViewGroup parent) {
-			
-			final AutoCompleteListHolder holder;
-			if(convertView == null) {
-        		convertView = getLayoutInflater().inflate(R.layout.dropdown_row_layout, parent, false);
-        		holder = new AutoCompleteListHolder();
-        		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.row_name_label);
-        		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.row_number_label);
-        		
-        		convertView.setTag(holder);
-    		} else {
-    			holder = (AutoCompleteListHolder) convertView.getTag();
-    		}
-    		
-    		holder.nameText.setText(shortlist.get(position).name);
-    		holder.numberText.setText(shortlist.get(position).number);
-    		
-    		return convertView;
-		}
-	}
-	
-	//-----------------------------------
-	//Holder for Auto-complete text
-	//-----------------------------------	
-	class AutoCompleteListHolder {
-		TextView nameText;
-		TextView numberText;
-	}
-	
-	public String refineNumber(String number){
+	public String refineNumber(String number) {
 		if(number.matches("[0-9]+")){
 			return number;
 		}
@@ -1335,10 +1155,7 @@ public class NewScheduleActivity extends Activity {
 		//}
 	}
 	
-	
-	
-	
-	public void refreshSpannableString(){
+	public void refreshSpannableString() {
 		ssb.clear();
 		clickableSpanArrayList.clear();
 //		clickableSpanArrayList = new ArrayList<ClickableSpan>();
@@ -1387,16 +1204,10 @@ public class NewScheduleActivity extends Activity {
 			}
 		}
 	}
-	
-	
-	
-	
-	
+		
 	@Override
 	public void onBackPressed() {
 		//super.onBackPressed();
-		
-		
 		
 		if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			final Dialog d = new Dialog(NewScheduleActivity.this);
@@ -1585,7 +1396,6 @@ public class NewScheduleActivity extends Activity {
 	}
 	
 	
-	
 	private void startVoiceRecognitionActivity() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
@@ -1596,4 +1406,171 @@ public class NewScheduleActivity extends Activity {
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
 	
+//----------------------------------------------------------------------------------------------------------	
+	//-----------------------------------
+	//Adapter for Auto-complete text
+	//-----------------------------------
+	class AutoCompleteAdapter extends ArrayAdapter<MyContact> implements Filterable {
+    	
+    	private ArrayList<MyContact> mData;
+    	
+		public AutoCompleteAdapter(Context context) {
+			super(context, android.R.layout.simple_dropdown_item_1line);
+			mData = new ArrayList<MyContact>();
+		}
+			
+		@Override
+		public int getCount() {
+			return mData.size();
+		}
+		
+		@Override
+		public MyContact getItem(int position) {
+			return mData.get(position);
+		}
+		
+		@Override
+		public Filter getFilter() {
+			Filter myFilter = new Filter() {
+					
+				@Override
+				protected FilterResults performFiltering(CharSequence constraint) {
+					mData.clear();
+					
+					FilterResults filterResults = new FilterResults();
+					String text= constraint == null ? " " : constraint.toString();
+										
+					shortlist.clear();
+					
+					int positionTrack = 0;
+					
+					if(text.length() > 0) {
+				
+						positionTrack = text.lastIndexOf(",");
+						positionTrack += 1; //if -1 then it will become 0 otherwise will point to character after ',' 
+						
+						String textForFiltering = text.substring(positionTrack, text.length()).trim();
+					
+						mData = shortlistContacts(textForFiltering);
+						filterResults.values = mData;
+						filterResults.count = mData.size();
+					}
+					
+					return filterResults;
+				}
+
+				@Override
+				protected void publishResults(CharSequence constraints, FilterResults results) {
+					if(results != null && results.count > 0) {
+						notifyDataSetChanged();
+		            }else {
+		            	notifyDataSetInvalidated();
+		            }		
+				}
+			};
+			
+			return myFilter;
+		}
+		
+		public View getView(int position, View convertView, ViewGroup parent) {
+			
+			final AutoCompleteListHolder holder;
+			if(convertView == null) {
+        		convertView = getLayoutInflater().inflate(R.layout.dropdown_row_layout, parent, false);
+        		holder = new AutoCompleteListHolder();
+        		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.row_name_label);
+        		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.row_number_label);
+        		
+        		convertView.setTag(holder);
+    		} else {
+    			holder = (AutoCompleteListHolder) convertView.getTag();
+    		}
+    		
+    		holder.nameText.setText(shortlist.get(position).name);
+    		holder.numberText.setText(shortlist.get(position).number);
+    		
+    		return convertView;
+		}
+	}
+	
+	//-----------------------------------
+	//Holder for Auto-complete text
+	//-----------------------------------	
+	class AutoCompleteListHolder {
+		TextView nameText;
+		TextView numberText;
+	}
+	
+	//------------------------------------------------
+	//Adapter for list in the templates dialog
+	//------------------------------------------------
+	class TemplateAdapter extends ArrayAdapter {
+		TemplateAdapter() {
+			super(NewScheduleActivity.this, R.layout.template_list_row, templatesArray);
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			final int _position = position;
+			LayoutInflater inflater = getLayoutInflater();
+    		View row = inflater.inflate(R.layout.template_list_row, parent, false);
+    		TextView templateText = (TextView) row.findViewById(R.id.template_content_space);
+    		templateText.setText(templatesArray.get(position));
+    		row.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(messageText.getText().toString().equals("")){
+						messageText.setText(templatesArray.get(_position));
+					}else{
+						messageText.setText(messageText.getText().toString() + "\n" + templatesArray.get(_position));
+					}
+					messageText.setSelection(messageText.getText().toString().length());
+					templateDialog.cancel();
+				}
+			});
+    		
+			return row;
+		}
+	}
+	
+	//------------------------------------------
+	//Adapter for smileys Grid
+	//------------------------------------------
+	public class SmileysAdapter extends BaseAdapter {
+	    private Context mContext;
+
+	    public SmileysAdapter(Context c) {
+	        mContext = c;
+	    }
+
+	    public int getCount() {
+	        return images.length;
+	    }
+
+	    public Object getItem(int position) {
+	        return null;
+	    }
+
+	    public long getItemId(int position) {
+	        return 0;
+	    }
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			//pos = position;
+			ImageView imageView;
+			if(convertView==null) {
+				imageView = new ImageView(mContext);
+	            imageView.setLayoutParams(new GridView.LayoutParams(50, 50));
+	            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+	            imageView.setPadding(8, 8, 8, 8);
+			}else {
+				imageView = (ImageView) convertView;
+			}
+			
+			imageView.setImageResource(images[position]);
+			return imageView;
+		}
+	}
 }
