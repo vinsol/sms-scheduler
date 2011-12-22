@@ -32,6 +32,8 @@ import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
+import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -54,6 +56,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.Constants;
@@ -356,7 +359,7 @@ public class NewScheduleActivity extends Activity {
 			}
 		});
 
-		numbersText.addTextChangedListener(new android.text.TextWatcher() {
+		numbersText.addTextChangedListener(new TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -409,7 +412,7 @@ public class NewScheduleActivity extends Activity {
 		});
 		
 		numbersText.setLongClickable(false);
-		numbersText.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+		numbersText.setMovementMethod(LinkMovementMethod.getInstance());
 		
 		numbersText.setOnItemClickListener(new OnItemClickListener() {
 
@@ -514,7 +517,7 @@ public class NewScheduleActivity extends Activity {
 				});
 
 				//---Setting TimePicker value change listner--------
-				timePicker.setOnTimeChangedListener(new android.widget.TimePicker.OnTimeChangedListener() {
+				timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
 					
 					@Override
 					public void onTimeChanged(android.widget.TimePicker view, int hourOfDay, int minute) {
@@ -540,7 +543,7 @@ public class NewScheduleActivity extends Activity {
 		
 		
 		//------------setting functionality of character count-------------------
-		messageText.addTextChangedListener(new android.text.TextWatcher() {
+		messageText.addTextChangedListener(new TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {

@@ -144,13 +144,17 @@ public class ContactsListActivity extends Activity {
 									if(groupNameExists){
 										Toast.makeText(ContactsListActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
 									}else{
-										groupName = groupNameEdit.getText().toString();
-										mdba.open();
-										mdba.createGroup(groupName, ids);
-										mdba.close();
-										setResult(10, intent);
 										d.cancel();
-										ContactsListActivity.this.finish();
+										groupName = groupNameEdit.getText().toString();
+										if(ids.size()==0){
+											Toast.makeText(ContactsListActivity.this, "Cannot create Group with no Contacts. Add few..", Toast.LENGTH_LONG).show();
+										}else{
+											mdba.open();
+											mdba.createGroup(groupName, ids);
+											mdba.close();
+											setResult(10, intent);
+											ContactsListActivity.this.finish();
+										}
 									}
 								}
 							}

@@ -11,14 +11,16 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:background="@drawable/header_bg" 
+        android:gravity="center_vertical"
         >
         <TextView
            android:id="@+id/manage_template_layout_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
             android:text="Manage Templates"
             android:textColor="@color/white"
             android:textSize="20sp" 

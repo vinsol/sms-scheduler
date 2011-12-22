@@ -24,7 +24,7 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dip"
-        android:src="@drawable/delete_image_states"
+        android:src="@drawable/delete_icon_states"
         >
     </ImageView>
     

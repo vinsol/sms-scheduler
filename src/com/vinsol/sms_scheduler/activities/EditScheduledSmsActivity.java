@@ -1755,9 +1755,8 @@ public class EditScheduledSmsActivity extends Activity {
         		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
         		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
         		Log.i("MSG", "Group size in private : " + spanIdsForGroup.size());
-        		if(spanIdsForGroup.size()==0){
-       				group.put(Constants.GROUP_CHECK, false);
-       			}else{
+        		group.put(Constants.GROUP_CHECK, false);
+        		if(spanIdsForGroup.size()>0){
        				for(int i = 0; i< Spans.size(); i++){
        					for(int j = 0; j< spanIdsForGroup.size(); j++){
        						if(spanIdsForGroup.get(j)==Spans.get(i).spanId){
