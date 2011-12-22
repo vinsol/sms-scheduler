@@ -51,6 +51,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -66,6 +67,7 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.activities.ContactsListActivity.ContactsAddListHolder;
 import com.vinsol.sms_scheduler.models.GroupStructure;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
@@ -133,8 +135,6 @@ public class NewScheduleActivity extends Activity {
 	ArrayList<MyContact> shortlist = new ArrayList<MyContact>();
 	
 	boolean smileyVisible = false;
-	
-	int positionTrack;
 	
 	ArrayList<Long> ids = new ArrayList<Long>();
 	ArrayList<String> idsString = new ArrayList<String>();
@@ -1217,12 +1217,9 @@ public class NewScheduleActivity extends Activity {
 	}
 	
 	
-	
-	
-	
-	
-	
-	//--------------------------Adapter for Autocomplete text----------------------------
+	//-----------------------------------
+	//Adapter for Auto-complete text
+	//-----------------------------------
 	class AutoCompleteAdapter extends ArrayAdapter<MyContact> implements Filterable {
     	
     	private ArrayList<MyContact> mData;
@@ -1251,36 +1248,20 @@ public class NewScheduleActivity extends Activity {
 					mData.clear();
 					
 					FilterResults filterResults = new FilterResults();
-					String text;
-					
-					try {
-						text = (String) constraint;
-						text.length();
-					}catch(NullPointerException npe) {
-						text = " ";
-					}
+					String text= constraint == null ? " " : constraint.toString();
 										
 					shortlist.clear();
-					Log.i("MESSAGE", "f : " + text);
 					
-					positionTrack = 0;
+					int positionTrack = 0;
 					
-					if(text.length() > 0 && !((text.charAt(text.length()-1) == ' ' && text.charAt(text.length()-2) == ','))) {
+					if(text.length() > 0) {
 				
-						for(int i = 0; i < text.length(); i++) {
-							if(i < text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' ') {
-								positionTrack = i+2;
-							}
-						}
+						positionTrack = text.lastIndexOf(",");
+						positionTrack += 1; //if -1 then it will become 0 otherwise will point to character after ',' 
+						
+						String textForFiltering = text.substring(positionTrack, text.length()).trim();
 					
-						String text2 = text.substring(positionTrack, text.length());
-					
-						try{
-							String p = text2;
-						}catch(NullPointerException npe){
-							text2 = " ";
-						}
-						mData = shortlistContacts(text2);
+						mData = shortlistContacts(textForFiltering);
 						filterResults.values = mData;
 						filterResults.count = mData.size();
 					}
@@ -1294,25 +1275,40 @@ public class NewScheduleActivity extends Activity {
 						notifyDataSetChanged();
 		            }else {
 		            	notifyDataSetInvalidated();
-		            }
-					
+		            }		
 				}
 			};
 			
 			return myFilter;
 		}
 		
-		public View getView(int position, View convertView, ViewGroup parent){
+		public View getView(int position, View convertView, ViewGroup parent) {
 			
-			LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.dropdown_row_layout, parent, false);
-			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
-			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
-			nameLabel.setText(shortlist.get(position).name);
-			numberLabel.setText(shortlist.get(position).number);
-			return row;
+			final AutoCompleteListHolder holder;
+			if(convertView == null) {
+        		convertView = getLayoutInflater().inflate(R.layout.dropdown_row_layout, parent, false);
+        		holder = new AutoCompleteListHolder();
+        		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.row_name_label);
+        		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.row_number_label);
+        		
+        		convertView.setTag(holder);
+    		} else {
+    			holder = (AutoCompleteListHolder) convertView.getTag();
+    		}
+    		
+    		holder.nameText.setText(shortlist.get(position).name);
+    		holder.numberText.setText(shortlist.get(position).number);
+    		
+    		return convertView;
 		}
+	}
 	
+	//-----------------------------------
+	//Holder for Auto-complete text
+	//-----------------------------------	
+	class AutoCompleteListHolder {
+		TextView nameText;
+		TextView numberText;
 	}
 	
 	public String refineNumber(String number){
