@@ -24,6 +24,7 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Groups;
@@ -819,9 +820,11 @@ public class NewScheduleActivity extends Activity {
 						
 						@Override
 						public void onClick(View v) {
-							doSmsScheduling();
 							d.cancel();
-							NewScheduleActivity.this.finish();
+							new AsyncScheduling().execute();
+							//doSmsScheduling();
+							
+//							NewScheduleActivity.this.finish();
 						}
 					});
 					
@@ -854,9 +857,11 @@ public class NewScheduleActivity extends Activity {
 							
 							@Override
 							public void onClick(View v) {
-								doSmsScheduling();
 								d.cancel();
-								NewScheduleActivity.this.finish();
+								new AsyncScheduling().execute();
+								//doSmsScheduling();
+								
+//								NewScheduleActivity.this.finish();
 							}
 						});
 						
@@ -870,9 +875,10 @@ public class NewScheduleActivity extends Activity {
 						});
 						
 						d.show();
-				}else{	
-					doSmsScheduling();
-					NewScheduleActivity.this.finish();
+				}else{
+					new AsyncScheduling().execute();
+					//doSmsScheduling();
+//					NewScheduleActivity.this.finish();
 				}
 				
 			
@@ -1087,7 +1093,7 @@ public class NewScheduleActivity extends Activity {
 					Spans.get(i).smsId = received_id;
 					Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
 					for(int k = 0; k< Spans.get(i).groupIds.size(); k++){
-						mdba.addSpanGroupRel(Spans.get(i).spanId, Spans.get(i).groupIds.get(k), 0);
+						mdba.addSpanGroupRel(Spans.get(i).spanId, Spans.get(i).groupIds.get(k), Spans.get(i).groupTypes.get(k));
 					}
 				}
 			}
@@ -1174,15 +1180,16 @@ public class NewScheduleActivity extends Activity {
             d.setContentView(R.layout.voice_matches_dialog);
             
             ListView matchesList = (ListView) d.findViewById(R.id.matches_list);
-            matchesList.setAdapter(new ArrayAdapter<String>(this, R.layout.simple_list_item, matches));
+            matchesList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, matches));
             
             matchesList.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-					if(messageText.getText().toString().length()==0) {
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					if(messageText.getText().toString().length()==0){
 						messageText.setText(matches.get(position));
-					} else {
+					}else{
 						messageText.setText(messageText.getText().toString() + "\n" + matches.get(position));
 					}
 					d.cancel();
@@ -1456,13 +1463,16 @@ public class NewScheduleActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					doSmsScheduling();
+					d.cancel();
 					Toast.makeText(NewScheduleActivity.this, "Message Scheduled", Toast.LENGTH_SHORT).show();
 					if(!checkDateValidity(processDate)){
 						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 					}
-					d.cancel();
-					NewScheduleActivity.this.finish();
+					new AsyncScheduling().execute();
+					//doSmsScheduling();
+					
+					
+//					NewScheduleActivity.this.finish();
 				}
 			});
 			
@@ -1497,11 +1507,12 @@ public class NewScheduleActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					
-					doSmsScheduling();
-					Toast.makeText(NewScheduleActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
 					d.cancel();
-					NewScheduleActivity.this.finish();
+					new AsyncScheduling().execute();
+//					doSmsScheduling();
+					Toast.makeText(NewScheduleActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
+					
+//					NewScheduleActivity.this.finish();
 				}
 			});
 			
@@ -1544,6 +1555,7 @@ public class NewScheduleActivity extends Activity {
         int count = 0;
         
         Cursor groupCursor = managedQuery(groupsUri, projection, null, null, null);
+        Log.i("MSG", "native groups size : " + groupCursor.getCount());
         if(groupCursor.moveToFirst()){
         	
         	do{
@@ -1562,6 +1574,7 @@ public class NewScheduleActivity extends Activity {
         		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
         			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
         				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsApplicationLevelData.contactsList.get(i).groupRowId.get(j)){
+        					
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
         					childParameters.put(Constants.CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
         					childParameters.put(Constants.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);
@@ -1595,6 +1608,15 @@ public class NewScheduleActivity extends Activity {
         		group.put(Constants.GROUP_TYPE, 2);
         		group.put(Constants.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
+        		for(int i = 0; i< Spans.size(); i++){
+        			for(int j = 0; j< Spans.get(i).groupIds.size(); j++){
+        				if((Spans.get(i).groupIds.get(j)==group.get(Constants.GROUP_ID)) && Spans.get(i).groupTypes.get(j) == 2){
+        					group.put(Constants.GROUP_CHECK, true);
+        					break;
+        				}
+        			}
+        		}
+        		
         		privateGroupData.add(group);
         		GroupStructure groupStructure;
         	
@@ -1610,7 +1632,14 @@ public class NewScheduleActivity extends Activity {
         					childParameters.put(Constants.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(j).content_uri_id);
         					childParameters.put(Constants.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
         					childParameters.put(Constants.CHILD_CHECK, false);
-
+        					for(int m = 0; m< Spans.size(); m++){
+        	        			for(int n = 0; n< Spans.get(m).groupIds.size(); n++){
+        	        				if((Spans.get(m).groupIds.get(n)==group.get(Constants.GROUP_ID)) && (Spans.get(m).groupTypes.get(n) == 2) && (Spans.get(m).entityId == contactIds.get(i))){
+        	        					group.put(Constants.GROUP_CHECK, true);
+        	        					break;
+        	        				}
+        	        			}
+        	        		}
         					
         					child.add(childParameters);
         				}
@@ -1637,4 +1666,38 @@ public class NewScheduleActivity extends Activity {
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
 	
+	
+	
+	
+	class AsyncScheduling extends AsyncTask<Void, Void, Void>{
+
+		Dialog dialog;
+		
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			dialog = new Dialog(NewScheduleActivity.this);
+			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			dialog.setContentView(R.layout.wait_dialog);
+			dialog.setCancelable(false);
+			TextView dialogText = (TextView) dialog.findViewById(R.id.wait_dialog_text);
+			dialogText.setText("Scheduling SMS\nPlease Wait...");
+			dialog.show();
+		}
+		
+		
+		@Override
+		protected Void doInBackground(Void... params) {
+			doSmsScheduling();
+			return null;
+		}
+		
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			dialog.cancel();
+			NewScheduleActivity.this.finish();
+			super.onPostExecute(result);
+		}
+	}
 }

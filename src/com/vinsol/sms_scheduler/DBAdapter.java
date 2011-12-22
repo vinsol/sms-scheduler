@@ -704,7 +704,14 @@ public class DBAdapter {
 	}
 	
 	public void deleteSpan(long smsId){
+		Cursor spanIds = db.query(DATABASE_SPANS_TABLE, new String []{KEY_SPAN_ID}, KEY_SPAN_SMS_ID + "=" + smsId, null, null, null, null);
+		if(spanIds.moveToFirst()){
+			do{
+				deleteSpanGroupRelsForSpan(spanIds.getLong(spanIds.getColumnIndex(KEY_SPAN_ID)));
+			}while(spanIds.moveToNext());
+		}
 		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_SMS_ID + "=" + smsId, null);
+		
 	}
 	//---------------------------------------------------------------end of functions for spans table--------------
 	
@@ -730,9 +737,20 @@ public class DBAdapter {
 		return groupIds;
 	}
 	
+	public ArrayList<Integer> fetchGroupTypesForSpan(long spanId){
+		Cursor cur = db.query(DATABASE_SPAN_GROUP_REL_TABLE, new String[]{KEY_SPAN_GRP_REL_GRP_TYPE}, KEY_SPAN_GRP_REL_SPAN_ID + "=" + spanId, null, null, null, null);
+		ArrayList<Integer> groupTypes = new ArrayList<Integer>();
+		if(cur.moveToFirst()){
+			do{
+				groupTypes.add(cur.getInt(cur.getColumnIndex(KEY_SPAN_GRP_REL_GRP_TYPE)));
+			}while(cur.moveToNext());
+		}
+		return groupTypes;
+	}
 	
-	public ArrayList<Long> fetchSpansForGroup(long groupId){
-		Cursor cur = db.query(DATABASE_SPAN_GROUP_REL_TABLE, new String[]{KEY_SPAN_GRP_REL_SPAN_ID}, KEY_SPAN_GRP_REL_GRP_ID + "=" + groupId, null, null, null, null);
+	
+	public ArrayList<Long> fetchSpansForGroup(long groupId, int type){
+		Cursor cur = db.query(DATABASE_SPAN_GROUP_REL_TABLE, new String[]{KEY_SPAN_GRP_REL_SPAN_ID}, KEY_SPAN_GRP_REL_GRP_ID + "=" + groupId + " AND " + KEY_SPAN_GRP_REL_GRP_TYPE + "=" + type, null, null, null, null);
 		ArrayList<Long> spanIds = new ArrayList<Long>();
 		if(cur.moveToFirst()){
 			do{
@@ -741,6 +759,9 @@ public class DBAdapter {
 		}
 		return spanIds;
 	}
+	
+	
+	
 	
 	
 	public void addSpanGroupRel(long spanId, long groupId, int type){
