@@ -83,6 +83,7 @@
 		    		android:gravity="top"
 		    		android:layout_toLeftOf="@+id/new_add_from_contact_imgbutton"
 		    		android:layout_marginTop="4dip"
+		    		android:background="@drawable/auto_complete_bg"
 		    		>
 	    		</AutoCompleteTextView>
 		    		

@@ -35,7 +35,6 @@ import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,6 +65,7 @@ import com.vinsol.sms_scheduler.models.GroupStructure;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class NewScheduleActivity extends Activity {
 	
@@ -234,10 +234,6 @@ public class NewScheduleActivity extends Activity {
 		numbersText.setAdapter(myAutoCompleteAdapter);
 	}
 	
-	
-	
-	
-	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -260,7 +256,7 @@ public class NewScheduleActivity extends Activity {
 			public void onClick(View v) {
 				//Log.i("MSG", "isDataLoaded : " + SmsApplicationLevelData.isDataLoaded);
 				if(SmsApplicationLevelData.isDataLoaded){
-					Log.i("MSG", "entering into if and isDataLoaded : " + SmsApplicationLevelData.isDataLoaded);
+					Log.d("entering into if and isDataLoaded : " + SmsApplicationLevelData.isDataLoaded);
 					Intent intent = new Intent(NewScheduleActivity.this, ContactsTabsActivity.class);
 					intent.putExtra("IDSARRAY", idsString);
 					intent.putExtra("ORIGIN", "new");
@@ -289,11 +285,8 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(SmsApplicationLevelData.isDataLoaded) {
-					if(spanStartPosition > 0) {
-						numbersText.setSelection(spanStartPosition);
-					}else if (Spans.size() > 0) {
-						numbersText.setSelection(numbersText.getText().toString().length());
-					}
+					if(Spans.size() > 0)
+						numbersText.setSelection(numbersText.getText().length());
 				} else {
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
@@ -317,21 +310,20 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				
-				Log.v("cccc", "" + keyCode + "  " + KeyEvent.KEYCODE_COMMA);				
 				if(keyCode == KeyEvent.KEYCODE_DEL) {
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
-	                 for(int i = 0; i< Spans.size(); i++) {
+	                 for(int i = 0; i < Spans.size(); i++) {
 	                	 len = len + Spans.get(i).displayName.length();
 	                	 if(i!=0) {
 	                		 len = len + 2;
 	                	 }
-	                	 if(pos<=len) {
+	                	 if(pos <= len) {
 	                		 int position = pos - (Spans.get(i).displayName.length());
-	                		 if (position > 0)
-	                			 numbersText.setSelection(position);
-	                		 for(int j = 0; j< nativeGroupData.size(); j++){
-	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++){
+	                		 if (Spans.size() > 0)
+                				 numbersText.setSelection(numbersText.getText().length());
+	                		 for(int j = 0; j < nativeGroupData.size(); j++){
+	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++) {
 	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
 	                					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
@@ -370,8 +362,8 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void afterTextChanged(android.text.Editable s) {
 				int pos = numbersText.getSelectionStart();
-				Log.i("MSG", pos + "");
-				if(pos>1) {
+				Log.d(pos + "");
+				if(pos > 1) {
 					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' ') {
 						if(numbersText.getText().toString().charAt(pos-2)== '0' ||
 								numbersText.getText().toString().charAt(pos-2)== '1' ||
@@ -386,13 +378,13 @@ public class NewScheduleActivity extends Activity {
 							
 							numbersText.setText(numbersText.getText().toString().substring(0, pos-1));// + numbersText.getText().toString().substring(pos, numbersText.getText().toString().length()-1));
 							int start = 0;
-							for(int i= 0; i < pos-1 ; i++){
+							for(int i= 0; i < pos-1 ; i++) {
 								if(numbersText.getText().toString().charAt(i) == ' '){
 									start = i+1;
 								}
 							}
 							boolean isPresent = false;
-							for(int i = 0; i< Spans.size(); i++){
+							for(int i = 0; i< Spans.size(); i++) {
 								if(Spans.get(i).displayName.equals(numbersText.getText().toString().substring(start, pos-1))){
 									isPresent = true;
 									break;
@@ -420,7 +412,7 @@ public class NewScheduleActivity extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				boolean isPresent = false;
 				for(int i = 0; i< Spans.size(); i++){
-					if(Spans.get(i).entityId == Long.parseLong(shortlist.get(position).content_uri_id)){
+					if(Spans.get(i).entityId == Long.parseLong(shortlist.get(position).content_uri_id)) {
 						isPresent = true;
 						break;
 					}
@@ -882,7 +874,7 @@ public class NewScheduleActivity extends Activity {
 		//String[] numbers = numbersText.getText().toString().split(",(' ')*");
 		ArrayList<String> numbers = new ArrayList<String>();
 		
-		Log.i("MSG", Spans.size()+"");
+		Log.d(Spans.size()+"");
 		
 		if(Spans.size()==0){
 			SpannedEntity span = new SpannedEntity(-1, 1, " ", -1, -1);  // for adding as a fake span to create a draft
@@ -896,15 +888,15 @@ public class NewScheduleActivity extends Activity {
 					numbers.add(SmsApplicationLevelData.contactsList.get(j).number);
 					long received_id = mdba.scheduleSms(SmsApplicationLevelData.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
 					if(!Spans.get(i).displayName.equals(" ")){
-						Log.i("MESSAGE", "entered to add to recents");
+						Log.d("entered to add to recents");
 						mdba.addRecentContact(Spans.get(i).entityId, "");
 					}
 					
 					
-					Log.i("MSG", "before if else");
+					Log.d("before if else");
 					
 					if(messageText.getText().toString().length() == 0){
-						Log.i("MSG", "inside messageText if else");
+						Log.d("inside messageText if else");
 						mdba.setAsDraft(received_id);
 					}else{
 						if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
@@ -915,7 +907,7 @@ public class NewScheduleActivity extends Activity {
 							}
 						}
 					}
-					Log.i("MSG", "after if else");
+					Log.d("after if else");
 					Spans.get(i).smsId = received_id;
 					Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
 					for(int k = 0; k< Spans.get(i).groupIds.size(); k++){
@@ -1079,13 +1071,20 @@ public class NewScheduleActivity extends Activity {
 	}
 	
 	public void refreshSpannableString() {
+		
+		Log.d("***************************************************");
+		for(SpannedEntity span: Spans) {
+			Log.d(span.displayName);
+		}
+		Log.d("***************************************************");
+		
 		ssb.clear();
 		clickableSpanArrayList.clear();
 		spanStartPosition = 0;
 		numbersText.setText("");
 			
 		
-		for(int i = 0; i< Spans.size(); i++){
+		for(int i = 0; i< Spans.size(); i++) {
 			
 			final int _i = i;
 		
@@ -1094,14 +1093,14 @@ public class NewScheduleActivity extends Activity {
 				@Override
 				public void onClick(View widget) {
 							
-					Log.i("MSG", _i + "");
-					for(int j = 0; j< nativeGroupData.size(); j++){
-            			 for(int k = 0; k< nativeChildData.get(j).size(); k++){
-            				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
-            					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
-            				 }
-            			 }
-            		 }
+					Log.d( _i + "");
+					for(int j = 0; j< nativeGroupData.size(); j++) {
+						for(int k = 0; k< nativeChildData.get(j).size(); k++) {
+							if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)) {
+								nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+							}
+						}
+					}
 					Spans.remove(_i);
 					refreshSpannableString();
 				}
@@ -1113,16 +1112,16 @@ public class NewScheduleActivity extends Activity {
 					ds.setUnderlineText(false);
 				}
 			});
-			try{
-    		ssb.append(Spans.get(i).displayName + ", ");
-    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
-    		spanStartPosition += Spans.get(i).displayName.length() + 2;
+			if(Spans != null && Spans.get(i) != null) {
+				ssb.append(Spans.get(i).displayName + ", ");
+				ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
+				spanStartPosition += Spans.get(i).displayName.length() + 2;
 			
-			numbersText.setText(ssb);
+				numbersText.setText(ssb);
+			}
 			
-			numbersText.setSelection(spanStartPosition);
-			}catch(IndexOutOfBoundsException iob){
-				
+			if(Spans.size() > 0 ) {
+				numbersText.setSelection(numbersText.getText().length());
 			}
 		}
 	}
