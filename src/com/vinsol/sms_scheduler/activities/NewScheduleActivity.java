@@ -78,7 +78,6 @@ public class NewScheduleActivity extends Activity {
 	ImageButton 			addFromContactsImgButton;
 	Button 					dateButton;
 	TextView 				characterCountText;
-	//TextView				messageCountText;
 	EditText 				messageText;
 	ImageButton 			templateImageButton;
 	ImageButton 			speechImageButton;
@@ -99,15 +98,12 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	//-----------------------------------------------------------------------------
-	
-	
-	
 	SmsManager smsManager = SmsManager.getDefault();
 	ArrayList<String> parts = new ArrayList<String>();
 	ArrayList<String> templatesArray = new ArrayList<String>();
 	
+	
 	//---------------------------------------------------------------
-	//static ArrayList<GroupStructure> Groups = new ArrayList<GroupStructure>();
 	static ArrayList<SpannedEntity> Spans = new ArrayList<SpannedEntity>();
 	private SpannableStringBuilder ssb = new SpannableStringBuilder();
 	private int spanStartPosition = 0;
@@ -115,14 +111,9 @@ public class NewScheduleActivity extends Activity {
 	//--------------------------------------------------------------------
 	
 	
-	
-	
-	
 	//-----------------------Variables related to Voice recognition-------------------
-
-     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
-
-     //----------------------------------------------------------------------------------
+	private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+	//----------------------------------------------------------------------------------
 	
      
     
@@ -146,7 +137,7 @@ public class NewScheduleActivity extends Activity {
 	
 	static int positionTrack;
 	
-	static ArrayList<SpannedEntity> spannables = new ArrayList<SpannedEntity>();
+//	static ArrayList<SpannedEntity> spannables = new ArrayList<SpannedEntity>();
 	
 	
 	ArrayList<Long> ids = new ArrayList<Long>();
@@ -186,8 +177,7 @@ public class NewScheduleActivity extends Activity {
 		
 		@Override
 		public void onReceive(Context context, Intent intent2) {
-//			Toast.makeText(SmsSchedulerExplActivity.this, "Data Loaded", Toast.LENGTH_SHORT).show();
-			if(dataLoadWaitDialog.isShowing()){
+			if(dataLoadWaitDialog.isShowing()) {
 				dataLoadWaitDialog.cancel();
 				if(toOpen == 1){
 					Intent intent = new Intent(NewScheduleActivity.this, ContactsTabsActivity.class);
@@ -213,7 +203,6 @@ public class NewScheduleActivity extends Activity {
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
 		dateButton 					= (Button) 					findViewById(R.id.new_date_button);
 		characterCountText 			= (TextView) 				findViewById(R.id.new_char_count_text);
-		//messageCountText			= (TextView) 				findViewById(R.id.new_msg_count_text);
 		messageText 				= (EditText) 				findViewById(R.id.new_message_space);
 		templateImageButton 		= (ImageButton) 			findViewById(R.id.template_imgbutton);
 		speechImageButton 			= (ImageButton) 			findViewById(R.id.speech_imgbutton);
@@ -223,7 +212,6 @@ public class NewScheduleActivity extends Activity {
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		
 		
-		//Groups.clear();
 		Spans.clear();
 		
 		numbersText.setThreshold(1);
