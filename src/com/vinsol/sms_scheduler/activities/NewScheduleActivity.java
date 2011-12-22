@@ -94,7 +94,6 @@ public class NewScheduleActivity extends Activity {
 	
 	static ArrayList<ArrayList<HashMap<String, Object>>> privateChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
 	static ArrayList<HashMap<String, Object>> privateGroupData = new ArrayList<HashMap<String, Object>>();
-	//boolean empty;
 	
 	
 	//-----------------------------------------------------------------------------
@@ -1192,36 +1191,29 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	
-	//--------------------------Setting up the Autocomplete text-----------------------------// 
+	//--------------------------Setting up the Auto-complete text-----------------------------// 
 	
-	public ArrayList<MyContact> shortlistContacts(CharSequence constraint){
-	  	
+	public ArrayList<MyContact> shortlistContacts(CharSequence constraint) {
 		
 		String text2 = (String) constraint;
-		
-		
-			if(text2.length()>0){
-		
-				Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
-				for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
-					SmsApplicationLevelData.contactsList.get(i).number = refineNumber(SmsApplicationLevelData.contactsList.get(i).number);
-					Matcher m = p.matcher(SmsApplicationLevelData.contactsList.get(i).name);
-					if(m.find()){
+			
+		if(text2.length() > 0) {
+	
+			Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
+			for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++) {
+				SmsApplicationLevelData.contactsList.get(i).number = refineNumber(SmsApplicationLevelData.contactsList.get(i).number);
+				Matcher m = p.matcher(SmsApplicationLevelData.contactsList.get(i).name);
+				if(m.find()) {
+					shortlist.add(SmsApplicationLevelData.contactsList.get(i));
+				} else {
+					m = p.matcher(SmsApplicationLevelData.contactsList.get(i).number);
+					if(m.find()) {
 						shortlist.add(SmsApplicationLevelData.contactsList.get(i));
-					}
-					else
-					{
-						m = p.matcher(SmsApplicationLevelData.contactsList.get(i).number);
-						if(m.find()){
-							shortlist.add(SmsApplicationLevelData.contactsList.get(i));
-						}
 					}
 				}
 			}
-//		}
-		  
-		return shortlist;
-					
+		}
+		return shortlist;			
 	}
 	
 	
@@ -1231,7 +1223,7 @@ public class NewScheduleActivity extends Activity {
 	
 	
 	//--------------------------Adapter for Autocomplete text----------------------------
-	class AutoCompleteAdapter extends ArrayAdapter<MyContact> implements Filterable{
+	class AutoCompleteAdapter extends ArrayAdapter<MyContact> implements Filterable {
     	
     	private ArrayList<MyContact> mData;
     	
@@ -1250,42 +1242,33 @@ public class NewScheduleActivity extends Activity {
 			return mData.get(position);
 		}
 		
-		
 		@Override
 		public Filter getFilter() {
-			Filter myFilter = new Filter(){
-			
-				
+			Filter myFilter = new Filter() {
+					
 				@Override
 				protected FilterResults performFiltering(CharSequence constraint) {
 					mData.clear();
+					
 					FilterResults filterResults = new FilterResults();
-					//
 					String text;
 					
-					try{
+					try {
 						text = (String) constraint;
 						text.length();
-					}catch(NullPointerException npe){
+					}catch(NullPointerException npe) {
 						text = " ";
 					}
-					
-//					if(constraint.length()>0){
-//						text = (String) constraint;
-//					}else{
-//						text = "";
-//					}
-					
+										
 					shortlist.clear();
 					Log.i("MESSAGE", "f : " + text);
 					
 					positionTrack = 0;
 					
-					if(text.length()>0 && !((text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ','))){
-						
-					
-						for(int i = 0; i< text.length(); i++){
-							if(i<text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' '){
+					if(text.length() > 0 && !((text.charAt(text.length()-1) == ' ' && text.charAt(text.length()-2) == ','))) {
+				
+						for(int i = 0; i < text.length(); i++) {
+							if(i < text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' ') {
 								positionTrack = i+2;
 							}
 						}
@@ -1301,8 +1284,6 @@ public class NewScheduleActivity extends Activity {
 						filterResults.values = mData;
 						filterResults.count = mData.size();
 					}
-					//
-					
 					
 					return filterResults;
 				}
@@ -1333,9 +1314,6 @@ public class NewScheduleActivity extends Activity {
 		}
 	
 	}
-	
-	
-	
 	
 	public String refineNumber(String number){
 		if(number.matches("[0-9]+")){
