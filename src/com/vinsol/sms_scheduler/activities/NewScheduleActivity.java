@@ -135,17 +135,14 @@ public class NewScheduleActivity extends Activity {
 	
 	boolean smileyVisible = false;
 	
-	static int positionTrack;
-	
-//	static ArrayList<SpannedEntity> spannables = new ArrayList<SpannedEntity>();
-	
+	int positionTrack;
 	
 	ArrayList<Long> ids = new ArrayList<Long>();
 	ArrayList<String> idsString = new ArrayList<String>();
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	
-	static int [] images = {
+	int [] images = {
 					 R.drawable.emoticon_01, R.drawable.emoticon_02,
 					 R.drawable.emoticon_03, R.drawable.emoticon_04,
 					 R.drawable.emoticon_05, R.drawable.emoticon_06,
@@ -154,7 +151,7 @@ public class NewScheduleActivity extends Activity {
 					 R.drawable.emoticon_11, R.drawable.emoticon_12,
 					};
 	
-	static String [] smileys = {
+	String [] smileys = {
 			":-)",
 			":-D",
 			"B-D",
