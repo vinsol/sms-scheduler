@@ -1034,12 +1034,21 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			TemplateHolder holder;
+			if(convertView == null){
+				LayoutInflater inflater = getLayoutInflater();
+	    		convertView = inflater.inflate(R.layout.template_list_row, parent, false);
+	    		holder = new TemplateHolder();
+	    		holder.templateText = (TextView) convertView.findViewById(R.id.template_content_space);
+	    		convertView.setTag(holder);
+			}else{
+				holder = (TemplateHolder) convertView.getTag();
+			}
+			
 			final int _position = position;
-			LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.template_list_row, parent, false);
-    		TextView templateText = (TextView) row.findViewById(R.id.template_content_space);
-    		templateText.setText(templatesArray.get(position));
-    		row.setOnClickListener(new OnClickListener() {
+    		
+    		holder.templateText.setText(templatesArray.get(position));
+    		convertView.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
@@ -1053,11 +1062,20 @@ public class EditScheduledSmsActivity extends Activity {
 				}
 			});
     		
-			return row;
+			return convertView;
 		}
 	}
 	
 	//------------------------------------------------------------------end of adapter--------------
+	
+	
+	//--------------------------------------
+	//Holder for Template Adapter
+	//--------------------------------------
+	class TemplateHolder{
+		TextView templateText;
+	}
+	
 	
 	
 	
