@@ -10,12 +10,14 @@
         android:id = "@+id/contacts_list_label"
         android:layout_width = "fill_parent"
         android:layout_height = "wrap_content"
-        android:text = "Select Contacts"
+        android:text = " Select Contacts"
         android:textSize="22sp"
         android:textColor="@color/white"
 		android:textStyle="bold"
 		android:background="@drawable/header_bg"
-		android:gravity="center"
+		android:layout_alignParentLeft="true"
+		android:paddingLeft="5dp"
+		android:gravity="center_vertical"
 		>
     </TextView>
     

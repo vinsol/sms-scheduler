@@ -804,7 +804,7 @@ public class ContactsTabsActivity extends Activity {
 					
 					@Override
 					public void onClick(View v) {
-						if(!holder.childCheck.isChecked()){
+						if(holder.childCheck.isChecked()){
 							holder.childCheck.setChecked(false);
 							nativeRemoveCheck(groupPosition, childPosition);
 							contactsAdapter.notifyDataSetChanged();
@@ -1128,52 +1128,35 @@ public class ContactsTabsActivity extends Activity {
 		Log.i("MSG", "entering childcheck is checked true listner");
 		nativeChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
-		
-		
-			for(int i = 0; i < SpansTemp.size(); i++){
-				
-				if(SpansTemp.get(i).entityId == Long.parseLong((String) nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))){
-					Log.i("MSG", "got a matching span");
-					spanExist = true;
-					try{
-						SpansTemp.get(i).groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
-						
-					}catch (ClassCastException e) {
-						SpansTemp.get(i).groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
-					}
-					SpansTemp.get(i).groupTypes.add(1);
-//					try{
-//						SpansTemp.get(i).groupTypes.add(((Integer)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE)));
-//					}catch (ClassCastException e) {
-//						SpansTemp.get(i).groupTypes.add(Integer.parseInt((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE)));
-//					}
-					Log.i("MSG", "span id : " + SpansTemp.get(i) + " , total spans : " + SpansTemp.size()+ " after group id addition");
-					break;
-				}
-				Log.i("MSG", SpansTemp.size()+"");
-			}
-			if(!spanExist){
-				Log.i("MSG", "got no matching span");
-				Log.i("MSG", SpansTemp.size()+"");
-				SpannedEntity span = new SpannedEntity(-1, 2, (String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), Long.parseLong((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)), -1);
+		for(int i = 0; i < SpansTemp.size(); i++){
+			if(SpansTemp.get(i).entityId == Long.parseLong((String) nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))){
+				Log.i("MSG", "got a matching span");
+				spanExist = true;
 				try{
-					span.groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
-					
+					SpansTemp.get(i).groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}catch (ClassCastException e) {
-					span.groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+					SpansTemp.get(i).groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}
-				span.groupTypes.add(1);
-//				try{
-//					span.groupTypes.add(Integer.parseInt((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE)));
-//				}catch(ClassCastException ce){
-//					span.groupTypes.add(((Integer)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE)));
-//				}
-				
-				SpansTemp.add(span);
-				contactsAdapter.notifyDataSetChanged();
-				Log.i("MSG", SpansTemp.size()+" after add");
+				SpansTemp.get(i).groupTypes.add(1);
+				Log.i("MSG", "span id : " + SpansTemp.get(i) + " , total spans : " + SpansTemp.size()+ " after group id addition");
+				break;
 			}
-		
+			Log.i("MSG", SpansTemp.size()+"");
+		}
+		if(!spanExist){
+			Log.i("MSG", "got no matching span");
+			Log.i("MSG", SpansTemp.size()+"");
+			SpannedEntity span = new SpannedEntity(-1, 2, (String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), Long.parseLong((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)), -1);
+			try{
+				span.groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+			}catch (ClassCastException e) {
+				span.groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+			}
+			span.groupTypes.add(1);
+			SpansTemp.add(span);
+			contactsAdapter.notifyDataSetChanged();
+			Log.i("MSG", SpansTemp.size()+" after add");
+		}
 	}
 	
 	
@@ -1184,10 +1167,8 @@ public class ContactsTabsActivity extends Activity {
 	public void nativeRemoveCheck(int groupPosition, int childPosition){
 		Log.i("MSG", "in removing a check");
 		nativeChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
-		
-		
-			for(int i = 0; i < SpansTemp.size(); i++){
-				if(Long.parseLong((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
+		for(int i = 0; i < SpansTemp.size(); i++){
+			if(Long.parseLong((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
 				Log.i("MSG", "Span found for deletion");
 				for(int j = 0; j< SpansTemp.get(i).groupIds.size(); j++){
 					Log.i("MSG", SpansTemp.get(i).groupIds.get(j) + "spans group Id");
@@ -1200,11 +1181,6 @@ public class ContactsTabsActivity extends Activity {
 						groupIdToRemove = (Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID);
 					}
 					groupTypeToRemove = 1;
-//					try{
-//						groupTypeToRemove = Integer.parseInt((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE));
-//					}catch (ClassCastException e) {
-//						groupTypeToRemove = (Integer)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE);
-//					}
 					
 					if(SpansTemp.get(i).groupIds.get(j) == groupIdToRemove && SpansTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
 						Log.i("MSG", "group id found for deletion");
@@ -1219,22 +1195,8 @@ public class ContactsTabsActivity extends Activity {
 						break;
 					}
 				}
-//				boolean z = true;
-//				for(int k = 0; k< childDataTemp.get(groupPosition).get(childPosition).size(); k++){
-//					Log.i("MSG", childDataTemp.get(groupPosition).get(childPosition).size() + "size of childdata for group");
-//					Log.i("MSG", (String)groupDataTemp.get(groupPosition).get(NewScheduleActivity.GROUP_NAME));
-//					if((Boolean)childDataTemp.get(groupPosition).get(k).get(NewScheduleActivity.CHILD_CHECK)){
-//						z = false;
-//						break;
-//					}
-//				}
-//				if(z){
-//					groupDataTemp.get(groupPosition).put(NewScheduleActivity.GROUP_CHECK, false);
-//					mAdapter.notifyDataSetChanged();
-//				}
-				}
 			}
-		
+		}
 	}
 	
 	
@@ -1253,16 +1215,10 @@ public class ContactsTabsActivity extends Activity {
 					spanExist = true;
 					try{
 						SpansTemp.get(i).groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
-						
 					}catch (ClassCastException e) {
 						SpansTemp.get(i).groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 					}
 					SpansTemp.get(i).groupTypes.add(2);
-//					try{
-//						SpansTemp.get(i).groupTypes.add(((Integer)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE)));
-//					}catch (ClassCastException e) {
-//						SpansTemp.get(i).groupTypes.add(Integer.parseInt((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE)));
-//					}
 					Log.i("MSG", "span id : " + SpansTemp.get(i) + " , total spans : " + SpansTemp.size()+ " after group id addition");
 					break;
 				}
@@ -1275,17 +1231,10 @@ public class ContactsTabsActivity extends Activity {
 				SpannedEntity span = new SpannedEntity(-1, 2, (String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), Long.parseLong((String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)), -1);
 				try{
 					span.groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
-					
 				}catch (ClassCastException e) {
 					span.groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}
 				span.groupTypes.add(2);
-//				try{
-//					span.groupTypes.add(Integer.parseInt((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE)));
-//				}catch(ClassCastException ce){
-//					span.groupTypes.add(((Integer)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE)));
-//				}
-				
 				SpansTemp.add(span);
 				contactsAdapter.notifyDataSetChanged();
 				Log.i("MSG", SpansTemp.size()+" after add");
@@ -1301,10 +1250,8 @@ public class ContactsTabsActivity extends Activity {
 	public void privateRemoveCheck(int groupPosition, int childPosition){
 		Log.i("MSG", "in removing a check");
 		privateChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
-		
-		
-			for(int i = 0; i < SpansTemp.size(); i++){
-				if(Long.parseLong((String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
+		for(int i = 0; i < SpansTemp.size(); i++){
+			if(Long.parseLong((String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
 				Log.i("MSG", "Span found for deletion");
 				for(int j = 0; j< SpansTemp.get(i).groupIds.size(); j++){
 					Log.i("MSG", SpansTemp.get(i).groupIds.get(j) + "spans group Id");
@@ -1317,17 +1264,9 @@ public class ContactsTabsActivity extends Activity {
 						groupIdToRemove = (Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID);
 					}
 					groupTypeToRemove = 2;
-//					try{
-//						groupTypeToRemove = Integer.parseInt((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE));
-//					}catch (ClassCastException e) {
-//						groupTypeToRemove = (Integer)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_TYPE);
-//					}
-					
 					if(SpansTemp.get(i).groupIds.get(j) == groupIdToRemove && SpansTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
 						Log.i("MSG", "group id found for deletion");
 						SpansTemp.get(i).groupIds.remove(j);
-						
-						
 						Log.i("MSG", SpansTemp.get(i).groupIds.size()+ " group size for this span");
 						if(SpansTemp.get(i).groupIds.size()==0){
 							SpansTemp.remove(i);
@@ -1336,22 +1275,8 @@ public class ContactsTabsActivity extends Activity {
 						break;
 					}
 				}
-//				boolean z = true;
-//				for(int k = 0; k< childDataTemp.get(groupPosition).get(childPosition).size(); k++){
-//					Log.i("MSG", childDataTemp.get(groupPosition).get(childPosition).size() + "size of childdata for group");
-//					Log.i("MSG", (String)groupDataTemp.get(groupPosition).get(NewScheduleActivity.GROUP_NAME));
-//					if((Boolean)childDataTemp.get(groupPosition).get(k).get(NewScheduleActivity.CHILD_CHECK)){
-//						z = false;
-//						break;
-//					}
-//				}
-//				if(z){
-//					groupDataTemp.get(groupPosition).put(NewScheduleActivity.GROUP_CHECK, false);
-//					mAdapter.notifyDataSetChanged();
-//				}
-				}
 			}
-		
+		}
 	}
 	
 	
@@ -1374,7 +1299,7 @@ public class ContactsTabsActivity extends Activity {
     			holder.contactImage 		= (ImageView) 	convertView.findViewById(R.id.contact_list_row_contact_pic);
         		holder.nameText 			= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_name);
         		holder.numberText 			= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_number);
-        		holder.contactCheck 	= (CheckBox) 	convertView.findViewById(R.id.contact_list_row_contact_check);
+        		holder.contactCheck 		= (CheckBox) 	convertView.findViewById(R.id.contact_list_row_contact_check);
     			convertView.setTag(holder);
     		}else{
     			holder = (RecentsListHolder) convertView.getTag();
@@ -1386,8 +1311,6 @@ public class ContactsTabsActivity extends Activity {
     		Log.i("MSG", recentIds.size() + " size of recent contacts arraylist");
     		
     		if(recentContactIds.get(position)> -1){
-    			Log.i("MSG", recentContactIds.get(position)+ "");
-    			
     			for(i = 0; i< SmsApplicationLevelData.contactsList.size(); i++){
     				if(Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id) == recentContactIds.get(position)){
     					holder.contactImage.setImageBitmap(SmsApplicationLevelData.contactsList.get(i).image);
@@ -1396,9 +1319,12 @@ public class ContactsTabsActivity extends Activity {
     		    		
     		    		
     		    		for(int j = 0; j< SpansTemp.size(); j++){
-    		    			
     		        		if(Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id) == SpansTemp.get(j).entityId){
+    		        			Log.i("MSG", "setting checked :" + Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id));
     		        			holder.contactCheck.setChecked(true);
+    		        			break;
+    		        		}else{
+    		        			holder.contactCheck.setChecked(false);
     		        		}
     		        	}
     		    		break;
@@ -1412,6 +1338,9 @@ public class ContactsTabsActivity extends Activity {
     			for(int j = 0; j< SpansTemp.size(); j++){
     				Log.i("MSG", "8888888888888888888888888888888888   entered!");
     				if(SpansTemp.get(j).displayName.equals(recentContactNumbers.get(position))){
+    					holder.contactCheck.setChecked(true);
+    					break;
+    				}else{
     					holder.contactCheck.setChecked(true);
     				}
     			}
@@ -1444,34 +1373,28 @@ public class ContactsTabsActivity extends Activity {
 						}
 						span.groupIds.add((long) -1);
 						span.groupTypes.add(-1);
-						
 						SpansTemp.add(span);
-						
 						contactsAdapter.notifyDataSetChanged();
 					}else{
-						
-							holder.contactCheck.setChecked(false);
-							for(int i = 0; i< SpansTemp.size(); i++){
-				    			if(recentContactIds.get(_position)>-1){
-				    				if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
-				    					Log.i("MSG", "got into removing a contact");
-				    					Log.i("MSG", "size of Span " + SpansTemp.size());
-				    					SpansTemp.remove(i);
-					    				Log.i("MSG", "size of Span " + SpansTemp.size());
-					    				contactsAdapter.notifyDataSetChanged();
-					    				break;
-					    			}
-				    			}else{
-				    				if(SpansTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
-				    					SpansTemp.remove(i);
-				    					contactsAdapter.notifyDataSetChanged();
-				    					break;
-				    				}
+						holder.contactCheck.setChecked(false);
+						for(int i = 0; i< SpansTemp.size(); i++){
+				    		if(recentContactIds.get(_position)>-1){
+				    			if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
+				    				Log.i("MSG", "got into removing a contact");
+				    				Log.i("MSG", "size of Span " + SpansTemp.size());
+				    				SpansTemp.remove(i);
+					    			Log.i("MSG", "size of Span " + SpansTemp.size());
+					    			contactsAdapter.notifyDataSetChanged();
+					    			break;
+					    		}
+				    		}else{
+				    			if(SpansTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
+				    				SpansTemp.remove(i);
+				    				contactsAdapter.notifyDataSetChanged();
+				    				break;
 				    			}
-								
 				    		}
-						
-						
+				    	}
 					}
 				}
 			});
@@ -1492,11 +1415,11 @@ public class ContactsTabsActivity extends Activity {
 								}
 							}
 						}else{
-							for(int k = 0; k< SmsApplicationLevelData.contactsList.size(); k++){
-								if(SmsApplicationLevelData.contactsList.get(k).name.equals(recentContactNumbers.get(_position))){
-									
-								}
-							}
+//							for(int k = 0; k< SmsApplicationLevelData.contactsList.size(); k++){
+//								if(SmsApplicationLevelData.contactsList.get(k).name.equals(recentContactNumbers.get(_position))){
+//								
+//								}
+//							}
 							span = new SpannedEntity(-1, 1, recentContactNumbers.get(_position), -1, -1);
 						}
 						span.groupIds.add((long) -1);
@@ -1506,29 +1429,24 @@ public class ContactsTabsActivity extends Activity {
 						
 						contactsAdapter.notifyDataSetChanged();
 					}else{
-						
-							
-							for(int i = 0; i< SpansTemp.size(); i++){
-				    			if(recentContactIds.get(_position)>-1){
-				    				if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
-				    					Log.i("MSG", "got into removing a contact");
-				    					Log.i("MSG", "size of Span " + SpansTemp.size());
-				    					SpansTemp.remove(i);
-					    				Log.i("MSG", "size of Span " + SpansTemp.size());
-					    				contactsAdapter.notifyDataSetChanged();
-					    				break;
-					    			}
-				    			}else{
-				    				if(SpansTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
-				    					SpansTemp.remove(i);
-				    					contactsAdapter.notifyDataSetChanged();
-				    					break;
-				    				}
+						for(int i = 0; i< SpansTemp.size(); i++){
+				    		if(recentContactIds.get(_position)>-1){
+				    			if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
+				    				Log.i("MSG", "got into removing a contact");
+				    				Log.i("MSG", "size of Span " + SpansTemp.size());
+				    				SpansTemp.remove(i);
+					    			Log.i("MSG", "size of Span " + SpansTemp.size());
+					    			contactsAdapter.notifyDataSetChanged();
+					    			break;
+					    		}
+				    		}else{
+				    			if(SpansTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
+				    				SpansTemp.remove(i);
+				    				contactsAdapter.notifyDataSetChanged();
+				    				break;
 				    			}
-								
 				    		}
-						
-						
+				    	}
 					}
 				}
 			});

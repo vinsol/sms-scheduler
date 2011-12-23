@@ -234,7 +234,7 @@
    		    <!-- smiley -->
 			<LinearLayout 
 				android:id = "@+id/smiley_layout"
-				android:orientation = "horizontal"
+				android:orientation = "vertical"
 				android:layout_height= "120dp"
 				android:layout_width = "fill_parent"
 				android:layout_above="@+id/schedule_cancel_button_layout"

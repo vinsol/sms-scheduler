@@ -419,12 +419,16 @@ public class SmsSchedulerExplActivity extends Activity {
     				holder.dateTextView.setText(childSchArray.get(childPosition).keyDate);
     				holder.receiverTextView.setText(numbersLengthRectify(childSchArray.get(childPosition).keyNumber));
     				holder.extraReceiversTextView.setText(extraReceiversCal(childSchArray.get(childPosition).keyNumber));
+    				holder.messageTextView.setTextColor(0xff000000);
+    				holder.receiverTextView.setTextColor(0xff000000);
     			} else if(groupPosition == 2) {
     				holder.messageTextView.setText(childSentArray.get(childPosition).keyMessage);
     				holder.statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
     				holder.dateTextView.setText(childSentArray.get(childPosition).keyDate);
     				holder.receiverTextView.setText(numbersLengthRectify(childSentArray.get(childPosition).keyNumber));
     				holder.extraReceiversTextView.setText(extraReceiversCal(childSentArray.get(childPosition).keyNumber));
+    				holder.messageTextView.setTextColor(0xff000000);
+    				holder.receiverTextView.setTextColor(0xff000000);
     			} else if(groupPosition == 0){
     				if(!childDraftArray.get(childPosition).keyMessage.matches("^(''|[' ']*)$")){
     					holder.messageTextView.setText(childDraftArray.get(childPosition).keyMessage);
