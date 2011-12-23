@@ -78,8 +78,7 @@
 		android:cacheColorHint="@color/transparent"
 		android:groupIndicator="@drawable/expander_group"
 		android:childDivider="@drawable/list_divider"
-		android:divider="@color/transparent"
-		android:dividerHeight="0dip"
+		android:divider="@drawable/list_divider"	
 		>
 	</ExpandableListView>
 	

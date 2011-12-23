@@ -282,8 +282,10 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(SmsApplicationLevelData.isDataLoaded) {
-					if(Spans.size() > 0)
+					if(Spans.size() > 0) {
+						Log.d("line 286, setting selection at position " + numbersText.getText().length());
 						numbersText.setSelection(numbersText.getText().length());
+					}
 				} else {
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
@@ -317,8 +319,10 @@ public class NewScheduleActivity extends Activity {
 	                	 }
 	                	 if(pos <= len) {
 	                		 int position = pos - (Spans.get(i).displayName.length());
-	                		 if (Spans.size() > 0)
-                				 numbersText.setSelection(numbersText.getText().length());
+	                		 if (Spans.size() > 0) {
+	                			 Log.d("line 322, setting selection at position " + numbersText.getText().length());
+	                			 numbersText.setSelection(numbersText.getText().length());
+	                		 }
 	                		 for(int j = 0; j < nativeGroupData.size(); j++){
 	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++) {
 	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
@@ -359,7 +363,7 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void afterTextChanged(android.text.Editable s) {
 				int pos = numbersText.getSelectionStart();
-				Log.d(pos + "");
+				Log.d(pos + " position after text changed 365");
 				if(pos > 1) {
 					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' ') {
 						if(numbersText.getText().toString().charAt(pos-2)== '0' ||
@@ -871,7 +875,7 @@ public class NewScheduleActivity extends Activity {
 		//String[] numbers = numbersText.getText().toString().split(",(' ')*");
 		ArrayList<String> numbers = new ArrayList<String>();
 		
-		Log.d(Spans.size()+"");
+		Log.d(Spans.size()+"span size 877");
 		
 		if(Spans.size()==0){
 			SpannedEntity span = new SpannedEntity(-1, 1, " ", -1, -1);  // for adding as a fake span to create a draft
@@ -1090,7 +1094,7 @@ public class NewScheduleActivity extends Activity {
 				@Override
 				public void onClick(View widget) {
 							
-					Log.d( _i + "");
+					Log.d("value of _i at line 1096 = " + _i );
 					for(int j = 0; j< nativeGroupData.size(); j++) {
 						for(int k = 0; k< nativeChildData.get(j).size(); k++) {
 							if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)) {
@@ -1111,15 +1115,20 @@ public class NewScheduleActivity extends Activity {
 			});
 			if(Spans != null && Spans.get(i) != null) {
 				ssb.append(Spans.get(i).displayName + ", ");
+				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+				Log.d("setting span 1118");
+				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+				
 				ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
 				spanStartPosition += Spans.get(i).displayName.length() + 2;
 			
 				numbersText.setText(ssb);
-			}
-			
-			if(Spans.size() > 0 ) {
-				numbersText.setSelection(numbersText.getText().length());
-			}
+			}	
+		}
+		
+		if(Spans.size() > 0 ) {
+			Log.d("line 1124, setting selection at position " + numbersText.getText().length());
+			numbersText.setSelection(numbersText.getText().length());
 		}
 	}
 		
@@ -1231,7 +1240,7 @@ public class NewScheduleActivity extends Activity {
         int count = 0;
         
         Cursor groupCursor = managedQuery(groupsUri, projection, null, null, null);
-        Log.i("MSG", "native groups size : " + groupCursor.getCount());
+        Log.d("native groups size : " + groupCursor.getCount());
         if(groupCursor.moveToFirst()){
         	
         	do{
