@@ -32,6 +32,8 @@ import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
+import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -53,6 +55,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.Constants;
@@ -352,7 +355,7 @@ public class NewScheduleActivity extends Activity {
 			}
 		});
 
-		numbersText.addTextChangedListener(new android.text.TextWatcher() {
+		numbersText.addTextChangedListener(new TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -405,7 +408,7 @@ public class NewScheduleActivity extends Activity {
 		});
 		
 		numbersText.setLongClickable(false);
-		numbersText.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+		numbersText.setMovementMethod(LinkMovementMethod.getInstance());
 		
 		numbersText.setOnItemClickListener(new OnItemClickListener() {
 
@@ -510,7 +513,7 @@ public class NewScheduleActivity extends Activity {
 				});
 
 				//---Setting TimePicker value change listner--------
-				timePicker.setOnTimeChangedListener(new android.widget.TimePicker.OnTimeChangedListener() {
+				timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
 					
 					@Override
 					public void onTimeChanged(android.widget.TimePicker view, int hourOfDay, int minute) {
@@ -536,7 +539,7 @@ public class NewScheduleActivity extends Activity {
 		
 		
 		//------------setting functionality of character count-------------------
-		messageText.addTextChangedListener(new android.text.TextWatcher() {
+		messageText.addTextChangedListener(new TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -1240,7 +1243,9 @@ public class NewScheduleActivity extends Activity {
         int count = 0;
         
         Cursor groupCursor = managedQuery(groupsUri, projection, null, null, null);
+        
         Log.d("native groups size : " + groupCursor.getCount());
+
         if(groupCursor.moveToFirst()){
         	
         	do{
@@ -1489,12 +1494,20 @@ public class NewScheduleActivity extends Activity {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			TemplateHolder holder;
+			if(convertView==null){
+				LayoutInflater inflater = getLayoutInflater();
+				convertView = inflater.inflate(R.layout.template_list_row, parent, false);
+				holder = new TemplateHolder();
+				holder.templateText = (TextView) convertView.findViewById(R.id.template_content_space);
+				convertView.setTag(holder);
+			}else{
+				holder = (TemplateHolder) convertView.getTag();
+			}
 			final int _position = position;
-			LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.template_list_row, parent, false);
-    		TextView templateText = (TextView) row.findViewById(R.id.template_content_space);
-    		templateText.setText(templatesArray.get(position));
-    		row.setOnClickListener(new OnClickListener() {
+		
+    		holder.templateText.setText(templatesArray.get(position));
+    		convertView.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
@@ -1508,9 +1521,21 @@ public class NewScheduleActivity extends Activity {
 				}
 			});
     		
-			return row;
+			return convertView;
 		}
 	}
+	
+	
+	
+	//--------------------------------------
+	//Holder for Template Adapter
+	//--------------------------------------
+	class TemplateHolder{
+		TextView templateText;
+	}
+	
+	
+	
 	
 	//------------------------------------------
 	//Adapter for smileys Grid

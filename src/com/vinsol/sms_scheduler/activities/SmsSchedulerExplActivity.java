@@ -675,7 +675,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		boolean bool = true;
     		
 
-    		childSchArray.get(i).keyImageRes = R.drawable.delete_image_states;    		
+    		childSchArray.get(i).keyImageRes = R.drawable.delete_icon_states;    		
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, childSchArray.get(i).keyDate);
     		child.put(RECEIVER, childSchArray.get(i).keyNumber);
@@ -830,7 +830,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		boolean bool = true;
     		
 //    		if(childDraftArray.get(i).keyNumber!=""){
-    			childDraftArray.get(i).keyImageRes = R.drawable.delete_image_states;
+    			childDraftArray.get(i).keyImageRes = R.drawable.delete_icon_states;
 //    		}else{
 //    			childDraftArray.get(i).keyImageRes = R.drawable.ic_btn_write_sms;
 //    		}

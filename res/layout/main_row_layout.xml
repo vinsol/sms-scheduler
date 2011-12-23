@@ -12,8 +12,8 @@
    		android:layout_width = "wrap_content"
    		android:text = "Mr.Reveiver"
    		android:textColor="@color/black"
-   		android:layout_below="@id/list_divider"
    		android:layout_alignParentLeft="true"
+   		android:layout_below="@+id/main_row_message_area"
    		android:paddingTop="5dip"
    		android:ellipsize="end"
    		android:maxLines="1"
@@ -30,6 +30,7 @@
         android:layout_alignBaseline="@id/main_row_recepient_area"
         android:paddingRight="10dip"
         android:textColor="@color/listing_text"
+        android:textStyle="bold"
         >
    	</TextView>
    	
@@ -39,8 +40,10 @@
   		android:layout_height = "wrap_content"
   		android:layout_width = "250dp"
   		android:text ="DATE"
-  		android:textColor="#cd7f32"
-  		android:layout_below="@id/main_row_recepient_area"
+  		android:textColor="#000000"
+  		android:textStyle="bold"
+  		android:layout_alignParentLeft="true"
+  		android:layout_alignParentTop="true"
   		android:paddingTop="5dip"
   		android:paddingLeft="10dip"
  		android:paddingRight="10dip"
@@ -49,7 +52,7 @@
     
    	<!-- message -->    
    	<TextView 
-  		android:id = "@+id/main_row_message_area"
+  		android:id = "@id/main_row_message_area"
   		android:layout_width = "250dp"
   		android:layout_height="wrap_content"
   		android:maxLines="1"
@@ -70,7 +73,7 @@
  		android:layout_width ="36dp"
  		android:layout_marginLeft="15dp"
  		android:layout_alignParentRight="true"
- 		android:layout_alignBaseline="@id/main_row_date_area"
+ 		android:layout_alignBaseline="@id/main_row_message_area"
  		android:layout_centerVertical="true"
  		android:layout_marginRight="10dip"	
  		>

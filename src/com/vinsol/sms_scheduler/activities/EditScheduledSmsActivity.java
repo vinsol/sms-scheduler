@@ -1034,12 +1034,21 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			TemplateHolder holder;
+			if(convertView == null){
+				LayoutInflater inflater = getLayoutInflater();
+	    		convertView = inflater.inflate(R.layout.template_list_row, parent, false);
+	    		holder = new TemplateHolder();
+	    		holder.templateText = (TextView) convertView.findViewById(R.id.template_content_space);
+	    		convertView.setTag(holder);
+			}else{
+				holder = (TemplateHolder) convertView.getTag();
+			}
+			
 			final int _position = position;
-			LayoutInflater inflater = getLayoutInflater();
-    		View row = inflater.inflate(R.layout.template_list_row, parent, false);
-    		TextView templateText = (TextView) row.findViewById(R.id.template_content_space);
-    		templateText.setText(templatesArray.get(position));
-    		row.setOnClickListener(new OnClickListener() {
+    		
+    		holder.templateText.setText(templatesArray.get(position));
+    		convertView.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
@@ -1053,11 +1062,20 @@ public class EditScheduledSmsActivity extends Activity {
 				}
 			});
     		
-			return row;
+			return convertView;
 		}
 	}
 	
 	//------------------------------------------------------------------end of adapter--------------
+	
+	
+	//--------------------------------------
+	//Holder for Template Adapter
+	//--------------------------------------
+	class TemplateHolder{
+		TextView templateText;
+	}
+	
 	
 	
 	
@@ -1755,9 +1773,8 @@ public class EditScheduledSmsActivity extends Activity {
         		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
         		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
         		Log.i("MSG", "Group size in private : " + spanIdsForGroup.size());
-        		if(spanIdsForGroup.size()==0){
-       				group.put(Constants.GROUP_CHECK, false);
-       			}else{
+        		group.put(Constants.GROUP_CHECK, false);
+        		if(spanIdsForGroup.size()>0){
        				for(int i = 0; i< Spans.size(); i++){
        					for(int j = 0; j< spanIdsForGroup.size(); j++){
        						if(spanIdsForGroup.get(j)==Spans.get(i).spanId){

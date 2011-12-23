@@ -219,7 +219,7 @@ public class ContactsTabsActivity extends Activity {
 				group.put(Constants.GROUP_TYPE, EditScheduledSmsActivity.privateGroupData.get(groupCount).get(Constants.GROUP_TYPE));
 				group.put(Constants.GROUP_CHECK, EditScheduledSmsActivity.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
 				if((Boolean)group.get(Constants.GROUP_CHECK)){
-					Log.i("MSG", "check is showing for : " +EditScheduledSmsActivity.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
+					Log.i("MSG", "check is showing for : " +EditScheduledSmsActivity.privateGroupData.get(groupCount).get(Constants.GROUP_NAME));
 				}
 				privateGroupDataTemp.add(group);
 				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
