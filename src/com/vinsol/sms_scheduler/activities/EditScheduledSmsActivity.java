@@ -1387,44 +1387,22 @@ public class EditScheduledSmsActivity extends Activity {
 				protected FilterResults performFiltering(CharSequence constraint) {
 					mData.clear();
 					FilterResults filterResults = new FilterResults();
-					String text;
-					
-					try{
-						text = (String) constraint;
-						text.length();
-					}catch(NullPointerException npe){
-						text = " ";
-					}
-					
+					String text= constraint == null ? " " : constraint.toString();
+										
 					shortlist.clear();
-					Log.i("MESSAGE", "f : " + text);
 					
-					positionTrack = 0;
+					int positionTrack = 0;
 					
-					Log.i("MSG", text.length()+" length of text");
-					
-					String text2 = text;
-					
-					if(text.length()>0){// && !((text.charAt(text.length()-1)==' ' && text.charAt(text.length()-2) == ','))){
+					if(text.length() > 0) {
+				
+						positionTrack = text.lastIndexOf(",");
+						positionTrack += 1; //if -1 then it will become 0 otherwise will point to character after ',' 
 						
-						for(int i = 0; i< text.length(); i++){
-							if(text.length()>1 && i<text.length()-2 && text.charAt(i) == ',' && text.charAt(i+1) == ' '){
-								positionTrack = i+2;
-							}
-						}
-
-						text2 = text.substring(positionTrack, text.length()-1);
+						String textForFiltering = text.substring(positionTrack, text.length()).trim();
 					
-						try{
-							String p = text2;
-						}catch(NullPointerException npe){
-							text2 = " ";
-						}
-						if(text2.length()>0){
-							mData = shortlistContacts(text2);
-							filterResults.values = mData;
-							filterResults.count = mData.size();
-						}
+						mData = shortlistContacts(textForFiltering);
+						filterResults.values = mData;
+						filterResults.count = mData.size();
 					}
 					
 					return filterResults;
@@ -1511,7 +1489,7 @@ public class EditScheduledSmsActivity extends Activity {
 				public void onClick(View widget) {
 							
 						Log.i("MSG", _i + "");
-						if(_i< Spans.size()-1){
+						
 							for(int j = 0; j< nativeGroupData.size(); j++){
 	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++){
 	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
@@ -1529,9 +1507,7 @@ public class EditScheduledSmsActivity extends Activity {
 	                		 }
 							Spans.remove(_i);
 							refreshSpannableString(true);
-						}else{
-							
-						}
+						
 				}
 			
 				@Override
