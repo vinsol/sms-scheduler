@@ -1086,7 +1086,7 @@ public class NewScheduleActivity extends Activity {
 		clickableSpanArrayList.clear();
 		spanStartPosition = 0;
 		numbersText.setText("");
-			
+		
 		
 		for(int i = 0; i< Spans.size(); i++) {
 			
@@ -1121,10 +1121,13 @@ public class NewScheduleActivity extends Activity {
 				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 				Log.d("setting span 1118");
 				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-				
-				ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
+				Log.d("spanStartPosition : " + spanStartPosition);
+				Log.d("ssb length : " + ssb.length());
+				Log.d("spanEndPosition : " + (spanStartPosition + (Spans.get(i).displayName.length())));
+				if((spanStartPosition + (Spans.get(i).displayName.length()))<ssb.length() && spanStartPosition>-1 && (spanStartPosition + (Spans.get(i).displayName.length()))>-1){
+					ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
+				}
 				spanStartPosition += Spans.get(i).displayName.length() + 2;
-			
 				numbersText.setText(ssb);
 			}	
 		}

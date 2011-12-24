@@ -78,7 +78,8 @@ public class ManageTemplateActivity extends Activity{
 				blankLayout.setVisibility(LinearLayout.GONE);
 				if(newTemplateSpaceLayout.getVisibility()==LinearLayout.VISIBLE){
 					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+//					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+					inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 					templatesList.requestFocus();
 				}else{
 					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
@@ -87,6 +88,7 @@ public class ManageTemplateActivity extends Activity{
 					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 					isEditing = false;
 					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+//					inputMethodManager.showSoftInputFromInputMethod(newTemplateBody.getWindowToken(), 0);
 				}	
 			}
 		});
@@ -99,16 +101,17 @@ public class ManageTemplateActivity extends Activity{
 				
 				if(newTemplateSpaceLayout.getVisibility()==LinearLayout.VISIBLE){
 					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+					inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 					templatesList.requestFocus();
 				}else{
+					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
+//					inputMethodManager.showSoftInputFromInputMethod(newTemplateBody.getWindowToken(), 0);
+//					inputMethodManager.showSoftInput(newTemplateBody, 0);
 					newTemplateBody.setText("");
 					newTemplateBody.requestFocus();
 					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 					isEditing = false;
-					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-					
 					
 				}
 			}
@@ -119,7 +122,7 @@ public class ManageTemplateActivity extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
+				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 				if(newTemplateBody.getText().toString().equals("")){
 					Toast.makeText(ManageTemplateActivity.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
 				}else if(isEditing && newTemplateBody.getText().toString().equals(templatesArray.get(editRowId))){
@@ -174,9 +177,7 @@ public class ManageTemplateActivity extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				if(inputMethodManager.isActive()){
-					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-				}
+				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 				newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
 				mdba.open();
 				Cursor cur = mdba.fetchAllTemplates();
@@ -263,7 +264,6 @@ public class ManageTemplateActivity extends Activity{
     		
     		holder.templateBodyLabel.setText(templatesArray.get(position));
     		
-    		
     		holder.deleteTemplateButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -299,9 +299,7 @@ public class ManageTemplateActivity extends Activity{
 							d.cancel();
 						}
 					});
-					
 					d.show();
-					
 				}
 			});
     		
@@ -311,13 +309,14 @@ public class ManageTemplateActivity extends Activity{
 				@Override
 				public void onClick(View v) {
 					if(newTemplateSpaceLayout.getVisibility()==LinearLayout.GONE){
+						inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 						newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
 						newTemplateBody.setText(holder.templateBodyLabel.getText().toString());
 						newTemplateBody.requestFocus();
 						newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_footer_states));
 						editRowId = position;
 						isEditing = true;
-						inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+//						inputMethodManager.showSoftInputFromInputMethod(newTemplateBody.getWindowToken(), 0);
 					}
 				}
 			});
