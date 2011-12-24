@@ -77,6 +77,8 @@ public class ContactsTabsActivity extends Activity {
 	
 	SimpleExpandableListAdapter nativeGroupAdapter;
 	SimpleExpandableListAdapter privateGroupAdapter;
+	
+	boolean hasToRefresh;
 	//-----------------------------------------------------------------------------
 	
 	
@@ -242,7 +244,9 @@ public class ContactsTabsActivity extends Activity {
 			
 			
 		}
-
+		
+		
+		
 		
 		
         doneButton			= (Button) 		findViewById(R.id.contacts_tab_done_button);
@@ -464,20 +468,36 @@ public class ContactsTabsActivity extends Activity {
 	
 	
 	@Override
+	protected void onPause() {
+		super.onPause();
+		if(privateGroupDataTemp.size() == 0){
+			hasToRefresh = true;
+		}else{
+			hasToRefresh = false;
+		}
+	}
+	
+	
+	
+	@Override
 	protected void onResume() {
 		super.onResume();
-		mdba.open();
-		cur = mdba.fetchAllGroups();
-		if(cur.getCount()==0){
-			listLayout.setVisibility(LinearLayout.GONE);
-			blankLayout.setVisibility(LinearLayout.VISIBLE);
-		}else{
-			listLayout.setVisibility(LinearLayout.VISIBLE);
-			blankLayout.setVisibility(LinearLayout.GONE);
+		Log.i("MSG", "Value of hastorefresh : " + hasToRefresh);
+		if(hasToRefresh){
+			mdba.open();
+			cur = mdba.fetchAllGroups();
+			if(cur.getCount()==0){
+				listLayout.setVisibility(LinearLayout.GONE);
+				blankLayout.setVisibility(LinearLayout.VISIBLE);
+			}else{
+				listLayout.setVisibility(LinearLayout.VISIBLE);
+				blankLayout.setVisibility(LinearLayout.GONE);
+			}
+			mdba.close();
+			reloadPrivateGroupData();
+			privateGroupAdapter.notifyDataSetChanged();
+			hasToRefresh = false;
 		}
-		mdba.close();
-//		reloadPrivateGroupData();
-//		privateGroupAdapter.notifyDataSetChanged();
 	}
 	
 	
@@ -1604,14 +1624,14 @@ public class ContactsTabsActivity extends Activity {
 					childParams.put(Constants.CHILD_NUMBER, NewScheduleActivity.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
 					childParams.put(Constants.CHILD_IMAGE, NewScheduleActivity.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
 					childParams.put(Constants.CHILD_CHECK, NewScheduleActivity.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
-					for(int m = 0; m< SpansTemp.size(); m++){
-	        			for(int n = 0; n< SpansTemp.get(m).groupIds.size(); n++){
-	        				if((SpansTemp.get(m).groupIds.get(n)==group.get(Constants.GROUP_ID)) && (SpansTemp.get(m).groupTypes.get(n) == 2)){
-	        					group.put(Constants.GROUP_CHECK, true);
-	        					break;
-	        				}
-	        			}
-	        		}
+//					for(int m = 0; m< SpansTemp.size(); m++){
+//	        			for(int n = 0; n< SpansTemp.get(m).groupIds.size(); n++){
+//	        				if((SpansTemp.get(m).groupIds.get(n)==group.get(Constants.GROUP_ID)) && (SpansTemp.get(m).groupTypes.get(n) == 2)){
+//	        					group.put(Constants.GROUP_CHECK, true);
+//	        					break;
+//	        				}
+//	        			}
+//	        		}
 					child.add(childParams);
 				}
 				privateChildDataTemp.add(child);

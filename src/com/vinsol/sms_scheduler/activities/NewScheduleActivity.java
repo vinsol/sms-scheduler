@@ -30,6 +30,7 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
+import android.test.IsolatedContext;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.TextWatcher;
@@ -343,7 +344,7 @@ public class NewScheduleActivity extends Activity {
 	                		 }
 	                		 
 	                		 Spans.remove(i);
-	                		 refreshSpannableString();
+	                		 refreshSpannableString(false);
 	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
 	                		 myAutoCompleteAdapter.notifyDataSetChanged();
 	                		 break;
@@ -399,7 +400,7 @@ public class NewScheduleActivity extends Activity {
 								Spans.add(span);
 								
 							}
-							refreshSpannableString();
+							refreshSpannableString(false);
 							
 						}		
 					}
@@ -426,7 +427,7 @@ public class NewScheduleActivity extends Activity {
 					Spans.add(span);
 					
 				}
-				refreshSpannableString();
+				refreshSpannableString(false);
 			}
 		});
 		
@@ -1018,7 +1019,7 @@ public class NewScheduleActivity extends Activity {
         
         else if(resultCode == 2) {
         	idsString.clear();
-        	refreshSpannableString();
+        	refreshSpannableString(false);
 
         }
 
@@ -1074,7 +1075,7 @@ public class NewScheduleActivity extends Activity {
 		//}
 	}
 	
-	public void refreshSpannableString() {
+	public void refreshSpannableString(boolean isDeleted) {
 		
 		Log.d("***************************************************");
 		for(SpannedEntity span: Spans) {
@@ -1105,8 +1106,16 @@ public class NewScheduleActivity extends Activity {
 							}
 						}
 					}
+					for(int j = 0; j< privateGroupData.size(); j++){
+           			 	for(int k = 0; k< privateChildData.get(j).size(); k++){
+           			 		if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+           			 			privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+           			 		}
+           			 	}
+           		 	}
 					Spans.remove(_i);
-					refreshSpannableString();
+					
+					refreshSpannableString(true);
 				}
 			
 				@Override
@@ -1118,6 +1127,9 @@ public class NewScheduleActivity extends Activity {
 			});
 			if(Spans != null && Spans.get(i) != null) {
 				ssb.append(Spans.get(i).displayName + ", ");
+//				if(i == Spans.size()-1){
+//					ssb.append("         ");
+//				}
 				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 				Log.d("setting span 1118");
 				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
@@ -1129,12 +1141,15 @@ public class NewScheduleActivity extends Activity {
 				}
 				spanStartPosition += Spans.get(i).displayName.length() + 2;
 				numbersText.setText(ssb);
+				
 			}	
 		}
+		Log.d("Merry Christmas!");
 		
+		if(!isDeleted)
 		if(Spans.size() > 0 ) {
 			Log.d("line 1124, setting selection at position " + numbersText.getText().length());
-			numbersText.setSelection(numbersText.getText().length());
+			numbersText.setSelection(spanStartPosition);
 		}
 	}
 		

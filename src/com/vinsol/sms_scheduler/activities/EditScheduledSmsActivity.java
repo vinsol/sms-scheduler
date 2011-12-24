@@ -289,7 +289,7 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		Log.i("MSG", "size of Spans : " + Spans.size());
 		mdba.close();
-		refreshSpannableString();
+		refreshSpannableString(false);
 		loadGroupsData();
 		
 		// Check to see if a recognition activity is present
@@ -430,7 +430,7 @@ public class EditScheduledSmsActivity extends Activity {
 	                		 mdba.deleteSpanGroupRelsForSpan(Spans.get(i).spanId);
 	                		 mdba.close();
 	                		 Spans.remove(i);
-	                		 refreshSpannableString();
+	                		 refreshSpannableString(false);
 	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
 	                		 myAutoCompleteAdapter.notifyDataSetChanged();
 	                		 break;
@@ -497,7 +497,7 @@ public class EditScheduledSmsActivity extends Activity {
 								Spans.add(span);
 								
 							}
-							refreshSpannableString();
+							refreshSpannableString(false);
 						}
 						
 					}
@@ -529,7 +529,7 @@ public class EditScheduledSmsActivity extends Activity {
 					Spans.add(span);
 					
 				}
-				refreshSpannableString();
+				refreshSpannableString(false);
 			}
 		});
 		
@@ -1307,7 +1307,7 @@ public class EditScheduledSmsActivity extends Activity {
         
         else if(resultCode == 2){
         	idsString.clear();
-        	refreshSpannableString();
+        	refreshSpannableString(false);
 
         }
 
@@ -1489,7 +1489,7 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	
 	
-	public void refreshSpannableString(){
+	public void refreshSpannableString(boolean isDeleted){
 		ssb.clear();
 		clickableSpanArrayList.clear();
 		spanStartPosition = 0;
@@ -1528,7 +1528,7 @@ public class EditScheduledSmsActivity extends Activity {
 	                			 }
 	                		 }
 							Spans.remove(_i);
-							refreshSpannableString();
+							refreshSpannableString(true);
 						}else{
 							
 						}
@@ -1541,18 +1541,23 @@ public class EditScheduledSmsActivity extends Activity {
 					ds.setUnderlineText(false);
 				}
 			});
-			try{
-    		ssb.append(Spans.get(i).displayName + ", ");
-    		ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
-    		spanStartPosition += Spans.get(i).displayName.length() + 2;
-			
-			numbersText.setText(ssb);
-			
-			numbersText.setSelection(spanStartPosition);
-			}catch(IndexOutOfBoundsException iob){
-				
+			if(Spans != null && Spans.get(i) != null) {
+				ssb.append(Spans.get(i).displayName + ", ");
+	    		if((spanStartPosition + (Spans.get(i).displayName.length()))<ssb.length() && spanStartPosition>-1 && (spanStartPosition + (Spans.get(i).displayName.length()))>-1){
+					ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
+				}
+				spanStartPosition += Spans.get(i).displayName.length() + 2;
+				numbersText.setText(ssb);
 			}
 		}
+		
+		
+		if(!isDeleted)
+			if(Spans.size() > 0 ) {
+				Log.d("MSG" , "line 1124, setting selection at position " + numbersText.getText().length());
+				numbersText.setSelection(spanStartPosition);
+			}
+		
 	}
 	
 	
