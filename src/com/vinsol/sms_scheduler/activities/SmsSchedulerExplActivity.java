@@ -444,6 +444,7 @@ public class SmsSchedulerExplActivity extends Activity {
     				}else{
     					holder.receiverTextView.setText("[No Recepients Added]");
     					holder.receiverTextView.setTextColor(0xff777777);
+    					holder.extraReceiversTextView.setText("");
     				}
     				
     			}
