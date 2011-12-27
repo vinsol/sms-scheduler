@@ -137,6 +137,7 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	boolean smileyVisible = false;
 	boolean isDraft = false;
+	boolean isDeletingASpan = false;
 	
 	static int positionTrack;
 	
@@ -406,8 +407,7 @@ public class EditScheduledSmsActivity extends Activity {
 			
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				
-				Log.v("cccc", "" + keyCode + "  " + KeyEvent.KEYCODE_COMMA);				
+				isDeletingASpan = true;
 				if(keyCode == KeyEvent.KEYCODE_DEL){  
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
@@ -417,6 +417,7 @@ public class EditScheduledSmsActivity extends Activity {
 	                		 len = len + 2;
 	                	 }
 	                	 if(pos<=len){
+	                		 
 	                		 numbersText.setSelection(pos - Spans.get(i).displayName.length());
 	                		 mdba.open();
 	                		 mdba.deleteSpanGroupRelsForSpan(Spans.get(i).spanId);
@@ -425,11 +426,12 @@ public class EditScheduledSmsActivity extends Activity {
 	                		 refreshSpannableString(false);
 	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
 	                		 myAutoCompleteAdapter.notifyDataSetChanged();
+	                		 
 	                		 break;
 	                	 }
 	                 }
 	            }
-				
+				isDeletingASpan = false;
 				return false;
 			}
 		});
@@ -1404,11 +1406,21 @@ public class EditScheduledSmsActivity extends Activity {
 						positionTrack += 1; //if -1 then it will become 0 otherwise will point to character after ',' 
 						
 						String textForFiltering = text.substring(positionTrack, text.length()).trim();
-						if(textForFiltering.length()>0 && !textForFiltering.equals(" ")){
-							isChanging = true;
-							mData = shortlistContacts(textForFiltering);
-							filterResults.values = mData;
-							filterResults.count = mData.size();
+						if(textForFiltering.length()>0 && !textForFiltering.equals("")){
+							if(Spans.size()>0 && !textForFiltering.equals(Spans.get(Spans.size()-1).displayName)){
+								Log.i("MSG", "coming in for creating dropdown suggestions for " + textForFiltering);
+								isChanging = true;
+								mData = shortlistContacts(textForFiltering);
+								filterResults.values = mData;
+								filterResults.count = mData.size();
+							}else{
+								Log.i("MSG", "coming in for creating dropdown suggestions for " + textForFiltering);
+								isChanging = true;
+								mData = shortlistContacts(textForFiltering);
+								filterResults.values = mData;
+								filterResults.count = mData.size();
+							}
+							
 						}
 					}
 					
@@ -1419,9 +1431,13 @@ public class EditScheduledSmsActivity extends Activity {
 				protected void publishResults(CharSequence constraints, FilterResults results) {
 					if(isChanging){
 					if(results != null && results.count > 0) {
+						Log.i("MSG", "notifyDatasSetChanged");
 						notifyDataSetChanged();
+						Log.i("MSG", "notifyDatasSetChanged done");
 		            }else {
+		            	Log.i("MSG", "notifyDatasSetInvalidated");
 		            	notifyDataSetInvalidated();
+		            	Log.i("MSG", "notifyDatasSetInvalidated done");
 		            }}
 				}
 			};
