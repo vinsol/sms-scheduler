@@ -375,7 +375,16 @@ public class NewScheduleActivity extends Activity {
 				Log.d(pos + " position after text changed 365");
 				if(pos > 1) {
 					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' ') {
-						if(numbersText.getText().toString().charAt(pos-2)== '0' ||
+						int pos2 = 0;
+						for(int i = pos-2; i>=0; i--){
+							if(numbersText.getText().toString().charAt(i)== ' '){
+								pos2 = i;
+								break;
+							}
+						}
+						boolean invalidSpan = false;
+						for(int i = pos-2; i>= pos2; i--){
+						if(!(numbersText.getText().toString().charAt(pos-2)== '0' ||
 								numbersText.getText().toString().charAt(pos-2)== '1' ||
 								numbersText.getText().toString().charAt(pos-2)== '2' ||
 								numbersText.getText().toString().charAt(pos-2)== '3' ||
@@ -384,8 +393,12 @@ public class NewScheduleActivity extends Activity {
 								numbersText.getText().toString().charAt(pos-2)== '6' ||
 								numbersText.getText().toString().charAt(pos-2)== '7' ||
 								numbersText.getText().toString().charAt(pos-2)== '8' ||
-								numbersText.getText().toString().charAt(pos-2)== '9'){
-							
+								numbersText.getText().toString().charAt(pos-2)== '9')){
+							invalidSpan = true;
+							break;
+						}
+						}
+						if(!invalidSpan){
 							numbersText.setText(numbersText.getText().toString().substring(0, pos-1));// + numbersText.getText().toString().substring(pos, numbersText.getText().toString().length()-1));
 							int start = 0;
 							for(int i= 0; i < pos-1 ; i++) {

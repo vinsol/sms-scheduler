@@ -460,24 +460,24 @@ public class EditScheduledSmsActivity extends Activity {
 				if(pos>1){
 					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' '){
 						int pos2 = 0;
-						for(int i = pos; i>0; i++){
+						for(int i = pos-2; i>=0; i--){
 							if(numbersText.getText().toString().charAt(i)== ' '){
 								pos2 = i;
 								break;
 							}
 						}
 						boolean invalidSpan = false;
-						for(int i = pos-2; i> pos2; i++){
-						if(!(numbersText.getText().toString().charAt(pos-2)== '0' ||
-								numbersText.getText().toString().charAt(pos-2)== '1' ||
-								numbersText.getText().toString().charAt(pos-2)== '2' ||
-								numbersText.getText().toString().charAt(pos-2)== '3' ||
-								numbersText.getText().toString().charAt(pos-2)== '4' ||
-								numbersText.getText().toString().charAt(pos-2)== '5' ||
-								numbersText.getText().toString().charAt(pos-2)== '6' ||
-								numbersText.getText().toString().charAt(pos-2)== '7' ||
-								numbersText.getText().toString().charAt(pos-2)== '8' ||
-								numbersText.getText().toString().charAt(pos-2)== '9')){
+						for(int i = pos-2; i>= pos2; i--){
+						if(!(numbersText.getText().toString().charAt(i)== '0' ||
+								numbersText.getText().toString().charAt(i)== '1' ||
+								numbersText.getText().toString().charAt(i)== '2' ||
+								numbersText.getText().toString().charAt(i)== '3' ||
+								numbersText.getText().toString().charAt(i)== '4' ||
+								numbersText.getText().toString().charAt(i)== '5' ||
+								numbersText.getText().toString().charAt(i)== '6' ||
+								numbersText.getText().toString().charAt(i)== '7' ||
+								numbersText.getText().toString().charAt(i)== '8' ||
+								numbersText.getText().toString().charAt(i)== '9')){
 							invalidSpan = true;
 							break;
 						}
@@ -1436,8 +1436,8 @@ public class EditScheduledSmsActivity extends Activity {
 			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
 			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
 			try{
-			nameLabel.setText(shortlist.get(position).name);
-			numberLabel.setText(shortlist.get(position).number);
+				nameLabel.setText(shortlist.get(position).name);
+				numberLabel.setText(shortlist.get(position).number);
 			}catch(IndexOutOfBoundsException ioe){}
 			return row;
 		}
