@@ -325,7 +325,6 @@ public class NewScheduleActivity extends Activity {
 	                		 len = len + 2;
 	                	 }
 	                	 if(pos <= len) {
-	                		 int position = pos - (Spans.get(i).displayName.length());
 	                		 if (Spans.size() > 0) {
 	                			 Log.d("line 322, setting selection at position " + numbersText.getText().length());
 	                			 numbersText.setSelection(numbersText.getText().length());
@@ -348,8 +347,6 @@ public class NewScheduleActivity extends Activity {
 	                		 
 	                		 Spans.remove(i);
 	                		 refreshSpannableString(false);
-//	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
-//	                		 myAutoCompleteAdapter.notifyDataSetChanged();
 	                		 break;
 	                	 }
 	                 }
