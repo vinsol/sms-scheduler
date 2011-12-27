@@ -22,9 +22,8 @@
 
     <TextView
         android:id="@+id/new_date_label"
-        android:layout_width="290dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
         android:gravity="center_horizontal"
         android:padding="3dp"
         android:background="@color/warning_yellow"
