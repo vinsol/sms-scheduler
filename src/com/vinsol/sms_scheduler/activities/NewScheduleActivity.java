@@ -325,10 +325,6 @@ public class NewScheduleActivity extends Activity {
 	                		 len = len + 2;
 	                	 }
 	                	 if(pos <= len) {
-	                		 if (Spans.size() > 0) {
-	                			 Log.d("line 322, setting selection at position " + numbersText.getText().length());
-	                			 numbersText.setSelection(numbersText.getText().length());
-	                		 }
 	                		 for(int j = 0; j < nativeGroupData.size(); j++){
 	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++) {
 	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
