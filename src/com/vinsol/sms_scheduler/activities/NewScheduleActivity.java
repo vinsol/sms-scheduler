@@ -350,8 +350,8 @@ public class NewScheduleActivity extends Activity {
 	                		 
 	                		 Spans.remove(i);
 	                		 refreshSpannableString(false);
-	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
-	                		 myAutoCompleteAdapter.notifyDataSetChanged();
+//	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
+//	                		 myAutoCompleteAdapter.notifyDataSetChanged();
 	                		 break;
 	                	 }
 	                 }
@@ -1111,24 +1111,24 @@ public class NewScheduleActivity extends Activity {
 				@Override
 				public void onClick(View widget) {
 							
-					Log.d("value of _i at line 1096 = " + _i );
-					for(int j = 0; j< nativeGroupData.size(); j++) {
-						for(int k = 0; k< nativeChildData.get(j).size(); k++) {
-							if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)) {
-								nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
-							}
-						}
-					}
-					for(int j = 0; j< privateGroupData.size(); j++){
-           			 	for(int k = 0; k< privateChildData.get(j).size(); k++){
-           			 		if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
-           			 			privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
-           			 		}
-           			 	}
-           		 	}
-					Spans.remove(_i);
-					
-					refreshSpannableString(true);
+//					Log.d("value of _i at line 1096 = " + _i );
+//					for(int j = 0; j< nativeGroupData.size(); j++) {
+//						for(int k = 0; k< nativeChildData.get(j).size(); k++) {
+//							if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)) {
+//								nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+//							}
+//						}
+//					}
+//					for(int j = 0; j< privateGroupData.size(); j++){
+//           			 	for(int k = 0; k< privateChildData.get(j).size(); k++){
+//           			 		if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+//           			 			privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+//           			 		}
+//           			 	}
+//           		 	}
+//					Spans.remove(_i);
+//					
+//					refreshSpannableString(true);
 				}
 			
 				@Override
@@ -1506,9 +1506,10 @@ public class NewScheduleActivity extends Activity {
     			holder = (AutoCompleteListHolder) convertView.getTag();
     		}
     		
-    		holder.nameText.setText(shortlist.get(position).name);
-    		holder.numberText.setText(shortlist.get(position).number);
-    		
+			if(shortlist != null && shortlist.size() > position) {
+				holder.nameText.setText(shortlist.get(position).name);
+				holder.numberText.setText(shortlist.get(position).number);
+			}    		
     		return convertView;
 		}
 	}
