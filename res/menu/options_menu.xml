@@ -8,6 +8,6 @@
         
     <item android:id="@+id/group_opt_menu"
         android:title="Manage Groups"
-        android:icon="@drawable/options_menu_manage_groups_icon_states" />
+        android:icon="@drawable/tab_icon_group" />
     
 </menu>

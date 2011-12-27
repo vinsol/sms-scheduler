@@ -31,9 +31,9 @@
         <ImageView
             android:id="@+id/splitter1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="7dp"
             android:layout_toLeftOf="@+id/manage_group_add_group_image_button"
             android:src="@drawable/vertical_seprator" 
             >
@@ -45,7 +45,7 @@
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="7dp"
             android:src="@drawable/ic_btn_write_sms" 
             >
     	</ImageView>
