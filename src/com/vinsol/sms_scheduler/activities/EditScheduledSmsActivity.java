@@ -42,6 +42,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -118,7 +119,7 @@ public class EditScheduledSmsActivity extends Activity {
 
     //----------------------------------------------------------------------------------
 	
-	
+	InputMethodManager inputMethodManager;
 	DBAdapter mdba = new DBAdapter(EditScheduledSmsActivity.this);
 	
 	AutoCompleteAdapter myAutoCompleteAdapter;
@@ -202,6 +203,7 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		dataLoadWaitDialog = new Dialog(EditScheduledSmsActivity.this);
 		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		inputMethodManager =(InputMethodManager)getSystemService(EditScheduledSmsActivity.this.INPUT_METHOD_SERVICE);
 		
 		headerText					= (TextView) 				findViewById(R.id.header);
 		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
@@ -326,7 +328,6 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
 	}
@@ -336,9 +337,7 @@ public class EditScheduledSmsActivity extends Activity {
 	
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
-		
 		unregisterReceiver(mDataLoadedReceiver);
 	}
 	
@@ -353,7 +352,6 @@ public class EditScheduledSmsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(SmsApplicationLevelData.isDataLoaded){
-//					loadGroupsData();
 					Intent intent = new Intent(EditScheduledSmsActivity.this, ContactsTabsActivity.class);
 					intent.putExtra("ORIGIN", "edit");
 					startActivityForResult(intent, 2);
@@ -378,12 +376,18 @@ public class EditScheduledSmsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
+				inputMethodManager.restartInput(numbersText);
 				if(SmsApplicationLevelData.isDataLoaded){
+					
 					if(spanStartPosition > 0){
 						numbersText.setSelection(spanStartPosition);
 					}else if (Spans.size() > 0){
+					Log.i("MSG", "before set selection at 385");
 						numbersText.setSelection(numbersText.getText().toString().length());
+						Log.i("MSG", "after set selection at 385");
+						Log.i("MSG", "selection at : " + numbersText.getSelectionStart());
 					}
+					inputMethodManager.restartInput(numbersText);
 				}else{
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
@@ -1512,7 +1516,7 @@ public class EditScheduledSmsActivity extends Activity {
 				
 				@Override
 				public void onClick(View widget) {
-							
+						inputMethodManager.restartInput(numbersText);
 						Log.i("MSG", _i + "");
 						
 							for(int j = 0; j< nativeGroupData.size(); j++){
@@ -1551,12 +1555,16 @@ public class EditScheduledSmsActivity extends Activity {
 				numbersText.setText(ssb);
 			}
 		}
+		Log.i("MSG", "after setting spans-----------------------------");
 		
+		inputMethodManager.restartInput(numbersText);
 		
 		if(!isDeleted)
 			if(Spans.size() > 0 ) {
 				Log.d("MSG" , "line 1124, setting selection at position " + numbersText.getText().length());
+				Log.i("MSG", "before set selection at 1561");
 				numbersText.setSelection(spanStartPosition);
+				Log.i("MSG", "after set selection at 1561");
 			}
 		
 	}
