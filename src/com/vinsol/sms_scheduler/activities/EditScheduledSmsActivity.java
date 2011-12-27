@@ -796,7 +796,7 @@ public class EditScheduledSmsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(messageText.getText().toString().matches("(''|[' ']*)")){
-					Toast.makeText(EditScheduledSmsActivity.this, "Text is blank. Couldn't add it as Template", Toast.LENGTH_SHORT).show();
+					Toast.makeText(EditScheduledSmsActivity.this, "Empty message, can't add it as template", Toast.LENGTH_SHORT).show();
 				}else{
 					mdba.open();
 					Cursor cur = mdba.fetchAllTemplates();
@@ -1565,8 +1565,11 @@ public class EditScheduledSmsActivity extends Activity {
 		boolean isChanged = false;
 		
 		if(originalSpans.size() != Spans.size()){
-			Log.i("MSG", "Changed : 1");
-			isChanged = true;
+			
+				Log.i("MSG", "Changed : 1");
+				isChanged = true;
+			
+			
 		}else if(!messageText.getText().toString().equals(originalMessage)){
 			Log.i("MSG", "Changed : 2");
 			isChanged = true;

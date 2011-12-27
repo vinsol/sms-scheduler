@@ -131,6 +131,8 @@ public class NewScheduleActivity extends Activity {
 	
 	boolean smileyVisible = false;
 	
+	boolean deletingSpan = false;
+	
 	ArrayList<Long> ids = new ArrayList<Long>();
 	ArrayList<String> idsString = new ArrayList<String>();
 	
@@ -286,9 +288,12 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(SmsApplicationLevelData.isDataLoaded) {
-					if(Spans.size() > 0) {
+					if(Spans.size() > 0 && !deletingSpan) {
 						Log.d("line 286, setting selection at position " + numbersText.getText().length());
 						numbersText.setSelection(numbersText.getText().length());
+						Log.d("line 286, did");
+					}else{
+//						deletingSpan = false;
 					}
 				} else {
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
@@ -639,7 +644,7 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(messageText.getText().toString().matches("(''|[' ']*)")){
-					Toast.makeText(NewScheduleActivity.this, "Text is blank. Couldn't add it as Template", Toast.LENGTH_SHORT).show();
+					Toast.makeText(NewScheduleActivity.this, "Empty message, can't add it as template", Toast.LENGTH_SHORT).show();
 				}else{
 					mdba.open();
 					Cursor cur = mdba.fetchAllTemplates();
@@ -1083,6 +1088,12 @@ public class NewScheduleActivity extends Activity {
 		}
 		Log.d("***************************************************");
 		
+		
+		if(isDeleted){
+			deletingSpan = true;
+		}
+		
+		
 		ssb.clear();
 		clickableSpanArrayList.clear();
 		spanStartPosition = 0;
@@ -1090,6 +1101,8 @@ public class NewScheduleActivity extends Activity {
 		
 		
 		for(int i = 0; i< Spans.size(); i++) {
+			
+			
 			
 			final int _i = i;
 		
@@ -1127,9 +1140,6 @@ public class NewScheduleActivity extends Activity {
 			});
 			if(Spans != null && Spans.get(i) != null) {
 				ssb.append(Spans.get(i).displayName + ", ");
-//				if(i == Spans.size()-1){
-//					ssb.append("         ");
-//				}
 				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 				Log.d("setting span 1118");
 				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
@@ -1145,6 +1155,8 @@ public class NewScheduleActivity extends Activity {
 			}	
 		}
 		Log.d("Merry Christmas!");
+		
+		deletingSpan = false;
 		
 		if(!isDeleted)
 		if(Spans.size() > 0 ) {

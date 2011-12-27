@@ -157,7 +157,7 @@ public class GroupEditActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
-							Toast.makeText(GroupEditActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
+							Toast.makeText(GroupEditActivity.this, "Group name can't be blank", Toast.LENGTH_SHORT).show();
 							groupNameEdit.setText(groupName);
 						
 							
@@ -175,7 +175,7 @@ public class GroupEditActivity extends Activity {
 							}
 							mdba.close();
 							if(groupNameExists){
-								Toast.makeText(GroupEditActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
+								Toast.makeText(GroupEditActivity.this, "Group name already exists", Toast.LENGTH_SHORT).show();
 							}else{
 								groupName = groupNameEdit.getText().toString();
 								groupNameLabel.setText(groupName);
