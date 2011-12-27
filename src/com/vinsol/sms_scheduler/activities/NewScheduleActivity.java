@@ -30,7 +30,6 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
-import android.test.IsolatedContext;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.TextWatcher;
@@ -62,7 +61,6 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.models.GroupStructure;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
@@ -327,11 +325,6 @@ public class NewScheduleActivity extends Activity {
 	                		 len = len + 2;
 	                	 }
 	                	 if(pos <= len) {
-	                		 int position = pos - (Spans.get(i).displayName.length());
-	                		 if (Spans.size() > 0) {
-	                			 Log.d("line 322, setting selection at position " + numbersText.getText().length());
-	                			 numbersText.setSelection(numbersText.getText().length());
-	                		 }
 	                		 for(int j = 0; j < nativeGroupData.size(); j++){
 	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++) {
 	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
@@ -350,8 +343,6 @@ public class NewScheduleActivity extends Activity {
 	                		 
 	                		 Spans.remove(i);
 	                		 refreshSpannableString(false);
-//	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
-//	                		 myAutoCompleteAdapter.notifyDataSetChanged();
 	                		 break;
 	                	 }
 	                 }
