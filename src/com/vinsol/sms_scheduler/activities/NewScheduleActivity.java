@@ -350,8 +350,8 @@ public class NewScheduleActivity extends Activity {
 	                		 
 	                		 Spans.remove(i);
 	                		 refreshSpannableString(false);
-	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
-	                		 myAutoCompleteAdapter.notifyDataSetChanged();
+//	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
+//	                		 myAutoCompleteAdapter.notifyDataSetChanged();
 	                		 break;
 	                	 }
 	                 }
