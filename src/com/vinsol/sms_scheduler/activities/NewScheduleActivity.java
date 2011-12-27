@@ -291,7 +291,7 @@ public class NewScheduleActivity extends Activity {
 					if(Spans.size() > 0 && !deletingSpan) {
 						Log.d("line 286, setting selection at position " + numbersText.getText().length());
 						numbersText.setSelection(numbersText.getText().length());
-						Log.d("line 286, did");
+						Log.d("line 286, did setSelection");
 					}else{
 //						deletingSpan = false;
 					}
@@ -1280,12 +1280,13 @@ public class NewScheduleActivity extends Activity {
         	
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
+        		group.put(Constants.GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
         		group.put(Constants.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
         		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
        			group.put(Constants.GROUP_CHECK, false);
         		group.put(Constants.GROUP_TYPE, 1);
-        		group.put(Constants.GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
         		
+
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         	
         		
@@ -1337,12 +1338,11 @@ public class NewScheduleActivity extends Activity {
         			}
         		}
         		
-        		privateGroupData.add(group);
-        		GroupStructure groupStructure;
+        		
         	
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
-        		
+        		boolean hasAChild = false;
         		for(int i = 0; i< contactIds.size(); i++){
         			for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
         				if(contactIds.get(i)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
@@ -1356,6 +1356,7 @@ public class NewScheduleActivity extends Activity {
         	        			for(int n = 0; n< Spans.get(m).groupIds.size(); n++){
         	        				if((Spans.get(m).groupIds.get(n)==group.get(Constants.GROUP_ID)) && (Spans.get(m).groupTypes.get(n) == 2) && (Spans.get(m).entityId == contactIds.get(i))){
         	        					group.put(Constants.GROUP_CHECK, true);
+        	        					hasAChild = true;
         	        					break;
         	        				}
         	        			}
@@ -1365,6 +1366,12 @@ public class NewScheduleActivity extends Activity {
         				}
         			}
         		}
+        		if(hasAChild){
+        			group.put(Constants.GROUP_CHECK, true);
+        		}else{
+        			group.put(Constants.GROUP_CHECK, false);
+        		}
+        		privateGroupData.add(group);
         		
         		privateChildData.add(child);
         		count++;

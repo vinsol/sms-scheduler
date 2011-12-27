@@ -352,6 +352,7 @@ public class EditScheduledSmsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(SmsApplicationLevelData.isDataLoaded){
+//					loadGroupsData();
 					Intent intent = new Intent(EditScheduledSmsActivity.this, ContactsTabsActivity.class);
 					intent.putExtra("ORIGIN", "edit");
 					startActivityForResult(intent, 2);
@@ -359,16 +360,7 @@ public class EditScheduledSmsActivity extends Activity {
 					
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					toOpen = 1;
-					
-//					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
-//						
-//						@Override
-//						public void onCancel(DialogInterface dialog) {
-//							// TODO Auto-generated method stub
-//							toOpen = 0;
-//							dataLoadWaitDialog.cancel();
-//						}
-//					});
+
 					dataLoadWaitDialog.show();
 				}
 				
@@ -467,7 +459,16 @@ public class EditScheduledSmsActivity extends Activity {
 				Log.i("MSG", pos + "");
 				if(pos>1){
 					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' '){
-						if(numbersText.getText().toString().charAt(pos-2)== '0' ||
+						int pos2 = 0;
+						for(int i = pos; i>0; i++){
+							if(numbersText.getText().toString().charAt(i)== ' '){
+								pos2 = i;
+								break;
+							}
+						}
+						boolean invalidSpan = false;
+						for(int i = pos-2; i> pos2; i++){
+						if(!(numbersText.getText().toString().charAt(pos-2)== '0' ||
 								numbersText.getText().toString().charAt(pos-2)== '1' ||
 								numbersText.getText().toString().charAt(pos-2)== '2' ||
 								numbersText.getText().toString().charAt(pos-2)== '3' ||
@@ -476,8 +477,12 @@ public class EditScheduledSmsActivity extends Activity {
 								numbersText.getText().toString().charAt(pos-2)== '6' ||
 								numbersText.getText().toString().charAt(pos-2)== '7' ||
 								numbersText.getText().toString().charAt(pos-2)== '8' ||
-								numbersText.getText().toString().charAt(pos-2)== '9'){
-							
+								numbersText.getText().toString().charAt(pos-2)== '9')){
+							invalidSpan = true;
+							break;
+						}
+						}
+						if(!invalidSpan){
 							numbersText.setText(numbersText.getText().toString().substring(0, pos-1));// + numbersText.getText().toString().substring(pos, numbersText.getText().toString().length()-1));
 							int start = 0;
 							for(int i= 0; i < pos-1 ; i++){
@@ -1381,7 +1386,7 @@ public class EditScheduledSmsActivity extends Activity {
 		@Override
 		public Filter getFilter() {
 			Filter myFilter = new Filter(){
-			
+			boolean isChanging = false;
 				
 				@Override
 				protected FilterResults performFiltering(CharSequence constraint) {
@@ -1399,10 +1404,12 @@ public class EditScheduledSmsActivity extends Activity {
 						positionTrack += 1; //if -1 then it will become 0 otherwise will point to character after ',' 
 						
 						String textForFiltering = text.substring(positionTrack, text.length()).trim();
-					
-						mData = shortlistContacts(textForFiltering);
-						filterResults.values = mData;
-						filterResults.count = mData.size();
+						if(textForFiltering.length()>0 && !textForFiltering.equals(" ")){
+							isChanging = true;
+							mData = shortlistContacts(textForFiltering);
+							filterResults.values = mData;
+							filterResults.count = mData.size();
+						}
 					}
 					
 					return filterResults;
@@ -1410,12 +1417,12 @@ public class EditScheduledSmsActivity extends Activity {
 
 				@Override
 				protected void publishResults(CharSequence constraints, FilterResults results) {
+					if(isChanging){
 					if(results != null && results.count > 0) {
 						notifyDataSetChanged();
 		            }else {
 		            	notifyDataSetInvalidated();
-		            }
-					
+		            }}
 				}
 			};
 			
@@ -1428,8 +1435,10 @@ public class EditScheduledSmsActivity extends Activity {
     		View row = inflater.inflate(R.layout.dropdown_row_layout, parent, false);
 			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
 			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
+			try{
 			nameLabel.setText(shortlist.get(position).name);
 			numberLabel.setText(shortlist.get(position).number);
+			}catch(IndexOutOfBoundsException ioe){}
 			return row;
 		}
 	

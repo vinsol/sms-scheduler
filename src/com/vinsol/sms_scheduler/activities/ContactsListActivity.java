@@ -144,7 +144,7 @@ public class ContactsListActivity extends Activity {
 										}
 										mdba.close();
 										if(groupNameExists){
-											Toast.makeText(ContactsListActivity.this, "Group Name Exists. Try another", Toast.LENGTH_SHORT).show();
+											Toast.makeText(ContactsListActivity.this, "Group name already exists", Toast.LENGTH_SHORT).show();
 										}else{
 											d.cancel();
 											groupName = groupNameEdit.getText().toString();
