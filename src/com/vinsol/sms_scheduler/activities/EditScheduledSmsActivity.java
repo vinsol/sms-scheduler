@@ -1596,7 +1596,7 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		boolean isChanged = false;
 		
-		if(originalSpans.size() != Spans.size()){
+		if(!isDraft && originalSpans.size() != Spans.size()){
 			
 				Log.i("MSG", "Changed : 1");
 				isChanged = true;
@@ -1605,6 +1605,10 @@ public class EditScheduledSmsActivity extends Activity {
 		}else if(!messageText.getText().toString().equals(originalMessage)){
 			Log.i("MSG", "Changed : 2");
 			isChanged = true;
+		}else if(isDraft && originalSpans.size()==1 && originalSpans.get(0).displayName.equals(" ")){
+			if(Spans.size()>0){
+				isChanged = true;
+			}
 		}else{
 			for(int i = 0; i< Spans.size(); i++){
 				if(Spans.get(i).entityId != originalSpans.get(i).entityId){
