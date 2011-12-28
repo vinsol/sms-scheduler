@@ -376,31 +376,21 @@ public class EditScheduledSmsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				inputMethodManager.restartInput(numbersText);
+//				inputMethodManager.restartInput(numbersText);
 				if(SmsApplicationLevelData.isDataLoaded){
-					
-					if(spanStartPosition > 0){
-						numbersText.setSelection(spanStartPosition);
-					}else if (Spans.size() > 0){
-					Log.i("MSG", "before set selection at 385");
+//					inputMethodManager.restartInput(numbersText);
+//					if(spanStartPosition > 0){
+//						numbersText.setSelection(spanStartPosition);
+//					}else if (Spans.size() > 0){
+//					Log.i("MSG", "before set selection at 385");
 						numbersText.setSelection(numbersText.getText().toString().length());
 						Log.i("MSG", "after set selection at 385");
 						Log.i("MSG", "selection at : " + numbersText.getSelectionStart());
-					}
+//					}
 					inputMethodManager.restartInput(numbersText);
 				}else{
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
-//					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
-//						
-//						@Override
-//						public void onCancel(DialogInterface dialog) {
-//							// TODO Auto-generated method stub
-//							Log.i("MSG", "2");
-//							toOpen = 0;
-//							dataLoadWaitDialog.cancel();
-//						}
-//					});
 					dataLoadWaitDialog.show();
 				}
 			}
@@ -411,7 +401,7 @@ public class EditScheduledSmsActivity extends Activity {
 			
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				isDeletingASpan = true;
+				
 				if(keyCode == KeyEvent.KEYCODE_DEL){  
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
@@ -426,6 +416,24 @@ public class EditScheduledSmsActivity extends Activity {
 	                		 mdba.open();
 	                		 mdba.deleteSpanGroupRelsForSpan(Spans.get(i).spanId);
 	                		 mdba.close();
+	                		 
+	                		 for(int j = 0; j < nativeGroupData.size(); j++){
+	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++) {
+	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+	                				 }
+	                			 }
+	                		 }
+	                		 
+	                		 for(int j = 0; j< privateGroupData.size(); j++){
+	                			 for(int k = 0; k< privateChildData.get(j).size(); k++){
+	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					// Log.d("coming into IF to uncheck a private group child");
+	                					 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+	                				 }
+	                			 }
+	                		 }
+	                		 
 	                		 Spans.remove(i);
 	                		 refreshSpannableString(false);
 	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
@@ -435,7 +443,7 @@ public class EditScheduledSmsActivity extends Activity {
 	                	 }
 	                 }
 	            }
-				isDeletingASpan = false;
+				
 				return false;
 			}
 		});
@@ -1412,19 +1420,14 @@ public class EditScheduledSmsActivity extends Activity {
 						String textForFiltering = text.substring(positionTrack, text.length()).trim();
 						if(textForFiltering.length()>0 && !textForFiltering.equals("")){
 							if(Spans.size()>0 && !textForFiltering.equals(Spans.get(Spans.size()-1).displayName)){
-								Log.i("MSG", "coming in for creating dropdown suggestions for " + textForFiltering);
-								isChanging = true;
 								mData = shortlistContacts(textForFiltering);
 								filterResults.values = mData;
 								filterResults.count = mData.size();
-							}else{
-								Log.i("MSG", "coming in for creating dropdown suggestions for " + textForFiltering);
-								isChanging = true;
+							}else if(Spans.size()==0){
 								mData = shortlistContacts(textForFiltering);
 								filterResults.values = mData;
 								filterResults.count = mData.size();
 							}
-							
 						}
 					}
 					
@@ -1433,16 +1436,11 @@ public class EditScheduledSmsActivity extends Activity {
 
 				@Override
 				protected void publishResults(CharSequence constraints, FilterResults results) {
-					if(isChanging){
 					if(results != null && results.count > 0) {
-						Log.i("MSG", "notifyDatasSetChanged");
 						notifyDataSetChanged();
-						Log.i("MSG", "notifyDatasSetChanged done");
-		            }else {
-		            	Log.i("MSG", "notifyDatasSetInvalidated");
-		            	notifyDataSetInvalidated();
-		            	Log.i("MSG", "notifyDatasSetInvalidated done");
-		            }}
+			        }else {
+			           	notifyDataSetInvalidated();		            	
+			        }
 				}
 			};
 			
@@ -1455,10 +1453,10 @@ public class EditScheduledSmsActivity extends Activity {
     		View row = inflater.inflate(R.layout.dropdown_row_layout, parent, false);
 			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
 			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
-			try{
+//			try{
 				nameLabel.setText(shortlist.get(position).name);
 				numberLabel.setText(shortlist.get(position).number);
-			}catch(IndexOutOfBoundsException ioe){}
+//			}catch(IndexOutOfBoundsException ioe){}
 			return row;
 		}
 	
@@ -1516,7 +1514,8 @@ public class EditScheduledSmsActivity extends Activity {
 				
 				@Override
 				public void onClick(View widget) {
-						inputMethodManager.restartInput(numbersText);
+						inputMethodManager.hideSoftInputFromWindow(numbersText.getWindowToken(), 0);
+
 						Log.i("MSG", _i + "");
 						
 							for(int j = 0; j< nativeGroupData.size(); j++){
@@ -1557,7 +1556,7 @@ public class EditScheduledSmsActivity extends Activity {
 		}
 		Log.i("MSG", "after setting spans-----------------------------");
 		
-		inputMethodManager.restartInput(numbersText);
+//		inputMethodManager.restartInput(numbersText);
 		
 		if(!isDeleted)
 			if(Spans.size() > 0 ) {

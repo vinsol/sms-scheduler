@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -109,7 +110,7 @@ public class NewScheduleActivity extends Activity {
 	private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 	//----------------------------------------------------------------------------------
 	
-     
+    InputMethodManager inputMethodManager;
     
 	DBAdapter mdba = new DBAdapter(NewScheduleActivity.this);
 	
@@ -128,8 +129,6 @@ public class NewScheduleActivity extends Activity {
 	ArrayList<MyContact> shortlist = new ArrayList<MyContact>();
 	
 	boolean smileyVisible = false;
-	
-	boolean deletingSpan = false;
 	
 	ArrayList<Long> ids = new ArrayList<Long>();
 	ArrayList<String> idsString = new ArrayList<String>();
@@ -189,6 +188,7 @@ public class NewScheduleActivity extends Activity {
 		dataLoadWaitDialog = new Dialog(NewScheduleActivity.this);
 		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
+		inputMethodManager = (InputMethodManager)getSystemService(NewScheduleActivity.this.INPUT_METHOD_SERVICE);
 		
 		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
 		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
@@ -265,17 +265,6 @@ public class NewScheduleActivity extends Activity {
 				}else{
 					toOpen = 1;
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
-					
-//					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
-//						
-//						@Override
-//						public void onCancel(DialogInterface dialog) {
-//							// TODO Auto-generated method stub
-//							Log.i("MSG", "2");
-//							toOpen = 0;
-//							dataLoadWaitDialog.cancel();
-//						}
-//					});
 					dataLoadWaitDialog.show();
 				}
 			}
@@ -286,26 +275,18 @@ public class NewScheduleActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(SmsApplicationLevelData.isDataLoaded) {
-					if(Spans.size() > 0 && !deletingSpan) {
-						Log.d("line 286, setting selection at position " + numbersText.getText().length());
-						numbersText.setSelection(numbersText.getText().length());
-						Log.d("line 286, did setSelection");
-					}else{
-//						deletingSpan = false;
+//					inputMethodManager.restartInput(numbersText);
+					if(SmsApplicationLevelData.isDataLoaded){
+//						if(spanStartPosition > 0){
+//							numbersText.setSelection(spanStartPosition);
+//						}else if (Spans.size() > 0){
+							numbersText.setSelection(numbersText.getText().toString().length());
+//						}
+						inputMethodManager.restartInput(numbersText);
 					}
 				} else {
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
-//					dataLoadWaitDialog.setOnCancelListener(new OnCancelListener() {
-//						
-//						@Override
-//						public void onCancel(DialogInterface dialog) {
-//							// TODO Auto-generated method stub
-//							Log.i("MSG", "2");
-//							toOpen = 0;
-//							dataLoadWaitDialog.cancel();
-//						}
-//					});
 					dataLoadWaitDialog.show();
 				}
 			}
@@ -336,6 +317,7 @@ public class NewScheduleActivity extends Activity {
 	                		 for(int j = 0; j< privateGroupData.size(); j++){
 	                			 for(int k = 0; k< privateChildData.get(j).size(); k++){
 	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 Log.d("coming into IF to uncheck a private group child");
 	                					 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
@@ -1093,10 +1075,6 @@ public class NewScheduleActivity extends Activity {
 		Log.d("***************************************************");
 		
 		
-		if(isDeleted){
-			deletingSpan = true;
-		}
-		
 		
 		ssb.clear();
 		clickableSpanArrayList.clear();
@@ -1114,25 +1092,25 @@ public class NewScheduleActivity extends Activity {
 				
 				@Override
 				public void onClick(View widget) {
-							
-//					Log.d("value of _i at line 1096 = " + _i );
-//					for(int j = 0; j< nativeGroupData.size(); j++) {
-//						for(int k = 0; k< nativeChildData.get(j).size(); k++) {
-//							if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)) {
-//								nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
-//							}
-//						}
-//					}
-//					for(int j = 0; j< privateGroupData.size(); j++){
-//           			 	for(int k = 0; k< privateChildData.get(j).size(); k++){
-//           			 		if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
-//           			 			privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
-//           			 		}
-//           			 	}
-//           		 	}
-//					Spans.remove(_i);
-//					
-//					refreshSpannableString(true);
+					inputMethodManager.hideSoftInputFromWindow(numbersText.getWindowToken(), 0);		
+					Log.d("value of _i at line 1096 = " + _i );
+					for(int j = 0; j< nativeGroupData.size(); j++) {
+						for(int k = 0; k< nativeChildData.get(j).size(); k++) {
+							if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)) {
+								nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+							}
+						}
+					}
+					for(int j = 0; j< privateGroupData.size(); j++){
+           			 	for(int k = 0; k< privateChildData.get(j).size(); k++){
+           			 		if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+           			 			privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+           			 		}
+           			 	}
+           		 	}
+					Spans.remove(_i);
+					
+					refreshSpannableString(true);
 				}
 			
 				@Override
@@ -1144,12 +1122,6 @@ public class NewScheduleActivity extends Activity {
 			});
 			if(Spans != null && Spans.get(i) != null) {
 				ssb.append(Spans.get(i).displayName + ", ");
-				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-				Log.d("setting span 1118");
-				Log.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-				Log.d("spanStartPosition : " + spanStartPosition);
-				Log.d("ssb length : " + ssb.length());
-				Log.d("spanEndPosition : " + (spanStartPosition + (Spans.get(i).displayName.length())));
 				if((spanStartPosition + (Spans.get(i).displayName.length()))<ssb.length() && spanStartPosition>-1 && (spanStartPosition + (Spans.get(i).displayName.length()))>-1){
 					ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
 				}
@@ -1158,9 +1130,11 @@ public class NewScheduleActivity extends Activity {
 				
 			}	
 		}
-		Log.d("Merry Christmas!");
 		
-		deletingSpan = false;
+		
+		
+		inputMethodManager.restartInput(numbersText);
+		
 		
 		if(!isDeleted)
 		if(Spans.size() > 0 ) {
@@ -1235,10 +1209,7 @@ public class NewScheduleActivity extends Activity {
 				public void onClick(View v) {
 					d.cancel();
 					new AsyncScheduling().execute();
-//					doSmsScheduling();
 					Toast.makeText(NewScheduleActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
-					
-//					NewScheduleActivity.this.finish();
 				}
 			});
 			
@@ -1475,9 +1446,17 @@ public class NewScheduleActivity extends Activity {
 						
 						String textForFiltering = text.substring(positionTrack, text.length()).trim();
 					
-						mData = shortlistContacts(textForFiltering);
-						filterResults.values = mData;
-						filterResults.count = mData.size();
+						if(textForFiltering.length()>0 && !textForFiltering.equals("")){
+							if(Spans.size()>0 && !textForFiltering.equals(Spans.get(Spans.size()-1).displayName)){
+								mData = shortlistContacts(textForFiltering);
+								filterResults.values = mData;
+								filterResults.count = mData.size();
+							}else if(Spans.size()==0){
+								mData = shortlistContacts(textForFiltering);
+								filterResults.values = mData;
+								filterResults.count = mData.size();
+							}
+						}
 					}
 					
 					return filterResults;
