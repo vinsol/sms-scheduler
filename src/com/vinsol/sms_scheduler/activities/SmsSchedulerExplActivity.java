@@ -1025,7 +1025,7 @@ public class SmsSchedulerExplActivity extends Activity {
 		messageSpace.setMovementMethod(new ScrollingMovementMethod());
 		SentDialogNumberListAdapter sentDialogAdapter = new SentDialogNumberListAdapter();
 		numbersList.setAdapter(sentDialogAdapter);
-		
+		mdba.close();
 		sentInfoDialog.show();
 	}
     
@@ -1059,6 +1059,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		long currentId = idsForSentDialog.get(position);
     		
     		int condition = 1;
+    		mdba.open();
     		Cursor cur = mdba.fetchSmsDetails(currentId);
 			cur.moveToFirst();
 			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !(mdba.checkDeliver(currentId))){
@@ -1085,7 +1086,7 @@ public class SmsSchedulerExplActivity extends Activity {
 			default:
 				break;
 			}
-    		
+    		mdba.close();
     		return convertView;
     	}
     }

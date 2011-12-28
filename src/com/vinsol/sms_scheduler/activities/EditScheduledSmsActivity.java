@@ -59,6 +59,7 @@ import android.widget.Filterable;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -89,6 +90,7 @@ public class EditScheduledSmsActivity extends Activity {
 	Button 					scheduleButton;
 	Button 					cancelButton;
 	GridView				smileysGrid;
+	LinearLayout			pastTimeDateLabel;
 	//--------------------------------------------------------
 	
 	static ArrayList<ArrayList<HashMap<String, Object>>> nativeChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
@@ -218,6 +220,7 @@ public class EditScheduledSmsActivity extends Activity {
 		scheduleButton 				= (Button) 					findViewById(R.id.new_schedule_button);
 		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
+		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
 		
 		
 		Intent intent = getIntent();
@@ -563,7 +566,11 @@ public class EditScheduledSmsActivity extends Activity {
 		final SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 		dateButton.setText(sdf.format(currentDate));
 		processDate = currentDate; 
-		
+		if(checkDateValidity(processDate)){
+			pastTimeDateLabel.setVisibility(View.GONE);
+		}else{
+			pastTimeDateLabel.setVisibility(View.VISIBLE);
+		}
 		dateButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -591,8 +598,10 @@ public class EditScheduledSmsActivity extends Activity {
 					public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 						if(checkDateValidity(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()))){
 							dateLabel.setVisibility(View.INVISIBLE);
+							pastTimeDateLabel.setVisibility(View.GONE);
 						}else{
 							dateLabel.setVisibility(View.VISIBLE);
+							pastTimeDateLabel.setVisibility(View.VISIBLE);
 						}
 					}
 				});
@@ -605,8 +614,10 @@ public class EditScheduledSmsActivity extends Activity {
 //				dateLabel.setText(dateString);
 				if(checkDateValidity(refDate)){
 					dateLabel.setVisibility(View.INVISIBLE);
+					pastTimeDateLabel.setVisibility(View.GONE);
 				}else{
 					dateLabel.setVisibility(View.VISIBLE);
+					pastTimeDateLabel.setVisibility(View.VISIBLE);
 				}
 				
 				okDateButton.setOnClickListener(new OnClickListener() {
@@ -651,8 +662,10 @@ public class EditScheduledSmsActivity extends Activity {
 					public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
 							dateLabel.setVisibility(View.INVISIBLE);
+							pastTimeDateLabel.setVisibility(View.GONE);
 						} else {
 							dateLabel.setVisibility(View.VISIBLE);
+							pastTimeDateLabel.setVisibility(View.VISIBLE);
 						}
 					}
 				});
@@ -1596,28 +1609,47 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		boolean isChanged = false;
 		
-		if(!isDraft && originalSpans.size() != Spans.size()){
-			
-				Log.i("MSG", "Changed : 1");
+		if(isDraft){
+			if(originalSpans.size()==1 && originalSpans.get(0).displayName.equals(" ")){
+				if(Spans.size()>0){
+					isChanged = true;
+				}
+			}else if(originalSpans.size()!=Spans.size()){
 				isChanged = true;
-			
-			
-		}else if(!messageText.getText().toString().equals(originalMessage)){
-			Log.i("MSG", "Changed : 2");
-			isChanged = true;
-		}else if(isDraft && originalSpans.size()==1 && originalSpans.get(0).displayName.equals(" ")){
-			if(Spans.size()>0){
+			}else if(!messageText.getText().toString().equals(originalMessage)){
+				Log.i("MSG", "Changed : 2");
 				isChanged = true;
+		
+			}else{
+				for(int i = 0; i< Spans.size(); i++){
+					if(Spans.get(i).entityId != originalSpans.get(i).entityId){
+						isChanged = true;
+						Log.i("MSG", "Changed : 3");
+						break;
+					}
+				}
 			}
 		}else{
-			for(int i = 0; i< Spans.size(); i++){
-				if(Spans.get(i).entityId != originalSpans.get(i).entityId){
-					isChanged = true;
-					Log.i("MSG", "Changed : 3");
-					break;
+			if(originalSpans.size() != Spans.size()){
+				Log.i("MSG", "Changed : 1");
+				isChanged = true;
+			}else if(!messageText.getText().toString().equals(originalMessage)){
+				Log.i("MSG", "Changed : 2");
+				isChanged = true;
+		
+			}else{
+				for(int i = 0; i< Spans.size(); i++){
+					if(Spans.get(i).entityId != originalSpans.get(i).entityId){
+						isChanged = true;
+						Log.i("MSG", "Changed : 3");
+						break;
+					}
 				}
 			}
 		}
+		
+		
+		
 		
 		Log.i("MSG", "is Changed : " + isChanged );
 		

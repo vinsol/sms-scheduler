@@ -18,6 +18,28 @@
 		android:paddingLeft="10dip"
 		>
 	</TextView>
+	
+	<LinearLayout 
+	    android:id = "@+id/past_time_label"
+	    android:orientation="horizontal"
+	    android:layout_height="wrap_content"
+	    android:layout_width = "fill_parent"
+	    android:layout_below="@id/header">
+	    
+	    <TextView
+        	android:id="@+id/new_date_label"
+        	android:layout_width="320dp"
+        	android:layout_height="wrap_content"
+        	android:gravity="center_horizontal"
+        	android:padding="3dp"
+        	android:background="@color/warning_yellow"
+        	android:text="Time in past, message will be sent now"
+        	android:textColor="@color/black" 
+        	android:drawableLeft="@drawable/warning_sign"
+        	>
+    	</TextView>
+	    
+	</LinearLayout>
     
 	<!-- footer -->    
 	<LinearLayout 
@@ -57,7 +79,7 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:background="@color/white"
-	    android:layout_below="@id/header"
+	    android:layout_below="@id/past_time_label"
 	    android:layout_above="@id/footer"
 	    >
 		<LinearLayout 

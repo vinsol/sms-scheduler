@@ -299,8 +299,8 @@ public class GroupEditActivity extends Activity {
 				Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 				
 				questionText.setText("Discard the changes?");
-				yesButton.setText("Yes");
-				noButton.setText("No");
+				yesButton.setText("");
+				noButton.setText("");
 				yesButton.setOnClickListener(new OnClickListener() {
 					
 					@Override

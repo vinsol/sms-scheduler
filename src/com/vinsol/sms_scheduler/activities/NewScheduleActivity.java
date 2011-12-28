@@ -54,6 +54,7 @@ import android.widget.Filterable;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker.OnTimeChangedListener;
@@ -81,6 +82,7 @@ public class NewScheduleActivity extends Activity {
 	Button 					scheduleButton;
 	Button 					cancelButton;
 	GridView				smileysGrid;
+	LinearLayout			pastTimeDateLabel;
 	//--------------------------------------------------------
 	
 	
@@ -201,6 +203,7 @@ public class NewScheduleActivity extends Activity {
 		scheduleButton 				= (Button) 					findViewById(R.id.new_schedule_button);
 		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
+		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
 		
 		
 		Spans.clear();
@@ -457,8 +460,10 @@ public class NewScheduleActivity extends Activity {
 						//dateLabel.setText(temp);
 						if(checkDateValidity(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()))){
 							dateLabel.setVisibility(View.INVISIBLE);
+							pastTimeDateLabel.setVisibility(View.GONE);
 						}else{
 							dateLabel.setVisibility(View.VISIBLE);
+							pastTimeDateLabel.setVisibility(View.VISIBLE);
 						}
 					}
 				});
@@ -471,8 +476,10 @@ public class NewScheduleActivity extends Activity {
 
 				if(checkDateValidity(refDate)){
 					dateLabel.setVisibility(View.INVISIBLE);
+					pastTimeDateLabel.setVisibility(View.GONE);
 				}else{
 					dateLabel.setVisibility(View.VISIBLE);
+					pastTimeDateLabel.setVisibility(View.VISIBLE);
 				}
 				
 				okDateButton.setOnClickListener(new OnClickListener() {
@@ -512,8 +519,10 @@ public class NewScheduleActivity extends Activity {
 						String temp = sdf.format(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute));
 						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
 							dateLabel.setVisibility(View.INVISIBLE);
+							pastTimeDateLabel.setVisibility(View.GONE);
 						} else {
 							dateLabel.setVisibility(View.VISIBLE);
+							pastTimeDateLabel.setVisibility(View.VISIBLE);
 						}
 					}
 				});
