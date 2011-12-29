@@ -16,6 +16,8 @@
         android:padding="5dp"
         android:text="Select Date and Time"
         android:textSize="20sp" 
+        android:textColor="#ffffff"
+        android:textStyle="bold"
         android:background="@drawable/header_bg"
         >
     </TextView>

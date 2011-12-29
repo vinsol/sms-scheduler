@@ -645,6 +645,13 @@ public class EditScheduledSmsActivity extends Activity {
 					
 					@Override
 					public void onClick(View v) {
+						if(checkDateValidity(processDate)){
+							dateLabel.setVisibility(View.INVISIBLE);
+							pastTimeDateLabel.setVisibility(View.GONE);
+						}else{
+							dateLabel.setVisibility(View.VISIBLE);
+							pastTimeDateLabel.setVisibility(View.VISIBLE);
+						}
 						dateSelectDialog.cancel();
 					}
 				});
