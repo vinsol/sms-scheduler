@@ -407,15 +407,14 @@ public class GroupEditActivity extends Activity {
 					if(newGroupContacts.size()==1 && callingState.equals("edit")){
 						
 						final Dialog d = new Dialog(GroupEditActivity.this);
-//						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-						d.setTitle("Last Group Member");
+						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 						d.setContentView(R.layout.confirmation_dialog_layout);
 						
 						TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 						Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 						Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 						
-						questionText.setText("If you delete the last member, the group will be deleted.\n Are you sure?");
+						questionText.setText("If you delete the last member, the group will be deleted.\n\nAre you sure?");
 						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_dialog_states));
 						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 						yesButton.setOnClickListener(new OnClickListener() {
