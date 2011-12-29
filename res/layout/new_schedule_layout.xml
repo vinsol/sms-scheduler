@@ -19,26 +19,25 @@
 		>
 	</TextView>
 	
+	<!-- time in past, warning message -->    
 	<LinearLayout 
 	    android:id = "@+id/past_time_label"
-	    android:orientation="horizontal"
 	    android:layout_height="wrap_content"
 	    android:layout_width = "fill_parent"
-	    android:layout_below="@id/header">
-	    
+	    android:layout_below="@id/header"
+	    >
 	    <TextView
         	android:id="@+id/new_date_label"
         	android:layout_width="320dp"
         	android:layout_height="wrap_content"
-        	android:gravity="center_horizontal"
-        	android:padding="3dp"
+        	android:paddingLeft="10dip"
+        	android:paddingBottom="3dip"
         	android:background="@color/warning_yellow"
-        	android:text="Time in past, message will be sent now"
+        	android:text="  Time in past, message will be sent now"
         	android:textColor="@color/black" 
         	android:drawableLeft="@drawable/warning_sign"
         	>
     	</TextView>
-	    
 	</LinearLayout>
     
 	<!-- footer -->    
