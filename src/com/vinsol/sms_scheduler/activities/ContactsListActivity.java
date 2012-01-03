@@ -126,7 +126,7 @@ public class ContactsListActivity extends Activity {
 								public void onClick(View v) {
 									Log.i("MSG", "GroupName : " + groupName);
 									if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
-										Toast.makeText(ContactsListActivity.this, "Invalid Name", Toast.LENGTH_SHORT).show();
+										Toast.makeText(ContactsListActivity.this, "Please enter the name for group", Toast.LENGTH_SHORT).show();
 										groupNameEdit.setText("");
 									}
 									
@@ -171,7 +171,7 @@ public class ContactsListActivity extends Activity {
 							d.show();
 						}else{
 							if(ids.size() == 0){
-								Toast.makeText(ContactsListActivity.this, "Cannot create blank group. Chooes some contacts", Toast.LENGTH_LONG).show();
+								Toast.makeText(ContactsListActivity.this, "No contacts selected, Please select some contacts", Toast.LENGTH_LONG).show();
 							}else{
 								mdba.open();
 								mdba.createGroup(groupName, ids);

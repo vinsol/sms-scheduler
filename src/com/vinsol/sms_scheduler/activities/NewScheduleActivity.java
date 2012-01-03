@@ -98,6 +98,7 @@ public class NewScheduleActivity extends Activity {
 	SmsManager smsManager = SmsManager.getDefault();
 	ArrayList<String> parts = new ArrayList<String>();
 	ArrayList<String> templatesArray = new ArrayList<String>();
+	ArrayList<String> matches;
 	
 	
 	//---------------------------------------------------------------
@@ -598,7 +599,8 @@ public class NewScheduleActivity extends Activity {
 						}
 						
 					}
-					
+					messageText.requestFocus();
+					messageText.setSelection(messageText.getText().toString().length());
 				}else
 					if(messageText.getText().length()==0){
 						messageText.setText(smileys[position]);
@@ -607,8 +609,10 @@ public class NewScheduleActivity extends Activity {
 						messageText.setText(smileys[position] + " " + afterString);
 						messageText.setSelection(cursorPos + smileys[position].length() + 1);
 					}
-					
+					messageText.requestFocus();
+					messageText.setSelection(messageText.getText().toString().length());
 				}
+			
 		
 		});
 		//-----------------------------------------------end of smiley Grid set up--------
@@ -997,14 +1001,16 @@ public class NewScheduleActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
             // Fill the list view with the strings the recognizer thought it could have heard
-            final ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             
             final Dialog d = new Dialog(NewScheduleActivity.this);
             d.requestWindowFeature(Window.FEATURE_NO_TITLE);
             d.setContentView(R.layout.voice_matches_dialog);
             
             ListView matchesList = (ListView) d.findViewById(R.id.matches_list);
-            matchesList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, matches));
+            MatchesAdapter matchesAdapter = new MatchesAdapter();
+            matchesList.setAdapter(matchesAdapter);
+            
             
             matchesList.setOnItemClickListener(new OnItemClickListener() {
 
@@ -1027,11 +1033,55 @@ public class NewScheduleActivity extends Activity {
         else if(resultCode == 2) {
         	idsString.clear();
         	refreshSpannableString(false);
-
+        	numbersText.requestFocus();
+        	numbersText.setSelection(numbersText.getText().toString().length());
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+	
+	
+	
+	
+	
+	//-------------------------Matches Adapter-------------------------------------------
+	class MatchesAdapter extends ArrayAdapter {
+		MatchesAdapter() {
+			super(NewScheduleActivity.this, R.layout.matches_list_row, matches);
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			MatchesHolder holder;
+			if(convertView==null){
+				LayoutInflater inflater = getLayoutInflater();
+				convertView = inflater.inflate(R.layout.template_list_row, parent, false);
+				holder = new MatchesHolder();
+				holder.matchText = (TextView) convertView.findViewById(R.id.match_text);
+				convertView.setTag(holder);
+			}else{
+				holder = (MatchesHolder) convertView.getTag();
+			}
+			
+			
+			return convertView;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	//--------------------------------------
+	//Holder for Matches Adapter
+	//--------------------------------------
+	class MatchesHolder{
+		TextView matchText;
+	}
+	
+	
+	
 	
 	//--------------------------Setting up the Auto-complete text-----------------------------// 
 	
@@ -1555,6 +1605,8 @@ public class NewScheduleActivity extends Activity {
 					}
 					messageText.setSelection(messageText.getText().toString().length());
 					templateDialog.cancel();
+					messageText.requestFocus();
+					messageText.setSelection(messageText.getText().toString().length());
 				}
 			});
     		

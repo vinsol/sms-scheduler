@@ -54,19 +54,25 @@
     </TimePicker>
 
     <LinearLayout
-        android:layout_width="290dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:paddingTop="3dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop = "5dp"
         android:orientation="horizontal" 
         android:background="@drawable/footer_bg"
         >
 
         <Button
             android:id="@+id/new_date_dialog_ok_button"
-            android:layout_width="142dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom = "5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="10dp"
             android:text=""
             android:background="@drawable/ok_dialog_states" 
             >
@@ -74,11 +80,12 @@
 
         <Button
             android:id="@+id/new_date_dialog_cancel_button"
-            android:layout_width="142dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="2dp"
+            android:layout_weight = "1"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="10dp"
             android:text=""
             android:background="@drawable/cancel_dialog_states" 
             >

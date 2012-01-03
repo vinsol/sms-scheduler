@@ -35,6 +35,8 @@
         android:layout_toLeftOf="@id/contact_list_row_contact_check"
         android:layout_margin="5dp"
         android:text = "Achin"
+        android:textColor = "#000000"
+        android:textStyle="bold"
         android:singleLine="true"
 		android:ellipsize="end"
         >

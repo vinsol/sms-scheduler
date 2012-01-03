@@ -69,6 +69,7 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.activities.NewScheduleActivity.MatchesHolder;
 import com.vinsol.sms_scheduler.models.GroupStructure;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
@@ -104,6 +105,8 @@ public class EditScheduledSmsActivity extends Activity {
 	SmsManager smsManager = SmsManager.getDefault();
 	ArrayList<String> parts = new ArrayList<String>();
 	ArrayList<String> templatesArray = new ArrayList<String>();
+	
+	ArrayList<String> matches;
 	
 	//---------------------------------------------------------------
 	static ArrayList<SpannedEntity> Spans = new ArrayList<SpannedEntity>();
@@ -743,7 +746,8 @@ public class EditScheduledSmsActivity extends Activity {
 							messageText.setText(beforeString + " " + smileys[position]);
 							messageText.setSelection(cursorPos + smileys[position].length() + 1);
 						}
-						
+						messageText.requestFocus();
+						messageText.setSelection(messageText.getText().toString().length());
 					}
 					
 				}else
@@ -754,7 +758,8 @@ public class EditScheduledSmsActivity extends Activity {
 						messageText.setText(smileys[position] + " " + afterString);
 						messageText.setSelection(cursorPos + smileys[position].length() + 1);
 					}
-					
+					messageText.requestFocus();
+					messageText.setSelection(messageText.getText().toString().length());
 				}
 		
 		});
@@ -1098,6 +1103,8 @@ public class EditScheduledSmsActivity extends Activity {
 					}
 					messageText.setSelection(messageText.getText().toString().length());
 					templateDialog.cancel();
+					messageText.requestFocus();
+					messageText.setSelection(messageText.getText().toString().length());
 				}
 			});
     		
@@ -1319,7 +1326,7 @@ public class EditScheduledSmsActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
             // Fill the list view with the strings the recognizer thought it could have heard
-        	final ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+        	matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             
             final Dialog d = new Dialog(EditScheduledSmsActivity.this);
             d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1347,11 +1354,51 @@ public class EditScheduledSmsActivity extends Activity {
         else if(resultCode == 2){
         	idsString.clear();
         	refreshSpannableString(false);
-
+        	numbersText.requestFocus();
+        	numbersText.setSelection(numbersText.getText().toString().length());
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+	
+	
+	
+	
+	//-------------------------Matches Adapter-------------------------------------------
+	class MatchesAdapter extends ArrayAdapter {
+		MatchesAdapter() {
+			super(EditScheduledSmsActivity.this, R.layout.matches_list_row, matches);
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			MatchesHolder holder;
+			if(convertView==null){
+				LayoutInflater inflater = getLayoutInflater();
+				convertView = inflater.inflate(R.layout.template_list_row, parent, false);
+				holder = new MatchesHolder();
+				holder.matchText = (TextView) convertView.findViewById(R.id.match_text);
+				convertView.setTag(holder);
+			}else{
+				holder = (MatchesHolder) convertView.getTag();
+			}
+			
+			return convertView;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	//--------------------------------------
+	//Holder for Matches Adapter
+	//--------------------------------------
+	class MatchesHolder{
+		TextView matchText;
+	}
+	
 	
 
 	
