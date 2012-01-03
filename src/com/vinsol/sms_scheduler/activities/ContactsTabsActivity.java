@@ -610,7 +610,46 @@ public class ContactsTabsActivity extends Activity {
 					
 						for(int i = 0; i<SpansTemp.size(); i++){
 				    		if(Long.parseLong(SmsApplicationLevelData.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
+				    			for(int j = 0; j< nativeGroupDataTemp.size(); j++){
+				    				int noOfChecks = 0;
+				    				for(int k = 0; k< nativeChildDataTemp.get(j).size(); k++){
+				    					
+				    					if(Long.parseLong((String)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID)) == SpansTemp.get(i).entityId){
+				    						nativeChildDataTemp.get(j).get(k).put(Constants.CHILD_CHECK, false);
+				    					}
+				    					if((Boolean)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CHECK)){
+				    						noOfChecks = 1;
+				    					}
+				    				}
+				    				if(noOfChecks>0){
+				    					nativeGroupDataTemp.get(j).put(Constants.GROUP_CHECK, true);
+				    				}else{
+				    					nativeGroupDataTemp.get(j).put(Constants.GROUP_CHECK, false);
+				    				}
+				    			}
+				    			for(int j = 0; j< privateGroupDataTemp.size(); j++){
+				    				int noOfChecks = 0;
+				    				for(int k = 0; k< privateChildDataTemp.get(j).size(); k++){
+				    					if(Long.parseLong((String)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID)) == SpansTemp.get(i).entityId){
+				    						privateChildDataTemp.get(j).get(k).put(Constants.CHILD_CHECK, false);
+				    					}
+				    					if((Boolean)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CHECK)){
+				    						noOfChecks = 1;
+				    					}
+				    				}
+				    				if(noOfChecks>0){
+				    					privateGroupDataTemp.get(j).put(Constants.GROUP_CHECK, true);
+				    				}else{
+				    					privateGroupDataTemp.get(j).put(Constants.GROUP_CHECK, false);
+				    				}
+				    			}
+				    			
+				    			
 				    			SpansTemp.remove(i);
+				    			
+				    			nativeGroupAdapter.notifyDataSetChanged();
+				    			privateGroupAdapter.notifyDataSetChanged();
+				    			
 				    		}
 				    	}
 					}
@@ -646,7 +685,43 @@ public class ContactsTabsActivity extends Activity {
 						holder.contactCheck.setChecked(false);
 						for(int i = 0; i<SpansTemp.size(); i++){
 				    		if(Long.parseLong(SmsApplicationLevelData.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
+				    			for(int j = 0; j< nativeGroupDataTemp.size(); j++){
+				    				int noOfChecks = 0;
+				    				for(int k = 0; k< nativeChildDataTemp.get(j).size(); k++){
+				    					if(Long.parseLong((String)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID)) == SpansTemp.get(i).entityId){
+				    						nativeChildDataTemp.get(j).get(k).put(Constants.CHILD_CHECK, false);
+				    					}
+				    					if((Boolean)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CHECK)){
+				    						noOfChecks = 1;
+				    					}
+				    				}
+				    				if(noOfChecks>0){
+				    					nativeGroupDataTemp.get(j).put(Constants.GROUP_CHECK, true);
+				    				}else{
+				    					nativeGroupDataTemp.get(j).put(Constants.GROUP_CHECK, false);
+				    				}
+				    			}
+				    			for(int j = 0; j< privateGroupDataTemp.size(); j++){
+				    				int noOfChecks = 0;
+				    				for(int k = 0; k< privateChildDataTemp.get(j).size(); k++){
+				    					if(Long.parseLong((String)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID)) == SpansTemp.get(i).entityId){
+				    						privateChildDataTemp.get(j).get(k).put(Constants.CHILD_CHECK, false);
+				    					}
+				    					if((Boolean)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CHECK)){
+				    						noOfChecks = 1;
+				    					}
+				    				}
+				    				if(noOfChecks>0){
+				    					privateGroupDataTemp.get(j).put(Constants.GROUP_CHECK, true);
+				    				}else{
+				    					privateGroupDataTemp.get(j).put(Constants.GROUP_CHECK, false);
+				    				}
+				    			}
+				    			
 				    			SpansTemp.remove(i);
+				    			
+				    			nativeGroupAdapter.notifyDataSetChanged();
+				    			privateGroupAdapter.notifyDataSetChanged();
 				    		}
 				    	}
 					}
