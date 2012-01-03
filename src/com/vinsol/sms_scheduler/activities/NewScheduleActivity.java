@@ -1336,7 +1336,7 @@ public class NewScheduleActivity extends Activity {
         		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
         			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
         				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsApplicationLevelData.contactsList.get(i).groupRowId.get(j)){
-        					
+        					Log.d(group.get(Constants.GROUP_NAME) + " has " + SmsApplicationLevelData.contactsList.get(i).name);
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
         					childParameters.put(Constants.CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
         					childParameters.put(Constants.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);

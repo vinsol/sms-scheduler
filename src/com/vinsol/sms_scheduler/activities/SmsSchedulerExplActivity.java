@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.text.method.MovementMethod;
 import android.text.method.ScrollingMovementMethod;
@@ -90,7 +91,7 @@ public class SmsSchedulerExplActivity extends Activity {
 	Dialog dataLoadWaitDialog;
 	int toOpen = 0;
 	
-		   
+	Cursor groupCursor;
 
 	IntentFilter mIntentFilter;
 	IntentFilter dataloadIntentFilter;
@@ -156,6 +157,14 @@ public class SmsSchedulerExplActivity extends Activity {
         dataLoadWaitDialog = new Dialog(SmsSchedulerExplActivity.this);
 		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         
+		
+		String[] projection = new String[] {Groups._ID};
+		Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
+		int count = 0;
+      
+		groupCursor = managedQuery(groupsUri, projection, null, null, null);
+		
+		
         newSmsButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -1169,14 +1178,28 @@ public class SmsSchedulerExplActivity extends Activity {
 		    	    	contact.number = phones.getString(phones.getColumnIndex(Phone.NUMBER));
 		    	    	
 		    	    	Cursor cur = SmsSchedulerExplActivity.this.managedQuery(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID}, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID + "=" + contact.content_uri_id, null, null);
-		    	    	
+		    	    	Log.i("MSG", contact.name + " : cursor size : " + cur.getCount());
 		    	    	if(cur.moveToFirst()){
 		    	    		do{
 		    	    			// SAZWQA: Should we add a rule that if GROUP_ROW_ID == 0 or it's equal to phone no. don't ADD it?
-		    	    			contact.groupRowId.add(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
+		    	    			if(!String.valueOf(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))).equals(contact.number) && cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))!=0){
+		    	    				boolean isValid = false;
+		    	    				if(groupCursor.moveToFirst()){
+		    	    					do{
+		    	    						if(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)) == groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID))){
+		    	    							isValid = true;
+		    	    							break;
+		    	    						}
+		    	    					}while(groupCursor.moveToNext());
+		    	    				}
+		    	    				if(isValid){
+		    	    					contact.groupRowId.add(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
+			    	    				Log.i("MSG", contact.name + " : group row : " + cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
+		    	    				}
+		    	    			}
 		    	    		}while(cur.moveToNext());
 		    	    	}
-		    	    	
+		    	    	Log.i("MSG", contact.name + " : " + contact.groupRowId.size());
 		    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.content_uri_id));
 			    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
 			    	    try{
