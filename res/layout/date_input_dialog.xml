@@ -26,10 +26,10 @@
         android:id="@+id/new_date_label"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:padding="3dp"
+        android:paddingLeft="10dip"
+        android:paddingBottom="3dp"
         android:background="@color/warning_yellow"
-        android:text="Time in past, message will be sent now"
+        android:text=" Time in past, message will be sent now"
         android:textColor="@color/black" 
         android:drawableLeft="@drawable/warning_sign"
         >
