@@ -1,7 +1,5 @@
 package com.vinsol.sms_scheduler.receivers;
 
-import com.vinsol.sms_scheduler.DBAdapter;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -10,8 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.telephony.SmsManager;
-import android.util.Log;
-import android.widget.Toast;
+
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class SentReceiver extends BroadcastReceiver{
 	
@@ -27,7 +26,7 @@ public class SentReceiver extends BroadcastReceiver{
 		Intent mIntent;
 		PendingIntent pi;
 		AlarmManager am;
-		Log.i("MESSAGE", "ID in SentReceiver : " + id);
+		Log.d("ID in SentReceiver : " + id);
 		mdba = new DBAdapter(context);
 		switch (getResultCode())
          { 	

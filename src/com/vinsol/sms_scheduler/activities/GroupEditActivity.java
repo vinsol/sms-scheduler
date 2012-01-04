@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +23,7 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class GroupEditActivity extends Activity {
 
@@ -86,7 +86,7 @@ public class GroupEditActivity extends Activity {
 		}
 		
 		if(callingState.equals("edit")){
-			Log.i("MSG", "Ids Size : ");
+			Log.d("Ids Size : ");
 			groupId = intent.getLongExtra("GROUPID", 0);
 			groupName = intent.getStringExtra("GROUPNAME");
 			ids.clear();
@@ -94,7 +94,7 @@ public class GroupEditActivity extends Activity {
 			ids = mdba.fetchIdsForGroups(groupId);
 			ids2 = mdba.fetchIdsForGroups(groupId);
 			mdba.close();
-			Log.i("MSG", "Ids Size : " + ids.size());
+			Log.d("Ids Size : " + ids.size());
 			groupNameLabel.setText(groupName);
 			
 			deleteGroupButton.setOnClickListener(new OnClickListener() {
@@ -115,7 +115,7 @@ public class GroupEditActivity extends Activity {
 						@Override
 						public void onClick(View v) {
 							mdba.open();
-							Log.i("MSG", "Group to delete : " + groupId);
+							Log.d("Group to delete : " + groupId);
 							mdba.removeGroup(groupId);
 							mdba.close();
 							d.cancel();
@@ -227,9 +227,9 @@ public class GroupEditActivity extends Activity {
 			public void onClick(View v) {
 				
 				if(callingState.equals("new")){
-					Log.i("MSG", "Size of Ids : " + ids.size());
+					Log.d("Size of Ids : " + ids.size());
 					mdba.open();
-					Log.i("MSG", "Size of Ids : " + ids.size());
+					Log.d("Size of Ids : " + ids.size());
 					mdba.createGroup(groupName, ids);
 					mdba.close();
 					GroupEditActivity.this.finish();
@@ -345,7 +345,7 @@ public class GroupEditActivity extends Activity {
 	
 	
 	public void loadContactsForGroups(){
-		Log.i("MSG", "Ids Size in LoadData : " + ids.size());
+		Log.d("Ids Size in LoadData : " + ids.size());
 		newGroupContacts.clear();
 		for(int j = 0; j< ids.size(); j++){
 			for(int i = 0; i< SmsApplicationLevelData.contactsList.size(); i++){
@@ -359,7 +359,7 @@ public class GroupEditActivity extends Activity {
 				}
 			}
 		}
-		Log.i("MSG", "GroupSize " + newGroupContacts.size());
+		Log.d("GroupSize " + newGroupContacts.size());
 	}
 	
 	
@@ -396,7 +396,7 @@ public class GroupEditActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					Log.i("MSG", "List position :" + _position);
+					Log.d("List position :" + _position);
 //					if(callingState.equals("edit")){
 //						mdba.open();
 //						mdba.removeContactFromGroup(Long.parseLong(newGroupContacts.get(_position).content_uri_id), groupId);

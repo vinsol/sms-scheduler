@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,6 +24,7 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class ContactsListActivity extends Activity {
 
@@ -85,7 +84,7 @@ public class ContactsListActivity extends Activity {
 			}else if(callingActivity.equals("Group Add Activity") || callingActivity.equals("Group Add Activity From Contacts")){
 				newCall = intent.getBooleanExtra("NEWCALL", true);
 			}
-			Log.i("MSG", "Contacts size : " + String.valueOf(contacts.size()));
+			Log.d("Contacts size : " + String.valueOf(contacts.size()));
 		
 		
 		
@@ -124,7 +123,7 @@ public class ContactsListActivity extends Activity {
 								
 								@Override
 								public void onClick(View v) {
-									Log.i("MSG", "GroupName : " + groupName);
+									Log.d("GroupName : " + groupName);
 									if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
 										Toast.makeText(ContactsListActivity.this, "Please enter the name for group", Toast.LENGTH_SHORT).show();
 										groupNameEdit.setText("");
@@ -263,7 +262,7 @@ public class ContactsListActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					Log.i("MSG", "position : " + position);
+					Log.d("position : " + position);
 					
 					if(holder.contactCheck.isChecked()){
 						ids.add(Long.parseLong(contacts.get(_position).content_uri_id));

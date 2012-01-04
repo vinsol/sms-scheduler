@@ -36,15 +36,14 @@ import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -69,11 +68,10 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.activities.NewScheduleActivity.MatchesHolder;
-import com.vinsol.sms_scheduler.models.GroupStructure;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class EditScheduledSmsActivity extends Activity {
 	
@@ -236,7 +234,7 @@ public class EditScheduledSmsActivity extends Activity {
 		editedGroup = intent.getLongExtra("GROUP", 0);
 		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
 		
-		Log.i("MSG", "group Id : " + editedGroup);
+		Log.d("group Id : " + editedGroup);
 		
 		Spans.clear();
 		
@@ -245,13 +243,13 @@ public class EditScheduledSmsActivity extends Activity {
 		mdba.open();
 		smsIds = mdba.getIds(editedGroup);
 		
-		Log.i("MSG", "size of smsIds : " + smsIds.size());
+		Log.d("size of smsIds : " + smsIds.size());
 		
 		originalSpans.clear();
 		
 		for(int i = 0; i< smsIds.size(); i++){
 			Cursor spanCur = mdba.fetchSpanForSms(smsIds.get(i));
-			Log.i("MSG", "size of Span cursor : " + spanCur.getCount());
+			Log.d("size of Span cursor : " + spanCur.getCount());
 			spanCur.moveToFirst();
 			Spans.add(new SpannedEntity(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
 					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_TYPE)),
@@ -296,7 +294,7 @@ public class EditScheduledSmsActivity extends Activity {
 			scheduleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_footer_states));
 		}
 		
-		Log.i("MSG", "size of Spans : " + Spans.size());
+		Log.d("size of Spans : " + Spans.size());
 		mdba.close();
 		refreshSpannableString(false);
 		loadGroupsData();
@@ -388,10 +386,10 @@ public class EditScheduledSmsActivity extends Activity {
 //					if(spanStartPosition > 0){
 //						numbersText.setSelection(spanStartPosition);
 //					}else if (Spans.size() > 0){
-//					Log.i("MSG", "before set selection at 385");
+//					Log.d("before set selection at 385");
 						numbersText.setSelection(numbersText.getText().toString().length());
-						Log.i("MSG", "after set selection at 385");
-						Log.i("MSG", "selection at : " + numbersText.getSelectionStart());
+						Log.d("after set selection at 385");
+						Log.d("selection at : " + numbersText.getSelectionStart());
 //					}
 					inputMethodManager.restartInput(numbersText);
 				}else{
@@ -476,7 +474,7 @@ public class EditScheduledSmsActivity extends Activity {
 			@Override
 			public void afterTextChanged(Editable s) {
 				int pos = numbersText.getSelectionStart();
-				Log.i("MSG", pos + "");
+				Log.d(pos + "");
 				if(pos>1){
 					if(numbersText.getText().toString().charAt(numbersText.getSelectionStart()-1) == ' '){
 						int pos2 = 0;
@@ -1209,7 +1207,7 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		ArrayList<String> numbers = new ArrayList<String>();
 		
-		Log.i("MSG", Spans.size()+"");
+		Log.d(Spans.size()+"");
 		
 		
 		
@@ -1218,7 +1216,7 @@ public class EditScheduledSmsActivity extends Activity {
 			for(int i = 0; i< editedIds.size(); i++){
 				mdba.deleteSms(editedIds.get(i), EditScheduledSmsActivity.this);
 			}
-			Log.i("MSG", "scheduling : deleted the previous record");
+			Log.d("scheduling : deleted the previous record");
 			if(Spans.size()==0){
 				SpannedEntity span = new SpannedEntity(-1, 1, " ", -1, -1);  //for adding a fake span to save as a draft
 				Spans.add(span);
@@ -1235,7 +1233,7 @@ public class EditScheduledSmsActivity extends Activity {
 						}
 						
 						if(messageText.getText().toString().length() == 0){
-							Log.i("MSG", "inside messageText if else");
+							Log.d("inside messageText if else");
 							mdba.setAsDraft(received_id);
 						}else{
 							if(mdba.getCurrentPiFiretime() == -1){
@@ -1244,10 +1242,10 @@ public class EditScheduledSmsActivity extends Activity {
 								handlePiUpdate(SmsApplicationLevelData.contactsList.get(j).number, editedGroup, received_id, cal.getTimeInMillis());
 							}
 						}
-						Log.i("MSG", "creating span for " + Spans.get(i).displayName );
+						Log.d("creating span for " + Spans.get(i).displayName );
 						Spans.get(i).smsId = received_id;
 						Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
-						Log.i("MSG", "size of groupIds for " + Spans.get(i).displayName +" : " + Spans.get(i).groupIds.size());
+						Log.d("size of groupIds for " + Spans.get(i).displayName +" : " + Spans.get(i).groupIds.size());
 						for(int k = 0; k< Spans.get(i).groupIds.size(); k++){
 							mdba.addSpanGroupRel(Spans.get(i).spanId, Spans.get(i).groupIds.get(k), Spans.get(i).groupTypes.get(k));
 						}
@@ -1276,7 +1274,7 @@ public class EditScheduledSmsActivity extends Activity {
 				}
 			}
 			
-			Log.i("MSG", "scheduling : new records created");
+			Log.d("scheduling : new records created");
 		
 		mdba.close();
 
@@ -1582,7 +1580,7 @@ public class EditScheduledSmsActivity extends Activity {
 				public void onClick(View widget) {
 						inputMethodManager.hideSoftInputFromWindow(numbersText.getWindowToken(), 0);
 
-						Log.i("MSG", _i + "");
+						Log.d(_i + "");
 						
 							for(int j = 0; j< nativeGroupData.size(); j++){
 	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++){
@@ -1620,16 +1618,16 @@ public class EditScheduledSmsActivity extends Activity {
 				numbersText.setText(ssb);
 			}
 		}
-		Log.i("MSG", "after setting spans-----------------------------");
+		Log.d("after setting spans-----------------------------");
 		
 //		inputMethodManager.restartInput(numbersText);
 		
 		if(!isDeleted)
 			if(Spans.size() > 0 ) {
-				Log.d("MSG" , "line 1124, setting selection at position " + numbersText.getText().length());
-				Log.i("MSG", "before set selection at 1561");
+				Log.d("line 1124, setting selection at position " + numbersText.getText().length());
+				Log.d("before set selection at 1561");
 				numbersText.setSelection(spanStartPosition);
-				Log.i("MSG", "after set selection at 1561");
+				Log.d("after set selection at 1561");
 			}
 		
 	}
@@ -1670,31 +1668,31 @@ public class EditScheduledSmsActivity extends Activity {
 			}else if(originalSpans.size()!=Spans.size()){
 				isChanged = true;
 			}else if(!messageText.getText().toString().equals(originalMessage)){
-				Log.i("MSG", "Changed : 2");
+				Log.d("Changed : 2");
 				isChanged = true;
 		
 			}else{
 				for(int i = 0; i< Spans.size(); i++){
 					if(Spans.get(i).entityId != originalSpans.get(i).entityId){
 						isChanged = true;
-						Log.i("MSG", "Changed : 3");
+						Log.d("Changed : 3");
 						break;
 					}
 				}
 			}
 		}else{
 			if(originalSpans.size() != Spans.size()){
-				Log.i("MSG", "Changed : 1");
+				Log.d("Changed : 1");
 				isChanged = true;
 			}else if(!messageText.getText().toString().equals(originalMessage)){
-				Log.i("MSG", "Changed : 2");
+				Log.d("Changed : 2");
 				isChanged = true;
 		
 			}else{
 				for(int i = 0; i< Spans.size(); i++){
 					if(Spans.get(i).entityId != originalSpans.get(i).entityId){
 						isChanged = true;
-						Log.i("MSG", "Changed : 3");
+						Log.d("Changed : 3");
 						break;
 					}
 				}
@@ -1704,7 +1702,7 @@ public class EditScheduledSmsActivity extends Activity {
 		
 		
 		
-		Log.i("MSG", "is Changed : " + isChanged );
+		Log.d("is Changed : " + isChanged );
 		
 		if(!isChanged){
 			EditScheduledSmsActivity.this.finish();
@@ -1877,13 +1875,13 @@ public class EditScheduledSmsActivity extends Activity {
         		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)), 2);
         		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
         		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
-        		Log.i("MSG", "Group size in private : " + spanIdsForGroup.size());
+        		Log.d("Group size in private : " + spanIdsForGroup.size());
         		group.put(Constants.GROUP_CHECK, false);
         		if(spanIdsForGroup.size()>0){
        				for(int i = 0; i< Spans.size(); i++){
        					for(int j = 0; j< spanIdsForGroup.size(); j++){
        						if(spanIdsForGroup.get(j)==Spans.get(i).spanId){
-       							Log.i("MSG", "-------is entering into the TRUE condition");
+       							Log.d("-------is entering into the TRUE condition");
        							group.put(Constants.GROUP_CHECK, true);
        							break;
        						}
@@ -1899,7 +1897,7 @@ public class EditScheduledSmsActivity extends Activity {
         		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
         		for(int i = 0; i< contactIds.size(); i++){
-        			Log.i("MSG", "contact_id for group : " + contactIds.get(i));
+        			Log.d("contact_id for group : " + contactIds.get(i));
         		}
         		
         		for(int i = 0; i< contactIds.size(); i++){
@@ -1912,13 +1910,13 @@ public class EditScheduledSmsActivity extends Activity {
         					childParameters.put(Constants.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
         					childParameters.put(Constants.CHILD_CHECK, false);
         					boolean isCheck = false;
-        					Log.i("MSG", "size of spanIdsForGroup " + spanIdsForGroup.size());
+        					Log.d("size of spanIdsForGroup " + spanIdsForGroup.size());
         					for(int k = 0; k< spanIdsForGroup.size(); k++){
        							for(int m = 0; m< Spans.size(); m++){
-       								Log.i("MSG", "Spans.get(m).entityId : " + Spans.get(m).entityId);
-       								Log.i("MSG", "contact_uri_id : " + Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id));
+       								Log.d("Spans.get(m).entityId : " + Spans.get(m).entityId);
+       								Log.d("contact_uri_id : " + Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id));
        								if(Spans.get(m).spanId == spanIdsForGroup.get(k) && Spans.get(m).entityId == contactIds.get(i)){
-       									Log.i("MSG", "checking the child in private for " + Spans.get(m).displayName);
+       									Log.d("checking the child in private for " + Spans.get(m).displayName);
        									childParameters.put(Constants.CHILD_CHECK, true);
        									isCheck = true;
 //       										break;

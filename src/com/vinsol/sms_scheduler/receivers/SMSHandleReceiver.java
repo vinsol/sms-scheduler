@@ -3,9 +3,6 @@ package com.vinsol.sms_scheduler.receivers;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.activities.NewScheduleActivity;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -14,8 +11,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.telephony.SmsManager;
-import android.util.Log;
-import android.widget.Toast;
+
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.activities.NewScheduleActivity;
+import com.vinsol.sms_scheduler.utils.Log;
 
 
 
@@ -46,8 +45,8 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		mdba.open();
 		mdba.makeOperated(id);
 		
-		Log.i("MESSAGE", "Number to the SMSHandleReceiver : " + number);
-		Log.i("MESSAGE", "ID in SMSHandle : " + id);
+		Log.d("Number to the SMSHandleReceiver : " + number);
+		Log.d("ID in SMSHandle : " + id);
 		
 		parts = smsManager.divideMessage(message);
 		msgSize = parts.size();
@@ -79,13 +78,13 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			pideliver = PendingIntent.getBroadcast(context, 0, ideliver, PendingIntent.FLAG_UPDATE_CURRENT);
 			deliverIntents.add(pideliver);
 		}
-		Log.i("MSG", "Before");
+		Log.d("Before");
 		try{
 			smsManager.sendMultipartTextMessage(number, null, parts, sentIntents, deliverIntents);
 		}catch(IllegalArgumentException iae){
 			
 		}
-		Log.i("MSG", "After");
+		Log.d("After");
 		
 		
 		//DBAdapter mdba = new DBAdapter(context);
@@ -95,7 +94,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		mdba.close();
 		
 		if(cur.moveToFirst()){
-			Log.i("MESSAGE", "there are other records too");
+			Log.d("there are other records too");
 			Intent nextIntent = new Intent(context, SMSHandleReceiver.class);
 			
 			nextIntent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
@@ -104,7 +103,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 
 			Random rand = new Random();
 			int piNumber = rand.nextInt();
-			Log.i("MESSAGE", "Pi Number : " + piNumber);
+			Log.d("Pi Number : " + piNumber);
 			PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mdba.open();
 			mdba.updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
@@ -117,7 +116,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 				alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pi);
 			}
 		}else{
-			Log.i("MESSAGE", "there are no records, pi to be set to default");
+			Log.d("there are no records, pi to be set to default");
 			mdba.open();
 			mdba.updatePi(0, -1, -1);
 			mdba.close();

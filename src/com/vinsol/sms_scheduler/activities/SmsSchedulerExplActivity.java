@@ -20,11 +20,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.text.method.MovementMethod;
+import android.provider.ContactsContract.Groups;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -50,6 +48,7 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class SmsSchedulerExplActivity extends Activity {
     
@@ -100,13 +99,13 @@ public class SmsSchedulerExplActivity extends Activity {
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.i("MESSAGE", "INTO UPDATES RECEIVER");
+			Log.d("INTO UPDATES RECEIVER");
 			
 			
 			
 			
 			loadData();
-			Log.i("MESSAGE", "==========================" + childSchArray.size());
+			Log.d("==========================" + childSchArray.size());
 			
 			mAdapter.notifyDataSetInvalidated();
 			mAdapter.notifyDataSetChanged();
@@ -636,7 +635,7 @@ public class SmsSchedulerExplActivity extends Activity {
 //    	}
     	
     	
-    	Log.i("MESSAGE", "results : " + schCur.getCount() + " ");
+    	Log.d("results : " + schCur.getCount() + " ");
     	
     	//---------------------------------------------------------------------------------------------
     	
@@ -682,7 +681,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		}while(schCur.moveToNext());
     	}
     	
-    	Log.i("MESSAGE", z + "");
+    	Log.d(z + "");
     	for(int i = 0; i<= z; i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, childSchArray.get(i).keyMessage);
@@ -710,7 +709,7 @@ public class SmsSchedulerExplActivity extends Activity {
     	ArrayList<HashMap<String, Object>> groupChildSent = new ArrayList<HashMap<String, Object>>();
     	z = -1;
     	childSentArray.clear();
-    	Log.i("MESSAGE", "Number of Sent Messages : " + sentCur.getCount());
+    	Log.d("Number of Sent Messages : " + sentCur.getCount());
     	if(sentCur.moveToFirst()){
     		z = -1;
     		do{
@@ -746,7 +745,7 @@ public class SmsSchedulerExplActivity extends Activity {
     			
     		}while(sentCur.moveToNext());
     	}
-    	Log.i("MESSAGE", "sents :" + z);
+    	Log.d("sents :" + z);
     	for(int i = 0; i<= z; i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, childSentArray.get(i).keyMessage);
@@ -837,7 +836,7 @@ public class SmsSchedulerExplActivity extends Activity {
     		}while(draftCur.moveToNext());
     	}
     	
-    	Log.i("MESSAGE", z + "");
+    	Log.d(z + "");
     	for(int i = 0; i<= z; i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, childDraftArray.get(i).keyMessage);
@@ -1178,7 +1177,7 @@ public class SmsSchedulerExplActivity extends Activity {
 		    	    	contact.number = phones.getString(phones.getColumnIndex(Phone.NUMBER));
 		    	    	
 		    	    	Cursor cur = SmsSchedulerExplActivity.this.managedQuery(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID}, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID + "=" + contact.content_uri_id, null, null);
-		    	    	Log.i("MSG", contact.name + " : cursor size : " + cur.getCount());
+		    	    	Log.d(contact.name + " : cursor size : " + cur.getCount());
 		    	    	if(cur.moveToFirst()){
 		    	    		do{
 		    	    			// SAZWQA: Should we add a rule that if GROUP_ROW_ID == 0 or it's equal to phone no. don't ADD it?
@@ -1194,12 +1193,12 @@ public class SmsSchedulerExplActivity extends Activity {
 		    	    				}
 		    	    				if(isValid){
 		    	    					contact.groupRowId.add(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
-			    	    				Log.i("MSG", contact.name + " : group row : " + cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
+			    	    				Log.d(contact.name + " : group row : " + cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
 		    	    				}
 		    	    			}
 		    	    		}while(cur.moveToNext());
 		    	    	}
-		    	    	Log.i("MSG", contact.name + " : " + contact.groupRowId.size());
+		    	    	Log.d(contact.name + " : " + contact.groupRowId.size());
 		    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.content_uri_id));
 			    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
 			    	    try{
@@ -1211,7 +1210,7 @@ public class SmsSchedulerExplActivity extends Activity {
 			    	    
 			    	    SmsApplicationLevelData.contactsList.add(contact);
 			    	    
-			    	    //Log.i("MSG", contact.groupRowId.size() + "");
+			    	    //Log.d(contact.groupRowId.size() + "");
 			    	    
 		    	    }
 		    	  }  

@@ -13,9 +13,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class DBAdapter {
 	
@@ -168,32 +168,32 @@ public class DBAdapter {
 	public Cursor fetchAllScheduled(){
 		
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_SENT + "= 0", null, null, null, KEY_TIME_MILLIS);
-		Log.i("MESSAGE", "No of schedules from DBAdapter : " + cur.getCount());
+		Log.d("No of schedules from DBAdapter : " + cur.getCount());
 		return cur;
 	}
 	
 	public Cursor fetchAllScheduledNoDraft(){
 		
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_SENT + "= 0 AND " + KEY_DRAFT + "=0 AND " + KEY_OPERATED + "=0", null, null, null, KEY_TIME_MILLIS);
-		Log.i("MESSAGE", "No of schedules from DBAdapter : " + cur.getCount());
+		Log.d("No of schedules from DBAdapter : " + cur.getCount());
 		return cur;
 	}
 	
 	public Cursor fetchAllSent(){
 		Cursor cur  = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_TIME_MILLIS, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_S_MILLIS, KEY_D_MILLIS}, KEY_OPERATED + "=1", null, null, null, KEY_TIME_MILLIS);
-		Log.i("MESSAGE", "No of sents from DBAdapter : " + cur.getCount());
+		Log.d("No of sents from DBAdapter : " + cur.getCount());
 		return cur;
 	}
 	
 	public Cursor fetchAllDrafts(){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_DRAFT + "= 1", null, null, null, KEY_TIME_MILLIS);
-		Log.i("MESSAGE", "No of Drafts from DBAdapter : " + cur.getCount());
+		Log.d("No of Drafts from DBAdapter : " + cur.getCount());
 		return cur;
 	}
 	
 	public Cursor fetchRemainingScheduled(){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS}, KEY_OPERATED + "=0 AND " + KEY_DRAFT + "=0"/* + KEY_MESSAGE + " NOT LIKE ' '"*/ , null, null, null, KEY_TIME_MILLIS);
-		Log.i("MESSAGE", "No of other schedules from DBAdapter : " + cur.getCount());
+		Log.d("No of other schedules from DBAdapter : " + cur.getCount());
 		return cur;
 	}
 	
@@ -302,7 +302,7 @@ public class DBAdapter {
 			
 			if(cur.moveToFirst()){
 				sentval = cur.getInt(cur.getColumnIndex("sent"));
-				Log.i("MESSAGE", "sent value : " + String.valueOf(sentval));
+				Log.d("sent value : " + String.valueOf(sentval));
 			}
 			
 			cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_MSG_PARTS}, KEY_ID + "=" + id, null, null, null, null);
@@ -363,7 +363,7 @@ public class DBAdapter {
 	
 	
 	public void deleteSms(long id, Context context){
-		Log.i("MSG", "Id to be deleted : " + id);
+		Log.d("Id to be deleted : " + id);
 		if(getCurrentPiId()==id){
 			Cursor cur = getPiDetails();
 			cur.moveToFirst();
@@ -372,21 +372,21 @@ public class DBAdapter {
 			intent.setAction(PRIVATE_SMS_ACTION);
 			PendingIntent pi = PendingIntent.getBroadcast(context, cur.getInt(cur.getColumnIndex(KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 			pi.cancel();
-			Log.i("MSG", "before1");
+			Log.d("before1");
 			deleteSpan(id);
-			Log.i("MSG", "before2");
+			Log.d("before2");
 			db.delete(DATABASE_SMS_TABLE, KEY_ID + "=" + id, null);
-			Log.i("MSG", "before");
+			Log.d("before");
 			Cursor cur2 = fetchRemainingScheduled();
-			Log.i("MSG", "cursor2 size : " + cur2.getCount());
+			Log.d("cursor2 size : " + cur2.getCount());
 			if(cur2.moveToFirst()){
-				Log.i("MSG", "cursor2 size : " + cur2.getCount());
+				Log.d("cursor2 size : " + cur2.getCount());
 				intent.setAction(PRIVATE_SMS_ACTION);
 				intent.putExtra("ID", cur2.getString(cur2.getColumnIndex(KEY_ID)));
 				intent.putExtra("NUMBER", cur2.getString(cur2.getColumnIndex(KEY_NUMBER)));
 				intent.putExtra("MESSAGE", cur2.getString(cur2.getColumnIndex(KEY_MESSAGE)));
 				
-				Log.i("MSG", "next sms id : " + cur2.getString(cur2.getColumnIndex(KEY_ID)));
+				Log.d("next sms id : " + cur2.getString(cur2.getColumnIndex(KEY_ID)));
 				
 				
 				
@@ -405,7 +405,7 @@ public class DBAdapter {
 			deleteSpan(id);
 			db.delete(DATABASE_SMS_TABLE, KEY_ID + "=" + id, null);
 		}
-		Log.i("MSG", "pi sms id : " + getCurrentPiId());
+		Log.d("pi sms id : " + getCurrentPiId());
 	}
 	
 	
@@ -484,12 +484,12 @@ public class DBAdapter {
 	
 	
 	public boolean checkDeliver(long id){
-		Log.i("MESSAGE", "ID in Check Delivery : " + id);
+		Log.d("ID in Check Delivery : " + id);
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_DELIVER, KEY_MSG_PARTS}, KEY_ID + "=" + id, null, null, null, null);
-		Log.i("MESSAGE", "Number of records in check Deliver : " + cur.getCount());
+		Log.d("Number of records in check Deliver : " + cur.getCount());
 		cur.moveToFirst();
 		boolean bool = ((cur.getInt(cur.getColumnIndex(KEY_DELIVER))) == (cur.getInt(cur.getColumnIndex(KEY_MSG_PARTS))));
-		Log.i("MESSAGE", "value of equality : " + bool);
+		Log.d("value of equality : " + bool);
 		return bool;
 	}
 	
@@ -497,8 +497,8 @@ public class DBAdapter {
 	
 	
 //	public boolean checkDelivery(long id){
-//		Log.i("MESSAGE", "sent 		: " + String.valueOf(getSent(id)));
-//		Log.i("MESSAGE", "deliver 	: " + String.valueOf(getDelivers(id)));
+//		Log.d("sent 		: " + String.valueOf(getSent(id)));
+//		Log.d("deliver 	: " + String.valueOf(getDelivers(id)));
 //		return (getSent(id) == getDelivers(id));
 //	}
 	
@@ -579,7 +579,7 @@ public class DBAdapter {
 	//-------------------------functions for template table---------------------------
 	public Cursor fetchAllTemplates(){
 		Cursor cur = db.query(DATABASE_TEMPLATE_TABLE, new String[] {KEY_TEMP_CONTENT, KEY_TEMP_ID}, null, null, null, null, null);
-		Log.v("as", cur.getCount()+" ui");
+		Log.d(cur.getCount()+" ui");
 		return cur;
 	}
 	
@@ -604,7 +604,7 @@ public class DBAdapter {
 	
 	public boolean removeTemplate(long id){
 		try{
-			Log.i("MESSAGE", "id in DB : " + id);
+			Log.d("id in DB : " + id);
 			db.delete(DATABASE_TEMPLATE_TABLE, KEY_TEMP_ID + "=" + id, null);
 			return true;
 		}catch(SQLException sqe){
@@ -669,7 +669,7 @@ public class DBAdapter {
 	
 	
 	public void removeGroup(long groupId){
-		Log.i("MSG", "group to remove : " + groupId);
+		Log.d("group to remove : " + groupId);
 		db.delete(DATABASE_GROUP_CONTACT_RELATION, KEY_GROUP_REL_ID + "=" + groupId, null);
 		db.delete(DATABASE_GROUP_TABLE, KEY_GROUP_ID + "=" + groupId, null);
 	}
@@ -686,9 +686,9 @@ public class DBAdapter {
 	
 	//---------------------------functions related to spans table---------------------------------
 	public Cursor fetchSpanForSms(long smsId){
-		Log.i("MSG", "smsId in fetchspan dba : " + smsId);
+		Log.d("smsId in fetchspan dba : " + smsId);
 		Cursor cur = db.query(DATABASE_SPANS_TABLE, null, KEY_SPAN_SMS_ID + "=" + smsId, null, null, null, null);
-		Log.i("MSG", "cursor length : " + cur.getCount());
+		Log.d("cursor length : " + cur.getCount());
 		return cur;
 	}
 	
@@ -789,7 +789,7 @@ public class DBAdapter {
 	
 	//----------------------------functions for recents table----------------------------------
 	public void addRecentContact(long contactId, String contactNumber){
-		Log.i("MSG", "came in with " + contactId);
+		Log.d("came in with " + contactId);
 		
 		Cursor cur = db.query(DATABASE_RECENTS_TABLE, new String[]{KEY_RECENT_CONTACT_ID, KEY_RECENT_CONTACT_CONTACT_ID, KEY_RECENT_CONTACT_NUMBER}, null, null, null, null, KEY_RECENT_CONTACT_ID);
 		boolean contactExist = false;
@@ -806,7 +806,7 @@ public class DBAdapter {
 			}while(cur.moveToNext());
 		}
 		if(!contactExist){
-			Log.i("MSG", "came in with " + contactId + " doesn't exist in recents");
+			Log.d("came in with " + contactId + " doesn't exist in recents");
 			ContentValues cv = new ContentValues();
 			cv.put(KEY_RECENT_CONTACT_CONTACT_ID, contactId);
 			cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);

@@ -1,6 +1,5 @@
 package com.vinsol.sms_scheduler.activities;
 
-import java.security.KeyStore.LoadStoreParameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,7 +10,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +34,7 @@ import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.GroupStructure;
 import com.vinsol.sms_scheduler.models.MyContact;
 import com.vinsol.sms_scheduler.models.SpannedEntity;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class ContactsTabsActivity extends Activity {
 	
@@ -170,7 +169,7 @@ public class ContactsTabsActivity extends Activity {
 				group.put(Constants.GROUP_TYPE, NewScheduleActivity.privateGroupData.get(groupCount).get(Constants.GROUP_TYPE));
 				group.put(Constants.GROUP_CHECK, false);// NewScheduleActivity.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
 				
-				Log.i("MSG", "private group check " + NewScheduleActivity.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
+				Log.d("private group check " + NewScheduleActivity.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
 				
 				
 				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
@@ -197,10 +196,10 @@ public class ContactsTabsActivity extends Activity {
 		}else if(origin.equals("edit")){
 			for(int i = 0; i < EditScheduledSmsActivity.Spans.size(); i++){
 				SpansTemp.add(EditScheduledSmsActivity.Spans.get(i));
-				Log.i("MSG", "from edit size of " + EditScheduledSmsActivity.Spans.get(i).displayName + "'s groupIds : " + EditScheduledSmsActivity.Spans.get(i).groupIds.size());
-				Log.i("MSG", "size of " + SpansTemp.get(i).displayName + "'s groupIds : " + SpansTemp.get(i).groupIds.size());
+				Log.d("from edit size of " + EditScheduledSmsActivity.Spans.get(i).displayName + "'s groupIds : " + EditScheduledSmsActivity.Spans.get(i).groupIds.size());
+				Log.d("size of " + SpansTemp.get(i).displayName + "'s groupIds : " + SpansTemp.get(i).groupIds.size());
 			}
-			Log.i("MSG", EditScheduledSmsActivity.nativeGroupData.size()+"group data size from edit activity");
+			Log.d(EditScheduledSmsActivity.nativeGroupData.size()+"group data size from edit activity");
 			for(int groupCount = 0; groupCount< EditScheduledSmsActivity.nativeGroupData.size(); groupCount++){
 				boolean hasAChild = false;
 				HashMap<String, Object> group = new HashMap<String, Object>();
@@ -212,7 +211,7 @@ public class ContactsTabsActivity extends Activity {
 				
 				
 				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-				Log.i("MSG", EditScheduledSmsActivity.nativeChildData.get(groupCount).size()+"child data size from edit activity");
+				Log.d(EditScheduledSmsActivity.nativeChildData.get(groupCount).size()+"child data size from edit activity");
 				for(int childCount = 0; childCount < EditScheduledSmsActivity.nativeChildData.get(groupCount).size(); childCount++){
 					
 					HashMap<String, Object> childParams = new HashMap<String, Object>();
@@ -236,7 +235,7 @@ public class ContactsTabsActivity extends Activity {
 			
 			
 			
-			Log.i("MSG", EditScheduledSmsActivity.privateGroupData.size()+"group data size from edit activity");
+			Log.d(EditScheduledSmsActivity.privateGroupData.size()+"group data size from edit activity");
 			for(int groupCount = 0; groupCount< EditScheduledSmsActivity.privateGroupData.size(); groupCount++){
 				boolean hasAChild = false;
 				HashMap<String, Object> group = new HashMap<String, Object>();
@@ -248,7 +247,7 @@ public class ContactsTabsActivity extends Activity {
 				
 				
 				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-				Log.i("MSG", EditScheduledSmsActivity.privateChildData.get(groupCount).size()+"child data size from edit activity");
+				Log.d(EditScheduledSmsActivity.privateChildData.get(groupCount).size()+"child data size from edit activity");
 				for(int childCount = 0; childCount < EditScheduledSmsActivity.privateChildData.get(groupCount).size(); childCount++){
 					
 					HashMap<String, Object> childParams = new HashMap<String, Object>();
@@ -288,7 +287,7 @@ public class ContactsTabsActivity extends Activity {
 				for(int i = 0; i< ids.size(); i++){
 					idsString.add(String.valueOf(ids.get(i)));
 				}
-				Log.i("MSG", "Size of SpansTemp : " + SpansTemp.size());
+				Log.d("Size of SpansTemp : " + SpansTemp.size());
 				intent.putExtra("IDSARRAY", idsString);
 				if(origin.equals("new")){
 					NewScheduleActivity.nativeGroupData.clear();
@@ -509,7 +508,7 @@ public class ContactsTabsActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i("MSG", "Value of hastorefresh : " + hasToRefresh);
+		Log.d("Value of hastorefresh : " + hasToRefresh);
 		if(hasToRefresh){
 			mdba.open();
 			cur = mdba.fetchAllGroups();
@@ -574,11 +573,11 @@ public class ContactsTabsActivity extends Activity {
     		holder.nameText.setText(SmsApplicationLevelData.contactsList.get(position).name);
     		holder.numberText.setText(SmsApplicationLevelData.contactsList.get(position).number);
     		
-//    		Log.i("MSG", "position : " + _position);
+//    		Log.d("position : " + _position);
     		for(int i = 0; i< SpansTemp.size(); i++){
     			
         		if(Long.parseLong(SmsApplicationLevelData.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
-        			Log.i("MSG", SmsApplicationLevelData.contactsList.get(position).content_uri_id + " is getting checked at " + SpansTemp.get(i).entityId);
+        			Log.d(SmsApplicationLevelData.contactsList.get(position).content_uri_id + " is getting checked at " + SpansTemp.get(i).entityId);
         			holder.contactCheck.setChecked(true);
         			break;
         		}else{
@@ -586,7 +585,7 @@ public class ContactsTabsActivity extends Activity {
         		}
         	}
     		
-    		Log.v("SpansSize", holder.contactCheck.isChecked()+" "+position+" sps");
+    		Log.d("SpansSize = " + holder.contactCheck.isChecked()+" "+position+" sps");
     		
     		holder.contactCheck.setOnClickListener(new OnClickListener() {
 				
@@ -1063,7 +1062,7 @@ public class ContactsTabsActivity extends Activity {
     			holder.groupCheck.setChecked((Boolean)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_CHECK));
 //    			holder.groupCheck.setChecked(true);
 //    			if((Boolean)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_CHECK)){
-//    				Log.i("MSG", "showing checked in private group adapter : " + (String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_NAME));
+//    				Log.d("showing checked in private group adapter : " + (String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_NAME));
 //    			}
     			//groupImage.setImageBitmap((Bitmap)groupData.get(groupPosition).get(GROUP_IMAGE));
     			
@@ -1247,12 +1246,12 @@ public class ContactsTabsActivity extends Activity {
 	
 	
 	public void nativeAddCheck(int groupPosition, int childPosition){
-		Log.i("MSG", "entering childcheck is checked true listner");
+		Log.d("entering childcheck is checked true listner");
 		nativeChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
 		for(int i = 0; i < SpansTemp.size(); i++){
 			if(SpansTemp.get(i).entityId == Long.parseLong((String) nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))){
-				Log.i("MSG", "got a matching span");
+				Log.d("got a matching span");
 				spanExist = true;
 				try{
 					SpansTemp.get(i).groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
@@ -1260,14 +1259,14 @@ public class ContactsTabsActivity extends Activity {
 					SpansTemp.get(i).groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}
 				SpansTemp.get(i).groupTypes.add(1);
-				Log.i("MSG", "span id : " + SpansTemp.get(i) + " , total spans : " + SpansTemp.size()+ " after group id addition");
+				Log.d("span id : " + SpansTemp.get(i) + " , total spans : " + SpansTemp.size()+ " after group id addition");
 				break;
 			}
-			Log.i("MSG", SpansTemp.size()+"");
+			Log.d(SpansTemp.size()+"");
 		}
 		if(!spanExist){
-			Log.i("MSG", "got no matching span");
-			Log.i("MSG", SpansTemp.size()+"");
+			Log.d("got no matching span");
+			Log.d(SpansTemp.size()+"");
 			SpannedEntity span = new SpannedEntity(-1, 2, (String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), Long.parseLong((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)), -1);
 			try{
 				span.groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
@@ -1277,7 +1276,7 @@ public class ContactsTabsActivity extends Activity {
 			span.groupTypes.add(1);
 			SpansTemp.add(span);
 			contactsAdapter.notifyDataSetChanged();
-			Log.i("MSG", SpansTemp.size()+" after add");
+			Log.d(SpansTemp.size()+" after add");
 		}
 	}
 	
@@ -1287,14 +1286,14 @@ public class ContactsTabsActivity extends Activity {
 	
 	
 	public void nativeRemoveCheck(int groupPosition, int childPosition){
-		Log.i("MSG", "in removing a check");
+		Log.d("in removing a check");
 		nativeChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
 		for(int i = 0; i < SpansTemp.size(); i++){
 			if(Long.parseLong((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
-				Log.i("MSG", "Span found for deletion");
+				Log.d("Span found for deletion");
 				for(int j = 0; j< SpansTemp.get(i).groupIds.size(); j++){
-					Log.i("MSG", SpansTemp.get(i).groupIds.get(j) + "spans group Id");
-					Log.i("MSG", nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID) + "group to be removed from span");
+					Log.d(SpansTemp.get(i).groupIds.get(j) + "spans group Id");
+					Log.d(nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID) + "group to be removed from span");
 					Long groupIdToRemove;
 					int groupTypeToRemove;
 					try{
@@ -1305,11 +1304,11 @@ public class ContactsTabsActivity extends Activity {
 					groupTypeToRemove = 1;
 					
 					if(SpansTemp.get(i).groupIds.get(j) == groupIdToRemove && SpansTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
-						Log.i("MSG", "group id found for deletion");
+						Log.d("group id found for deletion");
 						SpansTemp.get(i).groupIds.remove(j);
 						
 						
-						Log.i("MSG", SpansTemp.get(i).groupIds.size()+ " group size for this span");
+						Log.d(SpansTemp.get(i).groupIds.size()+ " group size for this span");
 						if(SpansTemp.get(i).groupIds.size()==0){
 							SpansTemp.remove(i);
 							contactsAdapter.notifyDataSetChanged();
@@ -1325,7 +1324,7 @@ public class ContactsTabsActivity extends Activity {
 	
 	
 	public void privateAddCheck(int groupPosition, int childPosition){
-		Log.i("MSG", "entering childcheck is checked true listner");
+		Log.d("entering childcheck is checked true listner");
 		privateChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
 		
@@ -1333,7 +1332,7 @@ public class ContactsTabsActivity extends Activity {
 			for(int i = 0; i < SpansTemp.size(); i++){
 				
 				if(SpansTemp.get(i).entityId == Long.parseLong((String) privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))){
-					Log.i("MSG", "got a matching span");
+					Log.d("got a matching span");
 					spanExist = true;
 					try{
 						SpansTemp.get(i).groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
@@ -1341,15 +1340,15 @@ public class ContactsTabsActivity extends Activity {
 						SpansTemp.get(i).groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 					}
 					SpansTemp.get(i).groupTypes.add(2);
-					Log.i("MSG", "span id : " + SpansTemp.get(i) + " , total spans : " + SpansTemp.size()+ " after group id addition");
+					Log.d("span id : " + SpansTemp.get(i) + " , total spans : " + SpansTemp.size()+ " after group id addition");
 					break;
 				}
-				Log.i("MSG", SpansTemp.size()+"");
+				Log.d(SpansTemp.size()+"");
 				
 			}
 			if(!spanExist){
-				Log.i("MSG", "got no matching span");
-				Log.i("MSG", SpansTemp.size()+"");
+				Log.d("got no matching span");
+				Log.d(SpansTemp.size()+"");
 				SpannedEntity span = new SpannedEntity(-1, 2, (String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), Long.parseLong((String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)), -1);
 				try{
 					span.groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
@@ -1359,7 +1358,7 @@ public class ContactsTabsActivity extends Activity {
 				span.groupTypes.add(2);
 				SpansTemp.add(span);
 				contactsAdapter.notifyDataSetChanged();
-				Log.i("MSG", SpansTemp.size()+" after add");
+				Log.d(SpansTemp.size()+" after add");
 			}
 		
 	}
@@ -1370,14 +1369,14 @@ public class ContactsTabsActivity extends Activity {
 	
 	
 	public void privateRemoveCheck(int groupPosition, int childPosition){
-		Log.i("MSG", "in removing a check");
+		Log.d("in removing a check");
 		privateChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
 		for(int i = 0; i < SpansTemp.size(); i++){
 			if(Long.parseLong((String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
-				Log.i("MSG", "Span found for deletion");
+				Log.d("Span found for deletion");
 				for(int j = 0; j< SpansTemp.get(i).groupIds.size(); j++){
-					Log.i("MSG", SpansTemp.get(i).groupIds.get(j) + "spans group Id");
-					Log.i("MSG", privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID) + "group to be removed from span");
+					Log.d(SpansTemp.get(i).groupIds.get(j) + "spans group Id");
+					Log.d(privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID) + "group to be removed from span");
 					Long groupIdToRemove;
 					int groupTypeToRemove;
 					try{
@@ -1387,9 +1386,9 @@ public class ContactsTabsActivity extends Activity {
 					}
 					groupTypeToRemove = 2;
 					if(SpansTemp.get(i).groupIds.get(j) == groupIdToRemove && SpansTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
-						Log.i("MSG", "group id found for deletion");
+						Log.d("group id found for deletion");
 						SpansTemp.get(i).groupIds.remove(j);
-						Log.i("MSG", SpansTemp.get(i).groupIds.size()+ " group size for this span");
+						Log.d(SpansTemp.get(i).groupIds.size()+ " group size for this span");
 						if(SpansTemp.get(i).groupIds.size()==0){
 							SpansTemp.remove(i);
 							contactsAdapter.notifyDataSetChanged();
@@ -1430,7 +1429,7 @@ public class ContactsTabsActivity extends Activity {
     		
     		int i = 0;
     		
-    		Log.i("MSG", recentIds.size() + " size of recent contacts arraylist");
+    		Log.d(recentIds.size() + " size of recent contacts arraylist");
     		
     		if(recentContactIds.get(position)> -1){
     			for(i = 0; i< SmsApplicationLevelData.contactsList.size(); i++){
@@ -1442,7 +1441,7 @@ public class ContactsTabsActivity extends Activity {
     		    		
     		    		for(int j = 0; j< SpansTemp.size(); j++){
     		        		if(Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id) == SpansTemp.get(j).entityId){
-    		        			Log.i("MSG", "setting checked :" + Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id));
+    		        			Log.d("setting checked :" + Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id));
     		        			holder.contactCheck.setChecked(true);
     		        			break;
     		        		}else{
@@ -1456,9 +1455,9 @@ public class ContactsTabsActivity extends Activity {
     			holder.contactImage.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
     			holder.nameText.setText(recentContactNumbers.get(position));
     			holder.numberText.setText("");
-    			Log.i("MSG", "size of span : " + SpansTemp.size());
+    			Log.d("size of span : " + SpansTemp.size());
     			for(int j = 0; j< SpansTemp.size(); j++){
-    				Log.i("MSG", "8888888888888888888888888888888888   entered!");
+    				Log.d("8888888888888888888888888888888888   entered!");
     				if(SpansTemp.get(j).displayName.equals(recentContactNumbers.get(position))){
     					holder.contactCheck.setChecked(true);
     					break;
@@ -1502,10 +1501,10 @@ public class ContactsTabsActivity extends Activity {
 						for(int i = 0; i< SpansTemp.size(); i++){
 				    		if(recentContactIds.get(_position)>-1){
 				    			if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
-				    				Log.i("MSG", "got into removing a contact");
-				    				Log.i("MSG", "size of Span " + SpansTemp.size());
+				    				Log.d("got into removing a contact");
+				    				Log.d("size of Span " + SpansTemp.size());
 				    				SpansTemp.remove(i);
-					    			Log.i("MSG", "size of Span " + SpansTemp.size());
+					    			Log.d("size of Span " + SpansTemp.size());
 					    			contactsAdapter.notifyDataSetChanged();
 					    			break;
 					    		}
@@ -1554,10 +1553,10 @@ public class ContactsTabsActivity extends Activity {
 						for(int i = 0; i< SpansTemp.size(); i++){
 				    		if(recentContactIds.get(_position)>-1){
 				    			if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
-				    				Log.i("MSG", "got into removing a contact");
-				    				Log.i("MSG", "size of Span " + SpansTemp.size());
+				    				Log.d("got into removing a contact");
+				    				Log.d("size of Span " + SpansTemp.size());
 				    				SpansTemp.remove(i);
-					    			Log.i("MSG", "size of Span " + SpansTemp.size());
+					    			Log.d("size of Span " + SpansTemp.size());
 					    			contactsAdapter.notifyDataSetChanged();
 					    			break;
 					    		}
@@ -1639,7 +1638,7 @@ public class ContactsTabsActivity extends Activity {
        				for(int i = 0; i< SpansTemp.size(); i++){
        					for(int j = 0; j< spanIdsForGroup.size(); j++){
        						if(spanIdsForGroup.get(j)==SpansTemp.get(i).spanId){
-       							Log.i("MSG", "-------is entering into the TRUE condition");
+       							Log.d("-------is entering into the TRUE condition");
        							group.put(Constants.GROUP_CHECK, true);
        							break;
        						}
@@ -1671,10 +1670,10 @@ public class ContactsTabsActivity extends Activity {
         					childParameters.put(Constants.CHILD_CHECK, false);
         					for(int k = 0; k< spanIdsForGroup.size(); k++){
        							for(int m = 0; m< SpansTemp.size(); m++){
-       								Log.i("MSG", "Spans.get(m).entityId : " + SpansTemp.get(m).entityId);
-       								Log.i("MSG", "contact_uri_id : " + Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id));
+       								Log.d("Spans.get(m).entityId : " + SpansTemp.get(m).entityId);
+       								Log.d("contact_uri_id : " + Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id));
        								if(SpansTemp.get(m).spanId == spanIdsForGroup.get(k) && SpansTemp.get(m).entityId == contactIds.get(i)){
-       									Log.i("MSG", "checking the child in private for " + SpansTemp.get(m).displayName);
+       									Log.d("checking the child in private for " + SpansTemp.get(m).displayName);
        									childParameters.put(Constants.CHILD_CHECK, true);
 //       										break;
        								}
@@ -1750,7 +1749,7 @@ public class ContactsTabsActivity extends Activity {
 				
 				privateGroupDataTemp.add(group);
 				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-				Log.i("MSG", EditScheduledSmsActivity.privateChildData.get(groupCount).size()+"child data size from edit activity");
+				Log.d(EditScheduledSmsActivity.privateChildData.get(groupCount).size()+"child data size from edit activity");
 				for(int childCount = 0; childCount < EditScheduledSmsActivity.privateChildData.get(groupCount).size(); childCount++){
 					
 					HashMap<String, Object> childParams = new HashMap<String, Object>();

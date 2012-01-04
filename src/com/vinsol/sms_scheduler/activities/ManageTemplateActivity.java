@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +23,7 @@ import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class ManageTemplateActivity extends Activity{
 
@@ -232,7 +232,7 @@ public class ManageTemplateActivity extends Activity{
 		templatesIdArray.clear();
 		if(cur.moveToFirst()){
 			do{
-				Log.i("MSG", cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
+				Log.d(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
 				templatesArray.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
 				templatesIdArray.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TEMP_ID)));
 			}while(cur.moveToNext());

@@ -3,12 +3,6 @@ package com.vinsol.sms_scheduler.activities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.R.drawable;
-import com.vinsol.sms_scheduler.R.id;
-import com.vinsol.sms_scheduler.R.layout;
-
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,20 +12,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Groups;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ExpandableListView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ExpandableListView.OnGroupCollapseListener;
-import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class GroupsTestActivity extends Activity {
 
@@ -107,7 +101,7 @@ public class GroupsTestActivity extends Activity {
         				}
         			}
         		}
-        		Log.i("MSG", child.size() + "");
+        		Log.d(child.size() + "");
         		childData.add(child);
         		
         	}while(groupCursor.moveToNext());
@@ -148,7 +142,7 @@ public class GroupsTestActivity extends Activity {
         				}
         			}
         		}
-        		Log.i("MSG", child.size() + "");
+        		Log.d(child.size() + "");
         		childData.add(child);
         		
         	}while(groupsCursor.moveToNext());
@@ -157,9 +151,9 @@ public class GroupsTestActivity extends Activity {
         mdba.close();
 
 //        for(int k = 0 ; k < groupData.size(); k++){
-//        	Log.i("MSG", "group");
+//        	LOg.d("group");
 //        	for(int n = 0 ; n< childData.get(k).size(); n++){
-//        		Log.i("MSG", "fdsafdsa");
+//        		LOg.d("fdsafdsa");
 //        	}
 //        }
 	}
@@ -282,11 +276,11 @@ public class GroupsTestActivity extends Activity {
 					
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						Log.v("sazwqa", "111111111111111111111111111111111111111111111111111111111");
-						Log.v("sazwqa", "groupPosition = " + groupPosition);
-						Log.v("sazwqa", "childPosition = " + childPosition);
-						Log.v("sazwqa", "isChecked = " + isChecked);
-						Log.v("sazwqa", "111111111111111111111111111111111111111111111111111111111");
+						Log.d("111111111111111111111111111111111111111111111111111111111");
+						Log.d("groupPosition = " + groupPosition);
+						Log.d("childPosition = " + childPosition);
+						Log.d("isChecked = " + isChecked);
+						Log.d("111111111111111111111111111111111111111111111111111111111");
 						
 						if(isChecked){
 							childData.get(groupPosition).get(childPosition).put(CHILD_CHECK, true);
