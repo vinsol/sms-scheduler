@@ -1375,7 +1375,7 @@ public class EditScheduledSmsActivity extends Activity {
 			MatchesHolder holder;
 			if(convertView==null){
 				LayoutInflater inflater = getLayoutInflater();
-				convertView = inflater.inflate(R.layout.template_list_row, parent, false);
+				convertView = inflater.inflate(R.layout.matches_list_row, parent, false);
 				holder = new MatchesHolder();
 				holder.matchText = (TextView) convertView.findViewById(R.id.match_text);
 				convertView.setTag(holder);
@@ -1520,13 +1520,12 @@ public class EditScheduledSmsActivity extends Activity {
     		View row = inflater.inflate(R.layout.dropdown_row_layout, parent, false);
 			TextView nameLabel 		= (TextView) row.findViewById(R.id.row_name_label);
 			TextView numberLabel 	= (TextView) row.findViewById(R.id.row_number_label);
-//			try{
+			try{
 				nameLabel.setText(shortlist.get(position).name);
 				numberLabel.setText(shortlist.get(position).number);
-//			}catch(IndexOutOfBoundsException ioe){}
+			}catch(IndexOutOfBoundsException ioe){}
 			return row;
 		}
-	
 	}
 	
 	

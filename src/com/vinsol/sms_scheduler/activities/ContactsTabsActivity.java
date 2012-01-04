@@ -396,8 +396,8 @@ public class ContactsTabsActivity extends Activity {
         mtabHost.setup( );
         mtabHost.getTabWidget().setDividerDrawable(R.drawable.vertical_seprator);
         
-        setupTab(new TextView(this), "Native");
-    	setupTab(new TextView(this), "Private");
+        setupTab(new TextView(this), "Phone Groups");
+    	setupTab(new TextView(this), "My Groups");
 
         
         ///////
@@ -475,9 +475,9 @@ public class ContactsTabsActivity extends Activity {
 	private void setupTab(final View view, final String tag) {
 		View tabview = createTabView(mtabHost.getContext(), tag);
 		TabSpec setContent = null;
-		if(tag.equals("Native")){
+		if(tag.equals("Phone Groups")){
 			setContent = mtabHost.newTabSpec(tag).setIndicator(tabview).setContent(R.id.native_list);
-		}else if(tag.equals("Private")){
+		}else if(tag.equals("My Groups")){
 			setContent = mtabHost.newTabSpec(tag).setIndicator(tabview).setContent(R.id.private_list_parent_layout);
 		}
 	        

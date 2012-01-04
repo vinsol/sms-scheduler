@@ -872,7 +872,7 @@ public class SmsSchedulerExplActivity extends Activity {
     	
     	//--------------------------------------------------------------------------end of child load--------------
     	sizeOfChildSchArray = childSchArray.size();
-    	mdba.close();
+//    	mdba.close();
     }
     
     

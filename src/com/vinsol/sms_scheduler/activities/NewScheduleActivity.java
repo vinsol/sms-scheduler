@@ -1008,9 +1008,9 @@ public class NewScheduleActivity extends Activity {
             d.setContentView(R.layout.voice_matches_dialog);
             
             ListView matchesList = (ListView) d.findViewById(R.id.matches_list);
-            MatchesAdapter matchesAdapter = new MatchesAdapter();
-            matchesList.setAdapter(matchesAdapter);
-            
+//            MatchesAdapter matchesAdapter = new MatchesAdapter();
+//            matchesList.setAdapter(matchesAdapter);
+            matchesList.setAdapter(new ArrayAdapter<String>(this, R.layout.simple_list_item, matches));
             
             matchesList.setOnItemClickListener(new OnItemClickListener() {
 
@@ -1055,7 +1055,7 @@ public class NewScheduleActivity extends Activity {
 			MatchesHolder holder;
 			if(convertView==null){
 				LayoutInflater inflater = getLayoutInflater();
-				convertView = inflater.inflate(R.layout.template_list_row, parent, false);
+				convertView = inflater.inflate(R.layout.matches_list_row, parent, false);
 				holder = new MatchesHolder();
 				holder.matchText = (TextView) convertView.findViewById(R.id.match_text);
 				convertView.setTag(holder);
