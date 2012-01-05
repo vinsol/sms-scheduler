@@ -5,7 +5,7 @@
     android:versionCode="1"
     android:versionName="1.0">
     
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="7" />
 	
 	<uses-permission android:name = "android.permission.SEND_SMS"/>
 	<uses-permission android:name="android.permission.READ_CONTACTS"/>
@@ -29,7 +29,7 @@
         <activity android:name = ".activities.NewScheduleActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ManageTemplateActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.ContactsListActivity" android:screenOrientation="portrait" />
-        <activity android:name = ".activities.ContactsTabsActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />
+        <activity android:name = ".activities.ContactsTabsActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait"/>
         <activity android:name = ".activities.ManageGroupsActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.GroupEditActivity" android:screenOrientation="portrait" />
         <activity android:name = ".activities.EditScheduledSmsActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" />

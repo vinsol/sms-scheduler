@@ -935,8 +935,7 @@ public class NewScheduleActivity extends Activity {
 			if(Spans.get(i).type == 1){
 				long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
 				
-				
-				if(Spans.size()==0 || messageText.toString().matches("(''|[' ']*)") || Spans.get(i).displayName.equals(" ")){
+				if((Spans.size()==1 && Spans.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)")){
 					mdba.setAsDraft(received_id);
 				}else{
 					mdba.addRecentContact(-1, Spans.get(i).displayName);
