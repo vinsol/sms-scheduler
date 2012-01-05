@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
@@ -99,9 +101,11 @@ public class ContactsTabsActivity extends Activity {
 		
 		
 		//----------------------Setting up the Tabs--------------------------------
-		TabHost tabHost=(TabHost)findViewById(R.id.tabHost);
+		final TabHost tabHost=(TabHost)findViewById(R.id.tabHost);
         tabHost.setup();
-
+        
+        tabHost.getTabWidget().setDividerDrawable(R.drawable.vertical_seprator);
+        
         TabSpec spec1=tabHost.newTabSpec("Tab 1");
         spec1.setContent(R.id.contacts_tabs_native_contacts_list);
         spec1.setIndicator("Contacts", getResources().getDrawable(R.drawable.contacts_tab_states));
@@ -117,7 +121,13 @@ public class ContactsTabsActivity extends Activity {
         tabHost.addTab(spec1);
         tabHost.addTab(spec2);
         tabHost.addTab(spec3);
-        //----------------------------------------------------end of Tabs Setup-----------
+        
+        for(int i=0;i<tabHost.getTabWidget().getChildCount();i++) {
+            tabHost.getTabWidget().getChildAt(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_bg_selector));
+        }
+        
+        
+    	//----------------------------------------------------end of Tabs Setup-----------
         
         
         
@@ -467,10 +477,7 @@ public class ContactsTabsActivity extends Activity {
 	}
 	
 	
-	
-	
-	
-	
+
 	private void setupTab(final View view, final String tag) {
 		View tabview = createTabView(mtabHost.getContext(), tag);
 		TabSpec setContent = null;

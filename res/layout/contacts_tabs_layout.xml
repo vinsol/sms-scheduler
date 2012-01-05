@@ -20,14 +20,24 @@
     			android:id="@android:id/tabs"
     			android:layout_width="fill_parent"
     			android:layout_height="wrap_content"
+    			android:tabStripEnabled="false"
     			>
    			</TabWidget>
+   			
+   		    <LinearLayout
+   		        android:id="@+id/seprator" 
+   		     	android:layout_width="fill_parent"
+   		     	android:layout_height="2dip"
+   		     	android:background="@color/text_grey"   
+   		        android:layout_below="@android:id/tabs"
+   		        >
+   		    </LinearLayout>
     
 	    	<FrameLayout
 	    		android:id="@android:id/tabcontent"
 	    		android:layout_width="fill_parent"
 	    		android:layout_height="fill_parent"
-	    		android:layout_below="@android:id/tabs"
+	    		android:layout_below="@id/seprator"
 	    		>
 	     
 	    	    <!-- contacts tab -->
