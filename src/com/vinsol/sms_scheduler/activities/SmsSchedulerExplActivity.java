@@ -48,13 +48,15 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.models.sentChildDataClass;
+import com.vinsol.sms_scheduler.models.unsentChildDataClass;
 import com.vinsol.sms_scheduler.utils.Log;
 
 public class SmsSchedulerExplActivity extends Activity {
     
-	public static ArrayList<childSch> childSchArray = new ArrayList<childSch>();
-	public static ArrayList<childSent> childSentArray = new ArrayList<childSent>();
-	public static ArrayList<childDraft> childDraftArray = new ArrayList<childDraft>();
+	public static ArrayList<unsentChildDataClass> childSchArray = new ArrayList<unsentChildDataClass>();
+	public static ArrayList<sentChildDataClass> childSentArray = new ArrayList<sentChildDataClass>();
+	public static ArrayList<unsentChildDataClass> childDraftArray = new ArrayList<unsentChildDataClass>();
 	
 	ExpandableListView 		explList;
 	ImageView				newSmsButton;
@@ -431,7 +433,7 @@ public class SmsSchedulerExplActivity extends Activity {
     				holder.receiverTextView.setTextColor(0xff000000);
     			} else if(groupPosition == 2) {
     				holder.messageTextView.setText(childSentArray.get(childPosition).keyMessage);
-    				holder.statusImageView.setImageResource(childSentArray.get(childPosition).keyImgRes);
+    				holder.statusImageView.setImageResource(childSentArray.get(childPosition).keyImageRes);
     				holder.dateTextView.setText(childSentArray.get(childPosition).keyDate);
     				holder.receiverTextView.setText(numbersLengthRectify(childSentArray.get(childPosition).keyNumber));
     				holder.extraReceiversTextView.setText(extraReceiversCal(childSentArray.get(childPosition).keyNumber));
@@ -663,7 +665,7 @@ public class SmsSchedulerExplActivity extends Activity {
     				z++;
     				ArrayList<Long> tempIds = new ArrayList<Long>();
     				tempIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
-    				childSchArray.add(new childSch(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)),
+    				childSchArray.add(new unsentChildDataClass(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)),
     						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_GRPID)),
     						displayName,
     						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
@@ -725,7 +727,7 @@ public class SmsSchedulerExplActivity extends Activity {
     				z++;
     				ArrayList<Long> tempIds = new ArrayList<Long>();
     				tempIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
-    				childSentArray.add(new childSent(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)),
+    				childSentArray.add(new sentChildDataClass(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)),
     						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_GRPID)),
     						displayName,
     						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
@@ -770,15 +772,15 @@ public class SmsSchedulerExplActivity extends Activity {
     		
     		switch (condition) {
 			case 1:
-				childSentArray.get(i).keyImgRes = R.drawable.sent_failure_icon;
+				childSentArray.get(i).keyImageRes = R.drawable.sent_failure_icon;
 				break;
 				
 			case 2:
-				childSentArray.get(i).keyImgRes = R.drawable.sending_sms_icon;
+				childSentArray.get(i).keyImageRes = R.drawable.sending_sms_icon;
 				break;
 				
 			case 3:
-				childSentArray.get(i).keyImgRes = R.drawable.sent_success_icon;
+				childSentArray.get(i).keyImageRes = R.drawable.sent_success_icon;
 				break; 
 				
 			default:
@@ -817,7 +819,7 @@ public class SmsSchedulerExplActivity extends Activity {
     				z++;
     				ArrayList<Long> tempIds = new ArrayList<Long>();
     				tempIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
-    				childDraftArray.add(new childDraft(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)),
+    				childDraftArray.add(new unsentChildDataClass(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)),
     						draftCur.getLong	(draftCur.getColumnIndex(DBAdapter.KEY_GRPID)),
     						displayName,
     						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
@@ -873,102 +875,7 @@ public class SmsSchedulerExplActivity extends Activity {
     	sizeOfChildSchArray = childSchArray.size();
 //    	mdba.close();
     }
-    
-    
-    
-    
-    
-    class childSch{
-		long 		keyId;
-		long 		keyGrpId;
-		String 		keyNumber;
-		String 		keyMessage;
-		long		keyTimeMilis;
-		String 		keyDate;
-		int			keySent;
-		int			keyDeliver;
-		int			keyMsgParts;
-		int 		keyImageRes;
-		String 		keyExtraReceivers;
-		ArrayList<Long>	keyIds;
-		
-		childSch(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, ArrayList<Long> keyids){
-			this.keyId 			= keyid;
-			this.keyGrpId 		= keygrpid;
-			this.keyNumber 		= keynumber;
-			this.keyMessage 	= keymessage;
-			this.keyTimeMilis 	= keytimemilis;
-			this.keyDate 		= keydate;
-			this.keySent 		= keysent;
-			this.keyDeliver 	= keydeliver;
-			this.keyMsgParts 	= keymsgparts;
-			this.keyIds			= keyids;
-		}
-	}
-	
-	
-	class childSent{
-		long 		keyId;
-		long 		keyGrpId;
-		String 		keyNumber;
-		String 		keyMessage;
-		long		keyTimeMilis;
-		String 		keyDate;
-		int			keySent;
-		int			keyDeliver;
-		int			keyMsgParts;
-		long		keySMillis;
-		long		keyDMillis;
-		int			keyImgRes;
-		String 		keyExtraReceivers;
-		ArrayList<Long> keyIds;
-		
-		childSent(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, long keysmillis, long keydmillis, ArrayList<Long> keyids){
-			this.keyId 			= keyid;
-			this.keyGrpId 		= keygrpid;
-			this.keyNumber 		= keynumber;
-			this.keyMessage 	= keymessage;
-			this.keyTimeMilis 	= keytimemilis;
-			this.keyDate 		= keydate;
-			this.keySent 		= keysent;
-			this.keyDeliver 	= keydeliver;
-			this.keyMsgParts 	= keymsgparts;
-			this.keySMillis		= keysmillis;
-			this.keyDMillis		= keydmillis;
-			this.keyIds			= keyids;
-		}
-	}
-	
-	
-	
-	class childDraft{
-		long 		keyId;
-		long 		keyGrpId;
-		String 		keyNumber;
-		String 		keyMessage;
-		long		keyTimeMilis;
-		String 		keyDate;
-		int			keySent;
-		int			keyDeliver;
-		int			keyMsgParts;
-		int 		keyImageRes;
-		String 		keyExtraReceivers;
-		ArrayList<Long>	keyIds;
-		
-		childDraft(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, ArrayList<Long> keyids){
-			this.keyId 			= keyid;
-			this.keyGrpId 		= keygrpid;
-			this.keyNumber 		= keynumber;
-			this.keyMessage 	= keymessage;
-			this.keyTimeMilis 	= keytimemilis;
-			this.keyDate 		= keydate;
-			this.keySent 		= keysent;
-			this.keyDeliver 	= keydeliver;
-			this.keyMsgParts 	= keymsgparts;
-			this.keyIds			= keyids;
-		}
-	}
-	
+
 	
 	
 	@Override
