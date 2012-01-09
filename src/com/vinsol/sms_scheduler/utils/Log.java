@@ -2,7 +2,7 @@ package com.vinsol.sms_scheduler.utils;
 
 public class Log  {
 	
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
     private static String app = "SMSScheduler";
 
     public static final void d(Throwable throwable) {
