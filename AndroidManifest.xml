@@ -18,7 +18,12 @@
 
  	<uses-feature android:name="android.hardware.microphone" />
 	
-    <application android:name=".activities.SmsApplicationLevelData" android:icon="@drawable/icon" android:label="SMS Scheduler" android:theme="@android:style/Theme.NoTitleBar">
+    <application 
+        android:name=".activities.SmsApplicationLevelData" 
+        android:icon="@drawable/icon" 
+        android:label="SMS Scheduler" 
+        android:theme="@android:style/Theme.NoTitleBar">
+        
         <!--  activities -->    
         <activity android:name = ".activities.SmsSchedulerExplActivity" android:screenOrientation="portrait" >
                 <intent-filter>
@@ -46,6 +51,5 @@
 				<category android:name="android.intent.category.HOME" />
         	</intent-filter> 
 		</receiver>
-		
     </application>
 </manifest>
