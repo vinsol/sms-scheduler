@@ -2,7 +2,7 @@ package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
-public class abstractChildDataClass {
+public abstract class abstractChildDataClass {
 	public long 			keyId;
 	public long 			keyGrpId;
 	public String 			keyNumber;

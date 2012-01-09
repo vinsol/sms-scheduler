@@ -27,7 +27,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.Editable;
@@ -158,17 +162,22 @@ abstract class AbstractScheduleClass extends Activity{
 	ArrayList<Long> ids = new ArrayList<Long>();
 	ArrayList<String> idsString = new ArrayList<String>();
 	
+//	ArrayList<Long> editedIds = new ArrayList<Long>();
+	
 	SimpleDateFormat sdf = new SimpleDateFormat("EEE hh:mm aa, dd MMM yyyy");
 	DBAdapter mdba = new DBAdapter(AbstractScheduleClass.this);
 	
 	
-	//-----------------------Variables related to Voice recognition-------------------
+	//-----------------------Variable related to Voice recognition-------------------
 	protected static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 	//--------------------------------------------------------------------------------
 	
 	
 	
+	
 	public void setSuperFunctionalities(){
+		numbersText.setThreshold(1);
+		
 		addFromContactsImgButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -561,7 +570,7 @@ abstract class AbstractScheduleClass extends Activity{
 
 		
 		
-		//-------------------------functionality of speech input button-----------------------------
+		//-------------------------functionality of speech input button------------------------------
 		speechImageButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -599,40 +608,7 @@ abstract class AbstractScheduleClass extends Activity{
 	
 	
 	
-
-	public void handlePiUpdate(String number, long groupId, long id, long time){
-		//Cancel the pi conditionally----------------------
-		Cursor cur = mdba.getPiDetails();
-		cur.moveToFirst();
-		
-		Intent intent = new Intent(AbstractScheduleClass.this, SMSHandleReceiver.class);
-		intent.setAction(DBAdapter.PRIVATE_SMS_ACTION);
-		
-		PendingIntent pi;
-		if(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME))>0){
-			intent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_SMS_ID)));
-			intent.putExtra("NUMBER", " ");
-			intent.putExtra("MESSAGE", " ");
-			
-			pi = PendingIntent.getBroadcast(AbstractScheduleClass.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
-			pi.cancel();
-		}
-		intent.putExtra("ID", id);
-		intent.putExtra("NUMBER", number);
-		intent.putExtra("MESSAGE", messageText.getText().toString());
-		
-		Random rand = new Random();
-		int piNumber = rand.nextInt();
-		pi = PendingIntent.getBroadcast(AbstractScheduleClass.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		mdba.updatePi(piNumber, id, time);
-		
-		AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-    	alarmManager.set(AlarmManager.RTC_WAKEUP, time, pi);
-	}
-	
-	
-	
-	
+	//=======================setting up voice recognition functionality============================
 	public void startVoiceRecognitionActivity() {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
@@ -668,6 +644,46 @@ abstract class AbstractScheduleClass extends Activity{
 		});
         d.show();
 	}
+	//===================================================end of voice recognition functionality================
+	
+	
+	
+	
+	//=======================function to handle updation of Pending Intent===================================
+	public void handlePiUpdate(String number, long groupId, long id, long time){
+		//Cancel the pi conditionally----------------------
+		Cursor cur = mdba.getPiDetails();
+		cur.moveToFirst();
+		
+		Intent intent = new Intent(AbstractScheduleClass.this, SMSHandleReceiver.class);
+		intent.setAction(DBAdapter.PRIVATE_SMS_ACTION);
+		
+		PendingIntent pi;
+		if(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME))>0){
+			intent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_SMS_ID)));
+			intent.putExtra("NUMBER", " ");
+			intent.putExtra("MESSAGE", " ");
+			
+			pi = PendingIntent.getBroadcast(AbstractScheduleClass.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+			pi.cancel();
+		}
+		intent.putExtra("ID", id);
+		intent.putExtra("NUMBER", number);
+		intent.putExtra("MESSAGE", messageText.getText().toString());
+		
+		Random rand = new Random();
+		int piNumber = rand.nextInt();
+		pi = PendingIntent.getBroadcast(AbstractScheduleClass.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		mdba.updatePi(piNumber, id, time);
+		
+		AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+    	alarmManager.set(AlarmManager.RTC_WAKEUP, time, pi);
+	}
+	//=============================================end of Pending Intent updation function==================
+	
+	
+	
+	
 	
 	
 	//------------------------------------------
@@ -876,6 +892,7 @@ abstract class AbstractScheduleClass extends Activity{
 	
 	//-------------------------Matches Adapter-------------------------------------------
 	class MatchesAdapter extends ArrayAdapter {
+		@SuppressWarnings("unchecked")
 		MatchesAdapter() {
 			super(AbstractScheduleClass.this, R.layout.matches_list_row, matches);
 		}
@@ -1095,6 +1112,324 @@ abstract class AbstractScheduleClass extends Activity{
 			super.onPostExecute(result);
 			dialog.cancel();
 			AbstractScheduleClass.this.finish();
+		}
+	}
+	
+	
+	
+	
+	
+	
+public void loadGroupsData(){
+		
+		nativeGroupData.clear();
+		nativeChildData.clear();
+		
+		privateGroupData.clear();
+		privateChildData.clear();
+		
+		//------------------------ Setting up data for native groups ---------------------------
+		String[] projection = new String[] {
+				  Groups._ID,
+	              Groups.TITLE,
+	              Groups.SYSTEM_ID,
+	              Groups.NOTES,
+             };
+        Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
+        int count = 0;
+        
+        Cursor groupCursor = managedQuery(groupsUri, projection, null, null, null);
+        if(groupCursor.moveToFirst()){
+        	mdba.open();
+        	do{
+        		HashMap<String, Object> group = new HashMap<String, Object>();
+        		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)), 1);
+        		group.put(Constants.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
+        		new BitmapFactory();
+				group.put(Constants.GROUP_IMAGE, BitmapFactory.decodeResource(getResources(), R.drawable.expander_ic_maximized));
+       			if(spanIdsForGroup.size()==0){
+       				group.put(Constants.GROUP_CHECK, false);
+       			}else{
+       				for(int i = 0; i< Spans.size(); i++){
+       					for(int j = 0; j< spanIdsForGroup.size(); j++){
+       						if(spanIdsForGroup.get(j)==Spans.get(i).spanId){
+       							group.put(Constants.GROUP_CHECK, true);
+       							break;
+       						}
+       					}
+       				}
+       			}
+        		
+        		group.put(Constants.GROUP_TYPE, 1);
+        		group.put(Constants.GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
+        		
+        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+        	
+        		
+        		nativeGroupData.add(group);
+        		
+        		for(int i = 0; i < SmsApplicationLevelData.contactsList.size(); i++){
+        			for(int j = 0; j< SmsApplicationLevelData.contactsList.get(i).groupRowId.size(); j++){
+        				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsApplicationLevelData.contactsList.get(i).groupRowId.get(j)){
+        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
+        					
+        					childParameters.put(Constants.CHILD_NAME, SmsApplicationLevelData.contactsList.get(i).name);
+        					childParameters.put(Constants.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(i).number);
+        					childParameters.put(Constants.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(i).image);
+        					childParameters.put(Constants.CHILD_CHECK, false);//doubted
+        					for(int k = 0; k< spanIdsForGroup.size(); k++){
+       							for(int m = 0; m< Spans.size(); m++){
+       								if(Spans.get(m).spanId == spanIdsForGroup.get(k) && Spans.get(m).entityId ==Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id)){
+       									childParameters.put(Constants.CHILD_CHECK, true);
+       								}
+       							}
+       						}
+        					childParameters.put(Constants.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(i).content_uri_id);
+        					child.add(childParameters);
+        				}
+        			}
+        		}
+        		nativeChildData.add(child);
+        		count++;
+        	}while(groupCursor.moveToNext());
+        	mdba.close();
+        }
+        // ---------------------------------------------------end of setting up native groups data-------------
+        
+        
+        
+        //---------------------------- Setting up private Groups data ------------------------------------
+        mdba.open();
+        Cursor groupsCursor = mdba.fetchAllGroups();
+        if(groupsCursor.moveToFirst()){
+        	do{
+        		HashMap<String, Object> group = new HashMap<String, Object>();
+        		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)), 2);
+        		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
+        		new BitmapFactory();
+				group.put(Constants.GROUP_IMAGE, BitmapFactory.decodeResource(getResources(), R.drawable.expander_ic_maximized));
+        		Log.d("Group size in private : " + spanIdsForGroup.size());
+        		group.put(Constants.GROUP_CHECK, false);
+        		if(spanIdsForGroup.size()>0){
+       				for(int i = 0; i< Spans.size(); i++){
+       					for(int j = 0; j< spanIdsForGroup.size(); j++){
+       						if(spanIdsForGroup.get(j)==Spans.get(i).spanId){
+       							group.put(Constants.GROUP_CHECK, true);
+       							break;
+       						}
+       					}
+       				}
+       			}
+        		group.put(Constants.GROUP_TYPE, 2);
+        		group.put(Constants.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+        		
+        		privateGroupData.add(group);
+        	
+        		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+        		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+        		
+        		for(int i = 0; i< contactIds.size(); i++){
+        			for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
+        				if(contactIds.get(i)==Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
+        					HashMap<String, Object> childParameters = new HashMap<String, Object>();
+        					childParameters.put(Constants.CHILD_NAME, SmsApplicationLevelData.contactsList.get(j).name);
+        					childParameters.put(Constants.CHILD_NUMBER, SmsApplicationLevelData.contactsList.get(j).number);
+        					childParameters.put(Constants.CHILD_CONTACT_ID, SmsApplicationLevelData.contactsList.get(j).content_uri_id);
+        					childParameters.put(Constants.CHILD_IMAGE, SmsApplicationLevelData.contactsList.get(j).image);
+        					childParameters.put(Constants.CHILD_CHECK, false);
+        					for(int k = 0; k< spanIdsForGroup.size(); k++){
+       							for(int m = 0; m< Spans.size(); m++){
+       								if(Spans.get(m).spanId == spanIdsForGroup.get(k) && Spans.get(m).entityId == contactIds.get(i)){
+       									childParameters.put(Constants.CHILD_CHECK, true);
+       								}
+       							}
+       						}       					
+        					child.add(childParameters);
+        				}
+        			}
+        		}
+        		privateChildData.add(child);
+        		count++;
+        	}while(groupsCursor.moveToNext());
+        }
+        mdba.close();
+	}
+
+
+
+
+
+
+
+	public void doSmsSchedulingTask(){
+		
+		Calendar cal = new GregorianCalendar(processDate.getYear() + 1900, processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes());
+		String dateString = sdf.format(cal.getTime());
+		
+		long groupId = mdba.getNextGroupId();
+		ArrayList<String> numbers = new ArrayList<String>();
+		
+		if(Spans.size()==0){
+			SpannedEntity span = new SpannedEntity(-1, 1, " ", -1, -1);  // for adding as a fake span to create a draft
+			Spans.add(span);
+		}
+		
+		
+		
+		for(int i = 0; i< Spans.size(); i++){
+			if(Spans.get(i).type == 2){
+				for(int j = 0; j< SmsApplicationLevelData.contactsList.size(); j++){
+					if(Spans.get(i).entityId == Long.parseLong(SmsApplicationLevelData.contactsList.get(j).content_uri_id)){
+						numbers.add(SmsApplicationLevelData.contactsList.get(j).number);
+						long received_id = mdba.scheduleSms(SmsApplicationLevelData.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
+						if(!Spans.get(i).displayName.equals(" ")){
+							mdba.addRecentContact(Spans.get(i).entityId, "");
+						}
+						if(messageText.getText().toString().length() == 0){
+							mdba.setAsDraft(received_id);
+						}else{
+							if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+								if(mdba.getCurrentPiFiretime() == -1){
+									handlePiUpdate(SmsApplicationLevelData.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+								}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+									handlePiUpdate(SmsApplicationLevelData.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
+								}
+							}
+						}
+						Spans.get(i).smsId = received_id;
+						Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
+						for(int k = 0; k< Spans.get(i).groupIds.size(); k++){
+							mdba.addSpanGroupRel(Spans.get(i).spanId, Spans.get(i).groupIds.get(k), Spans.get(i).groupTypes.get(k));
+						}
+					}
+				}
+			}else if(Spans.get(i).type == 1){
+				long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
+				
+				if((Spans.size()==1 && Spans.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)")){
+					mdba.setAsDraft(received_id);
+				}else{
+					mdba.addRecentContact(-1, Spans.get(i).displayName);
+					if(mdba.getCurrentPiFiretime() == -1){
+						handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
+					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+						handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
+					}
+				}
+				Spans.get(i).smsId = received_id;
+				Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
+				for(int k = 0; k< Spans.get(i).groupIds.size(); k++){
+					mdba.addSpanGroupRel(Spans.get(i).spanId, Spans.get(i).groupIds.get(k), Spans.get(i).groupTypes.get(i));
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	public void onScheduleButtonPressTasks(){
+		if(Spans.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
+			final Dialog d = new Dialog(AbstractScheduleClass.this);
+			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			d.setContentView(R.layout.confirmation_dialog_layout);
+			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+			
+			questionText.setText("Nothing to schedule");
+
+			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.schedule_dialog_states));
+			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.discard_dialog_states));
+			
+			yesButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					d.cancel();
+					numbersText.requestFocus();
+				}
+			});
+			
+			noButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					d.cancel();
+					AbstractScheduleClass.this.finish();
+				}
+			});
+			
+			d.show();
+		}else
+		if(Spans.size()==0){
+			final Dialog d = new Dialog(AbstractScheduleClass.this);
+			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			d.setContentView(R.layout.confirmation_dialog_layout);
+			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+			
+			questionText.setText("No recipients added!");
+			
+			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.save_as_draft_dialog_states));
+			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_recipients_dialog_states));
+			yesButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					d.cancel();
+					new AsyncScheduling().execute();
+				}
+			});
+			
+			noButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					d.cancel();
+					numbersText.requestFocus();
+				}
+			});
+			
+			d.show();
+			
+		}else if(messageText.getText().toString().matches("(''|[' ']*)")){
+				final Dialog d = new Dialog(AbstractScheduleClass.this);
+				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+				d.setContentView(R.layout.confirmation_dialog_layout);
+				TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+				Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+				Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+				
+				questionText.setText("Message is blank!");
+				
+				yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.save_as_draft_dialog_states));
+				noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.write_message_dialog_states));
+				
+				yesButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						d.cancel();
+						new AsyncScheduling().execute();
+					}
+				});
+				
+				noButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						messageText.requestFocus();
+						d.cancel();
+					}
+				});
+				
+				d.show();
+		}else{
+			new AsyncScheduling().execute();
 		}
 	}
 }

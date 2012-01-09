@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.utils.Log;
 
 public class ManageTemplateActivity extends Activity{
 
@@ -69,7 +68,6 @@ public class ManageTemplateActivity extends Activity{
 		mAdapter = new MyAdapter();
 		templatesList.setAdapter(mAdapter);
 		
-		
 		addATemplateButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -78,7 +76,6 @@ public class ManageTemplateActivity extends Activity{
 				blankLayout.setVisibility(LinearLayout.GONE);
 				if(newTemplateSpaceLayout.getVisibility()==LinearLayout.VISIBLE){
 					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-//					inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY,0);
 					inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 					templatesList.requestFocus();
 				}else{
@@ -88,7 +85,6 @@ public class ManageTemplateActivity extends Activity{
 					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 					isEditing = false;
 					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-//					inputMethodManager.showSoftInputFromInputMethod(newTemplateBody.getWindowToken(), 0);
 				}	
 			}
 		});
@@ -106,13 +102,10 @@ public class ManageTemplateActivity extends Activity{
 				}else{
 					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
-//					inputMethodManager.showSoftInputFromInputMethod(newTemplateBody.getWindowToken(), 0);
-//					inputMethodManager.showSoftInput(newTemplateBody, 0);
 					newTemplateBody.setText("");
 					newTemplateBody.requestFocus();
 					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 					isEditing = false;
-					
 				}
 			}
 		});
@@ -128,9 +121,7 @@ public class ManageTemplateActivity extends Activity{
 				}else if(isEditing && newTemplateBody.getText().toString().equals(templatesArray.get(editRowId))){
 					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
 				}else{
-					
 					mdba.open();
-				
 					Cursor cur = mdba.fetchAllTemplates();
 					boolean z = true;
 					if(cur.moveToFirst()){
@@ -144,7 +135,6 @@ public class ManageTemplateActivity extends Activity{
 					if(!z){
 						Toast.makeText(ManageTemplateActivity.this, "Template already exists", Toast.LENGTH_SHORT).show();
 					}else{
-						
 						if(isEditing){
 							mdba.editTemplate(templatesIdArray.get(editRowId), newTemplateBody.getText().toString());
 						}else{
@@ -153,18 +143,15 @@ public class ManageTemplateActivity extends Activity{
 							templatesIdArray.add(newId);
 						}
 						
-						
 						loadData();
 						mAdapter.notifyDataSetChanged();
 						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-						
 						
 						if(isEditing){
 							Toast.makeText(ManageTemplateActivity.this, "Template edited", Toast.LENGTH_SHORT).show();
 						}else{
 							Toast.makeText(ManageTemplateActivity.this, "Template added", Toast.LENGTH_SHORT).show();
 						}
-						
 					}
 					mdba.close();
 				}
@@ -191,8 +178,6 @@ public class ManageTemplateActivity extends Activity{
 				}
 			}
 		});
-		
-		
 	}
 	
 	
@@ -232,7 +217,6 @@ public class ManageTemplateActivity extends Activity{
 		templatesIdArray.clear();
 		if(cur.moveToFirst()){
 			do{
-				Log.d(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
 				templatesArray.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
 				templatesIdArray.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TEMP_ID)));
 			}while(cur.moveToNext());
@@ -316,7 +300,6 @@ public class ManageTemplateActivity extends Activity{
 						newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_footer_states));
 						editRowId = position;
 						isEditing = true;
-//						inputMethodManager.showSoftInputFromInputMethod(newTemplateBody.getWindowToken(), 0);
 					}
 				}
 			});

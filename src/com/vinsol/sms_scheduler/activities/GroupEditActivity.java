@@ -450,7 +450,6 @@ public class GroupEditActivity extends Activity {
 						ids.remove(_position);
 						MyAdapter.this.notifyDataSetChanged();
 					}
-					
 				}
 			});
     		
@@ -480,14 +479,8 @@ public class GroupEditActivity extends Activity {
 				}
 				loadContactsForGroups();
 				myAdapter.notifyDataSetChanged();
-				
 			}
-			
-			
-			
 		}
-		
-		
 	}
 	
 	
