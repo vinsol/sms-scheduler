@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, SmsSchedulerExplActivity!</string>
     <string name="app_name">SmsSchedulerExpl</string>
+    <string name="update_action">Home Update Action</string>
 </resources>

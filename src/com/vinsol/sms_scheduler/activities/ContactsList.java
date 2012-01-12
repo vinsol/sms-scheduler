@@ -23,32 +23,33 @@ import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
-public class ContactsListActivity extends Activity {
+public class ContactsList extends Activity {
 
 	
-	ListView contactsList;
-	Button doneButton;
-	Button cancelButton;
+	private ListView contactsList;
+	private Button doneButton;
+	private Button cancelButton;
 	
-	DBAdapter mdba;
-	long groupId;
-	boolean newCall;
-	String groupName = "";
+	private DBAdapter mdba;
+	private long groupId;
+	private boolean newCall;
+	private String groupName = "";
 	
-	ArrayList<MyContact> contacts = new ArrayList<MyContact>();
-	ArrayList<Long> ids = new ArrayList<Long>();
-	ArrayList<Long> ids2 = new ArrayList<Long>();
-	ArrayList<String> idsString = new ArrayList<String>();
+	private ArrayList<Contact> contacts = new ArrayList<Contact>();
+	private ArrayList<Long> ids = new ArrayList<Long>();
+	private ArrayList<Long> ids2 = new ArrayList<Long>();
+	private ArrayList<String> idsString = new ArrayList<String>();
 	
-	String callingActivity;
+	private String callingActivity;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.contacts_list_layout);
+		setContentView(R.layout.contacts_list);
 		
 		final DBAdapter mdba = new DBAdapter(this);
 		contactsList = (ListView) findViewById(R.id.contacts_list_main_list);
@@ -56,7 +57,7 @@ public class ContactsListActivity extends Activity {
 		cancelButton = (Button) findViewById(R.id.contacts_list_layout_cancel_button);
 		
 		Intent intent = getIntent();
-		contacts = SmsApplicationLevelData.contactsList;
+		contacts = SmsSchedulerApplication.contactsList;
 		callingActivity = intent.getStringExtra("ORIGINATOR");
 		
 		
@@ -106,12 +107,12 @@ public class ContactsListActivity extends Activity {
 				if(callingActivity.equals("Group Add Activity")){
 					intent.putExtra("NEWCALL", newCall);
 					if(ids.size()==0){
-						Toast.makeText(ContactsListActivity.this, "Cannot create Group with no Contacts. Add few..", Toast.LENGTH_LONG).show();
+						Toast.makeText(ContactsList.this, "Cannot create Group with no Contacts. Add few..", Toast.LENGTH_LONG).show();
 					}else{
 						if(groupName.equals("")){
-							final Dialog d = new Dialog(ContactsListActivity.this);
+							final Dialog d = new Dialog(ContactsList.this);
 							d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-							d.setContentView(R.layout.new_group_name_dialog_design);
+							d.setContentView(R.layout.group_name_input_dialog);
 							//d.setCancelable(false);
 							final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
 							Button groupNameOkButton 	= (Button) d.findViewById(R.id.group_name_dialog_name_ok_button);
@@ -125,7 +126,7 @@ public class ContactsListActivity extends Activity {
 								public void onClick(View v) {
 									Log.d("GroupName : " + groupName);
 									if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
-										Toast.makeText(ContactsListActivity.this, "Please enter the name for group", Toast.LENGTH_SHORT).show();
+										Toast.makeText(ContactsList.this, "Please enter the name for group", Toast.LENGTH_SHORT).show();
 										groupNameEdit.setText("");
 									}
 									
@@ -143,7 +144,7 @@ public class ContactsListActivity extends Activity {
 										}
 										mdba.close();
 										if(groupNameExists){
-											Toast.makeText(ContactsListActivity.this, "Group name already exists", Toast.LENGTH_SHORT).show();
+											Toast.makeText(ContactsList.this, "Group name already exists", Toast.LENGTH_SHORT).show();
 										}else{
 											d.cancel();
 											groupName = groupNameEdit.getText().toString();
@@ -152,7 +153,7 @@ public class ContactsListActivity extends Activity {
 												mdba.createGroup(groupName, ids);
 												mdba.close();
 												setResult(10, intent);
-												ContactsListActivity.this.finish();
+												ContactsList.this.finish();
 											
 										}
 									}
@@ -170,13 +171,13 @@ public class ContactsListActivity extends Activity {
 							d.show();
 						}else{
 							if(ids.size() == 0){
-								Toast.makeText(ContactsListActivity.this, "No contacts selected, Please select some contacts", Toast.LENGTH_LONG).show();
+								Toast.makeText(ContactsList.this, "No contacts selected, Please select some contacts", Toast.LENGTH_LONG).show();
 							}else{
 								mdba.open();
 								mdba.createGroup(groupName, ids);
 								mdba.close();
 								setResult(10, intent);
-								ContactsListActivity.this.finish();
+								ContactsList.this.finish();
 							}
 						}
 					}
@@ -187,7 +188,7 @@ public class ContactsListActivity extends Activity {
 					intent.putStringArrayListExtra("IDSLIST", idsStringChanged);
 					intent.putExtra("CANCEL", "no");
 					setResult(10, intent);
-					ContactsListActivity.this.finish();
+					ContactsList.this.finish();
 				}
 				
 			}
@@ -206,7 +207,7 @@ public class ContactsListActivity extends Activity {
 					intent.putExtra("NEWCALL", newCall);
 				}
 				setResult(10, intent);
-				ContactsListActivity.this.finish();
+				ContactsList.this.finish();
 			}
 		});
 		
@@ -223,15 +224,15 @@ public class ContactsListActivity extends Activity {
 		intent.putExtra("CANCEL", "back");
 		//intent.putExtra(name, value)
 		setResult(10, intent);
-		ContactsListActivity.this.finish();
+		ContactsList.this.finish();
 	}
 	
 	
 	
 	
-	class MyAdapter extends ArrayAdapter{
+	private class MyAdapter extends ArrayAdapter{
     	MyAdapter(){
-    		super(ContactsListActivity.this, R.layout.contacts_list_row_design, contacts);
+    		super(ContactsList.this, R.layout.contacts_list_row, contacts);
     	}
     	
     	
@@ -240,7 +241,7 @@ public class ContactsListActivity extends Activity {
     		final ContactsAddListHolder holder;
     		if(convertView == null) {
     			LayoutInflater inflater = getLayoutInflater();
-        		convertView = inflater.inflate(R.layout.contacts_list_row_design, parent, false);
+        		convertView = inflater.inflate(R.layout.contacts_list_row, parent, false);
         		holder = new ContactsAddListHolder();
         		holder.contactImage 	= (ImageView) 	convertView.findViewById(R.id.contact_list_row_contact_pic);
         		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_name);
@@ -326,7 +327,7 @@ public class ContactsListActivity extends Activity {
 	
 	
 	
-	class ContactsAddListHolder{
+	private class ContactsAddListHolder{
 		ImageView contactImage;
 		TextView nameText;
 		TextView numberText;

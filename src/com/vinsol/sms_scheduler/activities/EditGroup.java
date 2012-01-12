@@ -22,54 +22,53 @@ import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.models.MyContact;
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
+import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.utils.Log;
 
-public class GroupEditActivity extends Activity {
+
+public class EditGroup extends Activity {
 
 	
-	Button addContactsButton;
-	TextView groupNameLabel;
-	ListView groupContactsList;
-	Button saveGroupButton;
-	Button deleteGroupButton;
+	private Button addContactsButton;
+	private TextView groupNameLabel;
+	private ListView groupContactsList;
+	private Button saveGroupButton;
+	private Button deleteGroupButton;
 	
 	
-	DBAdapter mdba = new DBAdapter(GroupEditActivity.this);
+	private DBAdapter mdba = new DBAdapter(EditGroup.this);
 	
-	MyAdapter myAdapter;
+	private MyAdapter myAdapter;
 	
-	Long groupId;
-	String groupName = "";
+	private Long groupId;
+	private String groupName = "";
 	
-	String callingState;
-	boolean newCall = true;
+	private String callingState;
+	private boolean newCall = true;
 	
-	ArrayList<Long> ids = new ArrayList<Long>();
-	ArrayList<Long> ids2 = new ArrayList<Long>();
-	ArrayList<MyContact> newGroupContacts = new ArrayList<MyContact>();
+	private ArrayList<Long> ids = new ArrayList<Long>();
+	private ArrayList<Long> ids2 = new ArrayList<Long>();
+	private ArrayList<Contact> newGroupContacts = new ArrayList<Contact>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.group_edit_layout);
+		setContentView(R.layout.edit_group);
 		
 		Intent intent = getIntent();
 		callingState = intent.getStringExtra("STATE");
 		
 		groupNameLabel 		= (TextView) 	findViewById(R.id.group_name_label);
 		addContactsButton 	= (Button) findViewById(R.id.add_contacts_button);
-		
 		groupContactsList 	= (ListView) 	findViewById(R.id.group_members_listing);
-		
 		saveGroupButton 	= (Button) findViewById(R.id.save_group_button);
 		deleteGroupButton   = (Button) findViewById(R.id.delete_group_button);
 		
-		//groupNameButton.setText("");
 		
 		if(callingState.equals("new") && ids.size()==0){
 			ArrayList<String> idsString = new ArrayList<String>();
-			intent = new Intent(GroupEditActivity.this, ContactsListActivity.class);
+			intent = new Intent(EditGroup.this, ContactsList.class);
 			intent.putStringArrayListExtra("IDARRAY", idsString);
 			intent.putExtra("ORIGINATOR", "Group Add Activity");
 			intent.putExtra("NEWCALL", newCall);
@@ -78,7 +77,7 @@ public class GroupEditActivity extends Activity {
 		
 		if(callingState.equals("newc") && ids.size()==0){
 			ArrayList<String> idsString = new ArrayList<String>();
-			intent = new Intent(GroupEditActivity.this, ContactsListActivity.class);
+			intent = new Intent(EditGroup.this, ContactsList.class);
 			intent.putStringArrayListExtra("IDARRAY", idsString);
 			intent.putExtra("ORIGINATOR", "Group Add Activity From Contacts");
 			intent.putExtra("NEWCALL", newCall);
@@ -86,7 +85,6 @@ public class GroupEditActivity extends Activity {
 		}
 		
 		if(callingState.equals("edit")){
-			Log.d("Ids Size : ");
 			groupId = intent.getLongExtra("GROUPID", 0);
 			groupName = intent.getStringExtra("GROUPNAME");
 			ids.clear();
@@ -101,9 +99,9 @@ public class GroupEditActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					final Dialog d = new Dialog(GroupEditActivity.this);
+					final Dialog d = new Dialog(EditGroup.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog_layout);
+					d.setContentView(R.layout.confirmation_dialog);
 					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
@@ -119,7 +117,7 @@ public class GroupEditActivity extends Activity {
 							mdba.removeGroup(groupId);
 							mdba.close();
 							d.cancel();
-							GroupEditActivity.this.finish();
+							EditGroup.this.finish();
 						}
 					});
 					
@@ -143,9 +141,9 @@ public class GroupEditActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				final Dialog d = new Dialog(GroupEditActivity.this);
+				final Dialog d = new Dialog(EditGroup.this);
 				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				d.setContentView(R.layout.new_group_name_dialog_design);
+				d.setContentView(R.layout.group_name_input_dialog);
 				final EditText 	groupNameEdit 	= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
 				Button groupNameOkButton 	= (Button) d.findViewById(R.id.group_name_dialog_name_ok_button);
 				Button groupNameCancelButton= (Button) d.findViewById(R.id.group_name_dialog_name_cancel_button);
@@ -157,7 +155,7 @@ public class GroupEditActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
-							Toast.makeText(GroupEditActivity.this, "Group name can't be blank", Toast.LENGTH_SHORT).show();
+							Toast.makeText(EditGroup.this, "Group name can't be blank", Toast.LENGTH_SHORT).show();
 							groupNameEdit.setText(groupName);
 						
 							
@@ -174,7 +172,7 @@ public class GroupEditActivity extends Activity {
 								}while(cur.moveToNext());
 							}
 							if(groupNameExists){
-								Toast.makeText(GroupEditActivity.this, "Group name already exists", Toast.LENGTH_SHORT).show();
+								Toast.makeText(EditGroup.this, "Group name already exists", Toast.LENGTH_SHORT).show();
 							}else{
 								groupName = groupNameEdit.getText().toString();
 								groupNameLabel.setText(groupName);
@@ -203,7 +201,7 @@ public class GroupEditActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(GroupEditActivity.this, ContactsListActivity.class);
+				Intent intent = new Intent(EditGroup.this, ContactsList.class);
 				if(callingState.equals("new")){
 					intent.putExtra("ORIGINATOR", "Group Add Activity");
 				}else if(callingState.equals("edit")){
@@ -232,7 +230,7 @@ public class GroupEditActivity extends Activity {
 					Log.d("Size of Ids : " + ids.size());
 					mdba.createGroup(groupName, ids);
 					mdba.close();
-					GroupEditActivity.this.finish();
+					EditGroup.this.finish();
 				
 				
 				
@@ -248,9 +246,9 @@ public class GroupEditActivity extends Activity {
 						}
 						mdba.setGroupName(groupName, groupId);
 						mdba.close();
-						GroupEditActivity.this.finish();
+						EditGroup.this.finish();
 					}else{
-						Toast.makeText(GroupEditActivity.this, "Cannot make group with no Contact", Toast.LENGTH_LONG).show();
+						Toast.makeText(EditGroup.this, "Cannot make group with no Contact", Toast.LENGTH_LONG).show();
 					}
 					
 					
@@ -276,7 +274,7 @@ public class GroupEditActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		if(callingState.equals("new")){
-			GroupEditActivity.this.finish();
+			EditGroup.this.finish();
 		}else if(callingState.equals("edit")){
 			boolean isChanged = false;
 			if(ids.size() != ids2.size()){
@@ -290,9 +288,9 @@ public class GroupEditActivity extends Activity {
 				}
 			}
 			if(isChanged){
-				final Dialog d = new Dialog(GroupEditActivity.this);
+				final Dialog d = new Dialog(EditGroup.this);
 				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				d.setContentView(R.layout.confirmation_dialog_layout);
+				d.setContentView(R.layout.confirmation_dialog);
 				
 				TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 				Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
@@ -315,7 +313,7 @@ public class GroupEditActivity extends Activity {
 						}
 						mdba.close();
 						d.cancel();
-						GroupEditActivity.this.finish();
+						EditGroup.this.finish();
 					}
 				});
 				
@@ -329,7 +327,7 @@ public class GroupEditActivity extends Activity {
 				
 				d.show();
 			}else{
-				GroupEditActivity.this.finish();
+				EditGroup.this.finish();
 			}
 		}
 	}
@@ -344,30 +342,29 @@ public class GroupEditActivity extends Activity {
 	}
 	
 	
-	public void loadContactsForGroups(){
+	private void loadContactsForGroups(){
 		Log.d("Ids Size in LoadData : " + ids.size());
 		newGroupContacts.clear();
 		for(int j = 0; j< ids.size(); j++){
-			for(int i = 0; i< SmsApplicationLevelData.contactsList.size(); i++){
-				if(ids.get(j)==Long.parseLong(SmsApplicationLevelData.contactsList.get(i).content_uri_id)){
-					MyContact myContact = new MyContact();
-					myContact.content_uri_id = SmsApplicationLevelData.contactsList.get(i).content_uri_id;
-					myContact.name = SmsApplicationLevelData.contactsList.get(i).name;
-					myContact.number = SmsApplicationLevelData.contactsList.get(i).number;
-					myContact.image = SmsApplicationLevelData.contactsList.get(i).image;
-					newGroupContacts.add(myContact);
+			for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+				if(ids.get(j)==Long.parseLong(SmsSchedulerApplication.contactsList.get(i).content_uri_id)){
+					Contact Contact = new Contact();
+					Contact.content_uri_id = SmsSchedulerApplication.contactsList.get(i).content_uri_id;
+					Contact.name = SmsSchedulerApplication.contactsList.get(i).name;
+					Contact.number = SmsSchedulerApplication.contactsList.get(i).number;
+					Contact.image = SmsSchedulerApplication.contactsList.get(i).image;
+					newGroupContacts.add(Contact);
 				}
 			}
 		}
-		Log.d("GroupSize " + newGroupContacts.size());
 	}
 	
 	
 	
 	
-	class MyAdapter extends ArrayAdapter{
+	private class MyAdapter extends ArrayAdapter{
 		MyAdapter(){
-    		super(GroupEditActivity.this, R.layout.group_add_edit_row_design, ids);
+    		super(EditGroup.this, R.layout.edit_group_list_row, ids);
     	}
 		
 		@Override
@@ -375,7 +372,7 @@ public class GroupEditActivity extends Activity {
 			GroupsAddListHolder holder;
 			if(convertView==null){
 				LayoutInflater inflater = getLayoutInflater();
-	    		convertView = inflater.inflate(R.layout.group_add_edit_row_design, parent, false);
+	    		convertView = inflater.inflate(R.layout.edit_group_list_row, parent, false);
 	    		holder = new GroupsAddListHolder();
 	    		holder.contactImage 			= (ImageView) 	convertView.findViewById(R.id.group_add_edit_row_contact_pic);
 	    		holder.contactName 				= (TextView) 	convertView.findViewById(R.id.group_add_edit_row_contact_name);
@@ -406,9 +403,9 @@ public class GroupEditActivity extends Activity {
 //					Cursor cur = mdba.fetchIdsForGroups(groupId);
 					if(newGroupContacts.size()==1 && callingState.equals("edit")){
 						
-						final Dialog d = new Dialog(GroupEditActivity.this);
+						final Dialog d = new Dialog(EditGroup.this);
 						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-						d.setContentView(R.layout.confirmation_dialog_layout);
+						d.setContentView(R.layout.confirmation_dialog);
 						
 						TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 						Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
@@ -432,7 +429,7 @@ public class GroupEditActivity extends Activity {
 								}
 								mdba.removeGroup(groupId);
 								mdba.close();
-								GroupEditActivity.this.finish();
+								EditGroup.this.finish();
 							}
 						});
 						
@@ -463,11 +460,11 @@ public class GroupEditActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 		
 		if(callingState.equals("new")){
-			GroupEditActivity.this.finish();
+			EditGroup.this.finish();
 		}else{
 			String isCancelled = data.getStringExtra("CANCEL");
 			if(isCancelled.equals("yes")){
-				GroupEditActivity.this.finish();
+				EditGroup.this.finish();
 			}
 			if(isCancelled.equals("no")){
 				ArrayList<String> idsString = new ArrayList<String>();
@@ -485,7 +482,7 @@ public class GroupEditActivity extends Activity {
 	
 	
 	
-	static class GroupsAddListHolder{
+	private class GroupsAddListHolder{
 		ImageView 	contactImage;
 		TextView 	contactName;
 		TextView 	contactNumber;

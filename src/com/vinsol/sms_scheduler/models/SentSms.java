@@ -2,11 +2,14 @@ package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
-public class sentChildDataClass extends abstractChildDataClass{
+public class SentSms extends AbstractSms{
 	long		keySMillis;
 	long		keyDMillis;
+	int 		keySent;
+	int			keyDeliver;
+	int 		keyMsgParts;
 	
-	public sentChildDataClass(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, long keysmillis, long keydmillis, ArrayList<Long> keyids){
+	public SentSms(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, int keysent, int keydeliver, int keymsgparts, long keysmillis, long keydmillis, ArrayList<Long> keyids){
 		this.keyId 			= keyid;
 		this.keyGrpId 		= keygrpid;
 		this.keyNumber 		= keynumber;

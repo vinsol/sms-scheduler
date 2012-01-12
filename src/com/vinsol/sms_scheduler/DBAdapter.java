@@ -19,20 +19,18 @@ import com.vinsol.sms_scheduler.utils.Log;
 
 public class DBAdapter {
 	
-	private static final String DATABASE_NAME = "smsDatabase";
-	private static final String DATABASE_SMS_TABLE = "smsTable";
-	private static final String DATABASE_PI_TABLE = "piTable";
-	private static final String DATABASE_TEMPLATE_TABLE = "templateTable";
-	private static final String DATABASE_GROUP_TABLE = "groupTable";
-	private static final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
-	private static final String DATABASE_SPANS_TABLE = "spanTable";
-	private static final String DATABASE_SPAN_GROUP_REL_TABLE = "span_grp_rel_table";
-	private static final String DATABASE_RECENTS_TABLE = "recents_table";
-	private static final int 	DATABASE_VERSION = 1;
+	private final String DATABASE_NAME = "smsDatabase";
+	private final String DATABASE_SMS_TABLE = "smsTable";
+	private final String DATABASE_PI_TABLE = "piTable";
+	private final String DATABASE_TEMPLATE_TABLE = "templateTable";
+	private final String DATABASE_GROUP_TABLE = "groupTable";
+	private final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
+	private final String DATABASE_SPANS_TABLE = "spanTable";
+	private final String DATABASE_SPAN_GROUP_REL_TABLE = "span_grp_rel_table";
+	private final String DATABASE_RECENTS_TABLE = "recents_table";
+	private final int 	DATABASE_VERSION = 1;
 	
 	Cursor cur;
-	public static final String PRIVATE_SMS_ACTION = "com.smsschedulerexpl.android.private_sms_action";
-	public static final String PRIVATE_INTENT_ACTION = "com.smsschedulerexpl.android.private_intent_action";
 	
 	
 	//---------------------------static keys for columns---------------------------------------
@@ -98,7 +96,7 @@ public class DBAdapter {
 	
 	
 	//SQL to open or create a database
-	private static final String DATABASE_CREATE_SMS_TABLE = "create table " + 
+	private final String DATABASE_CREATE_SMS_TABLE = "create table " + 
 		DATABASE_SMS_TABLE + " (" + KEY_ID + " integer primary key autoincrement, " + KEY_GRPID + " integer, " + 
 		KEY_NUMBER + " text not null, " + KEY_MESSAGE + " text, " + KEY_DATE + " text, " + KEY_TIME_MILLIS + " long, " 
 		+ KEY_SENT + " integer default 0, "+ KEY_DELIVER + " integer default 0, " + KEY_MSG_PARTS + " integer default 0, " 
@@ -106,39 +104,39 @@ public class DBAdapter {
 		+ KEY_DRAFT + " integer default 0);";
 	
 	
-	private static final String DATABASE_CREATE_PI_TABLE = "create table " +
+	private final String DATABASE_CREATE_PI_TABLE = "create table " +
 		DATABASE_PI_TABLE + " (" + KEY_PI_ID + " integer primary key, " + KEY_PI_NUMBER + " integer, " +
 		KEY_SMS_ID + " integer, " + KEY_TIME + " integer, " + KEY_ACTION + " text);";
 	
 	
-	private static final String DATABASE_CREATE_TEMPLATE_TABLE = "create table " +
+	private final String DATABASE_CREATE_TEMPLATE_TABLE = "create table " +
 		DATABASE_TEMPLATE_TABLE + " (" + KEY_TEMP_ID + " integer primary key autoincrement, " +
 		KEY_TEMP_CONTENT + " text);";
 	
 	
-	private static final String DATABASE_CREATE_GROUP_TABLE = "create table " +
+	private final String DATABASE_CREATE_GROUP_TABLE = "create table " +
 		DATABASE_GROUP_TABLE + " (" + KEY_GROUP_ID + " integer primary key autoincrement, " +
 		KEY_GROUP_NAME + " text);";
 	
 	
-	private static final String DATABASE_CREATE_GROUP_CONTACT_RELATION = "create table " +
+	private final String DATABASE_CREATE_GROUP_CONTACT_RELATION = "create table " +
 		DATABASE_GROUP_CONTACT_RELATION + " (" + KEY_RELATION_ID + " integer primary key autoincrement, " +
 		KEY_GROUP_REL_ID + " integer, " + KEY_CONTACTS_ID + " integer);";
 	
 	
-	private static final String DATABASE_CREATE_SPANS_TABLE =  "create table " + 
+	private final String DATABASE_CREATE_SPANS_TABLE =  "create table " + 
 		DATABASE_SPANS_TABLE + " (" + KEY_SPAN_ID + " integer primary key autoincrement, " +
 		KEY_SPAN_DN + " text, " + KEY_SPAN_TYPE + " integer, " + KEY_SPAN_ENTITY_ID + " integer, " +
 		KEY_SPAN_SMS_ID + " integer);";
 	
 	
-	private static final String DATABASE_CREATE_SPAN_GROUP_REL_TABLE = "create table " +
+	private final String DATABASE_CREATE_SPAN_GROUP_REL_TABLE = "create table " +
 		DATABASE_SPAN_GROUP_REL_TABLE + " (" + KEY_SPAN_GRP_REL_ID + " integer primary key autoincrement, " +
 		KEY_SPAN_GRP_REL_SPAN_ID + " integer, " + KEY_SPAN_GRP_REL_GRP_ID + " integer, " +
 		KEY_SPAN_GRP_REL_GRP_TYPE + " integer);";
 	
 	
-	private static final String DATABASE_CREATE_RECENTS_TABLE = "create table " +
+	private final String DATABASE_CREATE_RECENTS_TABLE = "create table " +
 		DATABASE_RECENTS_TABLE + " (" + KEY_RECENT_CONTACT_ID + " integer primary key autoincrement, " + 
 		KEY_RECENT_CONTACT_CONTACT_ID + " integer, " + KEY_RECENT_CONTACT_NUMBER + " text);";
 	
@@ -240,7 +238,7 @@ public class DBAdapter {
 	}
 	
 		
-	public int getSent(long id){
+	private int getSent(long id){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_SENT}, KEY_ID + "=" + id, null, null, null, null);
 		if(cur.moveToFirst())
 			return cur.getInt(cur.getColumnIndex(KEY_SENT));
@@ -312,7 +310,7 @@ public class DBAdapter {
 			cur.moveToFirst();
 			
 			Intent intent = new Intent(context, SMSHandleReceiver.class);
-			intent.setAction(PRIVATE_SMS_ACTION);
+			intent.setAction(Constants.PRIVATE_SMS_ACTION);
 			PendingIntent pi = PendingIntent.getBroadcast(context, cur.getInt(cur.getColumnIndex(KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 			pi.cancel();
 			deleteSpan(id);
@@ -320,7 +318,7 @@ public class DBAdapter {
 			Cursor cur2 = fetchRemainingScheduled();
 			Log.d("cursor2 size : " + cur2.getCount());
 			if(cur2.moveToFirst()){
-				intent.setAction(PRIVATE_SMS_ACTION);
+				intent.setAction(Constants.PRIVATE_SMS_ACTION);
 				intent.putExtra("ID", cur2.getString(cur2.getColumnIndex(KEY_ID)));
 				intent.putExtra("NUMBER", cur2.getString(cur2.getColumnIndex(KEY_NUMBER)));
 				intent.putExtra("MESSAGE", cur2.getString(cur2.getColumnIndex(KEY_MESSAGE)));

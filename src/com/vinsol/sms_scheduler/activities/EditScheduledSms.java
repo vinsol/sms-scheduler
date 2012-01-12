@@ -31,20 +31,17 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.models.SpannedEntity;
-import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.models.ScheduledSms;
+import com.vinsol.sms_scheduler.models.Span;
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
-public class EditScheduledSmsActivity extends AbstractScheduleClass {
+public class EditScheduledSms extends AbstractScheduleSms {
 	
-	TextView 	headerText;
+	private TextView 	headerText;
 	
-	long editedGroup;
-	
-	boolean smileyVisible = false;
-	boolean isDraft = false;
-	boolean isDeletingASpan = false;
-	
-	ArrayList<Long> smsIds;
+	private long editedGroup;
+	private boolean isDraft = false;
+	private ArrayList<Long> smsIds;
 	
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
 		
@@ -54,7 +51,7 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 				dataLoadWaitDialog.cancel();
 				if(toOpen == 1){
 					toOpen = 0;
-					Intent intent = new Intent(EditScheduledSmsActivity.this, ContactsTabsActivity.class);
+					Intent intent = new Intent(EditScheduledSms.this, SelectContacts.class);
 					intent.putExtra("ORIGIN", "edit");
 					startActivityForResult(intent, 2);
 				}
@@ -66,9 +63,9 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.new_schedule_layout);
+		setContentView(R.layout.schedule_sms);
 		
-		dataLoadWaitDialog = new Dialog(EditScheduledSmsActivity.this);
+		dataLoadWaitDialog = new Dialog(EditScheduledSms.this);
 		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		inputMethodManager =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		
@@ -87,15 +84,16 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
 		
 		Intent intent = getIntent();
+		ScheduledSms SMS = intent.getParcelableExtra("SMS DATA");
 		
-		numbersText.setText(intent.getStringExtra("NUMBER"));
-		messageText.setText(intent.getStringExtra("MESSAGE"));
-		originalMessage = intent.getStringExtra("MESSAGE");
-		processDate = new Date(intent.getLongExtra("TIME", 0));
+		numbersText.setText(SMS.keyNumber);
+		messageText.setText(SMS.keyMessage);
+		originalMessage = SMS.keyMessage;
+		processDate = new Date(SMS.keyTimeMilis);
 		characterCountText.setText(String.valueOf(messageText.getText().toString().length()));
-		editedGroup = intent.getLongExtra("GROUP", 0);
+		editedGroup = SMS.keyGrpId;
 		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
-		
+
 		Spans.clear();
 		
 		mdba.open();
@@ -105,9 +103,8 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 		
 		for(int i = 0; i< smsIds.size(); i++){
 			Cursor spanCur = mdba.fetchSpanForSms(smsIds.get(i));
-			Log.d("size of Span cursor : " + spanCur.getCount());
 			spanCur.moveToFirst();
-			Spans.add(new SpannedEntity(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
+			Spans.add(new Span(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
 					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_TYPE)),
 					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN)),
 					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ENTITY_ID)),
@@ -115,7 +112,7 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 			ArrayList<Long> groupIds = mdba.fetchGroupsForSpan(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)));
 			ArrayList<Integer> groupTypes = mdba.fetchGroupTypesForSpan(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)));
 			
-			originalSpans.add(new SpannedEntity(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
+			originalSpans.add(new Span(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
 					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_TYPE)),
 					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN)),
 					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ENTITY_ID)),
@@ -155,8 +152,7 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 		
 		// Check to see if a recognition activity is present
         PackageManager pm = getPackageManager();
-        List<ResolveInfo> activities = pm.queryIntentActivities(
-                new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+        List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
         if (activities.size() != 0) {
             speechImageButton.setOnClickListener(new OnClickListener() {
 				
@@ -171,7 +167,7 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 		//---------------------------------------------------------------------
 		
         dataloadIntentFilter = new IntentFilter();
-        dataloadIntentFilter.addAction(SmsApplicationLevelData.DIALOG_CONTROL_ACTION);
+        dataloadIntentFilter.addAction(SmsSchedulerApplication.DIALOG_CONTROL_ACTION);
         
 		setFunctionalities();
 		setSuperFunctionalities();
@@ -198,14 +194,14 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 	
 	
 	
-	public void setFunctionalities(){
+	private void setFunctionalities(){
 		
 		numbersText.setOnKeyListener(new OnKeyListener() {
 			
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				
-				if(keyCode == KeyEvent.KEYCODE_DEL){  
+				if(keyCode == KeyEvent.KEYCODE_DEL){
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
 	                 for(int i = 0; i< Spans.size(); i++){
@@ -236,7 +232,6 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 	                		 }
 	                		 Spans.remove(i);
 	                		 refreshSpannableString(false);
-	                		 myAutoCompleteAdapter.notifyDataSetInvalidated();
 	                		 myAutoCompleteAdapter.notifyDataSetChanged();
 	                		 break;
 	                	 }
@@ -271,12 +266,11 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 				}
 				
 				if(isSending){
-					Toast.makeText(EditScheduledSmsActivity.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
-					EditScheduledSmsActivity.this.finish();
+					Toast.makeText(EditScheduledSms.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+					EditScheduledSms.this.finish();
 				}else{
 					onScheduleButtonPressTasks();
 				}
-				
 			}
 		});
 		
@@ -288,9 +282,9 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 			@Override
 			public void onClick(View v) {
 				if(!messageText.getText().toString().matches("(''|[' ']*)") || !numbersText.getText().toString().matches("(''|[' ']*)")){
-					final Dialog d = new Dialog(EditScheduledSmsActivity.this);
+					final Dialog d = new Dialog(EditScheduledSms.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog_layout);
+					d.setContentView(R.layout.confirmation_dialog);
 					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
@@ -306,10 +300,10 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 						public void onClick(View v) {
 							for(int i = 0; i<smsIds.size(); i++){
 								mdba.open();
-								mdba.deleteSms(smsIds.get(i), EditScheduledSmsActivity.this);
+								mdba.deleteSms(smsIds.get(i), EditScheduledSms.this);
 								mdba.close();
 							}
-							EditScheduledSmsActivity.this.finish();
+							EditScheduledSms.this.finish();
 						}
 					});
 					
@@ -323,7 +317,7 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 					
 					d.show();
 				}else{
-					EditScheduledSmsActivity.this.finish();
+					EditScheduledSms.this.finish();
 				}
 			}
 		});
@@ -336,11 +330,11 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 	
 	//--------------------function to Scheduling a new sms------------------------------------
 	@Override
-	public void doSmsScheduling(){
+	protected void doSmsScheduling(){
 		mdba.open();
 		ArrayList<Long> editedIds = mdba.getIds(editedGroup);
 		for(int i = 0; i< editedIds.size(); i++){
-			mdba.deleteSms(editedIds.get(i), EditScheduledSmsActivity.this);
+			mdba.deleteSms(editedIds.get(i), EditScheduledSms.this);
 		}
 		doSmsSchedulingTask();
 		mdba.close();
@@ -357,7 +351,6 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
         	matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
         	showMatchesDialog();
         }
-        
         else if(resultCode == 2){
         	refreshSpannableString(false);
         	numbersText.requestFocus();
@@ -426,11 +419,11 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 		
 		
 		if(!isChanged){
-			EditScheduledSmsActivity.this.finish();
+			EditScheduledSms.this.finish();
 		}else{
-			final Dialog d = new Dialog(EditScheduledSmsActivity.this);
+			final Dialog d = new Dialog(EditScheduledSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			d.setContentView(R.layout.confirmation_dialog_layout);
+			d.setContentView(R.layout.confirmation_dialog);
 			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
@@ -445,7 +438,7 @@ public class EditScheduledSmsActivity extends AbstractScheduleClass {
 				@Override
 				public void onClick(View v) {
 					d.cancel();
-					EditScheduledSmsActivity.this.finish();
+					EditScheduledSms.this.finish();
 				}
 			});
 			

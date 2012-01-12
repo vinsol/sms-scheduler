@@ -9,9 +9,10 @@ import android.content.Intent;
 import android.database.Cursor;
 
 import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.utils.Log;
 
-public class DeliverReceiver extends BroadcastReceiver{
+public class DeliveryReceiver extends BroadcastReceiver{
 
 	boolean successdeliver = true;
 	DBAdapter mdba;
@@ -39,7 +40,7 @@ public class DeliverReceiver extends BroadcastReceiver{
                	 	cur.moveToFirst();
                	 	String receiverName = cur.getString(cur.getColumnIndex(DBAdapter.KEY_SPAN_DN));          		
             		Intent mIntent = new Intent();
-                    mIntent.setAction("My special action");
+                    mIntent.setAction(context.getResources().getString(R.string.update_action));
                     PendingIntent pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
             		
             		AlarmManager am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
