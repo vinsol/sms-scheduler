@@ -24,7 +24,7 @@
         android:label="SMS Scheduler" 
         android:theme="@android:style/Theme.NoTitleBar">
 
-        <!--  activities -->    
+        <!--  activities -->
         <activity android:name = ".activities.Home" android:screenOrientation="portrait" >
                 <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
