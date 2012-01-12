@@ -5,7 +5,18 @@ import java.util.ArrayList;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ScheduledSms extends AbstractSms implements Parcelable{
+public class ScheduledSms implements Parcelable {
+	
+	public long 			keyId;
+	public long 			keyGrpId;
+	public String 			keyNumber;
+	public String 			keyMessage;
+	public long				keyTimeMilis;
+	public String 			keyDate;
+	public int 				keyImageRes;
+	public String 			keyExtraReceivers;
+	public ArrayList<Long>	keyIds;
+	
 	public ScheduledSms(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, ArrayList<Long> keyids){
 		this.keyId 			= keyid;
 		this.keyGrpId 		= keygrpid;

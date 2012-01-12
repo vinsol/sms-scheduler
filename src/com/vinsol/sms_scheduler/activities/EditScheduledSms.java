@@ -1,5 +1,6 @@
 package com.vinsol.sms_scheduler.activities;
 
+import static com.vinsol.sms_scheduler.Constants.DIALOG_CONTROL_ACTION;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -167,7 +168,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		//---------------------------------------------------------------------
 		
         dataloadIntentFilter = new IntentFilter();
-        dataloadIntentFilter.addAction(SmsSchedulerApplication.DIALOG_CONTROL_ACTION);
+        dataloadIntentFilter.addAction(DIALOG_CONTROL_ACTION);
         
 		setFunctionalities();
 		setSuperFunctionalities();
