@@ -9,15 +9,11 @@ public class SmsSchedulerApplication extends Application{
 
 	public static ArrayList<Contact> contactsList = new ArrayList<Contact>();
 	public static boolean isDataLoaded = false;
-	public static String DIALOG_CONTROL_ACTION = "com.vinsol.sms_scheduler.DIALOG_CONTROL_ACTION";
 	Activity myActivity = new Activity();
-	
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		
-	}	
-		
-	
+	}		
 }
