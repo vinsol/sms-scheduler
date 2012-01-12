@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import android.graphics.Bitmap;
 
-public class MyContact {
+public class Contact {
 
 	public String content_uri_id;
 	public String name;
@@ -13,7 +13,7 @@ public class MyContact {
 	public ArrayList<Long> groupRowId; 
 	public boolean checked = false;
 	
-	public MyContact(){
+	public Contact(){
 		this.groupRowId = new ArrayList<Long>();
 	}
 	

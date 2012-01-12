@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -22,39 +21,33 @@ import android.widget.TextView;
 
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.utils.Log;
 
-public class ManageGroupsActivity extends Activity {
+public class ManageGroups extends Activity {
 
+	private ImageView addGroupImageButton;
+	private ListView groupsList;
+	private Button blankListAddButton;
 	
-	ImageButton okImageButton;
-	ImageView addGroupImageButton;
-	TextView manageGroupsHeading;
-	ListView groupsList;
-	Button blankListAddButton;
+	private LinearLayout listLayout;
+	private LinearLayout blankLayout;
 	
-	LinearLayout listLayout;
-	LinearLayout blankLayout;
+	private DBAdapter mdba = new DBAdapter(this);
+	private Cursor cur;
+	private MyAdapter myAdapter;
 	
-	
-	DBAdapter mdba = new DBAdapter(this);
-	Cursor cur;
-	MyAdapter myAdapter;
-	
-	ArrayList<Long> grpIdsArray = new ArrayList<Long>();
-	ArrayList<String> grpNamesArray = new ArrayList<String>();
+	private ArrayList<Long> grpIdsArray = new ArrayList<Long>();
+	private ArrayList<String> grpNamesArray = new ArrayList<String>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.manage_group_layout);
+		setContentView(R.layout.manage_groups);
 		
-		addGroupImageButton = (ImageView) findViewById(R.id.manage_group_add_group_image_button);
-		manageGroupsHeading = (TextView) 	findViewById(R.id.manage_template_layout_heading);
+		addGroupImageButton = (ImageView) 	findViewById(R.id.manage_group_add_group_image_button);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
 		listLayout			= (LinearLayout)findViewById(R.id.group_manager_list_layout);
 		blankLayout			= (LinearLayout)findViewById(R.id.group_manager_blank_layout);
-		blankListAddButton = (Button) 		findViewById(R.id.blank_list_add_button);
+		blankListAddButton 	= (Button) 		findViewById(R.id.blank_list_add_button);
 		
 
 		loadGroupsData();
@@ -67,7 +60,7 @@ public class ManageGroupsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ManageGroupsActivity.this, GroupEditActivity.class);
+				Intent intent = new Intent(ManageGroups.this, EditGroup.class);
 				intent.putExtra("STATE", "new");
 				startActivity(intent);
 			}
@@ -78,7 +71,7 @@ public class ManageGroupsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ManageGroupsActivity.this, GroupEditActivity.class);
+				Intent intent = new Intent(ManageGroups.this, EditGroup.class);
 				intent.putExtra("STATE", "new");
 				startActivity(intent);
 			}
@@ -104,7 +97,7 @@ public class ManageGroupsActivity extends Activity {
 	}
 	
 	
-	public void loadGroupsData(){
+	private void loadGroupsData(){
 		grpIdsArray.clear();
 		grpNamesArray.clear();
 		
@@ -119,13 +112,12 @@ public class ManageGroupsActivity extends Activity {
 		}
 		cur.close();
 		mdba.close();
-		Log.d("Total Groups " + grpIdsArray.size());
 	}
 	
 	
-	class MyAdapter extends ArrayAdapter{
+	private class MyAdapter extends ArrayAdapter{
     	MyAdapter(){
-    		super(ManageGroupsActivity.this, R.layout.manage_goups_row_design, grpIdsArray);
+    		super(ManageGroups.this, R.layout.manage_groups_list_row, grpIdsArray);
     	}
     	
     	
@@ -134,7 +126,7 @@ public class ManageGroupsActivity extends Activity {
     		ManageGroupsListHolder holder;
     		if(convertView == null){
     			LayoutInflater inflater = getLayoutInflater();
-        		convertView = inflater.inflate(R.layout.manage_goups_row_design, parent, false);
+        		convertView = inflater.inflate(R.layout.manage_groups_list_row, parent, false);
         		holder = new ManageGroupsListHolder();
         		holder.groupNameLabel = (TextView) convertView.findViewById(R.id.manage_groups_row_group_name);
         		holder.groupDeleteButton = (ImageView) convertView.findViewById(R.id.manage_groups_row_group_delete_image);
@@ -142,20 +134,15 @@ public class ManageGroupsActivity extends Activity {
     		}else{
     			holder = (ManageGroupsListHolder) convertView.getTag();
     		}
-    		final int _position  = position;
-    		
-    		
-    		
-    		
     		holder.groupNameLabel.setText(grpNamesArray.get(position));
     		
     		holder.groupDeleteButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					final Dialog d = new Dialog(ManageGroupsActivity.this);
+					final Dialog d = new Dialog(ManageGroups.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog_layout);
+					d.setContentView(R.layout.confirmation_dialog);
 					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
@@ -208,7 +195,7 @@ public class ManageGroupsActivity extends Activity {
 //					for(int i = 0; i< ids.size(); i++){
 //						idsString.add(String.valueOf(ids.get(i)));
 //					}
-					Intent intent = new Intent(ManageGroupsActivity.this, GroupEditActivity.class);
+					Intent intent = new Intent(ManageGroups.this, EditGroup.class);
 					intent.putExtra("STATE", "edit");
 					intent.putExtra("GROUPNAME", grpNamesArray.get(position));
 					intent.putExtra("GROUPID", grpIdsArray.get(position));
@@ -221,7 +208,7 @@ public class ManageGroupsActivity extends Activity {
     }
 	
 	
-	static class ManageGroupsListHolder{
+	private class ManageGroupsListHolder{
 		TextView groupNameLabel;
 		ImageView groupDeleteButton;
 	}

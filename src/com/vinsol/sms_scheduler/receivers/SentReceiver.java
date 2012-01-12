@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.telephony.SmsManager;
 
 import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.utils.Log;
 
 public class SentReceiver extends BroadcastReceiver{
@@ -43,17 +44,12 @@ public class SentReceiver extends BroadcastReceiver{
                  
                  mIntent = new Intent();
                  mIntent.putExtra("ID", id);
-                 mIntent.setAction("My special action");
+                 mIntent.setAction(context.getResources().getString(R.string.update_action)); /////////
                  pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
          		
          		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
          		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
          		 
-//         		 mIntent.setAction("update action");
-//         		 pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-//        		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-        		 
-                 
                  break;
                  
              case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
@@ -65,8 +61,6 @@ public class SentReceiver extends BroadcastReceiver{
          		
          		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
          		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-//                 Toast.makeText(context, "Generic failure",
-//                         Toast.LENGTH_SHORT).show();
                  break;
                  
              case SmsManager.RESULT_ERROR_NO_SERVICE:
@@ -78,9 +72,7 @@ public class SentReceiver extends BroadcastReceiver{
          		
          		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
          		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-//                 Toast.makeText(context, "No service", 
-//                         Toast.LENGTH_SHORT).show();
-                 break;
+         		 break;
                  
              case SmsManager.RESULT_ERROR_NULL_PDU:
             	 mIntent = new Intent();
@@ -90,8 +82,6 @@ public class SentReceiver extends BroadcastReceiver{
          		
          		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
          		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-//                 Toast.makeText(context, "Null PDU", 
-//                         Toast.LENGTH_SHORT).show();
                  break;
                  
              case SmsManager.RESULT_ERROR_RADIO_OFF:
@@ -103,8 +93,6 @@ public class SentReceiver extends BroadcastReceiver{
          		
          		 am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
          		 am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
-//                 Toast.makeText(context, "Radio off", 
-//                         Toast.LENGTH_SHORT).show();
                  break;
          }
 	}

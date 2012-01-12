@@ -24,32 +24,32 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 
-public class ManageTemplateActivity extends Activity{
+public class ManageTemplates extends Activity{
 
-	ImageView	 	newTemplateButton;
-	LinearLayout 	newTemplateSpaceLayout;
-	EditText 		newTemplateBody;
-	Button 			newTemplateAddButton;
-	Button 			newTemplateCancelButton;
-	ListView 		templatesList;
-	LinearLayout	listLayout;
-	LinearLayout	blankLayout;
-	Button			addATemplateButton;
+	private ImageView	 	newTemplateButton;
+	private LinearLayout 	newTemplateSpaceLayout;
+	private EditText 		newTemplateBody;
+	private Button 			newTemplateAddButton;
+	private Button 			newTemplateCancelButton;
+	private ListView 		templatesList;
+	private LinearLayout	listLayout;
+	private LinearLayout	blankLayout;
+	private Button			addATemplateButton;
 	
-	MyAdapter mAdapter;
-	DBAdapter mdba = new DBAdapter(ManageTemplateActivity.this);
-	ArrayList<String> 	templatesArray = new ArrayList<String>();
-	ArrayList<Long>		templatesIdArray = new ArrayList<Long>();
+	private MyAdapter mAdapter;
+	private DBAdapter mdba = new DBAdapter(ManageTemplates.this);
+	private ArrayList<String> 	templatesArray = new ArrayList<String>();
+	private ArrayList<Long>		templatesIdArray = new ArrayList<Long>();
 	
-	boolean isEditing = false;
-	int editRowId = 0;
+	private boolean isEditing = false;
+	private int editRowId = 0;
 	
-	InputMethodManager inputMethodManager;
+	private InputMethodManager inputMethodManager;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.manage_template_layout);
+		setContentView(R.layout.manage_templates);
 		
 		newTemplateButton 			= (ImageView) 		findViewById(R.id.new_template_image_button);
 		newTemplateSpaceLayout 		= (LinearLayout) 	findViewById(R.id.new_template_input_space);
@@ -63,7 +63,7 @@ public class ManageTemplateActivity extends Activity{
 		
 		loadData();
 		
-		inputMethodManager =(InputMethodManager)getSystemService(ManageTemplateActivity.this.INPUT_METHOD_SERVICE);
+		inputMethodManager =(InputMethodManager)getSystemService(ManageTemplates.this.INPUT_METHOD_SERVICE);
 		
 		mAdapter = new MyAdapter();
 		templatesList.setAdapter(mAdapter);
@@ -117,7 +117,7 @@ public class ManageTemplateActivity extends Activity{
 			public void onClick(View v) {
 				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 				if(newTemplateBody.getText().toString().equals("")){
-					Toast.makeText(ManageTemplateActivity.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
+					Toast.makeText(ManageTemplates.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
 				}else if(isEditing && newTemplateBody.getText().toString().equals(templatesArray.get(editRowId))){
 					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
 				}else{
@@ -133,7 +133,7 @@ public class ManageTemplateActivity extends Activity{
 						}while(cur.moveToNext());
 					}
 					if(!z){
-						Toast.makeText(ManageTemplateActivity.this, "Template already exists", Toast.LENGTH_SHORT).show();
+						Toast.makeText(ManageTemplates.this, "Template already exists", Toast.LENGTH_SHORT).show();
 					}else{
 						if(isEditing){
 							mdba.editTemplate(templatesIdArray.get(editRowId), newTemplateBody.getText().toString());
@@ -148,9 +148,9 @@ public class ManageTemplateActivity extends Activity{
 						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
 						
 						if(isEditing){
-							Toast.makeText(ManageTemplateActivity.this, "Template edited", Toast.LENGTH_SHORT).show();
+							Toast.makeText(ManageTemplates.this, "Template edited", Toast.LENGTH_SHORT).show();
 						}else{
-							Toast.makeText(ManageTemplateActivity.this, "Template added", Toast.LENGTH_SHORT).show();
+							Toast.makeText(ManageTemplates.this, "Template added", Toast.LENGTH_SHORT).show();
 						}
 					}
 					mdba.close();
@@ -201,7 +201,7 @@ public class ManageTemplateActivity extends Activity{
 	
 	
 	
-	public void loadData(){
+	private void loadData(){
 		mdba.open();
 		Cursor cur = mdba.fetchAllTemplates();
 		if(cur.getCount()==0){
@@ -225,9 +225,9 @@ public class ManageTemplateActivity extends Activity{
 	
 	
 	
-	class MyAdapter extends ArrayAdapter{
+	private class MyAdapter extends ArrayAdapter{
     	MyAdapter(){
-    		super(ManageTemplateActivity.this, R.layout.manage_goups_row_design, templatesIdArray);
+    		super(ManageTemplates.this, R.layout.manage_groups_list_row, templatesIdArray);
     	}
     	
     	
@@ -236,7 +236,7 @@ public class ManageTemplateActivity extends Activity{
     		final TemplateViewHolder holder;
     		if(convertView==null){
     			LayoutInflater inflater = getLayoutInflater();
-    			convertView = inflater.inflate(R.layout.manage_goups_row_design, parent, false);
+    			convertView = inflater.inflate(R.layout.manage_groups_list_row, parent, false);
     			holder = new TemplateViewHolder();
     			holder.templateBodyLabel = (TextView)convertView.findViewById(R.id.manage_groups_row_group_name);
     			holder.deleteTemplateButton = (ImageView)convertView.findViewById(R.id.manage_groups_row_group_delete_image);
@@ -252,9 +252,9 @@ public class ManageTemplateActivity extends Activity{
 				
 				@Override
 				public void onClick(View v) {
-					final Dialog d = new Dialog(ManageTemplateActivity.this);
+					final Dialog d = new Dialog(ManageTemplates.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog_layout);
+					d.setContentView(R.layout.confirmation_dialog);
 					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
@@ -311,7 +311,7 @@ public class ManageTemplateActivity extends Activity{
 	
 	
 	
-	static class TemplateViewHolder{
+	private class TemplateViewHolder{
 		TextView templateBodyLabel;
 		ImageView deleteTemplateButton;
 	}

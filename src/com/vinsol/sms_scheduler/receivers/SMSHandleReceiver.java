@@ -11,19 +11,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.telephony.SmsManager;
+import com.vinsol.sms_scheduler.activities.ScheduleNewSms;
 
+import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.activities.NewScheduleActivity;
 import com.vinsol.sms_scheduler.utils.Log;
 
 
 
 public class SMSHandleReceiver extends BroadcastReceiver{
 	
-	String message;
-	String number;
-	long id;
-	Activity myActivity;
+	private String message;
+	private String number;
+	private long id;
 	private Context mContext;
 
 	SmsManager smsManager = SmsManager.getDefault();
@@ -38,15 +38,10 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		message = intent.getStringExtra("MESSAGE");
 		number = intent.getStringExtra("NUMBER");
 		id = intent.getLongExtra("ID", 0);
-		myActivity = (context instanceof NewScheduleActivity) ? (NewScheduleActivity)context : null;
-		
 		DBAdapter mdba = new DBAdapter(context);
 		
 		mdba.open();
 		mdba.makeOperated(id);
-		
-		Log.d("Number to the SMSHandleReceiver : " + number);
-		Log.d("ID in SMSHandle : " + id);
 		
 		parts = smsManager.divideMessage(message);
 		msgSize = parts.size();
@@ -64,37 +59,31 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			isent.putExtra("MESSAGE", message);
 			isent.putExtra("NUMBER", number);
 			isent.putExtra("ID", id);
-			isent.setAction(DBAdapter.PRIVATE_SMS_ACTION + id);
+			isent.setAction(Constants.PRIVATE_SMS_ACTION + id);
 			pisent = PendingIntent.getBroadcast(context, 0, isent, PendingIntent.FLAG_UPDATE_CURRENT);
 			sentIntents.add(pisent);
 			
-			Intent ideliver = new Intent(context, DeliverReceiver.class);
+			Intent ideliver = new Intent(context, DeliveryReceiver.class);
 			ideliver.putExtra("PART", i);
 			ideliver.putExtra("SIZE", msgSize);
 			ideliver.putExtra("MESSAGE", message);
 			ideliver.putExtra("NUMBER", number);
 			ideliver.putExtra("ID", id);
-			ideliver.setAction(DBAdapter.PRIVATE_SMS_ACTION + id);
+			ideliver.setAction(Constants.PRIVATE_SMS_ACTION + id);
 			pideliver = PendingIntent.getBroadcast(context, 0, ideliver, PendingIntent.FLAG_UPDATE_CURRENT);
 			deliverIntents.add(pideliver);
 		}
-		Log.d("Before");
 		try{
 			smsManager.sendMultipartTextMessage(number, null, parts, sentIntents, deliverIntents);
 		}catch(IllegalArgumentException iae){
 			
 		}
-		Log.d("After");
-		
-		
-		//DBAdapter mdba = new DBAdapter(context);
 		mdba.open();
 		mdba.makeOperated(id);
 		Cursor cur = mdba.fetchRemainingScheduled();
 		mdba.close();
 		
 		if(cur.moveToFirst()){
-			Log.d("there are other records too");
 			Intent nextIntent = new Intent(context, SMSHandleReceiver.class);
 			
 			nextIntent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
@@ -103,7 +92,6 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 
 			Random rand = new Random();
 			int piNumber = rand.nextInt();
-			Log.d("Pi Number : " + piNumber);
 			PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mdba.open();
 			mdba.updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
@@ -116,12 +104,9 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 				alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pi);
 			}
 		}else{
-			Log.d("there are no records, pi to be set to default");
 			mdba.open();
 			mdba.updatePi(0, -1, -1);
 			mdba.close();
 		}
-		
-		
 	}
 }

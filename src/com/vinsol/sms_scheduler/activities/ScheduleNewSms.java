@@ -27,8 +27,9 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
-public class NewScheduleActivity extends AbstractScheduleClass {
+public class ScheduleNewSms extends AbstractScheduleSms {
 	
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
 		
@@ -37,7 +38,7 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 			if(dataLoadWaitDialog.isShowing()) {
 				dataLoadWaitDialog.cancel();
 				if(toOpen == 1){
-					Intent intent = new Intent(NewScheduleActivity.this, ContactsTabsActivity.class);
+					Intent intent = new Intent(ScheduleNewSms.this, SelectContacts.class);
 					intent.putExtra("IDSARRAY", idsString);
 					intent.putExtra("ORIGIN", "new");
 					toOpen = 0;
@@ -50,9 +51,9 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.new_schedule_layout);
+		setContentView(R.layout.schedule_sms);
 		
-		dataLoadWaitDialog = new Dialog(NewScheduleActivity.this);
+		dataLoadWaitDialog = new Dialog(ScheduleNewSms.this);
 		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -90,7 +91,7 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 		//---------------------------------------------------------------------
 		
         dataloadIntentFilter = new IntentFilter();
-        dataloadIntentFilter.addAction(SmsApplicationLevelData.DIALOG_CONTROL_ACTION);
+        dataloadIntentFilter.addAction(SmsSchedulerApplication.DIALOG_CONTROL_ACTION);
 		
 		setFunctionalities();
 		setSuperFunctionalities();
@@ -115,7 +116,7 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 	
 	
 	
-	public void setFunctionalities() {
+	private void setFunctionalities() {
 		
 		numbersText.setOnKeyListener(new View.OnKeyListener() {
 			
@@ -179,9 +180,9 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 			@Override
 			public void onClick(View v) {
 				if(!messageText.getText().toString().matches("(''|[' ']*)") || !numbersText.getText().toString().matches("(''|[' ']*)")){
-					final Dialog d = new Dialog(NewScheduleActivity.this);
+					final Dialog d = new Dialog(ScheduleNewSms.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog_layout);
+					d.setContentView(R.layout.confirmation_dialog);
 					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
@@ -196,7 +197,7 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 						@Override
 						public void onClick(View v) {
 							d.cancel();
-							NewScheduleActivity.this.finish();
+							ScheduleNewSms.this.finish();
 						}
 					});
 					
@@ -209,7 +210,7 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 					});
 					d.show();
 				}else{
-					NewScheduleActivity.this.finish();
+					ScheduleNewSms.this.finish();
 				}
 			}
 		});
@@ -217,7 +218,7 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 	
 	//--------------------function to Scheduling a new sms------------------------------------
 	@Override
-	public void doSmsScheduling(){
+	protected void doSmsScheduling(){
 		
 		mdba.open();
 		doSmsSchedulingTask();
@@ -249,9 +250,9 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 	public void onBackPressed() {
 		
 		if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			final Dialog d = new Dialog(NewScheduleActivity.this);
+			final Dialog d = new Dialog(ScheduleNewSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			d.setContentView(R.layout.confirmation_dialog_layout);
+			d.setContentView(R.layout.confirmation_dialog);
 			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
@@ -266,9 +267,9 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 				@Override
 				public void onClick(View v) {
 					d.cancel();
-					Toast.makeText(NewScheduleActivity.this, "Message Scheduled", Toast.LENGTH_SHORT).show();
+					Toast.makeText(ScheduleNewSms.this, "Message Scheduled", Toast.LENGTH_SHORT).show();
 					if(!checkDateValidity(processDate)){
-						Toast.makeText(NewScheduleActivity.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
+						Toast.makeText(ScheduleNewSms.this, "Date is in Past, message will be sent immediately", Toast.LENGTH_SHORT).show();
 					}
 					new AsyncScheduling().execute();
 				}
@@ -279,15 +280,15 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 				@Override
 				public void onClick(View v) {
 					d.cancel();
-					NewScheduleActivity.this.finish();
+					ScheduleNewSms.this.finish();
 				}
 			});
 			
 			d.show();
 		}else if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
-			final Dialog d = new Dialog(NewScheduleActivity.this);
+			final Dialog d = new Dialog(ScheduleNewSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			d.setContentView(R.layout.confirmation_dialog_layout);
+			d.setContentView(R.layout.confirmation_dialog);
 			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
@@ -302,7 +303,7 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 				public void onClick(View v) {
 					d.cancel();
 					new AsyncScheduling().execute();
-					Toast.makeText(NewScheduleActivity.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
+					Toast.makeText(ScheduleNewSms.this, "Message saved as draft", Toast.LENGTH_SHORT).show();
 				}
 			});
 			
@@ -311,13 +312,13 @@ public class NewScheduleActivity extends AbstractScheduleClass {
 				@Override
 				public void onClick(View v) {
 					d.cancel();
-					NewScheduleActivity.this.finish();
+					ScheduleNewSms.this.finish();
 				}
 			});
 			
 			d.show();
 		}else{
-			NewScheduleActivity.this.finish();
+			ScheduleNewSms.this.finish();
 		}
 	}
 }

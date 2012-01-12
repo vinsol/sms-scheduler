@@ -2,7 +2,7 @@ package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
-public class SpannedEntity {
+public class Span {
 
 	public long spanId;
 	public int type;
@@ -12,11 +12,11 @@ public class SpannedEntity {
 	public ArrayList<Long> groupIds = new ArrayList<Long>();
 	public ArrayList<Integer> groupTypes = new ArrayList<Integer>();
 	
-	public SpannedEntity(){
+	public Span(){
 		
 	}
 	
-	public SpannedEntity(long spanId, int type, String displayName, long entityId, long smsId){
+	public Span(long spanId, int type, String displayName, long entityId, long smsId){
 		this.spanId = spanId;
 		this.type = type;
 		this.displayName = displayName;
