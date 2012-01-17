@@ -1,13 +1,12 @@
 package com.vinsol.sms_scheduler.activities;
 
+import static com.vinsol.sms_scheduler.Constants.DIALOG_CONTROL_ACTION;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -206,7 +205,7 @@ public class Home extends Activity {
         mIntentFilter.addAction(getResources().getString(R.string.update_action));
         
         dataloadIntentFilter = new IntentFilter();
-        dataloadIntentFilter.addAction(SmsSchedulerApplication.DIALOG_CONTROL_ACTION);
+        dataloadIntentFilter.addAction(DIALOG_CONTROL_ACTION);
         
         setExplData();
         
@@ -946,8 +945,7 @@ public class Home extends Activity {
 			
 			SmsSchedulerApplication.isDataLoaded = true;
 			Intent mIntent = new Intent();
-			mIntent.setAction(SmsSchedulerApplication.DIALOG_CONTROL_ACTION);
-			
+			mIntent.setAction(DIALOG_CONTROL_ACTION);
 			sendBroadcast(mIntent);
 		}
 	}

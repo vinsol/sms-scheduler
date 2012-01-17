@@ -1,5 +1,6 @@
 package com.vinsol.sms_scheduler.activities;
 
+import static com.vinsol.sms_scheduler.Constants.DIALOG_CONTROL_ACTION;
 import java.util.List;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -91,8 +92,8 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		//---------------------------------------------------------------------
 		
         dataloadIntentFilter = new IntentFilter();
-        dataloadIntentFilter.addAction(SmsSchedulerApplication.DIALOG_CONTROL_ACTION);
-		
+        dataloadIntentFilter.addAction(DIALOG_CONTROL_ACTION);
+        
 		setFunctionalities();
 		setSuperFunctionalities();
 		loadGroupsData();

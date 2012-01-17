@@ -5,7 +5,7 @@
     android:versionCode="1"
     android:versionName="1.0">
     
-    <uses-sdk android:minSdkVersion="7" />
+    <uses-sdk android:minSdkVersion="8" />
 	
 	<uses-permission android:name = "android.permission.SEND_SMS"/>
 	<uses-permission android:name="android.permission.READ_CONTACTS"/>
@@ -18,8 +18,13 @@
 
  	<uses-feature android:name="android.hardware.microphone" />
 	
-    <application android:name=".SmsSchedulerApplication" android:icon="@drawable/icon" android:label="SMS Scheduler" android:theme="@android:style/Theme.NoTitleBar">
-        <!--  activities -->    
+    <application 
+        android:name=".SmsSchedulerApplication" 
+        android:icon="@drawable/icon" 
+        android:label="SMS Scheduler" 
+        android:theme="@android:style/Theme.NoTitleBar">
+
+        <!--  activities -->
         <activity android:name = ".activities.Home" android:screenOrientation="portrait" >
                 <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,6 +50,5 @@
 				<category android:name="android.intent.category.HOME" />
         	</intent-filter> 
 		</receiver>
-		
     </application>
 </manifest>
