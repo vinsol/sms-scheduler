@@ -44,6 +44,7 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
@@ -205,7 +206,9 @@ public class Home extends Activity {
         mIntentFilter.addAction(getResources().getString(R.string.update_action));
         
         dataloadIntentFilter = new IntentFilter();
-        dataloadIntentFilter.addAction(DIALOG_CONTROL_ACTION);
+
+        dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);
+
         
         setExplData();
         
@@ -945,7 +948,9 @@ public class Home extends Activity {
 			
 			SmsSchedulerApplication.isDataLoaded = true;
 			Intent mIntent = new Intent();
-			mIntent.setAction(DIALOG_CONTROL_ACTION);
+
+			mIntent.setAction(Constants.DIALOG_CONTROL_ACTION);
+
 			
 			sendBroadcast(mIntent);
 		}

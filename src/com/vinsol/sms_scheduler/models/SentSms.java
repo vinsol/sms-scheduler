@@ -2,7 +2,9 @@ package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
+
 public class SentSms extends ScheduledSms {
+
 	long		keySMillis;
 	long		keyDMillis;
 	int 		keySent;

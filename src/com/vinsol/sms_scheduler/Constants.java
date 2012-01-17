@@ -17,5 +17,7 @@ public class Constants {
 	public static final String PRIVATE_SMS_ACTION = "com.smsschedulerexpl.android.private_sms_action";
 	public static final String PRIVATE_INTENT_ACTION = "com.smsschedulerexpl.android.private_intent_action";
 
+
 	public static String DIALOG_CONTROL_ACTION = "com.vinsol.sms_scheduler.DIALOG_CONTROL_ACTION";
+
 }

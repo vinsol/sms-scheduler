@@ -18,6 +18,7 @@
 
  	<uses-feature android:name="android.hardware.microphone" />
 	
+
     <application 
         android:name=".SmsSchedulerApplication" 
         android:icon="@drawable/icon" 
@@ -25,6 +26,7 @@
         android:theme="@android:style/Theme.NoTitleBar">
 
         <!--  activities -->
+
         <activity android:name = ".activities.Home" android:screenOrientation="portrait" >
                 <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

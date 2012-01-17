@@ -92,7 +92,9 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		//---------------------------------------------------------------------
 		
         dataloadIntentFilter = new IntentFilter();
-        dataloadIntentFilter.addAction(DIALOG_CONTROL_ACTION);
+
+        dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);
+
 		
 		setFunctionalities();
 		setSuperFunctionalities();

@@ -96,6 +96,7 @@ public class DBAdapter {
 	
 	
 	//SQL to open or create a database
+
 	private final String DATABASE_CREATE_SMS_TABLE = "create table " + DATABASE_SMS_TABLE 
 			+ " (" 
 			+ KEY_ID          + " integer primary key autoincrement, " 
@@ -163,7 +164,52 @@ public class DBAdapter {
 			+ KEY_RECENT_CONTACT_ID         + " integer primary key autoincrement, " 
 			+ KEY_RECENT_CONTACT_CONTACT_ID + " integer, " 
 			+ KEY_RECENT_CONTACT_NUMBER     + " text);";
-	
+
+//	private final String DATABASE_CREATE_SMS_TABLE = "create table " + 
+//		DATABASE_SMS_TABLE + " (" + KEY_ID + " integer primary key autoincrement, " + KEY_GRPID + " integer, " + 
+//		KEY_NUMBER + " text not null, " + KEY_MESSAGE + " text, " + KEY_DATE + " text, " + KEY_TIME_MILLIS + " long, " 
+//		+ KEY_SENT + " integer default 0, "+ KEY_DELIVER + " integer default 0, " + KEY_MSG_PARTS + " integer default 0, " 
+//		+ KEY_S_MILLIS + " integer, " + KEY_D_MILLIS + " integer, " + KEY_OPERATED + " integer default 0, "
+//		+ KEY_DRAFT + " integer default 0);";
+//	
+//	
+//	private final String DATABASE_CREATE_PI_TABLE = "create table " +
+//		DATABASE_PI_TABLE + " (" + KEY_PI_ID + " integer primary key, " + KEY_PI_NUMBER + " integer, " +
+//		KEY_SMS_ID + " integer, " + KEY_TIME + " integer, " + KEY_ACTION + " text);";
+//	
+//	
+//	private final String DATABASE_CREATE_TEMPLATE_TABLE = "create table " +
+//		DATABASE_TEMPLATE_TABLE + " (" + KEY_TEMP_ID + " integer primary key autoincrement, " +
+//		KEY_TEMP_CONTENT + " text);";
+//	
+//	
+//	private final String DATABASE_CREATE_GROUP_TABLE = "create table " +
+//		DATABASE_GROUP_TABLE + " (" + KEY_GROUP_ID + " integer primary key autoincrement, " +
+//		KEY_GROUP_NAME + " text);";
+//	
+//	
+//	private final String DATABASE_CREATE_GROUP_CONTACT_RELATION = "create table " +
+//		DATABASE_GROUP_CONTACT_RELATION + " (" + KEY_RELATION_ID + " integer primary key autoincrement, " +
+//		KEY_GROUP_REL_ID + " integer, " + KEY_CONTACTS_ID + " integer);";
+//	
+//	
+//	private final String DATABASE_CREATE_SPANS_TABLE =  "create table " + 
+//		DATABASE_SPANS_TABLE + " (" + KEY_SPAN_ID + " integer primary key autoincrement, " +
+//		KEY_SPAN_DN + " text, " + KEY_SPAN_TYPE + " integer, " + KEY_SPAN_ENTITY_ID + " integer, " +
+//		KEY_SPAN_SMS_ID + " integer);";
+//	
+//	
+//	private final String DATABASE_CREATE_SPAN_GROUP_REL_TABLE = "create table " +
+//		DATABASE_SPAN_GROUP_REL_TABLE + " (" + KEY_SPAN_GRP_REL_ID + " integer primary key autoincrement, " +
+//		KEY_SPAN_GRP_REL_SPAN_ID + " integer, " + KEY_SPAN_GRP_REL_GRP_ID + " integer, " +
+//		KEY_SPAN_GRP_REL_GRP_TYPE + " integer);";
+//	
+//	
+//	private final String DATABASE_CREATE_RECENTS_TABLE = "create table " +
+//		DATABASE_RECENTS_TABLE + " (" + KEY_RECENT_CONTACT_ID + " integer primary key autoincrement, " + 
+//		KEY_RECENT_CONTACT_CONTACT_ID + " integer, " + KEY_RECENT_CONTACT_NUMBER + " text);";
+//>>>>>>> refactoring
+//	
 	
 	
 	private SQLiteDatabase db;

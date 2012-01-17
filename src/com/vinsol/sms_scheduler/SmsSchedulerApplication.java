@@ -1,10 +1,8 @@
 package com.vinsol.sms_scheduler;
 
 import java.util.ArrayList;
-
-import android.app.Application;
-
 import com.vinsol.sms_scheduler.models.Contact;
+import android.app.Application;
 
 public class SmsSchedulerApplication extends Application {
 
