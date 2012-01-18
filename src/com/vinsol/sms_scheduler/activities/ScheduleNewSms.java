@@ -1,6 +1,5 @@
 package com.vinsol.sms_scheduler.activities;
 
-import static com.vinsol.sms_scheduler.Constants.DIALOG_CONTROL_ACTION;
 import java.util.List;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -28,7 +27,6 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.utils.Log;
-import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class ScheduleNewSms extends AbstractScheduleSms {
 	
@@ -48,6 +46,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			}
 		}
 	};
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -160,9 +159,6 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			}
 		});
 
-		
-		
-		
 		
 		
 		//----------------functionality for schedule button----------------------------

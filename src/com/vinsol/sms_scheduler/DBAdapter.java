@@ -280,12 +280,12 @@ public class DBAdapter {
 	public Long getSendingId(){
 		long sendingId = -1;
 		
-		String sql = "SELECT * FROM smsTable "
-			+ "WHERE _id=recipientTable.sms_id "
-			+ "AND smsTable.status=3 "
-			+ "AND recipientTable.operated=0 "
-			+ "ORDER BY smsTable.time_millis";
-		
+//		String sql = "SELECT * FROM smsTable "
+//			+ "WHERE _id=recipientTable.sms_id "
+//			+ "AND smsTable.status=3 "
+//			+ "AND recipientTable.operated=0 "
+//			+ "ORDER BY smsTable.time_millis";
+//		
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_ID}, KEY_STATUS + "=" + 3, null, null, null, null);
 		if(cur.moveToFirst()){
 			sendingId = cur.getLong(cur.getColumnIndex(KEY_ID));
@@ -543,7 +543,7 @@ public class DBAdapter {
 			PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			updatePi(piNumber, cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)), cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)));
 			
-			AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+			AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 	    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)), pi);
 		}else{
 			updatePi(0, -1, -1);

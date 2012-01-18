@@ -31,8 +31,6 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 	ArrayList<String> parts;
 	int msgSize;
 	
-	
-	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		mContext = context;
@@ -41,8 +39,6 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		smsId = intent.getLongExtra("SMS_ID", 0);
 		recipientId = intent.getLongExtra("RECIPIENT_ID", 0);
 		DBAdapter mdba = new DBAdapter(context);
-		
-		Log.d("Came in handler for recipient Id : " + recipientId);
 		
 		mdba.open();
 		mdba.makeOperated(recipientId);
@@ -86,7 +82,6 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			
 		}
 		mdba.open();
-//		mdba.makeOperated(id);
 		Cursor cur = mdba.fetchAllScheduled();
 		mdba.close();
 		if(cur.moveToFirst()){
@@ -112,35 +107,5 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			mdba.updatePi(0, -1, -1);
 			mdba.close();
 		}
-//		mdba.close();
-		
-//		Cursor cur = mdba.fetchRemainingScheduled();
-//		mdba.close();
-//		
-//		if(cur.moveToFirst()){
-//			Intent nextIntent = new Intent(context, SMSHandleReceiver.class);
-//			
-//			nextIntent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
-//			nextIntent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(DBAdapter.KEY_NUMBER)));
-//			nextIntent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)));
-//
-//			Random rand = new Random();
-//			int piNumber = rand.nextInt();
-//			PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//			mdba.open();
-//			mdba.updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
-//			mdba.close();
-//			
-//			AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(context.ALARM_SERVICE);
-//			if(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)) > System.currentTimeMillis()){
-//				alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)), pi);
-//			}else{
-//				alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pi);
-//			}
-//		}else{
-//			mdba.open();
-//			mdba.updatePi(0, -1, -1);
-//			mdba.close();
-//		}
 	}
 }

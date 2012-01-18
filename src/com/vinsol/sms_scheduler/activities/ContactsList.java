@@ -34,8 +34,6 @@ public class ContactsList extends Activity {
 	private Button doneButton;
 	private Button cancelButton;
 	
-	private DBAdapter mdba;
-	private long groupId;
 	private boolean newCall;
 	private String groupName = "";
 	
@@ -81,7 +79,7 @@ public class ContactsList extends Activity {
 			
 			if(callingActivity.equals("Group Edit Activity")){
 				doneButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
-				groupId = intent.getLongExtra("GROUPID", 0);
+				intent.getLongExtra("GROUPID", 0);
 			}else if(callingActivity.equals("Group Add Activity") || callingActivity.equals("Group Add Activity From Contacts")){
 				newCall = intent.getBooleanExtra("NEWCALL", true);
 			}

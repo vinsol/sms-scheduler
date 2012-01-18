@@ -147,8 +147,6 @@ abstract class AbstractScheduleSms extends Activity{
 	protected int positionTrack;
 	
 	protected boolean suggestionsBoolean = true;
-	private Pattern p = Pattern.compile("");
-	
 	private Date refDate = new Date();
 	private Calendar refCal = new GregorianCalendar();
 	protected Date processDate = new Date();

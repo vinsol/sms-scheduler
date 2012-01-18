@@ -1,6 +1,5 @@
 package com.vinsol.sms_scheduler.activities;
 
-import static com.vinsol.sms_scheduler.Constants.DIALOG_CONTROL_ACTION;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,7 +76,6 @@ public class Home extends Activity {
 	
 	private final String NAME = "name";
 	private final String IMAGE = "image";
-	private final String MESSAGE = "message";
 	private final String DATE = "date";
 	private final String EXTRA_RECEIVERS = "ext_receivers";
 	private final String RECEIVER = "receiver";
@@ -89,7 +87,6 @@ public class Home extends Activity {
 	private Dialog dataLoadWaitDialog;
 	private int toOpen = 0;
 	
-	private ArrayList<Long> selectedIds;
 	Long selectedSms;
 	
 	private Cursor groupCursor;
@@ -273,22 +270,16 @@ public class Home extends Activity {
 			groupPos = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 			childPos = ExpandableListView.getPackedPositionChild(info.packedPosition);
 			
-			selectedIds = new ArrayList<Long>();
-			
-			
 			switch (item.getItemId()) {
 				case MENU_DELETE:
 					//--------------------------------------Delete context option ------------------------------------
 					mdba.open();
 					
 					if(groupPos == 1){
-						selectedIds = scheduledSMSs.get(childPos).keyIds;
 						selectedSms = scheduledSMSs.get(childPos).keyId;
 					}else if(groupPos == 2){
-						selectedIds = sentSMSs.get(childPos).keyIds;
 						selectedSms = sentSMSs.get(childPos).keyId;
 					}else if(groupPos == 0){
-						selectedIds = drafts.get(childPos).keyIds;
 						selectedSms = drafts.get(childPos).keyId;
 					}
 					deleteSms();
@@ -410,8 +401,6 @@ public class Home extends Activity {
 								
 								@Override
 								public void onClick(View v) {
-									selectedIds = new ArrayList<Long>();
-									selectedIds = scheduledSMSs.get(childPosition).keyIds;
 									selectedSms = scheduledSMSs.get(childPosition).keyId;
 									deleteSms();
 							        d.cancel();
@@ -447,8 +436,6 @@ public class Home extends Activity {
 								
 								@Override
 								public void onClick(View v) {
-									selectedIds = new ArrayList<Long>();
-									selectedIds = drafts.get(childPosition).keyIds;
 									selectedSms = drafts.get(childPosition).keyId;
 									deleteSms();
 							        d.cancel();
@@ -479,9 +466,6 @@ public class Home extends Activity {
     	childData.clear();
     	
     	mdba.open();
-//    	Cursor schCur  = mdba.fetchAllScheduledNoDraft();
-//    	Cursor sentCur = mdba.fetchAllSent();
-//    	Cursor draftCur = mdba.fetchAllDrafts();
     	drafts.clear();
     	scheduledSMSs.clear();
     	sentSMSs.clear();
@@ -510,6 +494,7 @@ public class Home extends Activity {
     	//---------------------------------------------------------------------------------------------
     	
         	
+        //--------------------Extracting 'Sending..' messages from Database------------------------------
         long sendingId = mdba.getSendingId();
         if(sendingId != -1){
         	Cursor scheduledSendingCur = mdba.fetchSendingScheduled(sendingId);
@@ -549,9 +534,12 @@ public class Home extends Activity {
 				sentSMSs.add(SMS);
         	}
         	
-        }	
+        }
+        //-------------------------------------------'Sending' Messages Extracted---------------------------
+        
+        
     	
-    	//------------------------Loading scheduled msgs----------------------------------------------------
+    	//--------------Extracting Sent, Draft and Scheduled messages from Database------------------------
         Cursor SMSsCur = mdba.fetchStableRecipientDetails();
         
         long previousSmsId = -1;
@@ -599,34 +587,12 @@ public class Home extends Activity {
 				sentSMSs.add(SMS);
 			}
         }
+        //------------------------------------------------Messages Extracted From Database---------------------
         
+        
+        
+        //------------------------Loading scheduled msgs----------------------------------------------------
     	ArrayList<HashMap<String, Object>> groupChildSch = new ArrayList<HashMap<String, Object>>();
-//    	int z = -1;
-//    	scheduledSMSs.clear();
-//    	if(schCur.moveToFirst()){
-//    		z = -1;
-//    		do{
-//    			Cursor spanCur = mdba.fetchSpanForSms(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    			spanCur.moveToFirst();
-//    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
-//    			
-//    			if(z == -1 || scheduledSMSs.get(z).keyGrpId != schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_GRPID))){
-//    				z++;
-//    				ArrayList<Long> tempIds = new ArrayList<Long>();
-//    				tempIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    				scheduledSMSs.add(new ScheduledSms(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)),
-//    						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_GRPID)),
-//    						displayName,
-//    						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
-//    						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
-//    						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_DATE)),
-//    						tempIds));
-//    			}else{
-//    				scheduledSMSs.get(z).keyNumber = scheduledSMSs.get(z).keyNumber + ", " + displayName;
-//    				scheduledSMSs.get(z).keyIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    			}
-//    		}while(schCur.moveToNext());
-//    	}
     	
     	for(int i = 0; i< scheduledSMSs.size(); i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
@@ -645,39 +611,8 @@ public class Home extends Activity {
     	
     	//--------------------------loading sent messages------------------------------------------
     	ArrayList<HashMap<String, Object>> groupChildSent = new ArrayList<HashMap<String, Object>>();
-//    	z = -1;
-//    	sentSMSs.clear();
-//    	if(sentCur.moveToFirst()){
-//    		z = -1;
-//    		do{
-//    			Cursor spanCur = mdba.fetchSpanForSms(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    			spanCur.moveToFirst();
-//    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
-//    			
-//    			if(z == -1 || sentSMSs.get(z).keyGrpId != sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_GRPID))){
-//    				z++;
-//    				ArrayList<Long> tempIds = new ArrayList<Long>();
-//    				tempIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    				sentSMSs.add(new SentSms(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)),
-//    						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_GRPID)),
-//    						displayName,
-//    						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
-//    						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
-//    						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_DATE)),
-//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_SENT)),
-//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_DELIVER)),
-//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)),
-//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_S_MILLIS)),
-//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_D_MILLIS)),
-//    						tempIds));
-//    			}else{
-//    				sentSMSs.get(z).keyNumber = sentSMSs.get(z).keyNumber + ", " + displayName;
-//    				sentSMSs.get(z).keyIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    			}
-//    		}while(sentCur.moveToNext());
-//    	}
-    	
-    	for(int i = 0; i< sentSMSs.size(); i++){
+
+    	for(int i = sentSMSs.size()-1; i > -1; i--){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, sentSMSs.get(i).keyMessage);
     		int condition = 1;
@@ -687,10 +622,12 @@ public class Home extends Activity {
     			cur.moveToFirst();
     			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == 0){
     				condition = 1;
+    				sentSMSs.get(i).keyImageRes = R.drawable.sent_failure_icon;
     				break;
     			}
     			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !mdba.checkDelivery(sentSMSs.get(i).keyIds.get(k))){
     				condition = 2;
+    				sentSMSs.get(i).keyImageRes = R.drawable.sending_sms_icon;
     				break;
     			}
     			if(mdba.checkDelivery(sentSMSs.get(i).keyIds.get(k))){
@@ -698,22 +635,26 @@ public class Home extends Activity {
     			}
     		}
     		
-    		switch (condition) {
-			case 1:
-				sentSMSs.get(i).keyImageRes = R.drawable.sent_failure_icon;
-				break;
-				
-			case 2:
-				sentSMSs.get(i).keyImageRes = R.drawable.sending_sms_icon;
-				break;
-				
-			case 3:
-				sentSMSs.get(i).keyImageRes = R.drawable.sent_success_icon;
-				break; 
-				
-			default:
-				break;
-			}
+    		if(condition==3){
+    			sentSMSs.get(i).keyImageRes = R.drawable.sent_success_icon;
+    		}
+    		
+//    		switch (condition) {
+//			case 1:
+//				sentSMSs.get(i).keyImageRes = R.drawable.sent_failure_icon;
+//				break;
+//				
+//			case 2:
+//				sentSMSs.get(i).keyImageRes = R.drawable.sending_sms_icon;
+//				break;
+//				
+//			case 3:
+//				sentSMSs.get(i).keyImageRes = R.drawable.sent_success_icon;
+//				break; 
+//				
+//			default:
+//				break;
+//			}
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, sentSMSs.get(i).keyDate);
     		
@@ -727,35 +668,7 @@ public class Home extends Activity {
     	
     	//------------------------Loading Drafts----------------------------------------------------
     	ArrayList<HashMap<String, Object>> groupChildDraft = new ArrayList<HashMap<String, Object>>();
-//    	z = -1;
-//    	drafts.clear();
-//    	if(draftCur.moveToFirst()){
-//    		z = -1;
-//    		do{
-//    			Cursor spanCur = mdba.fetchSpanForSms(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    			
-//    			spanCur.moveToFirst();
-//    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
-//    			
-//    			if(z == -1 || drafts.get(z).keyGrpId != draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_GRPID))){
-//    				z++;
-//    				ArrayList<Long> tempIds = new ArrayList<Long>();
-//    				tempIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    				drafts.add(new ScheduledSms(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)),
-//    						draftCur.getLong	(draftCur.getColumnIndex(DBAdapter.KEY_GRPID)),
-//    						displayName,
-//    						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
-//    						draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
-//    						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_DATE)),
-//    						tempIds));
-//    			}else{
-//    				drafts.get(z).keyNumber = drafts.get(z).keyNumber + ", " + displayName;
-//    				drafts.get(z).keyIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
-//    			}
-//    		}while(draftCur.moveToNext());
-//    	}
-//    	
-//    	Log.d(z + "");
+
     	for(int i = 0; i< drafts.size(); i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, drafts.get(i).keyMessage);
@@ -1071,9 +984,7 @@ public class Home extends Activity {
 	
 	private void deleteSms(){
 		mdba.open();
-//		for(int i = 0; i<selectedIds.size(); i++){
 		mdba.deleteSms(selectedSms, Home.this);
-//		}
 		mdba.close();
 		loadData();
 		mAdapter.notifyDataSetChanged();
