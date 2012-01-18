@@ -6,10 +6,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 
-public class ScheduledSms implements Parcelable {
+public class Sms implements Parcelable {
 	
 	public long 			keyId;
-	public long 			keyGrpId;
+//	public long 			keyGrpId;
 	public String 			keyNumber;
 	public String 			keyMessage;
 	public long				keyTimeMilis;
@@ -21,9 +21,8 @@ public class ScheduledSms implements Parcelable {
 //=======
 //public class ScheduledSms extends AbstractSms implements Parcelable{
 //>>>>>>> refactoring
-	public ScheduledSms(long keyid, long keygrpid, String keynumber, String keymessage, long keytimemilis, String keydate, ArrayList<Long> keyids){
+	public Sms(long keyid, String keynumber, String keymessage, long keytimemilis, String keydate, ArrayList<Long> keyids){
 		this.keyId 			= keyid;
-		this.keyGrpId 		= keygrpid;
 		this.keyNumber 		= keynumber;
 		this.keyMessage 	= keymessage;
 		this.keyDate		= keydate;
@@ -31,21 +30,20 @@ public class ScheduledSms implements Parcelable {
 		this.keyIds			= keyids;
 	}
 	
-	public ScheduledSms(){}
+	public Sms(){}
 	
-	public static final Parcelable.Creator<ScheduledSms> CREATOR = new Parcelable.Creator<ScheduledSms>() {
-    	public ScheduledSms createFromParcel(Parcel in) {
-    		return new ScheduledSms(in);
+	public static final Parcelable.Creator<Sms> CREATOR = new Parcelable.Creator<Sms>() {
+    	public Sms createFromParcel(Parcel in) {
+    		return new Sms(in);
     	}
  
-        public ScheduledSms[] newArray(int size) {
-        	return new ScheduledSms[size];
+        public Sms[] newArray(int size) {
+        	return new Sms[size];
         }
     };
     
-    public ScheduledSms(Parcel in) {
+    public Sms(Parcel in) {
     	this.keyId = in.readLong();
-    	this.keyGrpId = in.readLong();
     	this.keyNumber = in.readString();
     	this.keyMessage = in.readString();
     	this.keyTimeMilis = in.readLong();
@@ -54,7 +52,6 @@ public class ScheduledSms implements Parcelable {
     @Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(this.keyId);
-		dest.writeLong(this.keyGrpId);
 		dest.writeString(this.keyNumber);
 		dest.writeString(this.keyMessage);
 		dest.writeLong(this.keyTimeMilis);

@@ -72,7 +72,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
 		
-		Spans.clear();
+		Recipients.clear();
 		
 		// Check to see if a recognition activity is present
         PackageManager pm = getPackageManager();
@@ -129,28 +129,28 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 				if(keyCode == KeyEvent.KEYCODE_DEL) {
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
-	                 for(int i = 0; i < Spans.size(); i++) {
-	                	 len = len + Spans.get(i).displayName.length();
+	                 for(int i = 0; i < Recipients.size(); i++) {
+	                	 len = len + Recipients.get(i).displayName.length();
 	                	 if(i!=0) {
 	                		 len = len + 2;
 	                	 }
 	                	 if(pos <= len) {
 	                		 for(int j = 0; j < nativeGroupData.size(); j++){
 	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++) {
-	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                				 if((Long)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == Recipients.get(i).contactId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
 	                					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
 	                		 }
 	                		 for(int j = 0; j< privateGroupData.size(); j++){
 	                			 for(int k = 0; k< privateChildData.get(j).size(); k++){
-	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                				 if((Long)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == Recipients.get(i).contactId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
 	                					 Log.d("coming into IF to uncheck a private group child");
 	                					 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
 	                		 }
-	                		 Spans.remove(i);
+	                		 Recipients.remove(i);
 	                		 refreshSpannableString(false);
 	                		 break;
 	                	 }
@@ -252,7 +252,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 	@Override
 	public void onBackPressed() {
 		
-		if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+		if(!(Recipients.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			final Dialog d = new Dialog(ScheduleNewSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.confirmation_dialog);
@@ -288,7 +288,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			});
 			
 			d.show();
-		}else if(!(Spans.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
+		}else if(!(Recipients.size()==0) || !(messageText.getText().toString().matches("(''|[' ']*)"))){
 			final Dialog d = new Dialog(ScheduleNewSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.confirmation_dialog);

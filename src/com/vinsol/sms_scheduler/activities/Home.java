@@ -48,16 +48,15 @@ import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
-import com.vinsol.sms_scheduler.models.SentSms;
-import com.vinsol.sms_scheduler.models.ScheduledSms;
+import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class Home extends Activity {
     
-	private ArrayList<ScheduledSms> scheduledSMSs = new ArrayList<ScheduledSms>();
-	private ArrayList<SentSms> sentSMSs = new ArrayList<SentSms>();
-	private ArrayList<ScheduledSms> drafts = new ArrayList<ScheduledSms>();
+	private ArrayList<Sms> scheduledSMSs = new ArrayList<Sms>();
+	private ArrayList<Sms> sentSMSs = new ArrayList<Sms>();
+	private ArrayList<Sms> drafts = new ArrayList<Sms>();
 	
 	private ExpandableListView 		explList;
 	private ImageView				newSmsButton;
@@ -91,6 +90,7 @@ public class Home extends Activity {
 	private int toOpen = 0;
 	
 	private ArrayList<Long> selectedIds;
+	Long selectedSms;
 	
 	private Cursor groupCursor;
 
@@ -209,7 +209,6 @@ public class Home extends Activity {
 
         dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);
 
-        
         setExplData();
         
         explList.setAdapter(mAdapter);
@@ -222,20 +221,13 @@ public class Home extends Activity {
     	super.onResume();
     	
     	mdba.open();
-    	Cursor cur = mdba.fetchAllScheduled();
+    	Cursor cur = mdba.fetchAllSms();
     	if(cur.getCount()>0){
     		explList.setVisibility(LinearLayout.VISIBLE);
     		blankListLayout.setVisibility(LinearLayout.GONE);
-    	}else{
-    		cur = null;
-    		cur = mdba.fetchAllSent();
-    		if(cur.getCount()>0){
-    			explList.setVisibility(LinearLayout.VISIBLE);
-    			blankListLayout.setVisibility(LinearLayout.GONE);
-    		}else{
-    			explList.setVisibility(LinearLayout.GONE);
-    			blankListLayout.setVisibility(LinearLayout.VISIBLE);
-    		}
+    	}else{    		
+    		explList.setVisibility(LinearLayout.GONE);
+    		blankListLayout.setVisibility(LinearLayout.VISIBLE);
     	}
     	mdba.close();
     
@@ -283,17 +275,21 @@ public class Home extends Activity {
 			
 			selectedIds = new ArrayList<Long>();
 			
+			
 			switch (item.getItemId()) {
 				case MENU_DELETE:
 					//--------------------------------------Delete context option ------------------------------------
 					mdba.open();
 					
 					if(groupPos == 1){
-						selectedIds = scheduledSMSs.get(childPos).keyIds;	
+						selectedIds = scheduledSMSs.get(childPos).keyIds;
+						selectedSms = scheduledSMSs.get(childPos).keyId;
 					}else if(groupPos == 2){
 						selectedIds = sentSMSs.get(childPos).keyIds;
+						selectedSms = sentSMSs.get(childPos).keyId;
 					}else if(groupPos == 0){
 						selectedIds = drafts.get(childPos).keyIds;
+						selectedSms = drafts.get(childPos).keyId;
 					}
 					deleteSms();
 			        
@@ -416,6 +412,7 @@ public class Home extends Activity {
 								public void onClick(View v) {
 									selectedIds = new ArrayList<Long>();
 									selectedIds = scheduledSMSs.get(childPosition).keyIds;
+									selectedSms = scheduledSMSs.get(childPosition).keyId;
 									deleteSms();
 							        d.cancel();
 								}
@@ -452,6 +449,7 @@ public class Home extends Activity {
 								public void onClick(View v) {
 									selectedIds = new ArrayList<Long>();
 									selectedIds = drafts.get(childPosition).keyIds;
+									selectedSms = drafts.get(childPosition).keyId;
 									deleteSms();
 							        d.cancel();
 								}
@@ -467,22 +465,26 @@ public class Home extends Activity {
 							
 							d.show();
 						}
-					});
+    				});
     			}
     			return convertView;
-    		}
+			}
     	};
     }
     
     
     private void loadData(){
     	
+    	Log.d("Into LoadData");
     	childData.clear();
     	
     	mdba.open();
-    	Cursor schCur  = mdba.fetchAllScheduledNoDraft();
-    	Cursor sentCur = mdba.fetchAllSent();
-    	Cursor draftCur = mdba.fetchAllDrafts();
+//    	Cursor schCur  = mdba.fetchAllScheduledNoDraft();
+//    	Cursor sentCur = mdba.fetchAllSent();
+//    	Cursor draftCur = mdba.fetchAllDrafts();
+    	drafts.clear();
+    	scheduledSMSs.clear();
+    	sentSMSs.clear();
     	
     	
     	//-----------------------Putting group headers for Expandable list---------------------------- 
@@ -507,37 +509,126 @@ public class Home extends Activity {
 //    	}
     	//---------------------------------------------------------------------------------------------
     	
+        	
+        long sendingId = mdba.getSendingId();
+        if(sendingId != -1){
+        	Cursor scheduledSendingCur = mdba.fetchSendingScheduled(sendingId);
+        	if(scheduledSendingCur.moveToFirst()){
+        		String displayName = scheduledSendingCur.getString(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
+    			ArrayList<Long> tempIds = new ArrayList<Long>();
+				tempIds.add(scheduledSendingCur.getLong(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+				Sms SMS = new Sms(scheduledSendingCur.getLong(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_ID)),
+						displayName,
+						scheduledSendingCur.getString(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+						scheduledSendingCur.getLong	(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
+						scheduledSendingCur.getString(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_DATE)),
+						tempIds);
+				while(scheduledSendingCur.moveToNext()){
+					SMS.keyIds.add(scheduledSendingCur.getLong(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_ID)));
+					SMS.keyNumber = SMS.keyNumber + ", " + scheduledSendingCur.getString(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
+				}
+				scheduledSMSs.add(SMS);
+        	}
+        	
+        	
+        	Cursor sentSendingCur = mdba.fetchSendingSent(sendingId);
+        	if(sentSendingCur.moveToFirst()){
+        		String displayName = sentSendingCur.getString(sentSendingCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
+    			ArrayList<Long> tempIds = new ArrayList<Long>();
+				tempIds.add(sentSendingCur.getLong(sentSendingCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+				Sms SMS = new Sms(sentSendingCur.getLong(sentSendingCur.getColumnIndex(DBAdapter.KEY_ID)),
+						displayName,
+						sentSendingCur.getString(sentSendingCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+						sentSendingCur.getLong	(sentSendingCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
+						sentSendingCur.getString(sentSendingCur.getColumnIndex(DBAdapter.KEY_DATE)),
+						tempIds);
+				while(sentSendingCur.moveToNext()){
+					SMS.keyIds.add(sentSendingCur.getLong(sentSendingCur.getColumnIndex(DBAdapter.KEY_ID)));
+					SMS.keyNumber = SMS.keyNumber + ", " + sentSendingCur.getString(sentSendingCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
+				}
+				sentSMSs.add(SMS);
+        	}
+        	
+        }	
     	
     	//------------------------Loading scheduled msgs----------------------------------------------------
-    	ArrayList<HashMap<String, Object>> groupChildSch = new ArrayList<HashMap<String, Object>>();
-    	int z = -1;
-    	scheduledSMSs.clear();
-    	if(schCur.moveToFirst()){
-    		z = -1;
-    		do{
-    			Cursor spanCur = mdba.fetchSpanForSms(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
-    			spanCur.moveToFirst();
-    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
-    			
-    			if(z == -1 || scheduledSMSs.get(z).keyGrpId != schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_GRPID))){
-    				z++;
-    				ArrayList<Long> tempIds = new ArrayList<Long>();
-    				tempIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
-    				scheduledSMSs.add(new ScheduledSms(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)),
-    						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_GRPID)),
+        Cursor SMSsCur = mdba.fetchStableRecipientDetails();
+        
+        long previousSmsId = -1;
+        int previousSmsType = -1;
+        	
+        Sms SMS = new Sms();
+        Log.d("size of SMSsCur : " + SMSsCur.getCount());
+        if(SMSsCur.moveToFirst()){
+        	do{
+        		if(previousSmsId!=SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID))){
+        			
+        			if(previousSmsType == 0){
+        				drafts.add(SMS);
+        			}else if(previousSmsType == 1){
+        				scheduledSMSs.add(SMS);
+        			}else if(previousSmsType == 2){
+        				sentSMSs.add(SMS);
+        			}
+        			
+        			previousSmsId = SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID));
+        			previousSmsType = SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_STATUS));
+        			
+        			String displayName = SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
+        			ArrayList<Long> tempIds = new ArrayList<Long>();
+    				tempIds.add(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+    				
+    				SMS = new Sms(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID)),
     						displayName,
-    						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
-    						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
-    						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_DATE)),
-    						tempIds));
-    			}else{
-    				scheduledSMSs.get(z).keyNumber = scheduledSMSs.get(z).keyNumber + ", " + displayName;
-    				scheduledSMSs.get(z).keyIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
-    			}
-    		}while(schCur.moveToNext());
-    	}
+    						SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+    						SMSsCur.getLong	(SMSsCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
+    						SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DATE)),
+    						tempIds);
+        		}else{
+        			SMS.keyNumber = SMS.keyNumber + ", " + SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
+    				SMS.keyIds.add(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+        		}
+        	}while(SMSsCur.moveToNext());
+        	
+        	if(previousSmsType == 0){
+				drafts.add(SMS);
+			}else if(previousSmsType == 1){
+				Log.d("getting added to schedules");
+				scheduledSMSs.add(SMS);
+			}else if(previousSmsType == 2){
+				sentSMSs.add(SMS);
+			}
+        }
+        
+    	ArrayList<HashMap<String, Object>> groupChildSch = new ArrayList<HashMap<String, Object>>();
+//    	int z = -1;
+//    	scheduledSMSs.clear();
+//    	if(schCur.moveToFirst()){
+//    		z = -1;
+//    		do{
+//    			Cursor spanCur = mdba.fetchSpanForSms(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    			spanCur.moveToFirst();
+//    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
+//    			
+//    			if(z == -1 || scheduledSMSs.get(z).keyGrpId != schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_GRPID))){
+//    				z++;
+//    				ArrayList<Long> tempIds = new ArrayList<Long>();
+//    				tempIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    				scheduledSMSs.add(new ScheduledSms(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)),
+//    						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_GRPID)),
+//    						displayName,
+//    						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+//    						schCur.getLong	(schCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
+//    						schCur.getString(schCur.getColumnIndex(DBAdapter.KEY_DATE)),
+//    						tempIds));
+//    			}else{
+//    				scheduledSMSs.get(z).keyNumber = scheduledSMSs.get(z).keyNumber + ", " + displayName;
+//    				scheduledSMSs.get(z).keyIds.add(schCur.getLong(schCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    			}
+//    		}while(schCur.moveToNext());
+//    	}
     	
-    	for(int i = 0; i<= z; i++){
+    	for(int i = 0; i< scheduledSMSs.size(); i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, scheduledSMSs.get(i).keyMessage);
     		scheduledSMSs.get(i).keyImageRes = R.drawable.delete_icon_states;
@@ -554,54 +645,55 @@ public class Home extends Activity {
     	
     	//--------------------------loading sent messages------------------------------------------
     	ArrayList<HashMap<String, Object>> groupChildSent = new ArrayList<HashMap<String, Object>>();
-    	z = -1;
-    	sentSMSs.clear();
-    	if(sentCur.moveToFirst()){
-    		z = -1;
-    		do{
-    			Cursor spanCur = mdba.fetchSpanForSms(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
-    			spanCur.moveToFirst();
-    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
-    			
-    			if(z == -1 || sentSMSs.get(z).keyGrpId != sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_GRPID))){
-    				z++;
-    				ArrayList<Long> tempIds = new ArrayList<Long>();
-    				tempIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
-    				sentSMSs.add(new SentSms(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)),
-    						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_GRPID)),
-    						displayName,
-    						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
-    						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
-    						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_DATE)),
-    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_SENT)),
-    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_DELIVER)),
-    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)),
-    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_S_MILLIS)),
-    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_D_MILLIS)),
-    						tempIds));
-    			}else{
-    				sentSMSs.get(z).keyNumber = sentSMSs.get(z).keyNumber + ", " + displayName;
-    				sentSMSs.get(z).keyIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
-    			}
-    		}while(sentCur.moveToNext());
-    	}
-    	for(int i = 0; i<= z; i++){
+//    	z = -1;
+//    	sentSMSs.clear();
+//    	if(sentCur.moveToFirst()){
+//    		z = -1;
+//    		do{
+//    			Cursor spanCur = mdba.fetchSpanForSms(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    			spanCur.moveToFirst();
+//    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
+//    			
+//    			if(z == -1 || sentSMSs.get(z).keyGrpId != sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_GRPID))){
+//    				z++;
+//    				ArrayList<Long> tempIds = new ArrayList<Long>();
+//    				tempIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    				sentSMSs.add(new SentSms(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)),
+//    						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_GRPID)),
+//    						displayName,
+//    						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+//    						sentCur.getLong	 (sentCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
+//    						sentCur.getString(sentCur.getColumnIndex(DBAdapter.KEY_DATE)),
+//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_SENT)),
+//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_DELIVER)),
+//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)),
+//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_S_MILLIS)),
+//    						sentCur.getInt	 (sentCur.getColumnIndex(DBAdapter.KEY_D_MILLIS)),
+//    						tempIds));
+//    			}else{
+//    				sentSMSs.get(z).keyNumber = sentSMSs.get(z).keyNumber + ", " + displayName;
+//    				sentSMSs.get(z).keyIds.add(sentCur.getLong(sentCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    			}
+//    		}while(sentCur.moveToNext());
+//    	}
+    	
+    	for(int i = 0; i< sentSMSs.size(); i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, sentSMSs.get(i).keyMessage);
     		int condition = 1;
     		
     		for(int k = 0; k< sentSMSs.get(i).keyIds.size(); k++){
-    			Cursor cur = mdba.fetchSmsDetails(sentSMSs.get(i).keyIds.get(k));
+    			Cursor cur = mdba.fetchRecipientDetails(sentSMSs.get(i).keyIds.get(k));
     			cur.moveToFirst();
     			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == 0){
     				condition = 1;
     				break;
     			}
-    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !mdba.checkDeliver(sentSMSs.get(i).keyIds.get(k))){
+    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !mdba.checkDelivery(sentSMSs.get(i).keyIds.get(k))){
     				condition = 2;
     				break;
     			}
-    			if(mdba.checkDeliver(sentSMSs.get(i).keyIds.get(k))){
+    			if(mdba.checkDelivery(sentSMSs.get(i).keyIds.get(k))){
     				condition = 3;
     			}
     		}
@@ -635,36 +727,36 @@ public class Home extends Activity {
     	
     	//------------------------Loading Drafts----------------------------------------------------
     	ArrayList<HashMap<String, Object>> groupChildDraft = new ArrayList<HashMap<String, Object>>();
-    	z = -1;
-    	drafts.clear();
-    	if(draftCur.moveToFirst()){
-    		z = -1;
-    		do{
-    			Cursor spanCur = mdba.fetchSpanForSms(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
-    			
-    			spanCur.moveToFirst();
-    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
-    			
-    			if(z == -1 || drafts.get(z).keyGrpId != draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_GRPID))){
-    				z++;
-    				ArrayList<Long> tempIds = new ArrayList<Long>();
-    				tempIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
-    				drafts.add(new ScheduledSms(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)),
-    						draftCur.getLong	(draftCur.getColumnIndex(DBAdapter.KEY_GRPID)),
-    						displayName,
-    						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
-    						draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
-    						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_DATE)),
-    						tempIds));
-    			}else{
-    				drafts.get(z).keyNumber = drafts.get(z).keyNumber + ", " + displayName;
-    				drafts.get(z).keyIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
-    			}
-    		}while(draftCur.moveToNext());
-    	}
-    	
-    	Log.d(z + "");
-    	for(int i = 0; i<= z; i++){
+//    	z = -1;
+//    	drafts.clear();
+//    	if(draftCur.moveToFirst()){
+//    		z = -1;
+//    		do{
+//    			Cursor spanCur = mdba.fetchSpanForSms(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    			
+//    			spanCur.moveToFirst();
+//    			String displayName = spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN));
+//    			
+//    			if(z == -1 || drafts.get(z).keyGrpId != draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_GRPID))){
+//    				z++;
+//    				ArrayList<Long> tempIds = new ArrayList<Long>();
+//    				tempIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    				drafts.add(new ScheduledSms(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)),
+//    						draftCur.getLong	(draftCur.getColumnIndex(DBAdapter.KEY_GRPID)),
+//    						displayName,
+//    						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+//    						draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
+//    						draftCur.getString(draftCur.getColumnIndex(DBAdapter.KEY_DATE)),
+//    						tempIds));
+//    			}else{
+//    				drafts.get(z).keyNumber = drafts.get(z).keyNumber + ", " + displayName;
+//    				drafts.get(z).keyIds.add(draftCur.getLong(draftCur.getColumnIndex(DBAdapter.KEY_ID)));
+//    			}
+//    		}while(draftCur.moveToNext());
+//    	}
+//    	
+//    	Log.d(z + "");
+    	for(int i = 0; i< drafts.size(); i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, drafts.get(i).keyMessage);
     		drafts.get(i).keyImageRes = R.drawable.delete_icon_states;
@@ -688,9 +780,7 @@ public class Home extends Activity {
     	//-------------------------------------------------------------------------end of drafts load--------
     	
     	
-    	
-    	scheduledSMSs.size();
-//    	mdba.close();
+    	mdba.close();
     }
 
 	
@@ -749,7 +839,7 @@ public class Home extends Activity {
 		TextView messageSpace = (TextView) sentInfoDialog.findViewById(R.id.sent_details_dialog_message_space);
 		mdba.open();
 		numbersForSentDialog = sentSMSs.get(childPos).keyNumber.split(", ");
-		idsForSentDialog = mdba.getIds(sentSMSs.get(childPos).keyGrpId);
+		idsForSentDialog = mdba.fetchRecipientIdsForSms(sentSMSs.get(childPos).keyId);
 		timeLabel.setText(sentSMSs.get(childPos).keyDate);
 		messageSpace.setText(sentSMSs.get(childPos).keyMessage);
 		messageSpace.setMovementMethod(new ScrollingMovementMethod());
@@ -791,12 +881,12 @@ public class Home extends Activity {
     		
     		int condition = 1;
     		mdba.open();
-    		Cursor cur = mdba.fetchSmsDetails(currentId);
+    		Cursor cur = mdba.fetchRecipientDetails(currentId);
 			cur.moveToFirst();
-			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !(mdba.checkDeliver(currentId))){
+			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !(mdba.checkDelivery(currentId))){
 				condition = 2;
 			}else
-			if(mdba.checkDeliver(currentId)){
+			if(mdba.checkDelivery(currentId)){
 				condition = 3;
 			}
 			
@@ -879,9 +969,10 @@ public class Home extends Activity {
 			
 			String[] projection = new String[] {Groups._ID};
 			Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
-			groupCursor = managedQuery(groupsUri, projection, null, null, null);
+			
 			
 			ContentResolver cr = getContentResolver();
+			groupCursor = cr.query(groupsUri, projection, null, null, null);
 		    Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 		    if(cursor.moveToFirst()){
 		    	do{
@@ -890,7 +981,7 @@ public class Home extends Activity {
 		    		Cursor phones = cr.query(Phone.CONTENT_URI, null, Phone.CONTACT_ID + " = " + id, null, null);
 		    	    if(phones.moveToFirst()){
 		    	    	Contact contact = new Contact();
-			    		contact.content_uri_id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+			    		contact.content_uri_id = Long.parseLong(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID)));
 			    		contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 			    		contact.number = phones.getString(phones.getColumnIndex(Phone.NUMBER));
 
@@ -915,7 +1006,7 @@ public class Home extends Activity {
 		    	    		}while(cur.moveToNext());
 		    	    	}
 		    	    	cur.close();
-		    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.content_uri_id));
+		    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contact.content_uri_id);
 			    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
 			    	    try{
 			    	    	contact.image = BitmapFactory.decodeStream(input);
@@ -951,7 +1042,6 @@ public class Home extends Activity {
 
 			mIntent.setAction(Constants.DIALOG_CONTROL_ACTION);
 
-			
 			sendBroadcast(mIntent);
 		}
 	}
@@ -981,28 +1071,21 @@ public class Home extends Activity {
 	
 	private void deleteSms(){
 		mdba.open();
-		for(int i = 0; i<selectedIds.size(); i++){
-			mdba.deleteSms(selectedIds.get(i), Home.this);
-		}
-		
+//		for(int i = 0; i<selectedIds.size(); i++){
+		mdba.deleteSms(selectedSms, Home.this);
+//		}
+		mdba.close();
 		loadData();
 		mAdapter.notifyDataSetChanged();
 		Toast.makeText(Home.this, "Message Deleted", Toast.LENGTH_SHORT).show();
-		
-        Cursor cur = mdba.fetchAllScheduled();
+		mdba.open();
+        Cursor cur = mdba.fetchAllSms();
         if(cur.getCount()>0){
         	explList.setVisibility(LinearLayout.VISIBLE);
         	blankListLayout.setVisibility(LinearLayout.GONE);
         }else{
-        	cur = null;
-        	cur = mdba.fetchAllSent();
-        	if(cur.getCount()>0){
-        		explList.setVisibility(LinearLayout.VISIBLE);
-            	blankListLayout.setVisibility(LinearLayout.GONE);
-        	}else{
-        		explList.setVisibility(LinearLayout.GONE);
-            	blankListLayout.setVisibility(LinearLayout.VISIBLE);
-        	}
+        	explList.setVisibility(LinearLayout.GONE);
+            blankListLayout.setVisibility(LinearLayout.VISIBLE);
         }
         mdba.close();
 	}

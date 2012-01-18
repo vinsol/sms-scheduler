@@ -32,17 +32,18 @@ import android.widget.Toast;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.models.ScheduledSms;
-import com.vinsol.sms_scheduler.models.Span;
+import com.vinsol.sms_scheduler.models.Sms;
+import com.vinsol.sms_scheduler.models.Recipient;
+import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class EditScheduledSms extends AbstractScheduleSms {
 	
 	private TextView 	headerText;
 	
-	private long editedGroup;
+	private long editedSms;
 	private boolean isDraft = false;
-	private ArrayList<Long> smsIds;
+	private ArrayList<Long> recipientIds;
 	
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
 		
@@ -85,58 +86,58 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
 		
 		Intent intent = getIntent();
-		ScheduledSms SMS = intent.getParcelableExtra("SMS DATA");
-		
+		Sms SMS = intent.getParcelableExtra("SMS DATA");
+		Log.d("Key Message : " + SMS.keyMessage);
 		numbersText.setText(SMS.keyNumber);
 		messageText.setText(SMS.keyMessage);
 		originalMessage = SMS.keyMessage;
 		processDate = new Date(SMS.keyTimeMilis);
 		characterCountText.setText(String.valueOf(messageText.getText().toString().length()));
-		editedGroup = SMS.keyGrpId;
+		editedSms = SMS.keyId;
 		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
 
-		Spans.clear();
+		Recipients.clear();
 		
 		mdba.open();
-		smsIds = mdba.getIds(editedGroup);
+		recipientIds = mdba.fetchRecipientIdsForSms(editedSms);
 		
-		originalSpans.clear();
+		originalRecipients.clear();
 		
-		for(int i = 0; i< smsIds.size(); i++){
-			Cursor spanCur = mdba.fetchSpanForSms(smsIds.get(i));
+		for(int i = 0; i< recipientIds.size(); i++){
+			Cursor spanCur = mdba.fetchRecipientDetails(recipientIds.get(i));
 			spanCur.moveToFirst();
-			Spans.add(new Span(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
-					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_TYPE)),
-					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN)),
-					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ENTITY_ID)),
-					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_SMS_ID))));
-			ArrayList<Long> groupIds = mdba.fetchGroupsForSpan(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)));
-			ArrayList<Integer> groupTypes = mdba.fetchGroupTypesForSpan(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)));
+			Recipients.add(new Recipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
+					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
+					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
+					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
+					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SMS_ID))));
+			ArrayList<Long> groupIds = mdba.fetchGroupsForRecipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+			ArrayList<Integer> groupTypes = mdba.fetchGroupTypesForSpan(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
 			
-			originalSpans.add(new Span(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ID)),
-					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_TYPE)),
-					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_DN)),
-					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_ENTITY_ID)),
-					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SPAN_SMS_ID))));
+			originalRecipients.add(new Recipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
+					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
+					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
+					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
+					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SMS_ID))));
 			
 			for(int k = 0; k < groupIds.size(); k++){
-				Spans.get(i).groupIds.add(groupIds.get(k));
-				Spans.get(i).groupTypes.add(groupTypes.get(k));
-				originalSpans.get(i).groupIds.add(groupIds.get(k));
-				originalSpans.get(i).groupTypes.add(groupTypes.get(k));
+				Recipients.get(i).groupIds.add(groupIds.get(k));
+				Recipients.get(i).groupTypes.add(groupTypes.get(k));
+				originalRecipients.get(i).groupIds.add(groupIds.get(k));
+				originalRecipients.get(i).groupTypes.add(groupTypes.get(k));
 			}
 		}
 		
-		if(Spans.size()==0){
+		if(Recipients.size()==0){
 			isDraft = true;
 		}else if(messageText.getText().toString().equals("")){
 			isDraft = true;
 		}
 		else{
 			mdba.open();
-			Cursor smsDetail = mdba.fetchSmsDetails(Spans.get(0).smsId);
+			Cursor smsDetail = mdba.fetchRecipientDetails(Recipients.get(0).recipientId);
 			smsDetail.moveToFirst();
-			if(smsDetail.getInt(smsDetail.getColumnIndex(DBAdapter.KEY_DRAFT))==1){
+			if(smsDetail.getInt(smsDetail.getColumnIndex(DBAdapter.KEY_STATUS))==0){
 				isDraft = true;
 			}
 			mdba.close();
@@ -207,20 +208,20 @@ public class EditScheduledSms extends AbstractScheduleSms {
 				if(keyCode == KeyEvent.KEYCODE_DEL){
 	                 int pos = numbersText.getSelectionStart();
 	                 int len = 0;
-	                 for(int i = 0; i< Spans.size(); i++){
-	                	 len = len + Spans.get(i).displayName.length();
+	                 for(int i = 0; i< Recipients.size(); i++){
+	                	 len = len + Recipients.get(i).displayName.length();
 	                	 if(i!=0){
 	                		 len = len + 2;
 	                	 }
 	                	 if(pos<=len){
-	                		 numbersText.setSelection(pos - Spans.get(i).displayName.length());
+	                		 numbersText.setSelection(pos - Recipients.get(i).displayName.length());
 	                		 mdba.open();
-	                		 mdba.deleteSpanGroupRelsForSpan(Spans.get(i).spanId);
+	                		 mdba.deleteRecipientGroupRelsForRecipient(Recipients.get(i).recipientId);
 	                		 mdba.close();
 	                		 
 	                		 for(int j = 0; j < nativeGroupData.size(); j++){
 	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++) {
-	                				 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                				 if((Long)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == Recipients.get(i).contactId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
 	                					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
@@ -228,12 +229,12 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	                		 
 	                		 for(int j = 0; j< privateGroupData.size(); j++){
 	                			 for(int k = 0; k< privateChildData.get(j).size(); k++){
-	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Recipients.get(i).contactId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
 	                					 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
 	                		 }
-	                		 Spans.remove(i);
+	                		 Recipients.remove(i);
 	                		 refreshSpannableString(false);
 	                		 myAutoCompleteAdapter.notifyDataSetChanged();
 	                		 break;
@@ -253,11 +254,11 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			public void onClick(View v) {
 				boolean isSending = false;
 				mdba.open();
-				for(int i = 0; i< smsIds.size(); i++){
+				for(int i = 0; i< recipientIds.size(); i++){
 					if(isSending){
 						break;
 					}
-					Cursor cur = mdba.fetchSmsDetails(smsIds.get(i));
+					Cursor cur = mdba.fetchRecipientDetails(recipientIds.get(i));
 					if(cur.moveToFirst()){
 						do{
 							if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
@@ -301,11 +302,14 @@ public class EditScheduledSms extends AbstractScheduleSms {
 						
 						@Override
 						public void onClick(View v) {
-							for(int i = 0; i<smsIds.size(); i++){
-								mdba.open();
-								mdba.deleteSms(smsIds.get(i), EditScheduledSms.this);
-								mdba.close();
-							}
+							mdba.open();
+							mdba.deleteSms(editedSms, EditScheduledSms.this);
+							mdba.close();
+//							for(int i = 0; i<recipientIds.size(); i++){
+//								mdba.open();
+//								mdba.deleteSms(smsIds.get(i), EditScheduledSms.this);
+//								mdba.close();
+//							}
 							EditScheduledSms.this.finish();
 						}
 					});
@@ -335,10 +339,10 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	@Override
 	protected void doSmsScheduling(){
 		mdba.open();
-		ArrayList<Long> editedIds = mdba.getIds(editedGroup);
-		for(int i = 0; i< editedIds.size(); i++){
-			mdba.deleteSms(editedIds.get(i), EditScheduledSms.this);
-		}
+//		ArrayList<Long> editedIds = mdba.fetchRecipientIdsForSms(editedSms);
+		
+		mdba.deleteSms(editedSms, EditScheduledSms.this);
+		
 		doSmsSchedulingTask();
 		mdba.close();
 	}
@@ -369,11 +373,11 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	public void onBackPressed() {
 		boolean isSending = false;
 		mdba.open();
-		for(int i = 0; i< smsIds.size(); i++){
+		for(int i = 0; i< recipientIds.size(); i++){
 			if(isSending){
 				break;
 			}
-			Cursor cur = mdba.fetchSmsDetails(smsIds.get(i));
+			Cursor cur = mdba.fetchRecipientDetails(recipientIds.get(i));
 			if(cur.moveToFirst()){
 				do{
 					if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
@@ -388,30 +392,30 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		boolean isChanged = false;
 		
 		if(isDraft){
-			if(originalSpans.size()==1 && originalSpans.get(0).displayName.equals(" ")){
-				if(Spans.size()>0){
+			if(originalRecipients.size()==0){
+				if(Recipients.size()>0){
 					isChanged = true;
 				}
-			}else if(originalSpans.size()!=Spans.size()){
+			}else if(originalRecipients.size()!=Recipients.size()){
 				isChanged = true;
 			}else if(!messageText.getText().toString().equals(originalMessage)){
 				isChanged = true;
 			}else{
-				for(int i = 0; i< Spans.size(); i++){
-					if(Spans.get(i).entityId != originalSpans.get(i).entityId){
+				for(int i = 0; i< Recipients.size(); i++){
+					if(Recipients.get(i).contactId != originalRecipients.get(i).contactId){
 						isChanged = true;
 						break;
 					}
 				}
 			}
 		}else{
-			if(originalSpans.size() != Spans.size()){
+			if(originalRecipients.size() != Recipients.size()){
 				isChanged = true;
 			}else if(!messageText.getText().toString().equals(originalMessage)){
 				isChanged = true;
 			}else{
-				for(int i = 0; i< Spans.size(); i++){
-					if(Spans.get(i).entityId != originalSpans.get(i).entityId){
+				for(int i = 0; i< Recipients.size(); i++){
+					if(Recipients.get(i).contactId != originalRecipients.get(i).contactId){
 						isChanged = true;
 						break;
 					}

@@ -30,7 +30,7 @@ import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
-import com.vinsol.sms_scheduler.models.Span;
+import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
@@ -56,7 +56,7 @@ public class SelectContacts extends Activity {
 	private String origin;
 	
 	private ArrayList<Contact> selectedIds 	= new ArrayList<Contact>();
-	private ArrayList<Span> SpansTemp 	= new ArrayList<Span>();
+	private ArrayList<Recipient> RecipientsTemp 	= new ArrayList<Recipient>();
 	//---------------------------------------------------------------------------
 	
 	
@@ -128,8 +128,8 @@ public class SelectContacts extends Activity {
 		origin = intent.getStringExtra("ORIGIN");
 		
 		if(origin.equals("new")){
-			for(int i = 0; i < ScheduleNewSms.Spans.size(); i++){
-				SpansTemp.add(ScheduleNewSms.Spans.get(i));
+			for(int i = 0; i < ScheduleNewSms.Recipients.size(); i++){
+				RecipientsTemp.add(ScheduleNewSms.Recipients.get(i));
 			}
 			for(int groupCount = 0; groupCount< ScheduleNewSms.nativeGroupData.size(); groupCount++){
 				boolean hasAChild = false;
@@ -194,8 +194,8 @@ public class SelectContacts extends Activity {
 			}
 			
 		}else if(origin.equals("edit")){
-			for(int i = 0; i < EditScheduledSms.Spans.size(); i++){
-				SpansTemp.add(EditScheduledSms.Spans.get(i));
+			for(int i = 0; i < EditScheduledSms.Recipients.size(); i++){
+				RecipientsTemp.add(EditScheduledSms.Recipients.get(i));
 			}
 			
 			for(int groupCount = 0; groupCount< EditScheduledSms.nativeGroupData.size(); groupCount++){
@@ -290,9 +290,9 @@ public class SelectContacts extends Activity {
 					ScheduleNewSms.privateGroupData = privateGroupDataTemp;
 					ScheduleNewSms.privateChildData = privateChildDataTemp;
 					
-					ScheduleNewSms.Spans.clear();
-					for(int i = 0; i< SpansTemp.size(); i++){
-						ScheduleNewSms.Spans.add(SpansTemp.get(i));
+					ScheduleNewSms.Recipients.clear();
+					for(int i = 0; i< RecipientsTemp.size(); i++){
+						ScheduleNewSms.Recipients.add(RecipientsTemp.get(i));
 					}
 				}else if(origin.equals("edit")){
 					EditScheduledSms.nativeGroupData.clear();
@@ -307,9 +307,9 @@ public class SelectContacts extends Activity {
 					EditScheduledSms.privateGroupData = privateGroupDataTemp;
 					EditScheduledSms.privateChildData = privateChildDataTemp;
 					
-					EditScheduledSms.Spans.clear();
-					for(int i = 0; i< SpansTemp.size(); i++){
-						EditScheduledSms.Spans.add(SpansTemp.get(i));
+					EditScheduledSms.Recipients.clear();
+					for(int i = 0; i< RecipientsTemp.size(); i++){
+						EditScheduledSms.Recipients.add(RecipientsTemp.get(i));
 					}
 				}
 					
@@ -509,9 +509,9 @@ public class SelectContacts extends Activity {
     		holder.nameText.setText(SmsSchedulerApplication.contactsList.get(position).name);
     		holder.numberText.setText(SmsSchedulerApplication.contactsList.get(position).number);
     		
-    		for(int i = 0; i< SpansTemp.size(); i++){
+    		for(int i = 0; i< RecipientsTemp.size(); i++){
     			
-        		if(Long.parseLong(SmsSchedulerApplication.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
+        		if(SmsSchedulerApplication.contactsList.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
         			holder.contactCheck.setChecked(true);
         			break;
         		}else{
@@ -525,25 +525,25 @@ public class SelectContacts extends Activity {
 				public void onClick(View v) {
 					if(holder.contactCheck.isChecked()){
 						boolean isPresent = false;
-						for(int i = 0; i< SpansTemp.size(); i++){
-							if(SpansTemp.get(i).entityId == Long.parseLong(SmsSchedulerApplication.contactsList.get(position).content_uri_id)){
+						for(int i = 0; i< RecipientsTemp.size(); i++){
+							if(RecipientsTemp.get(i).contactId == SmsSchedulerApplication.contactsList.get(position).content_uri_id){
 								isPresent = true;
 								break;
 							}
 						}
 						if(!isPresent){
-							Span span = new Span(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, Long.parseLong(SmsSchedulerApplication.contactsList.get(position).content_uri_id), -1);
-							span.groupIds.add((long) -1);
-							span.groupTypes.add(-1);
-							SpansTemp.add(span);
+							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, SmsSchedulerApplication.contactsList.get(position).content_uri_id, -1);
+							recipient.groupIds.add((long) -1);
+							recipient.groupTypes.add(-1);
+							RecipientsTemp.add(recipient);
 						}
 					}else{
-						for(int i = 0; i<SpansTemp.size(); i++){
-				    		if(Long.parseLong(SmsSchedulerApplication.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
+						for(int i = 0; i<RecipientsTemp.size(); i++){
+				    		if(SmsSchedulerApplication.contactsList.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
 				    			for(int j = 0; j< nativeGroupDataTemp.size(); j++){
 				    				int noOfChecks = 0;
 				    				for(int k = 0; k< nativeChildDataTemp.get(j).size(); k++){
-				    					if(Long.parseLong((String)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID)) == SpansTemp.get(i).entityId){
+				    					if((Long)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == RecipientsTemp.get(i).contactId){
 				    						nativeChildDataTemp.get(j).get(k).put(Constants.CHILD_CHECK, false);
 				    					}
 				    					if((Boolean)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CHECK)){
@@ -559,7 +559,7 @@ public class SelectContacts extends Activity {
 				    			for(int j = 0; j< privateGroupDataTemp.size(); j++){
 				    				int noOfChecks = 0;
 				    				for(int k = 0; k< privateChildDataTemp.get(j).size(); k++){
-				    					if(Long.parseLong((String)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID)) == SpansTemp.get(i).entityId){
+				    					if((Long)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == RecipientsTemp.get(i).contactId){
 				    						privateChildDataTemp.get(j).get(k).put(Constants.CHILD_CHECK, false);
 				    					}
 				    					if((Boolean)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CHECK)){
@@ -572,7 +572,7 @@ public class SelectContacts extends Activity {
 				    					privateGroupDataTemp.get(j).put(Constants.GROUP_CHECK, false);
 				    				}
 				    			}
-				    			SpansTemp.remove(i);
+				    			RecipientsTemp.remove(i);
 				    			
 				    			nativeGroupAdapter.notifyDataSetChanged();
 				    			privateGroupAdapter.notifyDataSetChanged(); 
@@ -594,26 +594,26 @@ public class SelectContacts extends Activity {
 					if(!holder.contactCheck.isChecked()){
 						holder.contactCheck.setChecked(true);
 						boolean isPresent = false;
-						for(int i = 0; i< SpansTemp.size(); i++){
-							if(SpansTemp.get(i).entityId == Long.parseLong(SmsSchedulerApplication.contactsList.get(position).content_uri_id)){
+						for(int i = 0; i< RecipientsTemp.size(); i++){
+							if(RecipientsTemp.get(i).contactId == SmsSchedulerApplication.contactsList.get(position).content_uri_id){
 								isPresent = true;
 								break;
 							}
 						}
 						if(!isPresent){
-							Span span = new Span(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, Long.parseLong(SmsSchedulerApplication.contactsList.get(position).content_uri_id), -1);
-							span.groupIds.add((long) -1);
-							span.groupTypes.add(-1);
-							SpansTemp.add(span);
+							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, SmsSchedulerApplication.contactsList.get(position).content_uri_id, -1);
+							recipient.groupIds.add((long) -1);
+							recipient.groupTypes.add(-1);
+							RecipientsTemp.add(recipient);
 						}
 					}else{	
 						holder.contactCheck.setChecked(false);
-						for(int i = 0; i<SpansTemp.size(); i++){
-				    		if(Long.parseLong(SmsSchedulerApplication.contactsList.get(position).content_uri_id) == SpansTemp.get(i).entityId){
+						for(int i = 0; i<RecipientsTemp.size(); i++){
+				    		if(SmsSchedulerApplication.contactsList.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
 				    			for(int j = 0; j< nativeGroupDataTemp.size(); j++){
 				    				int noOfChecks = 0;
 				    				for(int k = 0; k< nativeChildDataTemp.get(j).size(); k++){
-				    					if(Long.parseLong((String)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID)) == SpansTemp.get(i).entityId){
+				    					if((Long)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == RecipientsTemp.get(i).contactId){
 				    						nativeChildDataTemp.get(j).get(k).put(Constants.CHILD_CHECK, false);
 				    					}
 				    					if((Boolean)nativeChildDataTemp.get(j).get(k).get(Constants.CHILD_CHECK)){
@@ -629,7 +629,7 @@ public class SelectContacts extends Activity {
 				    			for(int j = 0; j< privateGroupDataTemp.size(); j++){
 				    				int noOfChecks = 0;
 				    				for(int k = 0; k< privateChildDataTemp.get(j).size(); k++){
-				    					if(Long.parseLong((String)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID)) == SpansTemp.get(i).entityId){
+				    					if((Long)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == RecipientsTemp.get(i).contactId){
 				    						privateChildDataTemp.get(j).get(k).put(Constants.CHILD_CHECK, false);
 				    					}
 				    					if((Boolean)privateChildDataTemp.get(j).get(k).get(Constants.CHILD_CHECK)){
@@ -642,7 +642,7 @@ public class SelectContacts extends Activity {
 				    					privateGroupDataTemp.get(j).put(Constants.GROUP_CHECK, false);
 				    				}
 				    			}
-				    			SpansTemp.remove(i);
+				    			RecipientsTemp.remove(i);
 				    			
 				    			nativeGroupAdapter.notifyDataSetChanged();
 				    			privateGroupAdapter.notifyDataSetChanged();
@@ -1141,27 +1141,27 @@ public class SelectContacts extends Activity {
 	private void nativeAddCheck(int groupPosition, int childPosition){
 		nativeChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
-		for(int i = 0; i < SpansTemp.size(); i++){
-			if(SpansTemp.get(i).entityId == Long.parseLong((String) nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))){
+		for(int i = 0; i < RecipientsTemp.size(); i++){
+			if(RecipientsTemp.get(i).contactId == (Long)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)){
 				spanExist = true;
 				try{
-					SpansTemp.get(i).groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+					RecipientsTemp.get(i).groupIds.add((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID));
 				}catch (ClassCastException e) {
-					SpansTemp.get(i).groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+					RecipientsTemp.get(i).groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}
-				SpansTemp.get(i).groupTypes.add(1);
+				RecipientsTemp.get(i).groupTypes.add(1);
 				break;
 			}
 		}
 		if(!spanExist){
-			Span span = new Span(-1, 2, (String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), Long.parseLong((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)), -1);
+			Recipient recipient = new Recipient(-1, 2, (String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1);
 			try{
-				span.groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+				recipient.groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}catch (ClassCastException e) {
-				span.groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+				recipient.groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}
-			span.groupTypes.add(1);
-			SpansTemp.add(span);
+			recipient.groupTypes.add(1);
+			RecipientsTemp.add(recipient);
 			contactsAdapter.notifyDataSetChanged();
 		}
 	}
@@ -1171,9 +1171,9 @@ public class SelectContacts extends Activity {
 	
 	private void nativeRemoveCheck(int groupPosition, int childPosition){
 		nativeChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
-		for(int i = 0; i < SpansTemp.size(); i++){
-			if(Long.parseLong((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
-				for(int j = 0; j< SpansTemp.get(i).groupIds.size(); j++){
+		for(int i = 0; i < RecipientsTemp.size(); i++){
+			if((Long)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)==RecipientsTemp.get(i).contactId){
+				for(int j = 0; j< RecipientsTemp.get(i).groupIds.size(); j++){
 					Long groupIdToRemove;
 					int groupTypeToRemove;
 					try{
@@ -1183,10 +1183,10 @@ public class SelectContacts extends Activity {
 					}
 					groupTypeToRemove = 1;
 					
-					if(SpansTemp.get(i).groupIds.get(j) == groupIdToRemove && SpansTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
-						SpansTemp.get(i).groupIds.remove(j);
-						if(SpansTemp.get(i).groupIds.size()==0){
-							SpansTemp.remove(i);
+					if(RecipientsTemp.get(i).groupIds.get(j) == groupIdToRemove && RecipientsTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
+						RecipientsTemp.get(i).groupIds.remove(j);
+						if(RecipientsTemp.get(i).groupIds.size()==0){
+							RecipientsTemp.remove(i);
 							contactsAdapter.notifyDataSetChanged();
 						}
 						break;
@@ -1203,27 +1203,27 @@ public class SelectContacts extends Activity {
 		Log.d("entering childcheck is checked true listner");
 		privateChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
-		for(int i = 0; i < SpansTemp.size(); i++){
-			if(SpansTemp.get(i).entityId == Long.parseLong((String) privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))){
+		for(int i = 0; i < RecipientsTemp.size(); i++){
+			if(RecipientsTemp.get(i).contactId == (Long) privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)){
 				spanExist = true;
 				try{
-					SpansTemp.get(i).groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+					RecipientsTemp.get(i).groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}catch (ClassCastException e) {
-					SpansTemp.get(i).groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+					RecipientsTemp.get(i).groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}
-					SpansTemp.get(i).groupTypes.add(2);
+				RecipientsTemp.get(i).groupTypes.add(2);
 				break;
 			}
 		}
 		if(!spanExist){
-			Span span = new Span(-1, 2, (String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), Long.parseLong((String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)), -1);
+			Recipient recipient = new Recipient(-1, 2, (String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1);
 			try{
-				span.groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+				recipient.groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}catch (ClassCastException e) {
-				span.groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+				recipient.groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}
-			span.groupTypes.add(2);
-			SpansTemp.add(span);
+			recipient.groupTypes.add(2);
+			RecipientsTemp.add(recipient);
 			contactsAdapter.notifyDataSetChanged();
 		}
 	}	
@@ -1233,9 +1233,9 @@ public class SelectContacts extends Activity {
 	
 	private void privateRemoveCheck(int groupPosition, int childPosition){
 		privateChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
-		for(int i = 0; i < SpansTemp.size(); i++){
-			if(Long.parseLong((String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID))==SpansTemp.get(i).entityId){
-				for(int j = 0; j< SpansTemp.get(i).groupIds.size(); j++){
+		for(int i = 0; i < RecipientsTemp.size(); i++){
+			if((Long)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)==RecipientsTemp.get(i).contactId){
+				for(int j = 0; j< RecipientsTemp.get(i).groupIds.size(); j++){
 					Long groupIdToRemove;
 					int groupTypeToRemove;
 					try{
@@ -1244,10 +1244,10 @@ public class SelectContacts extends Activity {
 						groupIdToRemove = (Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID);
 					}
 					groupTypeToRemove = 2;
-					if(SpansTemp.get(i).groupIds.get(j) == groupIdToRemove && SpansTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
-						SpansTemp.get(i).groupIds.remove(j);
-						if(SpansTemp.get(i).groupIds.size()==0){
-							SpansTemp.remove(i);
+					if(RecipientsTemp.get(i).groupIds.get(j) == groupIdToRemove && RecipientsTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
+						RecipientsTemp.get(i).groupIds.remove(j);
+						if(RecipientsTemp.get(i).groupIds.size()==0){
+							RecipientsTemp.remove(i);
 							contactsAdapter.notifyDataSetChanged();
 						}
 						break;
@@ -1287,13 +1287,13 @@ public class SelectContacts extends Activity {
     		
     		if(recentContactIds.get(position)> -1){
     			for(i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
-    				if(Long.parseLong(SmsSchedulerApplication.contactsList.get(i).content_uri_id) == recentContactIds.get(position)){
+    				if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == recentContactIds.get(position)){
     					holder.contactImage.setImageBitmap(SmsSchedulerApplication.contactsList.get(i).image);
     		    		holder.nameText.setText(SmsSchedulerApplication.contactsList.get(i).name);
     		    		holder.numberText.setText(SmsSchedulerApplication.contactsList.get(i).number);
     		    		
-    		    		for(int j = 0; j< SpansTemp.size(); j++){
-    		        		if(Long.parseLong(SmsSchedulerApplication.contactsList.get(i).content_uri_id) == SpansTemp.get(j).entityId){
+    		    		for(int j = 0; j< RecipientsTemp.size(); j++){
+    		        		if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == RecipientsTemp.get(j).contactId){
     		        			holder.contactCheck.setChecked(true);
     		        			break;
     		        		}else{
@@ -1307,8 +1307,8 @@ public class SelectContacts extends Activity {
     			holder.contactImage.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
     			holder.nameText.setText(recentContactNumbers.get(position));
     			holder.numberText.setText("");
-    			for(int j = 0; j< SpansTemp.size(); j++){
-    				if(SpansTemp.get(j).displayName.equals(recentContactNumbers.get(position))){
+    			for(int j = 0; j< RecipientsTemp.size(); j++){
+    				if(RecipientsTemp.get(j).displayName.equals(recentContactNumbers.get(position))){
     					holder.contactCheck.setChecked(true);
     					break;
     				}else{
@@ -1322,11 +1322,11 @@ public class SelectContacts extends Activity {
 				public void onClick(View v) {
 					if(!holder.contactCheck.isChecked()){
 						holder.contactCheck.setChecked(true);
-						Span span = new Span();
+						Recipient recipient = new Recipient();
 						if(recentContactIds.get(_position)> -1){
 							for(int k = 0; k< SmsSchedulerApplication.contactsList.size(); k++){
-								if(Long.parseLong(SmsSchedulerApplication.contactsList.get(k).content_uri_id) == recentContactIds.get(_position)){
-									span = new Span(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, Long.parseLong(SmsSchedulerApplication.contactsList.get(k).content_uri_id), -1);
+								if(SmsSchedulerApplication.contactsList.get(k).content_uri_id == recentContactIds.get(_position)){
+									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1);
 									break;
 								}
 							}
@@ -1336,24 +1336,24 @@ public class SelectContacts extends Activity {
 									
 								}
 							}
-							span = new Span(-1, 1, recentContactNumbers.get(_position), -1, -1);
+							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1);
 						}
-						span.groupIds.add((long) -1);
-						span.groupTypes.add(-1);
-						SpansTemp.add(span);
+						recipient.groupIds.add((long) -1);
+						recipient.groupTypes.add(-1);
+						RecipientsTemp.add(recipient);
 						contactsAdapter.notifyDataSetChanged();
 					}else{
 						holder.contactCheck.setChecked(false);
-						for(int i = 0; i< SpansTemp.size(); i++){
+						for(int i = 0; i< RecipientsTemp.size(); i++){
 				    		if(recentContactIds.get(_position)>-1){
-				    			if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
-				    				SpansTemp.remove(i);
+				    			if(recentContactIds.get(_position) == RecipientsTemp.get(i).contactId){
+				    				RecipientsTemp.remove(i);
 					    			contactsAdapter.notifyDataSetChanged();
 					    			break;
 					    		}
 				    		}else{
-				    			if(SpansTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
-				    				SpansTemp.remove(i);
+				    			if(RecipientsTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
+				    				RecipientsTemp.remove(i);
 				    				contactsAdapter.notifyDataSetChanged();
 				    				break;
 				    			}
@@ -1370,34 +1370,34 @@ public class SelectContacts extends Activity {
 				@Override
 				public void onClick(View v) {
 					if(holder.contactCheck.isChecked()){
-						Span span = new Span();
+						Recipient recipient = new Recipient();
 						if(recentContactIds.get(_position)> -1){
 							for(int k = 0; k< SmsSchedulerApplication.contactsList.size(); k++){
-								if(Long.parseLong(SmsSchedulerApplication.contactsList.get(k).content_uri_id) == recentContactIds.get(_position)){
-									span = new Span(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, Long.parseLong(SmsSchedulerApplication.contactsList.get(k).content_uri_id), -1);
+								if(SmsSchedulerApplication.contactsList.get(k).content_uri_id == recentContactIds.get(_position)){
+									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1);
 									break;
 								}
 							}
 						}else{
-							span = new Span(-1, 1, recentContactNumbers.get(_position), -1, -1);
+							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1);
 						}
-						span.groupIds.add((long) -1);
-						span.groupTypes.add(-1);
+						recipient.groupIds.add((long) -1);
+						recipient.groupTypes.add(-1);
 						
-						SpansTemp.add(span);
+						RecipientsTemp.add(recipient);
 						
 						contactsAdapter.notifyDataSetChanged();
 					}else{
-						for(int i = 0; i< SpansTemp.size(); i++){
+						for(int i = 0; i< RecipientsTemp.size(); i++){
 				    		if(recentContactIds.get(_position)>-1){
-				    			if(recentContactIds.get(_position) == SpansTemp.get(i).entityId){
-				    				SpansTemp.remove(i);
+				    			if(recentContactIds.get(_position) == RecipientsTemp.get(i).contactId){
+				    				RecipientsTemp.remove(i);
 					    			contactsAdapter.notifyDataSetChanged();
 					    			break;
 					    		}
 				    		}else{
-				    			if(SpansTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
-				    				SpansTemp.remove(i);
+				    			if(RecipientsTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
+				    				RecipientsTemp.remove(i);
 				    				contactsAdapter.notifyDataSetChanged();
 				    				break;
 				    			}
@@ -1463,15 +1463,15 @@ public class SelectContacts extends Activity {
         if(groupsCursor.moveToFirst()){
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
-        		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)), 2);
+        		ArrayList<Long> spanIdsForGroup = mdba.fetchRecipientsForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)), 2);
         		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
         		group.put(Constants.GROUP_IMAGE, new BitmapFactory().decodeResource(getResources(), R.drawable.expander_ic_maximized));
         		if(spanIdsForGroup.size()==0){
        				group.put(Constants.GROUP_CHECK, false);
        			}else{
-       				for(int i = 0; i< SpansTemp.size(); i++){
+       				for(int i = 0; i< RecipientsTemp.size(); i++){
        					for(int j = 0; j< spanIdsForGroup.size(); j++){
-       						if(spanIdsForGroup.get(j)==SpansTemp.get(i).spanId){
+       						if(spanIdsForGroup.get(j)==RecipientsTemp.get(i).recipientId){
        							group.put(Constants.GROUP_CHECK, true);
        							break;
        						}
@@ -1493,7 +1493,7 @@ public class SelectContacts extends Activity {
         		
         		for(int i = 0; i< contactIds.size(); i++){
         			for(int j = 0; j< SmsSchedulerApplication.contactsList.size(); j++){
-        				if(contactIds.get(i)==Long.parseLong(SmsSchedulerApplication.contactsList.get(j).content_uri_id)){
+        				if(contactIds.get(i)==SmsSchedulerApplication.contactsList.get(j).content_uri_id){
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
         					childParameters.put(Constants.CHILD_NAME, SmsSchedulerApplication.contactsList.get(j).name);
         					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(j).number);
@@ -1501,8 +1501,8 @@ public class SelectContacts extends Activity {
         					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(j).image);
         					childParameters.put(Constants.CHILD_CHECK, false);
         					for(int k = 0; k< spanIdsForGroup.size(); k++){
-       							for(int m = 0; m< SpansTemp.size(); m++){
-       								if(SpansTemp.get(m).spanId == spanIdsForGroup.get(k) && SpansTemp.get(m).entityId == contactIds.get(i)){
+       							for(int m = 0; m< RecipientsTemp.size(); m++){
+       								if(RecipientsTemp.get(m).recipientId == spanIdsForGroup.get(k) && RecipientsTemp.get(m).recipientId == contactIds.get(i)){
        									childParameters.put(Constants.CHILD_CHECK, true);
        								}
        							}
@@ -1530,9 +1530,9 @@ public class SelectContacts extends Activity {
 				group.put(Constants.GROUP_IMAGE, ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_IMAGE));
 				group.put(Constants.GROUP_TYPE, ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_TYPE));
 				group.put(Constants.GROUP_CHECK, ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
-				for(int i = 0; i< SpansTemp.size(); i++){
-        			for(int j = 0; j< SpansTemp.get(i).groupIds.size(); j++){
-        				if((SpansTemp.get(i).groupIds.get(j)==group.get(Constants.GROUP_ID)) && SpansTemp.get(i).groupTypes.get(j) == 2){
+				for(int i = 0; i< RecipientsTemp.size(); i++){
+        			for(int j = 0; j< RecipientsTemp.get(i).groupIds.size(); j++){
+        				if((RecipientsTemp.get(i).groupIds.get(j)==group.get(Constants.GROUP_ID)) && RecipientsTemp.get(i).groupTypes.get(j) == 2){
         					group.put(Constants.GROUP_CHECK, true);
         					break;
         				}

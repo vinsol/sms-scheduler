@@ -23,7 +23,8 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 	
 	private String message;
 	private String number;
-	private long id;
+	private long smsId;
+	private long recipientId;
 	private Context mContext;
 
 	SmsManager smsManager = SmsManager.getDefault();
@@ -37,11 +38,15 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		mContext = context;
 		message = intent.getStringExtra("MESSAGE");
 		number = intent.getStringExtra("NUMBER");
-		id = intent.getLongExtra("ID", 0);
+		smsId = intent.getLongExtra("SMS_ID", 0);
+		recipientId = intent.getLongExtra("RECIPIENT_ID", 0);
 		DBAdapter mdba = new DBAdapter(context);
 		
+		Log.d("Came in handler for recipient Id : " + recipientId);
+		
 		mdba.open();
-		mdba.makeOperated(id);
+		mdba.makeOperated(recipientId);
+		mdba.setStatus(smsId, 3);
 		
 		parts = smsManager.divideMessage(message);
 		msgSize = parts.size();
@@ -58,8 +63,9 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			isent.putExtra("SIZE", msgSize);
 			isent.putExtra("MESSAGE", message);
 			isent.putExtra("NUMBER", number);
-			isent.putExtra("ID", id);
-			isent.setAction(Constants.PRIVATE_SMS_ACTION + id);
+			isent.putExtra("SMS_ID", smsId);
+			isent.putExtra("RECIPIENT_ID", recipientId);
+			isent.setAction(Constants.PRIVATE_SMS_ACTION + recipientId);
 			pisent = PendingIntent.getBroadcast(context, 0, isent, PendingIntent.FLAG_UPDATE_CURRENT);
 			sentIntents.add(pisent);
 			
@@ -68,8 +74,9 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			ideliver.putExtra("SIZE", msgSize);
 			ideliver.putExtra("MESSAGE", message);
 			ideliver.putExtra("NUMBER", number);
-			ideliver.putExtra("ID", id);
-			ideliver.setAction(Constants.PRIVATE_SMS_ACTION + id);
+			ideliver.putExtra("SMS_ID", smsId);
+			ideliver.putExtra("RECIPIENT_ID", recipientId);
+			ideliver.setAction(Constants.PRIVATE_SMS_ACTION + recipientId);
 			pideliver = PendingIntent.getBroadcast(context, 0, ideliver, PendingIntent.FLAG_UPDATE_CURRENT);
 			deliverIntents.add(pideliver);
 		}
@@ -79,34 +86,61 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			
 		}
 		mdba.open();
-		mdba.makeOperated(id);
-		Cursor cur = mdba.fetchRemainingScheduled();
+//		mdba.makeOperated(id);
+		Cursor cur = mdba.fetchAllScheduled();
 		mdba.close();
-		
 		if(cur.moveToFirst()){
-			Intent nextIntent = new Intent(context, SMSHandleReceiver.class);
+			Log.d("more records");
+			intent = new Intent(context, SMSHandleReceiver.class);
+			intent.setAction(Constants.PRIVATE_SMS_ACTION);
+			intent.putExtra("SMS_ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
+			intent.putExtra("RECIPIENT_ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+			intent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(DBAdapter.KEY_NUMBER)));
+			intent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)));
 			
-			nextIntent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
-			nextIntent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(DBAdapter.KEY_NUMBER)));
-			nextIntent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)));
-
 			Random rand = new Random();
 			int piNumber = rand.nextInt();
-			PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			mdba.open();
-			mdba.updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
+			mdba.updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
 			mdba.close();
-			
-			AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(context.ALARM_SERVICE);
-			if(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)) > System.currentTimeMillis()){
-				alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)), pi);
-			}else{
-				alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pi);
-			}
+			AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+	    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)), pi);
 		}else{
+			Log.d("no more records retrieved");
 			mdba.open();
 			mdba.updatePi(0, -1, -1);
 			mdba.close();
 		}
+//		mdba.close();
+		
+//		Cursor cur = mdba.fetchRemainingScheduled();
+//		mdba.close();
+//		
+//		if(cur.moveToFirst()){
+//			Intent nextIntent = new Intent(context, SMSHandleReceiver.class);
+//			
+//			nextIntent.putExtra("ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
+//			nextIntent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(DBAdapter.KEY_NUMBER)));
+//			nextIntent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)));
+//
+//			Random rand = new Random();
+//			int piNumber = rand.nextInt();
+//			PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//			mdba.open();
+//			mdba.updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
+//			mdba.close();
+//			
+//			AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(context.ALARM_SERVICE);
+//			if(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)) > System.currentTimeMillis()){
+//				alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)), pi);
+//			}else{
+//				alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pi);
+//			}
+//		}else{
+//			mdba.open();
+//			mdba.updatePi(0, -1, -1);
+//			mdba.close();
+//		}
 	}
 }

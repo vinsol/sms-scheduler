@@ -73,7 +73,7 @@ public class ContactsList extends Activity {
 			for(int i = 0; i< contacts.size(); i++){
 				contacts.get(i).checked = false;
 				for(int j = 0; j< ids.size(); j++){
-					if(Long.parseLong(contacts.get(i).content_uri_id) == ids.get(j)){
+					if(contacts.get(i).content_uri_id == ids.get(j)){
 						contacts.get(i).checked = true;
 					}
 				}
@@ -266,11 +266,11 @@ public class ContactsList extends Activity {
 					Log.d("position : " + position);
 					
 					if(holder.contactCheck.isChecked()){
-						ids.add(Long.parseLong(contacts.get(_position).content_uri_id));
+						ids.add(contacts.get(_position).content_uri_id);
 						contacts.get(_position).checked = true;	
 					}else{
 						for(int i = 0; i< ids.size(); i++){
-							if(ids.get(i) == Long.parseLong(contacts.get(_position).content_uri_id)){
+							if(ids.get(i) == contacts.get(_position).content_uri_id){
 								ids.remove(i);
 								contacts.get(_position).checked = false;
 							}
@@ -306,12 +306,12 @@ public class ContactsList extends Activity {
 				public void onClick(View v) {
 					if(!holder.contactCheck.isChecked()){
 						holder.contactCheck.setChecked(true);
-						ids.add(Long.parseLong(contacts.get(_position).content_uri_id));
+						ids.add(contacts.get(_position).content_uri_id);
 						contacts.get(_position).checked = true;	
 					}else{
 						holder.contactCheck.setChecked(false);
 						for(int i = 0; i< ids.size(); i++){
-							if(ids.get(i) == Long.parseLong(contacts.get(_position).content_uri_id)){
+							if(ids.get(i) == contacts.get(_position).content_uri_id){
 								ids.remove(i);
 								contacts.get(_position).checked = false;
 							}

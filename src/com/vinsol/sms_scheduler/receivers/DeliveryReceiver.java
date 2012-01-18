@@ -22,8 +22,10 @@ public class DeliveryReceiver extends BroadcastReceiver{
 		int msgSize = intent.getIntExtra("SIZE", 0);
 		int part = (int)intent.getIntExtra("PART", 0);
 		String number = intent.getStringExtra("NUMBER");
-		long id = intent.getLongExtra("ID", 0);
-		Log.d("ID in DeliverReceiver : " + id);
+		long smsId = intent.getLongExtra("SMS_ID", 0);
+		long recipientId = intent.getLongExtra("RECIPIENT_ID", 0);
+		Log.d("Recipient ID in DeliverReceiver : " + recipientId);
+		Log.d("Sms ID in DeliverReceiver : " + smsId);
 		mdba = new DBAdapter(context);
 		
 		switch (getResultCode())
@@ -31,14 +33,14 @@ public class DeliveryReceiver extends BroadcastReceiver{
             case Activity.RESULT_OK:
 
             	mdba.open();
-            	mdba.increaseDeliver(id);
+            	mdba.increaseDeliver(recipientId);
             	mdba.close();
             	
             	if(part==msgSize){
             		mdba.open();
-            		Cursor cur = mdba.fetchSpanForSms(id);
-               	 	cur.moveToFirst();
-               	 	String receiverName = cur.getString(cur.getColumnIndex(DBAdapter.KEY_SPAN_DN));          		
+//            		Cursor cur = mdba.fetchRecipientDetails(recipientId);
+//               	 	cur.moveToFirst();
+//               	 	String receiverName = cur.getString(cur.getColumnIndex(DBAdapter.KEY_SPAN_DN));          		
             		Intent mIntent = new Intent();
                     mIntent.setAction(context.getResources().getString(R.string.update_action));
                     PendingIntent pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);

@@ -347,7 +347,7 @@ public class EditGroup extends Activity {
 		newGroupContacts.clear();
 		for(int j = 0; j< ids.size(); j++){
 			for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
-				if(ids.get(j)==Long.parseLong(SmsSchedulerApplication.contactsList.get(i).content_uri_id)){
+				if(ids.get(j)==SmsSchedulerApplication.contactsList.get(i).content_uri_id){
 					Contact Contact = new Contact();
 					Contact.content_uri_id = SmsSchedulerApplication.contactsList.get(i).content_uri_id;
 					Contact.name = SmsSchedulerApplication.contactsList.get(i).name;

@@ -15,7 +15,7 @@ import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 
 import com.vinsol.sms_scheduler.models.Contact;
-import com.vinsol.sms_scheduler.models.Span;
+import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
@@ -98,8 +98,8 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	//---------------------------------------------------------------
-	protected static ArrayList<Span> Spans = new ArrayList<Span>();
-	protected static ArrayList<Span> originalSpans = new ArrayList<Span>();
+	protected static ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
+	protected static ArrayList<Recipient> originalRecipients = new ArrayList<Recipient>();
 	protected SpannableStringBuilder ssb = new SpannableStringBuilder();
 	protected int spanStartPosition = 0;
 	protected static String originalMessage;
@@ -236,7 +236,7 @@ abstract class AbstractScheduleSms extends Activity{
 								break;
 							}
 						}
-						boolean invalidSpan = false;
+						boolean invalidRecipient = false;
 						for(int i = pos-2; i>= pos2; i--){
 						if(!(numbersText.getText().toString().charAt(pos-2)== '0' ||
 								numbersText.getText().toString().charAt(pos-2)== '1' ||
@@ -248,11 +248,11 @@ abstract class AbstractScheduleSms extends Activity{
 								numbersText.getText().toString().charAt(pos-2)== '7' ||
 								numbersText.getText().toString().charAt(pos-2)== '8' ||
 								numbersText.getText().toString().charAt(pos-2)== '9')){
-							invalidSpan = true;
+							invalidRecipient = true;
 							break;
 						}
 						}
-						if(!invalidSpan){
+						if(!invalidRecipient){
 							numbersText.setText(numbersText.getText().toString().substring(0, pos-1));// + numbersText.getText().toString().substring(pos, numbersText.getText().toString().length()-1));
 							int start = 0;
 							for(int i= 0; i < pos-1 ; i++) {
@@ -261,15 +261,15 @@ abstract class AbstractScheduleSms extends Activity{
 								}
 							}
 							boolean isPresent = false;
-							for(int i = 0; i< Spans.size(); i++) {
-								if(Spans.get(i).displayName.equals(numbersText.getText().toString().substring(start, pos-1))){
+							for(int i = 0; i< Recipients.size(); i++) {
+								if(Recipients.get(i).displayName.equals(numbersText.getText().toString().substring(start, pos-1))){
 									isPresent = true;
 									break;
 								}
 							}
 							if(!isPresent){
-								Span span = new Span(-1, 1, numbersText.getText().toString().substring(start, pos-1), -1, -1);
-								Spans.add(span);
+								Recipient recipient = new Recipient(-1, 1, numbersText.getText().toString().substring(start, pos-1), -1, -1);
+								Recipients.add(recipient);
 							}
 							refreshSpannableString(false);
 						}		
@@ -290,15 +290,15 @@ abstract class AbstractScheduleSms extends Activity{
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				boolean isPresent = false;
-				for(int i = 0; i< Spans.size(); i++){
-					if(Spans.get(i).entityId == Long.parseLong(shortlist.get(position).content_uri_id)) {
+				for(int i = 0; i< Recipients.size(); i++){
+					if(Recipients.get(i).contactId == shortlist.get(position).content_uri_id) {
 						isPresent = true;
 						break;
 					}
 				}
 				if(!isPresent){
-					final Span span = new Span(-1, 2, shortlist.get(position).name, Long.parseLong(shortlist.get(position).content_uri_id), -1);
-					Spans.add(span);
+					final Recipient recipient = new Recipient(-1, 2, shortlist.get(position).name, shortlist.get(position).content_uri_id, -1);
+					Recipients.add(recipient);
 			
 				}
 				refreshSpannableString(false);
@@ -650,7 +650,7 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	//=======================function to handle updation of Pending Intent===================================
-	private void handlePiUpdate(String number, long groupId, long id, long time){
+	private void handlePiUpdate(String number, long smsId, long recipientid, long time){
 		//Cancel the pi conditionally----------------------
 		Cursor cur = mdba.getPiDetails();
 		cur.moveToFirst();
@@ -667,14 +667,15 @@ abstract class AbstractScheduleSms extends Activity{
 			pi = PendingIntent.getBroadcast(AbstractScheduleSms.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 			pi.cancel();
 		}
-		intent.putExtra("ID", id);
+		intent.putExtra("SMS_ID", smsId);
+		intent.putExtra("RECIPIENT_ID", recipientid);
 		intent.putExtra("NUMBER", number);
 		intent.putExtra("MESSAGE", messageText.getText().toString());
 		
 		Random rand = new Random();
 		int piNumber = rand.nextInt();
 		pi = PendingIntent.getBroadcast(AbstractScheduleSms.this, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		mdba.updatePi(piNumber, id, time);
+		mdba.updatePi(piNumber, recipientid, time);
 		
 		AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     	alarmManager.set(AlarmManager.RTC_WAKEUP, time, pi);
@@ -774,11 +775,11 @@ abstract class AbstractScheduleSms extends Activity{
 						String textForFiltering = text.substring(positionTrack, text.length()).trim();
 					
 						if(textForFiltering.length()>0 && !textForFiltering.equals("")){
-							if(Spans.size()>0 && !textForFiltering.equals(Spans.get(Spans.size()-1).displayName)){
+							if(Recipients.size()>0 && !textForFiltering.equals(Recipients.get(Recipients.size()-1).displayName)){
 								mData = shortlistContacts(textForFiltering);
 								filterResults.values = mData;
 								filterResults.count = mData.size();
-							}else if(Spans.size()==0){
+							}else if(Recipients.size()==0){
 								mData = shortlistContacts(textForFiltering);
 								filterResults.values = mData;
 								filterResults.count = mData.size();
@@ -1015,11 +1016,11 @@ abstract class AbstractScheduleSms extends Activity{
 		spanStartPosition = 0;
 		numbersText.setText("");
 			
-		if(Spans.size()>0 && Spans.get(0).displayName.equals(" ")){
-			Spans.remove(0);
+		if(Recipients.size()>0 && Recipients.get(0).displayName.equals(" ")){
+			Recipients.remove(0);
 		}
 		
-		for(int i = 0; i< Spans.size(); i++){
+		for(int i = 0; i< Recipients.size(); i++){
 			
 			
 			
@@ -1032,19 +1033,19 @@ abstract class AbstractScheduleSms extends Activity{
 					 inputMethodManager.hideSoftInputFromWindow(numbersText.getWindowToken(), 0);
 					 for(int j = 0; j< nativeGroupData.size(); j++){
 	                	 for(int k = 0; k< nativeChildData.get(j).size(); k++){
-	                		 if((Long.parseLong((String)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                		 if((Long)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == Recipients.get(_i).contactId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
 	                			 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                		 }
 	                	 }
 	                 }	
 					 for(int j = 0; j< privateGroupData.size(); j++){
 	                	 for(int k = 0; k< privateChildData.get(j).size(); k++){
-	                		 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Spans.get(_i).entityId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                		 if((Long)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == Recipients.get(_i).contactId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
 	                			 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                		 }
 	                	 }
 	                 }
-					 Spans.remove(_i);
+					 Recipients.remove(_i);
 					 refreshSpannableString(true);
 				}
 			
@@ -1055,19 +1056,19 @@ abstract class AbstractScheduleSms extends Activity{
 					ds.setUnderlineText(false);
 				}
 			});
-			if(Spans != null && Spans.get(i) != null) {
-				ssb.append(Spans.get(i).displayName + ", ");
-	    		if((spanStartPosition + (Spans.get(i).displayName.length()))<ssb.length() && spanStartPosition>-1 && (spanStartPosition + (Spans.get(i).displayName.length()))>-1){
-					ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Spans.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
+			if(Recipients != null && Recipients.get(i) != null) {
+				ssb.append(Recipients.get(i).displayName + ", ");
+	    		if((spanStartPosition + (Recipients.get(i).displayName.length()))<ssb.length() && spanStartPosition>-1 && (spanStartPosition + (Recipients.get(i).displayName.length()))>-1){
+					ssb.setSpan(clickableSpanArrayList.get(clickableSpanArrayList.size() - 1), spanStartPosition, (spanStartPosition + (Recipients.get(i).displayName.length())), SpannableStringBuilder.SPAN_INCLUSIVE_EXCLUSIVE);
 				}
-				spanStartPosition += Spans.get(i).displayName.length() + 2;
+				spanStartPosition += Recipients.get(i).displayName.length() + 2;
 				numbersText.setText(ssb);
 			}
 		}
 		
 		
 		if(!isDeleted){
-			if(Spans.size() > 0 ) {
+			if(Recipients.size() > 0 ) {
 				numbersText.setSelection(spanStartPosition);
 			}
 		}
@@ -1139,16 +1140,16 @@ abstract class AbstractScheduleSms extends Activity{
         	mdba.open();
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
-        		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)), 1);
+        		ArrayList<Long> recipientIdsForGroup = mdba.fetchRecipientsForGroup(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)), 1);
         		group.put(Constants.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
         		new BitmapFactory();
 				group.put(Constants.GROUP_IMAGE, BitmapFactory.decodeResource(getResources(), R.drawable.expander_ic_maximized));
-       			if(spanIdsForGroup.size()==0){
+       			if(recipientIdsForGroup.size()==0){
        				group.put(Constants.GROUP_CHECK, false);
        			}else{
-       				for(int i = 0; i< Spans.size(); i++){
-       					for(int j = 0; j< spanIdsForGroup.size(); j++){
-       						if(spanIdsForGroup.get(j)==Spans.get(i).spanId){
+       				for(int i = 0; i< Recipients.size(); i++){
+       					for(int j = 0; j< recipientIdsForGroup.size(); j++){
+       						if(recipientIdsForGroup.get(j)==Recipients.get(i).recipientId){
        							group.put(Constants.GROUP_CHECK, true);
        							break;
        						}
@@ -1172,9 +1173,9 @@ abstract class AbstractScheduleSms extends Activity{
         					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(i).number);
         					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(i).image);
         					childParameters.put(Constants.CHILD_CHECK, false);//doubted
-        					for(int k = 0; k< spanIdsForGroup.size(); k++){
-       							for(int m = 0; m< Spans.size(); m++){
-       								if(Spans.get(m).spanId == spanIdsForGroup.get(k) && Spans.get(m).entityId ==Long.parseLong(SmsSchedulerApplication.contactsList.get(i).content_uri_id)){
+        					for(int k = 0; k< recipientIdsForGroup.size(); k++){
+       							for(int m = 0; m< Recipients.size(); m++){
+       								if(Recipients.get(m).recipientId == recipientIdsForGroup.get(k) && Recipients.get(m).contactId ==SmsSchedulerApplication.contactsList.get(i).content_uri_id){
        									childParameters.put(Constants.CHILD_CHECK, true);
        								}
        							}
@@ -1199,15 +1200,15 @@ abstract class AbstractScheduleSms extends Activity{
         if(groupsCursor.moveToFirst()){
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
-        		ArrayList<Long> spanIdsForGroup = mdba.fetchSpansForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)), 2);
+        		ArrayList<Long> spanIdsForGroup = mdba.fetchRecipientsForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)), 2);
         		group.put(Constants.GROUP_NAME, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_NAME)));
         		new BitmapFactory();
 				group.put(Constants.GROUP_IMAGE, BitmapFactory.decodeResource(getResources(), R.drawable.expander_ic_maximized));
         		group.put(Constants.GROUP_CHECK, false);
         		if(spanIdsForGroup.size()>0){
-       				for(int i = 0; i< Spans.size(); i++){
+       				for(int i = 0; i< Recipients.size(); i++){
        					for(int j = 0; j< spanIdsForGroup.size(); j++){
-       						if(spanIdsForGroup.get(j)==Spans.get(i).spanId){
+       						if(spanIdsForGroup.get(j)==Recipients.get(i).recipientId){
        							group.put(Constants.GROUP_CHECK, true);
        							break;
        						}
@@ -1224,7 +1225,7 @@ abstract class AbstractScheduleSms extends Activity{
         		
         		for(int i = 0; i< contactIds.size(); i++){
         			for(int j = 0; j< SmsSchedulerApplication.contactsList.size(); j++){
-        				if(contactIds.get(i)==Long.parseLong(SmsSchedulerApplication.contactsList.get(j).content_uri_id)){
+        				if(contactIds.get(i)==SmsSchedulerApplication.contactsList.get(j).content_uri_id){
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
         					childParameters.put(Constants.CHILD_NAME, SmsSchedulerApplication.contactsList.get(j).name);
         					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(j).number);
@@ -1232,8 +1233,8 @@ abstract class AbstractScheduleSms extends Activity{
         					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(j).image);
         					childParameters.put(Constants.CHILD_CHECK, false);
         					for(int k = 0; k< spanIdsForGroup.size(); k++){
-       							for(int m = 0; m< Spans.size(); m++){
-       								if(Spans.get(m).spanId == spanIdsForGroup.get(k) && Spans.get(m).entityId == contactIds.get(i)){
+       							for(int m = 0; m< Recipients.size(); m++){
+       								if(Recipients.get(m).recipientId == spanIdsForGroup.get(k) && Recipients.get(m).contactId == contactIds.get(i)){
        									childParameters.put(Constants.CHILD_CHECK, true);
        								}
        							}
@@ -1259,62 +1260,69 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		Calendar cal = new GregorianCalendar(processDate.getYear() + 1900, processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes());
 		String dateString = sdf.format(cal.getTime());
-		
-		long groupId = mdba.getNextGroupId();
+
+
 		ArrayList<String> numbers = new ArrayList<String>();
+		mdba.open();
+		long smsId = mdba.scheduleSms(messageText.getText().toString(), dateString, parts.size(), cal.getTimeInMillis());
 		
-		if(Spans.size()==0){
-			Span span = new Span(-1, 1, " ", -1, -1);  // for adding as a fake span to create a draft
-			Spans.add(span);
+		if(Recipients.size()==0 || messageText.getText().toString().matches("(''|[' ']*)")){
+			mdba.setAsDraft(smsId);
+			
 		}
 		
-		for(int i = 0; i< Spans.size(); i++){
-			if(Spans.get(i).type == 2){
+		if(Recipients.size()==0){
+			Recipient recipient = new Recipient(-1, 1, " ", -1, -1);  // for adding as a fake span to create a draft
+			Recipients.add(recipient);
+		}
+		
+		for(int i = 0; i< Recipients.size(); i++){
+			if(Recipients.get(i).type == 2){
 				for(int j = 0; j< SmsSchedulerApplication.contactsList.size(); j++){
-					if(Spans.get(i).entityId == Long.parseLong(SmsSchedulerApplication.contactsList.get(j).content_uri_id)){
+					if(Recipients.get(i).contactId == SmsSchedulerApplication.contactsList.get(j).content_uri_id){
 						numbers.add(SmsSchedulerApplication.contactsList.get(j).number);
-						long received_id = mdba.scheduleSms(SmsSchedulerApplication.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-						if(!Spans.get(i).displayName.equals(" ")){
-							mdba.addRecentContact(Spans.get(i).entityId, "");
+						Log.d("added Display Name : " + SmsSchedulerApplication.contactsList.get(j).name);
+						long receivedRecipientId = mdba.addRecipient(smsId, SmsSchedulerApplication.contactsList.get(j).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
+//						long received_id = mdba.scheduleSms(SmsSchedulerApplication.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
+						if(!Recipients.get(i).displayName.equals(" ")){
+							mdba.addRecentContact(Recipients.get(i).contactId, "");
 						}
-						if(messageText.getText().toString().length() == 0){
-							mdba.setAsDraft(received_id);
-						}else{
-							if(!(Spans.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
-								if(mdba.getCurrentPiFiretime() == -1){
-									handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
-								}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-									handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).number, groupId, received_id, cal.getTimeInMillis());
-								}
+						
+						if(!(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
+							if(mdba.getCurrentPiFiretime() == -1){
+								handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).number, smsId, receivedRecipientId, cal.getTimeInMillis());
+							}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
+								handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).number, smsId, receivedRecipientId, cal.getTimeInMillis());
 							}
 						}
-						Spans.get(i).smsId = received_id;
-						Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
-						for(int k = 0; k< Spans.get(i).groupIds.size(); k++){
-							mdba.addSpanGroupRel(Spans.get(i).spanId, Spans.get(i).groupIds.get(k), Spans.get(i).groupTypes.get(k));
+						
+						Recipients.get(i).recipientId = receivedRecipientId;
+						for(int k = 0; k< Recipients.get(i).groupIds.size(); k++){
+							mdba.addRecipientGroupRel(Recipients.get(i).recipientId, Recipients.get(i).groupIds.get(k), Recipients.get(i).groupTypes.get(k));
 						}
 					}
 				}
-			}else if(Spans.get(i).type == 1){
-				long received_id = mdba.scheduleSms(Spans.get(i).displayName, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
-				
-				if((Spans.size()==1 && Spans.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)")){
-					mdba.setAsDraft(received_id);
+			}else if(Recipients.get(i).type == 1){
+				long receivedRecipientId = mdba.addRecipient(smsId, Recipients.get(i).displayName, Recipients.get(i).displayName, 1, -1);
+				mdba.addRecentContact(-1, Recipients.get(i).displayName);
+				if((Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)")){
+					mdba.setAsDraft(receivedRecipientId);
 				}else{
-					mdba.addRecentContact(-1, Spans.get(i).displayName);
 					if(mdba.getCurrentPiFiretime() == -1){
-						handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
+						handlePiUpdate(Recipients.get(i).displayName, smsId, receivedRecipientId, cal.getTimeInMillis());
 					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-						handlePiUpdate(Spans.get(i).displayName, groupId, received_id, cal.getTimeInMillis());
+						handlePiUpdate(Recipients.get(i).displayName, smsId, receivedRecipientId, cal.getTimeInMillis());
 					}
 				}
-				Spans.get(i).smsId = received_id;
-				Spans.get(i).spanId = mdba.createSpan(Spans.get(i).displayName, Spans.get(i).entityId, Spans.get(i).type, Spans.get(i).smsId);
-				for(int k = 0; k< Spans.get(i).groupIds.size(); k++){
-					mdba.addSpanGroupRel(Spans.get(i).spanId, Spans.get(i).groupIds.get(k), Spans.get(i).groupTypes.get(i));
+				
+				Recipients.get(i).recipientId = receivedRecipientId;
+				
+				for(int k = 0; k< Recipients.get(i).groupIds.size(); k++){
+					mdba.addRecipientGroupRel(Recipients.get(i).recipientId, Recipients.get(i).groupIds.get(k), Recipients.get(i).groupTypes.get(k));
 				}
 			}
 		}
+		mdba.close();
 	}
 	
 	
@@ -1324,7 +1332,7 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	protected void onScheduleButtonPressTasks(){
 		
-		if(Spans.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
+		if(Recipients.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
 			final Dialog d = new Dialog(AbstractScheduleSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.confirmation_dialog);
@@ -1357,7 +1365,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			d.show();
 		}else
-		if(Spans.size()==0){
+		if(Recipients.size()==0){
 			final Dialog d = new Dialog(AbstractScheduleSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.confirmation_dialog);
