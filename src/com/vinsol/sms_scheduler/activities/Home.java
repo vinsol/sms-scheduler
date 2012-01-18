@@ -184,8 +184,6 @@ public class Home extends Activity {
 	    
         
         
-        
-        
         optionsImageButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -241,7 +239,6 @@ public class Home extends Activity {
 			menu.add(0, MENU_DELETE, 1, menu_title);
 		}
     }
-    
     
     
     
@@ -571,22 +568,6 @@ public class Home extends Activity {
     			sentSMSs.get(i).keyImageRes = R.drawable.sent_success_icon;
     		}
     		
-//    		switch (condition) {
-//			case 1:
-//				sentSMSs.get(i).keyImageRes = R.drawable.sent_failure_icon;
-//				break;
-//				
-//			case 2:
-//				sentSMSs.get(i).keyImageRes = R.drawable.sending_sms_icon;
-//				break;
-//				
-//			case 3:
-//				sentSMSs.get(i).keyImageRes = R.drawable.sent_success_icon;
-//				break; 
-//				
-//			default:
-//				break;
-//			}
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, sentSMSs.get(i).keyDate);
     		

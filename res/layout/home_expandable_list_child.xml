@@ -54,13 +54,14 @@
    	<!-- message -->    
    	<TextView 
   		android:id = "@id/main_row_message_area"
-  		android:layout_width = "250dp"
+  		android:layout_width = "fill_parent"
   		android:layout_height="wrap_content"
   		android:maxLines="1"
   		android:textColor="@color/listing_text"
   		android:textSize="14dip"
   		android:ellipsize="end"
   		android:layout_below="@id/main_row_date_area"
+  		android:layout_toLeftOf="@+id/main_row_image_area"
   		android:paddingTop="5dip"
   		android:paddingLeft="10dip"
  		android:paddingRight="10dip"
@@ -69,12 +70,11 @@
     
    	<!-- icon -->    		
    	<ImageView 
- 		android:id = "@+id/main_row_image_area"
+ 		android:id = "@id/main_row_image_area"
  		android:layout_height="36dp"
  		android:layout_width ="36dp"
  		android:layout_marginLeft="15dp"
  		android:layout_alignParentRight="true"
- 		android:layout_alignBaseline="@id/main_row_message_area"
  		android:layout_centerVertical="true"
  		android:layout_marginRight="10dip"	
  		>

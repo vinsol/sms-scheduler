@@ -1,8 +1,6 @@
 package com.vinsol.sms_scheduler.receivers;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,10 +34,7 @@ public class DeliveryReceiver extends BroadcastReceiver{
             		mdba.open();        		
             		Intent mIntent = new Intent();
                     mIntent.setAction(context.getResources().getString(R.string.update_action));
-                    PendingIntent pi = PendingIntent.getBroadcast(context, 0, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-            		
-            		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            		am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pi);
+                    context.sendBroadcast(mIntent);
             		mdba.close();
             	}
                 break;

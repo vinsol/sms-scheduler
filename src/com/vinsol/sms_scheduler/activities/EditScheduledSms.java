@@ -21,7 +21,7 @@ import com.vinsol.sms_scheduler.utils.Log;
 
 public class EditScheduledSms extends AbstractScheduleSms {
 	
-	private TextView 	headerText;
+	private TextView headerText;
 	
 	private boolean isDraft = false;
 	
@@ -122,7 +122,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		boolean isChanged = false;
 		
 		if(isDraft){
-			if(originalRecipients.size()==0){
+			if(originalRecipients.size()==1 && originalRecipients.get(0).displayName.equals(" ")){
 				if(Recipients.size()>0){
 					isChanged = true;
 				}

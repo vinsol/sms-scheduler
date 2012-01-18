@@ -97,7 +97,7 @@ public class DBAdapter {
 			+ KEY_DATE        + " text, " 
 			+ KEY_TIME_MILLIS + " long, " 
 			+ KEY_MSG_PARTS   + " integer default 0, " 
-			+ KEY_STATUS       + " integer default 1);";
+			+ KEY_STATUS      + " integer default 1);";
 	
 	
 	private final String DATABASE_CREATE_RECIPIENT_TABLE = "create table " + DATABASE_RECIPIENT_TABLE 
