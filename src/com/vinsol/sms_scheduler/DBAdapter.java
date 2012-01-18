@@ -193,10 +193,9 @@ public class DBAdapter {
 	}
 	
 	
-	public Cursor fetchStableRecipientDetails(){
+	public Cursor fetchAllRecipientDetails(){
 		String sql = "SELECT * FROM smsTable, recipientTable "
 			+ "WHERE smsTable._id=recipientTable.sms_id "
-			+ "AND (smsTable.status=0 OR smsTable.status=1 OR smsTable.status=2) "
 			+ "ORDER BY smsTable.time_millis";
 		
 		Cursor cur = db.rawQuery(sql, null);
@@ -258,43 +257,7 @@ public class DBAdapter {
 		return cur;
 	}
 	
-	
-	
-	public Long getSendingId(){
-		long sendingId = -1;
-		
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_ID}, KEY_STATUS + "=" + 3, null, null, null, null);
-		if(cur.moveToFirst()){
-			sendingId = cur.getLong(cur.getColumnIndex(KEY_ID));
-		}
-		
-		return sendingId;
-	}
-	
-	
-	
-	public Cursor fetchSendingScheduled(long sendingId){
-		String sql = "SELECT * FROM smsTable, recipientTable "
-			+ "WHERE smsTable._id=" + sendingId
-			+ " AND recipientTable.sent=0 "
-			+ "ORDER BY recipientTable.recipient_id";
-		
-		Cursor cur = db.rawQuery(sql, null);
-		return cur;
-	}
-	
-	
-	
-	public Cursor fetchSendingSent(long sendingId){
-		String sql = "SELECT * FROM smsTable, recipientTable "
-			+ "WHERE smsTable._id=" + sendingId
-			+ " AND recipientTable.sent>0 "
-			+ "ORDER BY recipientTable.recipient_id";
-		
-		Cursor cur = db.rawQuery(sql, null);
-		return cur;
-	}
-	
+
 	
 	public long scheduleSms(String message, String date, int parts, long timeInMilis){
 		ContentValues addValues = new ContentValues();

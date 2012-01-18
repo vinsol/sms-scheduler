@@ -8,23 +8,23 @@ import android.os.Parcelable;
 
 public class Sms implements Parcelable {
 	
-	public long 			keyId;
-	public String 			keyNumber;
-	public String 			keyMessage;
-	public long				keyTimeMilis;
-	public String 			keyDate;
-	public int 				keyImageRes;
-	public String 			keyExtraReceivers;
-	public ArrayList<Long>	keyIds;
+	public long 					keyId;
+	public String 					keyNumber;
+	public String 					keyMessage;
+	public long						keyTimeMilis;
+	public String 					keyDate;
+	public int 						keyImageRes;
+	public String 					keyExtraReceivers;
+	public ArrayList<Recipient>		keyRecipients;
 	
 	
-	public Sms(long keyid, String keynumber, String keymessage, long keytimemilis, String keydate, ArrayList<Long> keyids){
+	public Sms(long keyid, String keynumber, String keymessage, long keytimemilis, String keydate, ArrayList<Recipient> keyrecipients){
 		this.keyId 			= keyid;
 		this.keyNumber 		= keynumber;
 		this.keyMessage 	= keymessage;
 		this.keyDate		= keydate;
 		this.keyTimeMilis 	= keytimemilis;
-		this.keyIds			= keyids;
+		this.keyRecipients	= keyrecipients;
 	}
 	
 	public Sms(){}

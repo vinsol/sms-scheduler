@@ -1446,9 +1446,6 @@ abstract class AbstractScheduleSms extends Activity{
 
 
 
-
-
-
 	protected void doSmsSchedulingTask(){
 		
 		Calendar cal = new GregorianCalendar(processDate.getYear() + 1900, processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes());

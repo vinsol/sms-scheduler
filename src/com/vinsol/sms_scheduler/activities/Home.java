@@ -47,6 +47,7 @@ import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
+import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
@@ -422,54 +423,10 @@ public class Home extends Activity {
 //    	}
     	//---------------------------------------------------------------------------------------------
     	
-        	
-        //--------------------Extracting 'Sending..' messages from Database------------------------------
-        long sendingId = mdba.getSendingId();
-        if(sendingId != -1){
-        	Cursor scheduledSendingCur = mdba.fetchSendingScheduled(sendingId);
-        	if(scheduledSendingCur.moveToFirst()){
-        		String displayName = scheduledSendingCur.getString(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
-    			ArrayList<Long> tempIds = new ArrayList<Long>();
-				tempIds.add(scheduledSendingCur.getLong(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
-				Sms SMS = new Sms(scheduledSendingCur.getLong(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_ID)),
-						displayName,
-						scheduledSendingCur.getString(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
-						scheduledSendingCur.getLong	(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
-						scheduledSendingCur.getString(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_DATE)),
-						tempIds);
-				while(scheduledSendingCur.moveToNext()){
-					SMS.keyIds.add(scheduledSendingCur.getLong(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_ID)));
-					SMS.keyNumber = SMS.keyNumber + ", " + scheduledSendingCur.getString(scheduledSendingCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
-				}
-				scheduledSMSs.add(SMS);
-        	}
-        	
-        	
-        	Cursor sentSendingCur = mdba.fetchSendingSent(sendingId);
-        	if(sentSendingCur.moveToFirst()){
-        		String displayName = sentSendingCur.getString(sentSendingCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
-    			ArrayList<Long> tempIds = new ArrayList<Long>();
-				tempIds.add(sentSendingCur.getLong(sentSendingCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
-				Sms SMS = new Sms(sentSendingCur.getLong(sentSendingCur.getColumnIndex(DBAdapter.KEY_ID)),
-						displayName,
-						sentSendingCur.getString(sentSendingCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
-						sentSendingCur.getLong	(sentSendingCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
-						sentSendingCur.getString(sentSendingCur.getColumnIndex(DBAdapter.KEY_DATE)),
-						tempIds);
-				while(sentSendingCur.moveToNext()){
-					SMS.keyIds.add(sentSendingCur.getLong(sentSendingCur.getColumnIndex(DBAdapter.KEY_ID)));
-					SMS.keyNumber = SMS.keyNumber + ", " + sentSendingCur.getString(sentSendingCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
-				}
-				sentSMSs.add(SMS);
-        	}
-        	
-        }
-        //-------------------------------------------'Sending' Messages Extracted---------------------------
-        
         
     	
     	//--------------Extracting Sent, Draft and Scheduled messages from Database------------------------
-        Cursor SMSsCur = mdba.fetchStableRecipientDetails();
+        Cursor SMSsCur = mdba.fetchAllRecipientDetails();
         
         long previousSmsId = -1;
         int previousSmsType = -1;
@@ -482,7 +439,7 @@ public class Home extends Activity {
         			
         			if(previousSmsType == 0){
         				drafts.add(SMS);
-        			}else if(previousSmsType == 1){
+        			}else if(previousSmsType == 1 || previousSmsType == 3){
         				scheduledSMSs.add(SMS);
         			}else if(previousSmsType == 2){
         				sentSMSs.add(SMS);
@@ -491,25 +448,34 @@ public class Home extends Activity {
         			previousSmsId = SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID));
         			previousSmsType = SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_STATUS));
         			
-        			String displayName = SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
-        			ArrayList<Long> tempIds = new ArrayList<Long>();
-    				tempIds.add(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+        			String displayName = "";
+        			ArrayList<Recipient> tempRecipients = new ArrayList<Recipient>();
     				
     				SMS = new Sms(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID)),
     						displayName,
     						SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
     						SMSsCur.getLong	(SMSsCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
     						SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DATE)),
-    						tempIds);
+    						tempRecipients);
+        		}
+        		Recipient recipient = new Recipient(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
+        											SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
+        											SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
+        											SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
+        											SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID)));
+        		if(SMS.keyNumber.equals("")){
+        			SMS.keyNumber = SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
         		}else{
         			SMS.keyNumber = SMS.keyNumber + ", " + SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
-    				SMS.keyIds.add(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
         		}
+        		
+    			SMS.keyRecipients.add(recipient);
+        		
         	}while(SMSsCur.moveToNext());
         	
         	if(previousSmsType == 0){
 				drafts.add(SMS);
-			}else if(previousSmsType == 1){
+			}else if(previousSmsType == 1 || previousSmsType == 3){
 				Log.d("getting added to schedules");
 				scheduledSMSs.add(SMS);
 			}else if(previousSmsType == 2){
@@ -546,20 +512,20 @@ public class Home extends Activity {
     		child.put(NAME, sentSMSs.get(i).keyMessage);
     		int condition = 1;
     		
-    		for(int k = 0; k< sentSMSs.get(i).keyIds.size(); k++){
-    			Cursor cur = mdba.fetchRecipientDetails(sentSMSs.get(i).keyIds.get(k));
+    		for(int k = 0; k< sentSMSs.get(i).keyRecipients.size(); k++){
+    			Cursor cur = mdba.fetchRecipientDetails(sentSMSs.get(i).keyRecipients.get(k).recipientId);
     			cur.moveToFirst();
     			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == 0){
     				condition = 1;
     				sentSMSs.get(i).keyImageRes = R.drawable.sent_failure_icon;
     				break;
     			}
-    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !mdba.checkDelivery(sentSMSs.get(i).keyIds.get(k))){
+    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !mdba.checkDelivery(sentSMSs.get(i).keyRecipients.get(k).recipientId)){
     				condition = 2;
     				sentSMSs.get(i).keyImageRes = R.drawable.sending_sms_icon;
     				break;
     			}
-    			if(mdba.checkDelivery(sentSMSs.get(i).keyIds.get(k))){
+    			if(mdba.checkDelivery(sentSMSs.get(i).keyRecipients.get(k).recipientId)){
     				condition = 3;
     			}
     		}
