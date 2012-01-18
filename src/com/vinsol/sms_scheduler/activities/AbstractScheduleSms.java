@@ -1122,42 +1122,6 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	//-------------------------Matches Adapter-------------------------------------------
-	@SuppressWarnings({ "rawtypes", "unused" })
-	private class MatchesAdapter extends ArrayAdapter {
-		@SuppressWarnings("unchecked")
-		MatchesAdapter() {
-			super(AbstractScheduleSms.this, R.layout.voice_input_matches_list_row, matches);
-		}
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			MatchesHolder holder;
-			if(convertView==null){
-				LayoutInflater inflater = getLayoutInflater();
-				convertView = inflater.inflate(R.layout.voice_input_matches_list_row, parent, false);
-				holder = new MatchesHolder();
-				holder.matchText = (TextView) convertView.findViewById(R.id.match_text);
-				convertView.setTag(holder);
-			}else{
-				holder = (MatchesHolder) convertView.getTag();
-			}
-			
-			return convertView;
-		}
-	}
-	
-	
-	
-	//--------------------------------------
-	//Holder for Matches Adapter
-	//--------------------------------------
-	private class MatchesHolder{
-		TextView matchText;
-	}
-	
-	
-	
 	//------------------------------------------------
 	//Adapter for list in the templates dialog
 	//------------------------------------------------
