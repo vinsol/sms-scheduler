@@ -186,6 +186,13 @@ public class DBAdapter {
 	}
 	
 	
+	public boolean isDraft(long smsId){
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_STATUS}, KEY_ID + "=" + smsId, null, null, null, null);
+		cur.moveToFirst();
+		return (cur.getInt(cur.getColumnIndex(KEY_STATUS))==0);
+	}
+	
+	
 	public Cursor fetchStableRecipientDetails(){
 		String sql = "SELECT * FROM smsTable, recipientTable "
 			+ "WHERE smsTable._id=recipientTable.sms_id "

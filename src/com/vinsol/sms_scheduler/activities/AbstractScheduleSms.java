@@ -46,11 +46,13 @@ import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -105,6 +107,7 @@ abstract class AbstractScheduleSms extends Activity{
 	//---------------------------------------------------------------
 	protected static ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
 	protected static ArrayList<Recipient> originalRecipients = new ArrayList<Recipient>();
+	protected ArrayList<Long> recipientIds;
 	protected SpannableStringBuilder ssb = new SpannableStringBuilder();
 	protected int spanStartPosition = 0;
 	protected static String originalMessage;
@@ -141,6 +144,8 @@ abstract class AbstractScheduleSms extends Activity{
 	protected Dialog dataLoadWaitDialog;
 	protected IntentFilter dataloadIntentFilter;
 	
+	protected int mode;
+	protected long editedSms;
 	
 	protected InputMethodManager inputMethodManager;
 	
@@ -396,6 +401,93 @@ abstract class AbstractScheduleSms extends Activity{
 			}
 		});
 		
+		
+
+		
+		numbersText.setOnKeyListener(new OnKeyListener() {
+			
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				
+				if(keyCode == KeyEvent.KEYCODE_DEL){
+	                 int pos = numbersText.getSelectionStart();
+	                 int len = 0;
+	                 for(int i = 0; i< Recipients.size(); i++){
+	                	 len = len + Recipients.get(i).displayName.length();
+	                	 if(i!=0){
+	                		 len = len + 2;
+	                	 }
+	                	 if(pos<=len){
+	                		 if(mode==2){
+	                			 numbersText.setSelection(pos - Recipients.get(i).displayName.length());
+	                			 mdba.open();
+	                			 mdba.deleteRecipientGroupRelsForRecipient(Recipients.get(i).recipientId);
+	                			 mdba.close();
+	                		 }
+	                		 
+	                		 for(int j = 0; j < nativeGroupData.size(); j++){
+	                			 for(int k = 0; k< nativeChildData.get(j).size(); k++) {
+	                				 if((Long)nativeChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == Recipients.get(i).contactId && (Boolean)nativeChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 nativeChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+	                				 }
+	                			 }
+	                		 }
+	                		 
+	                		 for(int j = 0; j< privateGroupData.size(); j++){
+	                			 for(int k = 0; k< privateChildData.get(j).size(); k++){
+	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Recipients.get(i).contactId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                					 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
+	                				 }
+	                			 }
+	                		 }
+	                		 Recipients.remove(i);
+	                		 refreshSpannableString(false);
+	                		 myAutoCompleteAdapter.notifyDataSetChanged();
+	                		 break;
+	                	 }
+	                 }
+	            }
+				return false;
+			}
+		});
+		
+		
+		
+
+		//----------------functionality for schedule button----------------------------
+		scheduleButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(mode==1){
+					onScheduleButtonPressTasks();
+				}else if(mode==2){
+					boolean isSending = false;
+					mdba.open();
+					for(int i = 0; i< recipientIds.size(); i++){
+						if(isSending){
+							break;
+						}
+						Cursor cur = mdba.fetchRecipientDetails(recipientIds.get(i));
+						if(cur.moveToFirst()){
+							do{
+								if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
+									isSending = true;
+									break;
+								}
+							}while(cur.moveToNext());
+						}
+					}
+					
+					if(isSending){
+						Toast.makeText(AbstractScheduleSms.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+						AbstractScheduleSms.this.finish();
+					}else{
+						onScheduleButtonPressTasks();
+					}
+				}
+			}
+		});
 		
 		
 		
@@ -659,6 +751,57 @@ abstract class AbstractScheduleSms extends Activity{
 		//------------------------------------------------------end of add template button setup ----------------
 		
 
+		
+		//--------------------------functionality for Cancel Button--------------------------
+		cancelButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(!messageText.getText().toString().matches("(''|[' ']*)") || !numbersText.getText().toString().matches("(''|[' ']*)")){
+					final Dialog d = new Dialog(AbstractScheduleSms.this);
+					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					d.setContentView(R.layout.confirmation_dialog);
+					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+					
+					if(mode==2){
+						questionText.setText("Delete this message?");
+					}else if(mode==1){
+						questionText.setText("Discard this message?");
+					}
+					
+					yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.yes_dialog_states));
+					noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.no_dialog_states));
+					
+					yesButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							if(mode==2){
+								mdba.open();
+								mdba.deleteSms(editedSms, AbstractScheduleSms.this);
+								mdba.close();
+							}
+							d.cancel();
+							AbstractScheduleSms.this.finish();
+						}
+					});
+					
+					noButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							d.cancel();
+						}
+					});
+					
+					d.show();
+				}else{
+					AbstractScheduleSms.this.finish();
+				}
+			}
+		});
 		
 		
 		//-------------------------functionality of speech input button------------------------------
