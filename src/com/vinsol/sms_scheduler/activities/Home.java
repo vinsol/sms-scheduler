@@ -334,22 +334,22 @@ public class Home extends Activity {
     				holder.dateTextView.setText(scheduledSMSs.get(childPosition).keyDate);
     				holder.receiverTextView.setText(numbersLengthRectify(scheduledSMSs.get(childPosition).keyNumber));
     				holder.extraReceiversTextView.setText(extraReceiversCal(scheduledSMSs.get(childPosition).keyNumber));
-    				holder.messageTextView.setTextColor(0xff000000);
-    				holder.receiverTextView.setTextColor(0xff000000);
+    				holder.messageTextView.setTextColor(getResources().getColor(R.color.black));
+    				holder.receiverTextView.setTextColor(getResources().getColor(R.color.black));
     			} else if(groupPosition == 2) {
     				holder.messageTextView.setText(sentSMSs.get(childPosition).keyMessage);
     				holder.statusImageView.setImageResource(sentSMSs.get(childPosition).keyImageRes);
     				holder.dateTextView.setText(sentSMSs.get(childPosition).keyDate);
     				holder.receiverTextView.setText(numbersLengthRectify(sentSMSs.get(childPosition).keyNumber));
     				holder.extraReceiversTextView.setText(extraReceiversCal(sentSMSs.get(childPosition).keyNumber));
-    				holder.messageTextView.setTextColor(0xff000000);
-    				holder.receiverTextView.setTextColor(0xff000000);
+    				holder.messageTextView.setTextColor(getResources().getColor(R.color.black));
+    				holder.receiverTextView.setTextColor(getResources().getColor(R.color.black));
     			} else if(groupPosition == 0){
     				if(!drafts.get(childPosition).keyMessage.matches("^(''|[' ']*)$")){
     					holder.messageTextView.setText(drafts.get(childPosition).keyMessage);
     				}else{
     					holder.messageTextView.setText("[No Message Written]");
-    					holder.messageTextView.setTextColor(0xff777777);
+    					holder.messageTextView.setTextColor(getResources().getColor(R.color.grey));
     				}
     				holder.statusImageView.setImageResource(drafts.get(childPosition).keyImageRes);
     				holder.dateTextView.setText(drafts.get(childPosition).keyDate);
@@ -358,7 +358,7 @@ public class Home extends Activity {
         				holder.extraReceiversTextView.setText(extraReceiversCal(drafts.get(childPosition).keyNumber));
     				}else{
     					holder.receiverTextView.setText("[No Recepients Added]");
-    					holder.receiverTextView.setTextColor(0xff777777);
+    					holder.receiverTextView.setTextColor(getResources().getColor(R.color.grey));
     					holder.extraReceiversTextView.setText("");
     				}
     			}
