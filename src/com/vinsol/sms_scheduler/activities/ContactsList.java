@@ -59,35 +59,29 @@ public class ContactsList extends Activity {
 		callingActivity = intent.getStringExtra("ORIGINATOR");
 		
 		
-			idsString.clear();
-			idsString = intent.getStringArrayListExtra("IDARRAY");
-			for(int i = 0; i< idsString.size(); i++){
-				ids.add(Long.parseLong(idsString.get(i)));
-				ids2.add(Long.parseLong(idsString.get(i)));
-			}
-			
-			
-			
-			for(int i = 0; i< contacts.size(); i++){
-				contacts.get(i).checked = false;
-				for(int j = 0; j< ids.size(); j++){
-					if(contacts.get(i).content_uri_id == ids.get(j)){
-						contacts.get(i).checked = true;
-					}
+		idsString.clear();
+		idsString = intent.getStringArrayListExtra("IDARRAY");
+		for(int i = 0; i< idsString.size(); i++){
+			ids.add(Long.parseLong(idsString.get(i)));
+			ids2.add(Long.parseLong(idsString.get(i)));
+		}
+		
+		for(int i = 0; i< contacts.size(); i++){
+			contacts.get(i).checked = false;
+			for(int j = 0; j< ids.size(); j++){
+				if(contacts.get(i).content_uri_id == ids.get(j)){
+					contacts.get(i).checked = true;
 				}
 			}
-			
-			if(callingActivity.equals("Group Edit Activity")){
-				doneButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
-				intent.getLongExtra("GROUPID", 0);
-			}else if(callingActivity.equals("Group Add Activity") || callingActivity.equals("Group Add Activity From Contacts")){
-				newCall = intent.getBooleanExtra("NEWCALL", true);
-			}
-			Log.d("Contacts size : " + String.valueOf(contacts.size()));
+		}
 		
-		
-		
-		
+		if(callingActivity.equals("Group Edit Activity")){
+			doneButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
+			intent.getLongExtra("GROUPID", 0);
+		}else if(callingActivity.equals("Group Add Activity") || callingActivity.equals("Group Add Activity From Contacts")){
+			newCall = intent.getBooleanExtra("NEWCALL", true);
+		}
+		Log.d("Contacts size : " + String.valueOf(contacts.size()));
 		
 		MyAdapter myAdapter = new MyAdapter();
 		contactsList.setAdapter(myAdapter);
@@ -111,7 +105,6 @@ public class ContactsList extends Activity {
 							final Dialog d = new Dialog(ContactsList.this);
 							d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 							d.setContentView(R.layout.group_name_input_dialog);
-							//d.setCancelable(false);
 							final EditText 	groupNameEdit 		= (EditText) 	d.findViewById(R.id.group_name_dialog_name_label);
 							Button groupNameOkButton 	= (Button) d.findViewById(R.id.group_name_dialog_name_ok_button);
 							Button groupNameCancelButton= (Button) d.findViewById(R.id.group_name_dialog_name_cancel_button);
@@ -126,9 +119,7 @@ public class ContactsList extends Activity {
 									if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
 										Toast.makeText(ContactsList.this, "Please enter the name for group", Toast.LENGTH_SHORT).show();
 										groupNameEdit.setText("");
-									}
-									
-									else{
+									}else{
 										boolean groupNameExists = false;
 										mdba.open();
 										Cursor cur = mdba.fetchAllGroups();
@@ -147,12 +138,11 @@ public class ContactsList extends Activity {
 											d.cancel();
 											groupName = groupNameEdit.getText().toString();
 											
-												mdba.open();
-												mdba.createGroup(groupName, ids);
-												mdba.close();
-												setResult(10, intent);
-												ContactsList.this.finish();
-											
+											mdba.open();
+											mdba.createGroup(groupName, ids);
+											mdba.close();
+											setResult(10, intent);
+											ContactsList.this.finish();
 										}
 									}
 								}
@@ -179,9 +169,6 @@ public class ContactsList extends Activity {
 							}
 						}
 					}
-					
-					
-					
 				}else{
 					intent.putStringArrayListExtra("IDSLIST", idsStringChanged);
 					intent.putExtra("CANCEL", "no");
@@ -220,7 +207,6 @@ public class ContactsList extends Activity {
 		Intent intent = new Intent();
 		intent.putStringArrayListExtra("IDSLIST", idsString);
 		intent.putExtra("CANCEL", "back");
-		//intent.putExtra(name, value)
 		setResult(10, intent);
 		ContactsList.this.finish();
 	}
@@ -228,8 +214,10 @@ public class ContactsList extends Activity {
 	
 	
 	
+	@SuppressWarnings("rawtypes")
 	private class MyAdapter extends ArrayAdapter{
-    	MyAdapter(){
+    	@SuppressWarnings("unchecked")
+		MyAdapter(){
     		super(ContactsList.this, R.layout.contacts_list_row, contacts);
     	}
     	
@@ -331,7 +319,4 @@ public class ContactsList extends Activity {
 		TextView numberText;
 		CheckBox contactCheck;
 	}
-	
-	
-	
 }

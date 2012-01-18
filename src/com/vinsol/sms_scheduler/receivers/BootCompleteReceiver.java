@@ -28,8 +28,8 @@ public class BootCompleteReceiver extends BroadcastReceiver{
 		if(cur.moveToFirst()){
 			intent = new Intent(context, SMSHandleReceiver.class);
 			intent.setAction(Constants.PRIVATE_SMS_ACTION);
-			intent.putExtra("SMS_ID", cur.getString(cur.getColumnIndex(DBAdapter.KEY_ID)));
-			intent.putExtra("RECIPIENT_ID", cur.getString(cur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+			intent.putExtra("SMS_ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
+			intent.putExtra("RECIPIENT_ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
 			intent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(DBAdapter.KEY_NUMBER)));
 			intent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)));
 			

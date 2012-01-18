@@ -29,20 +29,17 @@ import android.widget.TextView;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class SelectContacts extends Activity {
 	
-	private TabHost tabHost;
 	private TabHost mtabHost;
 	private DBAdapter mdba = new DBAdapter(this);
 	private Cursor cur;
 	private LinearLayout listLayout;
 	private LinearLayout blankLayout;
-	private LinearLayout parentLayout;
 	private Button blankListAddButton;
 	
 	
@@ -55,7 +52,6 @@ public class SelectContacts extends Activity {
 	private ContactsAdapter contactsAdapter;
 	private String origin;
 	
-	private ArrayList<Contact> selectedIds 	= new ArrayList<Contact>();
 	private ArrayList<Recipient> RecipientsTemp 	= new ArrayList<Recipient>();
 	//---------------------------------------------------------------------------
 	
@@ -343,8 +339,7 @@ public class SelectContacts extends Activity {
         
         
         
-        //---------------- Setting up the Groups Tab -----------------------------------------------
-        parentLayout = (LinearLayout) findViewById(R.id.private_list_parent_layout);
+        
         listLayout = (LinearLayout) findViewById(R.id.list_layout);
         blankLayout = (LinearLayout) findViewById(R.id.blank_layout);
         blankListAddButton = (Button) findViewById(R.id.blank_list_add_button);
@@ -484,8 +479,10 @@ public class SelectContacts extends Activity {
 	//************************* Adapter for the list *****************************************
 	//**************************** in Contacts Tab ********************************************
 	
+	@SuppressWarnings("rawtypes")
 	private class ContactsAdapter extends ArrayAdapter {
 		
+		@SuppressWarnings("unchecked")
 		ContactsAdapter(){
     		super(SelectContacts.this, R.layout.contacts_list_row, SmsSchedulerApplication.contactsList);
     	}
@@ -1260,8 +1257,10 @@ public class SelectContacts extends Activity {
 	
 	
 	
+	@SuppressWarnings("rawtypes")
 	private class RecentsAdapter extends ArrayAdapter {
 		
+		@SuppressWarnings("unchecked")
 		RecentsAdapter(){
     		super(SelectContacts.this, R.layout.contacts_list_row, recentIds);
     	}
@@ -1446,6 +1445,7 @@ public class SelectContacts extends Activity {
 	
 	
 	
+	@SuppressWarnings("static-access")
 	private void reloadPrivateGroupData(){
 		mdba.open();
 		

@@ -105,7 +105,6 @@ public class Home extends Activity {
 	
 	
 	
-	
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
 		
 		@Override
@@ -154,8 +153,6 @@ public class Home extends Activity {
 		});
         
         
-        
-        
         blankListAddButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -164,8 +161,6 @@ public class Home extends Activity {
 				startActivity(intent);
 			}
 		});
-        
-        
         
         
         explList.setOnChildClickListener(new OnChildClickListener() {
@@ -217,17 +212,7 @@ public class Home extends Activity {
     protected void onResume() {
     	super.onResume();
     	
-    	mdba.open();
-    	Cursor cur = mdba.fetchAllSms();
-    	if(cur.getCount()>0){
-    		explList.setVisibility(LinearLayout.VISIBLE);
-    		blankListLayout.setVisibility(LinearLayout.GONE);
-    	}else{    		
-    		explList.setVisibility(LinearLayout.GONE);
-    		blankListLayout.setVisibility(LinearLayout.VISIBLE);
-    	}
-    	mdba.close();
-    
+    	doScreenUpdate();
     	setExplData();
     	explList.setAdapter(mAdapter);
     	explList.expandGroup(0);
@@ -388,33 +373,7 @@ public class Home extends Activity {
 						
 						@Override
 						public void onClick(View v) {
-							final Dialog d = new Dialog(Home.this);
-							d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-							d.setContentView(R.layout.confirmation_dialog);
-							TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-							Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-							Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-							
-							questionText.setText("Delete this scheduled message?");
-							
-							yesButton.setOnClickListener(new OnClickListener() {
-								
-								@Override
-								public void onClick(View v) {
-									selectedSms = scheduledSMSs.get(childPosition).keyId;
-									deleteSms();
-							        d.cancel();
-								}
-							});
-							
-							noButton.setOnClickListener(new OnClickListener() {
-								
-								@Override
-								public void onClick(View v) {
-									d.cancel();
-								}
-							});
-							d.show();
+							showDeleteDialog(scheduledSMSs, childPosition, "Delete this Scheduled Message?");
 						}
 					});
     				
@@ -423,34 +382,7 @@ public class Home extends Activity {
 						
 						@Override
 						public void onClick(View v) {
-							final Dialog d = new Dialog(Home.this);
-							d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-							d.setContentView(R.layout.confirmation_dialog);
-							TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-							Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-							Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-							
-							questionText.setText("Delete this draft?");
-							
-							yesButton.setOnClickListener(new OnClickListener() {
-								
-								@Override
-								public void onClick(View v) {
-									selectedSms = drafts.get(childPosition).keyId;
-									deleteSms();
-							        d.cancel();
-								}
-							});
-							
-							noButton.setOnClickListener(new OnClickListener() {
-								
-								@Override
-								public void onClick(View v) {
-									d.cancel();
-								}
-							});
-							
-							d.show();
+							showDeleteDialog(drafts, childPosition, "Delete this Draft?");
 						}
     				});
     			}
@@ -766,6 +698,7 @@ public class Home extends Activity {
 	
 	
 	//********* Adapter for the list of recipients and msg status, in the show dialog of sent msgs ***********************
+	@SuppressWarnings("rawtypes")
 	private class SentDialogNumberListAdapter extends ArrayAdapter{
 		
 		@SuppressWarnings({ "unchecked" })
@@ -875,7 +808,6 @@ public class Home extends Activity {
 	
 	
 	//------------------------Contacts Data Load functions---------------------------------------------
-	
 	public void loadContactsData(){
 		if(SmsSchedulerApplication.contactsList.size()==0){
 			System.currentTimeMillis();
@@ -937,7 +869,6 @@ public class Home extends Activity {
 	}
 	
 	
-	
 	private class ContactsAsync extends AsyncTask<Void, Void, Void>{
 
 		@Override
@@ -960,7 +891,6 @@ public class Home extends Activity {
 	}
 	
 	
-	
 	private class GroupListHolder{
 		TextView groupHeading;
 	}
@@ -981,17 +911,20 @@ public class Home extends Activity {
 	}
 	
 	
-	
 	private void deleteSms(){
 		mdba.open();
 		mdba.deleteSms(selectedSms, Home.this);
 		mdba.close();
+		Toast.makeText(Home.this, "Message Deleted", Toast.LENGTH_SHORT).show();
 		loadData();
 		mAdapter.notifyDataSetChanged();
-		Toast.makeText(Home.this, "Message Deleted", Toast.LENGTH_SHORT).show();
+		doScreenUpdate();
+	}
+	
+	
+	private void doScreenUpdate(){
 		mdba.open();
-        Cursor cur = mdba.fetchAllSms();
-        if(cur.getCount()>0){
+        if(mdba.ifSmsExist()){
         	explList.setVisibility(LinearLayout.VISIBLE);
         	blankListLayout.setVisibility(LinearLayout.GONE);
         }else{
@@ -999,5 +932,36 @@ public class Home extends Activity {
             blankListLayout.setVisibility(LinearLayout.VISIBLE);
         }
         mdba.close();
+	}
+	
+	
+	public void showDeleteDialog(final ArrayList<Sms> SMSList, final int childPosition, String questionString){
+		final Dialog d = new Dialog(Home.this);
+		d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		d.setContentView(R.layout.confirmation_dialog);
+		TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+		Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+		Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+		
+		questionText.setText(questionString);
+		
+		yesButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				selectedSms = SMSList.get(childPosition).keyId;
+				deleteSms();
+		        d.cancel();
+			}
+		});
+		
+		noButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				d.cancel();
+			}
+		});
+		d.show();
 	}
 }

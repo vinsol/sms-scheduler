@@ -115,8 +115,10 @@ public class ManageGroups extends Activity {
 	}
 	
 	
+	@SuppressWarnings("rawtypes")
 	private class MyAdapter extends ArrayAdapter{
-    	MyAdapter(){
+    	@SuppressWarnings("unchecked")
+		MyAdapter(){
     		super(ManageGroups.this, R.layout.manage_groups_list_row, grpIdsArray);
     	}
     	

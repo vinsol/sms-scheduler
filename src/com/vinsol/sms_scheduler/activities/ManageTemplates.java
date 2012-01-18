@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -63,7 +64,7 @@ public class ManageTemplates extends Activity{
 		
 		loadData();
 		
-		inputMethodManager =(InputMethodManager)getSystemService(ManageTemplates.this.INPUT_METHOD_SERVICE);
+		inputMethodManager =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		
 		mAdapter = new MyAdapter();
 		templatesList.setAdapter(mAdapter);
@@ -225,8 +226,10 @@ public class ManageTemplates extends Activity{
 	
 	
 	
+	@SuppressWarnings("rawtypes")
 	private class MyAdapter extends ArrayAdapter{
-    	MyAdapter(){
+    	@SuppressWarnings("unchecked")
+		MyAdapter(){
     		super(ManageTemplates.this, R.layout.manage_groups_list_row, templatesIdArray);
     	}
     	

@@ -26,13 +26,11 @@ public class DBAdapter {
 	private final String DATABASE_TEMPLATE_TABLE = "templateTable";
 	private final String DATABASE_GROUP_TABLE = "groupTable";
 	private final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
-//	private final String DATABASE_SPANS_TABLE = "spanTable";
 	private final String DATABASE_RECIPIENT_GROUP_REL_TABLE = "span_grp_rel_table";
 	private final String DATABASE_RECENTS_TABLE = "recents_table";
 	private final int 	DATABASE_VERSION = 1;
 	
 	Cursor cur;
-	
 	
 	//---------------------------static keys for columns---------------------------------------
 	
@@ -43,7 +41,6 @@ public class DBAdapter {
 	public static final String KEY_TIME_MILLIS = "time_millis";
 	public static final String KEY_MSG_PARTS = "msg_parts";
 	public static final String KEY_STATUS = "status";
-	
 	
 	//------------------keys for Recipients table-----------------------
 	public static final String KEY_RECIPIENT_ID = "recipient_id";
@@ -56,7 +53,6 @@ public class DBAdapter {
 	public static final String KEY_DISPLAY_NAME = "display_name";
 	public static final String KEY_CONTACT_ID = "contact_id";
 	public static final String KEY_RECIPIENT_TYPE = "recipient_type";
-	
 	
 	//--------------keys for PI table---------------------------
 	public static final String KEY_PI_ID = "_id";
@@ -77,26 +73,16 @@ public class DBAdapter {
 	public static final String KEY_GROUP_REL_ID = "group_rel_id";
 	public static final String KEY_CONTACTS_ID = "contacts_id";
 	
-//	//-----------------keys for spans table----------------------------
-//	public static final String KEY_SPAN_ID = "_id";
-//	public static final String KEY_SPAN_DN = "span_display_name";
-//	public static final String KEY_SPAN_TYPE = "span_type";
-//	public static final String KEY_SPAN_ENTITY_ID = "span_entity_id";
-//	public static final String KEY_SPAN_SMS_ID = "span_sms_id";
-//	
-//	
 	//-------------------keys for recipient-groupId relation--------------------
 	public static final String KEY_RECIPIENT_GRP_REL_ID = "_id";
 	public static final String KEY_RECIPIENT_GRP_REL_RECIPIENT_ID = "recipient_grp_rel_recipient_id";
 	public static final String KEY_RECIPIENT_GRP_REL_GRP_ID = "recipient_grp_rel_grp_id";
 	public static final String KEY_RECIPIENT_GRP_REL_GRP_TYPE = "recipient_grp_rel_grp_type";
 	
-	
 	//------------------keys for recents table-------------------------
 	public static final String KEY_RECENT_CONTACT_ID = "_id";
 	public static final String KEY_RECENT_CONTACT_CONTACT_ID = "contact_id";
 	public static final String KEY_RECENT_CONTACT_NUMBER = "contact_number";
-	
 	
 	//------------------------------------------------------------------end of static keys defs-------
 	
@@ -156,15 +142,6 @@ public class DBAdapter {
 			+ KEY_CONTACTS_ID  + " integer);";
 	
 	
-//	private final String DATABASE_CREATE_SPANS_TABLE =  "create table " + DATABASE_SPANS_TABLE 
-//			+ " (" 
-//			+ KEY_SPAN_ID        + " integer primary key autoincrement, " 
-//			+ KEY_SPAN_DN        + " text, " 
-//			+ KEY_SPAN_TYPE      + " integer, " 
-//			+ KEY_SPAN_ENTITY_ID + " integer, " 
-//			+ KEY_SPAN_SMS_ID    + " integer);";
-//	
-//	
 	private final String DATABASE_CREATE_RECIPIENT_GROUP_REL_TABLE = "create table " + DATABASE_RECIPIENT_GROUP_REL_TABLE 
 			+ " (" 
 			+ KEY_RECIPIENT_GRP_REL_ID + " integer primary key autoincrement, " 
@@ -201,11 +178,11 @@ public class DBAdapter {
 	
 	// functions-----------------------------------------------------------------------------------------
 	
-	//------------------------functions for SMS table------------------------------
+	//------------------------functions for SMS and Recipient tables------------------------------
 	
-	public Cursor fetchAllSms(){
+	public boolean ifSmsExist(){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, null, null, null, null, null, null);
-		return cur;
+		return (cur.getCount()>0);
 	}
 	
 	
@@ -231,17 +208,16 @@ public class DBAdapter {
 	
 	public Cursor fetchRecipientsForSms(long smsId){
 		String sql = "SELECT * FROM smsTable, recipientTable "
-			+ "WHERE smsTable._id=recipientTable.sms_id AND  smsTable._id=" + smsId;
+			+ "WHERE smsTable._id=recipientTable.sms_id AND smsTable._id=" + smsId;
 		
 		Cursor cur = db.rawQuery(sql, null);
 		return cur;
 	}
 	
 	
-	
 	public ArrayList<Long> fetchRecipientIdsForSms(long smsId){
 		String sql = "SELECT * FROM smsTable, recipientTable "
-			+ "WHERE smsTable._id=recipientTable.sms_id AND  smsTable._id=" + smsId;
+			+ "WHERE smsTable._id=recipientTable.sms_id AND smsTable._id=" + smsId;
 		
 		ArrayList<Long> recipientIds = new ArrayList<Long>();
 		
@@ -256,9 +232,9 @@ public class DBAdapter {
 	}
 	
 	
-	
 	public void deleteRecipient(long recipientId){
 		db.delete(DATABASE_RECIPIENT_TABLE, KEY_RECIPIENT_ID + "=" + recipientId, null);
+		deleteRecipientGroupRelsForRecipient(recipientId);
 	}
 	
 	
@@ -280,12 +256,6 @@ public class DBAdapter {
 	public Long getSendingId(){
 		long sendingId = -1;
 		
-//		String sql = "SELECT * FROM smsTable "
-//			+ "WHERE _id=recipientTable.sms_id "
-//			+ "AND smsTable.status=3 "
-//			+ "AND recipientTable.operated=0 "
-//			+ "ORDER BY smsTable.time_millis";
-//		
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_ID}, KEY_STATUS + "=" + 3, null, null, null, null);
 		if(cur.moveToFirst()){
 			sendingId = cur.getLong(cur.getColumnIndex(KEY_ID));
@@ -318,36 +288,6 @@ public class DBAdapter {
 		return cur;
 	}
 	
-	
-//	public Cursor fetchAllScheduled(){
-//		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_SENT + "= 0", null, null, null, KEY_TIME_MILLIS);
-//		return cur;
-//	}
-	
-//	public Cursor fetchAllScheduledNoDraft(){
-//		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_SENT + "= 0 AND " + KEY_DRAFT + "=0 AND " + KEY_OPERATED + "=0", null, null, null, KEY_TIME_MILLIS);
-//		return cur;
-//	}
-//	
-//	public Cursor fetchAllSent(){
-//		Cursor cur  = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_TIME_MILLIS, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_S_MILLIS, KEY_D_MILLIS}, KEY_OPERATED + "=1", null, null, null, KEY_TIME_MILLIS);
-//		return cur;
-//	}
-//	
-//	public Cursor fetchAllDrafts(){
-//		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_DRAFT}, KEY_DRAFT + "= 1", null, null, null, KEY_TIME_MILLIS);
-//		return cur;
-//	}
-//	
-//	public Cursor fetchRemainingScheduled(){
-//		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_TIME_MILLIS, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS}, KEY_OPERATED + "=0 AND " + KEY_DRAFT + "=0"/* + KEY_MESSAGE + " NOT LIKE ' '"*/ , null, null, null, KEY_TIME_MILLIS);
-//		return cur;
-//	}
-//	
-//	public Cursor fetchSmsDetails(long id){
-//		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID, KEY_GRPID, KEY_NUMBER, KEY_MESSAGE, KEY_DATE, KEY_SENT, KEY_DELIVER, KEY_MSG_PARTS, KEY_TIME_MILLIS, KEY_DRAFT}, KEY_ID + "=" + id, null, null, null, null);
-//		return cur;
-//	}
 	
 	public long scheduleSms(String message, String date, int parts, long timeInMilis){
 		ContentValues addValues = new ContentValues();
@@ -393,16 +333,6 @@ public class DBAdapter {
 		db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + smsId, null);
 	}
 	
-//	public int getNextGroupId(){
-//		cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_GRPID}, null, null, null, null, KEY_GRPID + " ASC");
-//		if(cur.moveToFirst()){
-//			cur.moveToLast();
-//			return cur.getInt(cur.getColumnIndex(KEY_GRPID)) + 1;
-//		}else{
-//			return 0;
-//		}
-//	}
-	
 		
 	public void makeOperated(long recipientId){
 		ContentValues cv = new ContentValues();
@@ -410,7 +340,6 @@ public class DBAdapter {
 		db.update(DATABASE_RECIPIENT_TABLE, cv, KEY_RECIPIENT_ID + "=" + recipientId, null);
 	}
 	
-		
 	
 	public int getSent(long recipientId){
 		Cursor cur = db.query(DATABASE_RECIPIENT_TABLE, new String[] {KEY_SENT}, KEY_RECIPIENT_ID + "=" + recipientId, null, null, null, null);
@@ -444,8 +373,6 @@ public class DBAdapter {
 			return false;
 		}
 	}
-	
-	
 	
 	
 	public int getDelivers(long recipientId){
@@ -483,36 +410,6 @@ public class DBAdapter {
 	}
 	
 	
-	
-	
-	public boolean checkSent(long id){
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_SENT, KEY_MSG_PARTS}, KEY_ID + "=" + id, null, null, null, null);
-		return ((cur.getInt(cur.getColumnIndex(KEY_SENT)) == cur.getInt(cur.getColumnIndex(KEY_MSG_PARTS))));
-	}
-	
-	
-	public boolean removeAllDelivered(){
-		try{
-			db.delete(DATABASE_SMS_TABLE, KEY_DELIVER + "=" + KEY_MSG_PARTS, null);
-			return true;
-		}catch(SQLiteException ex){
-			return false;
-		}
-	}
-	
-	
-//	public ArrayList<Long> getIds(Long grp){
-//		ArrayList<Long> ids = new ArrayList<Long>();
-//		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_ID}, KEY_GRPID + "=" + grp, null, null, null, null);
-//		if(cur.moveToFirst()){
-//			do{
-//				ids.add(cur.getLong(cur.getColumnIndex(KEY_ID)));
-//			}while(cur.moveToNext());
-//		}
-//		return ids;
-//	}
-	
-	
 	public void deleteSms(long smsId, Context context){
 		ArrayList<Long> recipientIds = fetchRecipientIdsForSms(smsId);
 		for(int i = 0; i< recipientIds.size(); i++){
@@ -533,8 +430,8 @@ public class DBAdapter {
 		if(cur.moveToFirst()){
 			Intent intent = new Intent(context, SMSHandleReceiver.class);
 			intent.setAction(Constants.PRIVATE_SMS_ACTION);
-			intent.putExtra("SMS_ID", cur.getString(cur.getColumnIndex(KEY_ID)));
-			intent.putExtra("RECIPIENT_ID", cur.getString(cur.getColumnIndex(KEY_RECIPIENT_ID)));
+			intent.putExtra("SMS_ID", cur.getLong(cur.getColumnIndex(KEY_ID)));
+			intent.putExtra("RECIPIENT_ID", cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)));
 			intent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(KEY_NUMBER)));
 			intent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(KEY_MESSAGE)));
 			
@@ -549,24 +446,7 @@ public class DBAdapter {
 			updatePi(0, -1, -1);
 		}
 	}
-	
-	
-	
-	
-	
-	public long getSentDate(long id){
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_S_MILLIS}, KEY_ID + "=" + id, null, null, null, null);
-		cur.moveToFirst();
-		return cur.getLong(cur.getColumnIndex(KEY_S_MILLIS));
-	}
-	
-	
-	public long getDeliveryDate(long id){
-		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_D_MILLIS}, KEY_ID + "=" + id, null, null, null, null);
-		cur.moveToFirst();
-		return cur.getLong(cur.getColumnIndex(KEY_D_MILLIS));
-	}
-	//--------------------------------------------------------end of functions for SMS table---------------
+	//--------------------------------------------------------end of functions for SMS and Recipient tables---------------
 	
 	
 	
@@ -721,41 +601,6 @@ public class DBAdapter {
 	
 	
 	
-	
-	//---------------------------functions for spans table---------------------------------
-//	public Cursor fetchSpanForSms(long smsId){
-//		Cursor cur = db.query(DATABASE_SPANS_TABLE, null, KEY_SPAN_SMS_ID + "=" + smsId, null, null, null, null);
-//		return cur;
-//	}
-//	
-//	
-//	public long createSpan(String displayName, long entityId, int type, long smsId){
-//		ContentValues cv = new ContentValues();
-//		cv.put(KEY_SPAN_DN, displayName);
-//		cv.put(KEY_SPAN_ENTITY_ID, entityId);
-//		cv.put(KEY_SPAN_TYPE, type);
-//		cv.put(KEY_SPAN_SMS_ID, smsId);
-//		
-//		long spanId = db.insert(DATABASE_SPANS_TABLE, null, cv);
-//		return spanId;
-//	}
-//	
-//	
-//	public void deleteSpan(long smsId){
-//		Cursor spanIds = db.query(DATABASE_SPANS_TABLE, new String []{KEY_SPAN_ID}, KEY_SPAN_SMS_ID + "=" + smsId, null, null, null, null);
-//		if(spanIds.moveToFirst()){
-//			do{
-//				deleteSpanGroupRelsForSpan(spanIds.getLong(spanIds.getColumnIndex(KEY_SPAN_ID)));
-//			}while(spanIds.moveToNext());
-//		}
-//		db.delete(DATABASE_SPANS_TABLE, KEY_SPAN_SMS_ID + "=" + smsId, null);
-//	}
-	//---------------------------------------------------------------end of functions for spans table--------------
-	
-	
-	
-	
-	
 	//--------------------------------functions for span-group-relation table--------------------------------
 	//*** Table to log the relation between added spans and groups ***
 	public ArrayList<Long> fetchGroupsForRecipient(long recipientId){
@@ -816,8 +661,6 @@ public class DBAdapter {
 	
 	
 	
-	
-	
 	//----------------------------functions for recents table----------------------------------
 	public void addRecentContact(long contactId, String contactNumber){
 		Cursor cur = db.query(DATABASE_RECENTS_TABLE, new String[]{KEY_RECENT_CONTACT_ID, KEY_RECENT_CONTACT_CONTACT_ID, KEY_RECENT_CONTACT_NUMBER}, null, null, null, null, KEY_RECENT_CONTACT_ID);
@@ -874,7 +717,6 @@ public class DBAdapter {
 	        db.execSQL(DATABASE_CREATE_PI_TABLE);
 	        db.execSQL(DATABASE_CREATE_GROUP_TABLE);
 	        db.execSQL(DATABASE_CREATE_GROUP_CONTACT_RELATION);
-//	        db.execSQL(DATABASE_CREATE_SPANS_TABLE);
 	        db.execSQL(DATABASE_CREATE_RECIPIENT_GROUP_REL_TABLE);
 	        db.execSQL(DATABASE_CREATE_RECENTS_TABLE);
 	        

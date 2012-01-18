@@ -1,13 +1,8 @@
 package com.vinsol.sms_scheduler.activities;
 
-import java.util.List;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.view.KeyEvent;
@@ -15,12 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,70 +20,18 @@ import com.vinsol.sms_scheduler.utils.Log;
 
 public class ScheduleNewSms extends AbstractScheduleSms {
 	
-	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
-		
-		@Override
-		public void onReceive(Context context, Intent intent2) {
-			if(dataLoadWaitDialog.isShowing()) {
-				dataLoadWaitDialog.cancel();
-				if(toOpen == 1){
-					Intent intent = new Intent(ScheduleNewSms.this, SelectContacts.class);
-					intent.putExtra("IDSARRAY", idsString);
-					intent.putExtra("ORIGIN", "new");
-					toOpen = 0;
-					startActivityForResult(intent, 2);
-				}
-			}
-		}
-	};
 	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.schedule_sms);
 		
 		dataLoadWaitDialog = new Dialog(ScheduleNewSms.this);
 		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		
-		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
-		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
-		dateButton 					= (Button) 					findViewById(R.id.new_date_button);
-		characterCountText 			= (TextView) 				findViewById(R.id.new_char_count_text);
-		messageText 				= (EditText) 				findViewById(R.id.new_message_space);
-		templateImageButton 		= (ImageButton) 			findViewById(R.id.template_imgbutton);
-		speechImageButton 			= (ImageButton) 			findViewById(R.id.speech_imgbutton);
-		addTemplateImageButton 		= (ImageButton) 			findViewById(R.id.add_template_imgbutton);
-		scheduleButton 				= (Button) 					findViewById(R.id.new_schedule_button);
-		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
-		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
-		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
-		
 		Recipients.clear();
-		
-		// Check to see if a recognition activity is present
-        PackageManager pm = getPackageManager();
-        List<ResolveInfo> activities = pm.queryIntentActivities(
-                new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-        if (activities.size() != 0) {
-            speechImageButton.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					startVoiceRecognitionActivity();
-				}
-			});
-        } else {
-            speechImageButton.setEnabled(false);
-        }
-		//---------------------------------------------------------------------
-		
-        dataloadIntentFilter = new IntentFilter();
-
-        dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);
-
 		
 		setFunctionalities();
 		setSuperFunctionalities();
@@ -101,19 +39,6 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		
 		myAutoCompleteAdapter = (AutoCompleteAdapter) new AutoCompleteAdapter(this);
 		numbersText.setAdapter(myAutoCompleteAdapter);
-	}
-	
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		unregisterReceiver(mDataLoadedReceiver);
 	}
 	
 	
@@ -214,33 +139,6 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			}
 		});
 	}
-	
-	//--------------------function to Scheduling a new sms------------------------------------
-	@Override
-	protected void doSmsScheduling(){
-		
-		mdba.open();
-		doSmsSchedulingTask();
-		mdba.close();
-	}
-	
-	
-	
-	@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
-            // Fill the list view with the strings the recognizer thought it could have heard
-            matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            showMatchesDialog();
-        }
-        else if(resultCode == 2) {
-        	refreshSpannableString(false);
-        	numbersText.requestFocus();
-        	numbersText.setSelection(numbersText.getText().toString().length());
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-	
 	
 	
 	

@@ -3,7 +3,6 @@ package com.vinsol.sms_scheduler.receivers;
 import java.util.ArrayList;
 import java.util.Random;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -11,8 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.telephony.SmsManager;
-import com.vinsol.sms_scheduler.activities.ScheduleNewSms;
-
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.utils.Log;
@@ -25,15 +22,12 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 	private String number;
 	private long smsId;
 	private long recipientId;
-	private Context mContext;
-
 	SmsManager smsManager = SmsManager.getDefault();
 	ArrayList<String> parts;
 	int msgSize;
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		mContext = context;
 		message = intent.getStringExtra("MESSAGE");
 		number = intent.getStringExtra("NUMBER");
 		smsId = intent.getLongExtra("SMS_ID", 0);
@@ -99,7 +93,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			mdba.open();
 			mdba.updatePi(piNumber, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)), cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)));
 			mdba.close();
-			AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+			AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 	    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)), pi);
 		}else{
 			Log.d("no more records retrieved");

@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,13 +25,17 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
@@ -170,6 +175,94 @@ abstract class AbstractScheduleSms extends Activity{
 	protected final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
 	//--------------------------------------------------------------------------------
 	
+	
+	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent2) {
+			if(dataLoadWaitDialog.isShowing()){
+				dataLoadWaitDialog.cancel();
+				if(toOpen == 1){
+					toOpen = 0;
+					Intent intent = new Intent(AbstractScheduleSms.this, SelectContacts.class);
+					intent.putExtra("ORIGIN", "edit");
+					startActivityForResult(intent, 2);
+				}
+			}
+		}
+	};
+	
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.schedule_sms);
+		
+		numbersText 				= (AutoCompleteTextView) 	findViewById(R.id.new_numbers_text);
+		addFromContactsImgButton 	= (ImageButton) 		 	findViewById(R.id.new_add_from_contact_imgbutton);
+		dateButton 					= (Button) 					findViewById(R.id.new_date_button);
+		characterCountText 			= (TextView) 				findViewById(R.id.new_char_count_text);
+		messageText 				= (EditText) 				findViewById(R.id.new_message_space);
+		templateImageButton 		= (ImageButton) 			findViewById(R.id.template_imgbutton);
+		speechImageButton 			= (ImageButton) 			findViewById(R.id.speech_imgbutton);
+		addTemplateImageButton 		= (ImageButton) 			findViewById(R.id.add_template_imgbutton);
+		scheduleButton 				= (Button) 					findViewById(R.id.new_schedule_button);
+		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
+		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
+		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
+		
+		
+		
+		// Check to see if a recognition activity is present
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+        if (activities.size() != 0) {
+            speechImageButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					startVoiceRecognitionActivity();
+				}
+			});
+        } else {
+            speechImageButton.setEnabled(false);
+        }
+		//---------------------------------------------------------------------
+        
+
+        dataloadIntentFilter = new IntentFilter();
+        dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);
+	}
+	
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
+	}
+	
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		unregisterReceiver(mDataLoadedReceiver);
+	}
+	
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Fill the list view with the strings the recognizer thought it could have heard
+            matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            showMatchesDialog();
+        }
+        else if(resultCode == 2) {
+        	refreshSpannableString(false);
+        	numbersText.requestFocus();
+        	numbersText.setSelection(numbersText.getText().toString().length());
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 	
 	
 	
@@ -887,6 +980,7 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	//-------------------------Matches Adapter-------------------------------------------
+	@SuppressWarnings({ "rawtypes", "unused" })
 	private class MatchesAdapter extends ArrayAdapter {
 		@SuppressWarnings("unchecked")
 		MatchesAdapter() {
@@ -924,7 +1018,9 @@ abstract class AbstractScheduleSms extends Activity{
 	//------------------------------------------------
 	//Adapter for list in the templates dialog
 	//------------------------------------------------
+	@SuppressWarnings("rawtypes")
 	private class TemplateAdapter extends ArrayAdapter {
+		@SuppressWarnings("unchecked")
 		TemplateAdapter() {
 			super(AbstractScheduleSms.this, R.layout.template_list_row, templatesArray);
 		}
@@ -1074,10 +1170,6 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	
-	protected abstract void doSmsScheduling();
-	
-	
 	protected class AsyncScheduling extends AsyncTask<Void, Void, Void>{
 
 		Dialog dialog;
@@ -1097,7 +1189,7 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		@Override
 		protected Void doInBackground(Void... params) {
-			doSmsScheduling();
+			doSmsSchedulingTask();
 			return null;
 		}
 		
@@ -1109,10 +1201,6 @@ abstract class AbstractScheduleSms extends Activity{
 			AbstractScheduleSms.this.finish();
 		}
 	}
-	
-	
-	
-	
 	
 	
 	protected void loadGroupsData(){

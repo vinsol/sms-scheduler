@@ -9,7 +9,6 @@ import android.os.Parcelable;
 public class Sms implements Parcelable {
 	
 	public long 			keyId;
-//	public long 			keyGrpId;
 	public String 			keyNumber;
 	public String 			keyMessage;
 	public long				keyTimeMilis;
@@ -18,9 +17,7 @@ public class Sms implements Parcelable {
 	public String 			keyExtraReceivers;
 	public ArrayList<Long>	keyIds;
 	
-//=======
-//public class ScheduledSms extends AbstractSms implements Parcelable{
-//>>>>>>> refactoring
+	
 	public Sms(long keyid, String keynumber, String keymessage, long keytimemilis, String keydate, ArrayList<Long> keyids){
 		this.keyId 			= keyid;
 		this.keyNumber 		= keynumber;
@@ -61,5 +58,4 @@ public class Sms implements Parcelable {
 	public int describeContents() {
 		return 0;
 	}
-	
 }

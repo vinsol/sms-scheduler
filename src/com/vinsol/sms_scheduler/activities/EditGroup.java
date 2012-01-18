@@ -362,7 +362,9 @@ public class EditGroup extends Activity {
 	
 	
 	
+	@SuppressWarnings("rawtypes")
 	private class MyAdapter extends ArrayAdapter{
+		@SuppressWarnings("unchecked")
 		MyAdapter(){
     		super(EditGroup.this, R.layout.edit_group_list_row, ids);
     	}
