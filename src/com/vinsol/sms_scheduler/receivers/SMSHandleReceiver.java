@@ -76,7 +76,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			
 		}
 		mdba.open();
-		Cursor cur = mdba.fetchAllScheduled();
+		Cursor cur = mdba.fetchNextScheduled();
 		mdba.close();
 		if(cur.moveToFirst()){
 			Log.d("more records");

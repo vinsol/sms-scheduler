@@ -245,29 +245,29 @@ public class DBAdapter {
 	
 	
 	
-	public Cursor fetchAllScheduled(){
-		String sql = "SELECT * FROM smsTable, recipientTable "
-			+ "WHERE smsTable._id=recipientTable.sms_id "
-			+ "AND (smsTable.status=1 OR smsTable.status=3) "
-			+ "AND recipientTable.operated=0 "
-			+ "ORDER BY smsTable.time_millis";
-		
-		Cursor cur = db.rawQuery(sql, null);
-		Log.d("size of cur in db : " + cur.getCount());
-		return cur;
-	}
+//	public Cursor fetchAllScheduled(){
+//		String sql = "SELECT * FROM smsTable, recipientTable "
+//			+ "WHERE smsTable._id=recipientTable.sms_id "
+//			+ "AND (smsTable.status=1 OR smsTable.status=3) "
+//			+ "AND recipientTable.operated=0 "
+//			+ "ORDER BY smsTable.time_millis";
+//		
+//		Cursor cur = db.rawQuery(sql, null);
+//		Log.d("size of cur in db : " + cur.getCount());
+//		return cur;
+//	}
 	
 	
 	
 	public Cursor fetchNextScheduled(){
-		String sql = "SELECT * FROM smsTable, recipientTable "
-			+ "WHERE recipientTable.sms_id=smsTable._id "
-			+ "AND recipientTable.recipient_id ="
-				+ "(SELECT MIN(recipientTable.recipient_id) FROM recipientTable, smsTable "
-				+ "WHERE smsTable.time_millis="
-					+ "(SELECT MIN(smsTable.time_millis) FROM smsTable))";
+		String sql = "SELECT * FROM smsTable, recipientTable WHERE recipientTable.sms_id=smsTable._id AND recipientTable.recipient_id="
+			 + "(SELECT recipientTable.recipient_id FROM recipientTable, smsTable " 
+					+ "WHERE recipientTable.sms_id = smsTable._id AND recipientTable.operated=0 AND smsTable._id="
+				           + "(SELECT smsTable._id FROM smsTable WHERE  smsTable.time_millis="
+						          + "(SELECT MIN(smsTable.time_millis) FROM smsTable, recipientTable WHERE (smsTable.status=1 OR smsTable.status=3))))";
 		
 		Cursor cur = db.rawQuery(sql, null);
+		Log.d("size of cur in db : " + cur.getCount());
 		return cur;
 	}
 	
@@ -410,7 +410,7 @@ public class DBAdapter {
 		}
 		db.delete(DATABASE_SMS_TABLE, KEY_ID + "=" + smsId, null);
 		
-		Cursor cur = fetchAllScheduled();
+		Cursor cur = fetchNextScheduled();
 		if(cur.moveToFirst()){
 			Intent intent = new Intent(context, SMSHandleReceiver.class);
 			intent.setAction(Constants.PRIVATE_SMS_ACTION);

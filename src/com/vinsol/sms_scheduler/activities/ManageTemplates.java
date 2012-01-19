@@ -86,7 +86,7 @@ public class ManageTemplates extends Activity{
 					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 					isEditing = false;
 					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-				}	
+				}
 			}
 		});
 		
@@ -101,7 +101,7 @@ public class ManageTemplates extends Activity{
 					inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 					templatesList.requestFocus();
 				}else{
-					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+					inputMethodManager.showSoftInput(newTemplateBody, 0);
 					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
 					newTemplateBody.setText("");
 					newTemplateBody.requestFocus();

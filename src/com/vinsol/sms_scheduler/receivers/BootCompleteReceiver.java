@@ -24,7 +24,7 @@ public class BootCompleteReceiver extends BroadcastReceiver{
 		Log.d("boot receiver triggered");
 		mdba = new DBAdapter(context);
 		mdba.open();
-		Cursor cur = mdba.fetchAllScheduled();
+		Cursor cur = mdba.fetchNextScheduled();
 		if(cur.moveToFirst()){
 			intent = new Intent(context, SMSHandleReceiver.class);
 			intent.setAction(Constants.PRIVATE_SMS_ACTION);

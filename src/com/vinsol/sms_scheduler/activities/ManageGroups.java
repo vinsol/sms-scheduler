@@ -189,19 +189,9 @@ public class ManageGroups extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-//					ArrayList<Long> ids = new ArrayList<Long>(); 
-//					mdba.open();
-//					ids = mdba.fetchIdsForGroups(grpIdsArray.get(position));
-//					mdba.close();
-//					ArrayList<String> idsString = new ArrayList<String>();
-//					for(int i = 0; i< ids.size(); i++){
-//						idsString.add(String.valueOf(ids.get(i)));
-//					}
 					Intent intent = new Intent(ManageGroups.this, EditGroup.class);
-					//intent.putExtra("STATE", "edit");
 					intent.putExtra("GROUPNAME", grpNamesArray.get(position));
 					intent.putExtra("GROUPID", grpIdsArray.get(position));
-					//intent.putStringArrayListExtra("IDARRAY", idsString);
 					startActivity(intent);
 				}
 			});
@@ -214,6 +204,4 @@ public class ManageGroups extends Activity {
 		TextView groupNameLabel;
 		ImageView groupDeleteButton;
 	}
-	
-	
 }
