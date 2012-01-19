@@ -258,15 +258,19 @@ public class DBAdapter {
 	}
 	
 	
-//	
-//	public Cursor fetchNextScheduled(){
-//		String sql = "SELECT * FROM smsTable, recipientTable "
-//			+ "WHERE recipientTable.recipient_id ="
-//					+ "(SELECT recipientTable.recipient_id FROM smsTable, recipientTable "
-//						+ "WHERE recipientTable.recipient_id=
-//					)
-//	}
-//	
+	
+	public Cursor fetchNextScheduled(){
+		String sql = "SELECT * FROM smsTable, recipientTable "
+			+ "WHERE recipientTable.sms_id=smsTable._id "
+			+ "AND recipientTable.recipient_id ="
+				+ "(SELECT MIN(recipientTable.recipient_id) FROM recipientTable, smsTable "
+				+ "WHERE smsTable.time_millis="
+					+ "(SELECT MIN(smsTable.time_millis) FROM smsTable))";
+		
+		Cursor cur = db.rawQuery(sql, null);
+		return cur;
+	}
+	
 
 	
 	public long scheduleSms(String message, String date, int parts, long timeInMilis){

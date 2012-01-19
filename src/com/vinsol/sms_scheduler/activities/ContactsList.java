@@ -38,7 +38,7 @@ public class ContactsList extends Activity {
 	
 	private ArrayList<Contact> contacts = new ArrayList<Contact>();
 	private ArrayList<Long> ids = new ArrayList<Long>();
-	private ArrayList<Long> ids2 = new ArrayList<Long>();
+	private ArrayList<Long> idsTemp = new ArrayList<Long>();
 	private ArrayList<String> idsString = new ArrayList<String>();
 	
 	private String callingActivity;
@@ -62,7 +62,7 @@ public class ContactsList extends Activity {
 			idsString = intent.getStringArrayListExtra("IDARRAY");
 			for(int i = 0; i< idsString.size(); i++){
 				ids.add(Long.parseLong(idsString.get(i)));
-				ids2.add(Long.parseLong(idsString.get(i)));
+				idsTemp.add(Long.parseLong(idsString.get(i)));
 			}
 		
 			for(int i = 0; i< contacts.size(); i++){
@@ -83,7 +83,6 @@ public class ContactsList extends Activity {
 				contacts.get(i).checked = false;
 			}
 		}
-		Log.d("Contacts size : " + String.valueOf(contacts.size()));
 		
 		MyAdapter myAdapter = new MyAdapter();
 		contactsList.setAdapter(myAdapter);
@@ -172,11 +171,10 @@ public class ContactsList extends Activity {
 					}
 				}else{
 					intent.putStringArrayListExtra("IDSLIST", idsStringChanged);
-					intent.putExtra("CANCEL", "no");
+					intent.putExtra("CANCEL", false);
 					setResult(10, intent);
 					ContactsList.this.finish();
 				}
-				
 			}
 		});
 		
@@ -186,18 +184,12 @@ public class ContactsList extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(callingActivity.equals("Group Edit Activity")){
-					Intent intent = new Intent();
-					intent.putStringArrayListExtra("IDSLIST", idsString);
-					intent.putExtra("CANCEL", "back");
-					
-					setResult(10, intent);
+					handleBackForEdit();
 				}
 				
 				ContactsList.this.finish();
 			}
 		});
-		
-		
 	}
 	
 	
@@ -206,14 +198,19 @@ public class ContactsList extends Activity {
 	@Override
 	public void onBackPressed() {
 		if(callingActivity.equals("Group Edit Activity")){
-			Intent intent = new Intent();
-			intent.putStringArrayListExtra("IDSLIST", idsString);
-			intent.putExtra("CANCEL", "back");
-			setResult(10, intent);
+			handleBackForEdit();
 		}
 		ContactsList.this.finish();
 	}
 	
+	
+	
+	public void handleBackForEdit(){
+		Intent intent = new Intent();
+		intent.putStringArrayListExtra("IDSLIST", idsString);
+		intent.putExtra("CANCEL", true);
+		setResult(10, intent);
+	}
 	
 	
 	
@@ -245,14 +242,12 @@ public class ContactsList extends Activity {
     		holder.contactImage.setImageBitmap(contacts.get(position).image);
     		holder.nameText.setText(contacts.get(position).name);
     		holder.numberText.setText(contacts.get(position).number);
-    		
     		holder.contactCheck.setChecked(contacts.get(position).checked);
     		
     		holder.contactCheck.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					Log.d("position : " + position);
 					
 					if(holder.contactCheck.isChecked()){
 						ids.add(contacts.get(_position).content_uri_id);

@@ -45,7 +45,7 @@ public class EditGroup extends Activity {
 	private String groupName = "";
 	
 	private ArrayList<Long> ids = new ArrayList<Long>();
-	private ArrayList<Long> ids2 = new ArrayList<Long>();
+	private ArrayList<Long> idsTemp = new ArrayList<Long>();
 	private ArrayList<Contact> newGroupContacts = new ArrayList<Contact>();
 	
 	@Override
@@ -66,10 +66,9 @@ public class EditGroup extends Activity {
 		groupName = intent.getStringExtra("GROUPNAME");
 		ids.clear();
 		mdba.open();
-		ids = mdba.fetchIdsForGroups(groupId);
-		ids2 = mdba.fetchIdsForGroups(groupId);
+		ids = idsTemp = mdba.fetchIdsForGroups(groupId);
+		
 		mdba.close();
-		Log.d("Ids Size : " + ids.size());
 		groupNameLabel.setText(groupName);
 			
 		deleteGroupButton.setOnClickListener(new OnClickListener() {
@@ -90,7 +89,6 @@ public class EditGroup extends Activity {
 					@Override
 						public void onClick(View v) {
 						mdba.open();
-						Log.d("Group to delete : " + groupId);
 						mdba.removeGroup(groupId);
 						mdba.close();
 						d.cancel();
@@ -99,13 +97,13 @@ public class EditGroup extends Activity {
 				});
 					
 				noButton.setOnClickListener(new OnClickListener() {
-						
+				
 					@Override
 					public void onClick(View v) {
 						d.cancel();
 					}
 				});
-					
+				
 				d.show();
 			}
 		});
@@ -198,9 +196,9 @@ public class EditGroup extends Activity {
 				
 				mdba.open();
 				if(ids.size()>0){
-					ids2 = mdba.fetchIdsForGroups(groupId);
-					for(int i = 0; i< ids2.size(); i++){
-						mdba.removeContactFromGroup(ids2.get(i), groupId);
+					idsTemp = mdba.fetchIdsForGroups(groupId);
+					for(int i = 0; i< idsTemp.size(); i++){
+						mdba.removeContactFromGroup(idsTemp.get(i), groupId);
 					}
 					for(int i = 0; i< ids.size(); i++){
 						mdba.addContactToGroup(ids.get(i), groupId);
@@ -226,11 +224,11 @@ public class EditGroup extends Activity {
 	@Override
 	public void onBackPressed() {
 		boolean isChanged = false;
-		if(ids.size() != ids2.size()){
+		if(ids.size() != idsTemp.size()){
 			isChanged = true;
 		}else{
 			for(int i = 0; i< ids.size(); i++){
-				if (!ids.get(i).equals(ids2.get(i))){
+				if (!ids.get(i).equals(idsTemp.get(i))){
 					isChanged = true;
 					break;
 				}
@@ -257,8 +255,8 @@ public class EditGroup extends Activity {
 					for(int i = 0; i< ids.size(); i++){
 						mdba.removeContactFromGroup(ids.get(i), groupId);
 					}
-					for(int i = 0; i< ids2.size(); i++){
-						mdba.addContactToGroup(ids2.get(i), groupId);
+					for(int i = 0; i< idsTemp.size(); i++){
+						mdba.addContactToGroup(idsTemp.get(i), groupId);
 					}
 					mdba.close();
 					d.cancel();
@@ -366,9 +364,9 @@ public class EditGroup extends Activity {
 								ids.remove(_position);
 								MyAdapter.this.notifyDataSetChanged();
 								mdba.open();
-								ids2 = mdba.fetchIdsForGroups(groupId);
-								for(int i = 0; i< ids2.size(); i++){
-									mdba.removeContactFromGroup(ids2.get(i), groupId);
+								idsTemp = mdba.fetchIdsForGroups(groupId);
+								for(int i = 0; i< idsTemp.size(); i++){
+									mdba.removeContactFromGroup(idsTemp.get(i), groupId);
 								}
 								mdba.removeGroup(groupId);
 								mdba.close();
@@ -403,11 +401,8 @@ public class EditGroup extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
-		String isCancelled = data.getStringExtra("CANCEL");
-		if(isCancelled.equals("yes")){
-			EditGroup.this.finish();
-		}
-		if(isCancelled.equals("no")){
+		boolean isCancelled = data.getBooleanExtra("CANCEL", false);
+		if(!isCancelled){
 			ArrayList<String> idsString = new ArrayList<String>();
 			idsString = data.getStringArrayListExtra("IDSLIST");
 			ids.clear();
