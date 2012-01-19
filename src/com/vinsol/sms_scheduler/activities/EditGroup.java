@@ -44,9 +44,6 @@ public class EditGroup extends Activity {
 	private Long groupId;
 	private String groupName = "";
 	
-	private String callingState;
-	private boolean newCall = true;
-	
 	private ArrayList<Long> ids = new ArrayList<Long>();
 	private ArrayList<Long> ids2 = new ArrayList<Long>();
 	private ArrayList<Contact> newGroupContacts = new ArrayList<Contact>();
@@ -57,7 +54,6 @@ public class EditGroup extends Activity {
 		setContentView(R.layout.edit_group);
 		
 		Intent intent = getIntent();
-		callingState = intent.getStringExtra("STATE");
 		
 		groupNameLabel 		= (TextView) 	findViewById(R.id.group_name_label);
 		addContactsButton 	= (Button) findViewById(R.id.add_contacts_button);
@@ -65,74 +61,54 @@ public class EditGroup extends Activity {
 		saveGroupButton 	= (Button) findViewById(R.id.save_group_button);
 		deleteGroupButton   = (Button) findViewById(R.id.delete_group_button);
 		
-		
-		if(callingState.equals("new") && ids.size()==0){
-			ArrayList<String> idsString = new ArrayList<String>();
-			intent = new Intent(EditGroup.this, ContactsList.class);
-			intent.putStringArrayListExtra("IDARRAY", idsString);
-			intent.putExtra("ORIGINATOR", "Group Add Activity");
-			intent.putExtra("NEWCALL", newCall);
-			startActivityForResult(intent, 1);
-		}
-		
-		if(callingState.equals("newc") && ids.size()==0){
-			ArrayList<String> idsString = new ArrayList<String>();
-			intent = new Intent(EditGroup.this, ContactsList.class);
-			intent.putStringArrayListExtra("IDARRAY", idsString);
-			intent.putExtra("ORIGINATOR", "Group Add Activity From Contacts");
-			intent.putExtra("NEWCALL", newCall);
-			startActivityForResult(intent, 1);
-		}
-		
-		if(callingState.equals("edit")){
-			groupId = intent.getLongExtra("GROUPID", 0);
-			groupName = intent.getStringExtra("GROUPNAME");
-			ids.clear();
-			mdba.open();
-			ids = mdba.fetchIdsForGroups(groupId);
-			ids2 = mdba.fetchIdsForGroups(groupId);
-			mdba.close();
-			Log.d("Ids Size : " + ids.size());
-			groupNameLabel.setText(groupName);
+	
+		groupId = intent.getLongExtra("GROUPID", 0);
+		groupName = intent.getStringExtra("GROUPNAME");
+		ids.clear();
+		mdba.open();
+		ids = mdba.fetchIdsForGroups(groupId);
+		ids2 = mdba.fetchIdsForGroups(groupId);
+		mdba.close();
+		Log.d("Ids Size : " + ids.size());
+		groupNameLabel.setText(groupName);
 			
-			deleteGroupButton.setOnClickListener(new OnClickListener() {
+		deleteGroupButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				final Dialog d = new Dialog(EditGroup.this);
+				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+				d.setContentView(R.layout.confirmation_dialog);
+				TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+				Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+				Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 				
-				@Override
-				public void onClick(View v) {
-					final Dialog d = new Dialog(EditGroup.this);
-					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					d.setContentView(R.layout.confirmation_dialog);
-					TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-					
-					questionText.setText("Delete this Group?");
-					
-					yesButton.setOnClickListener(new OnClickListener() {
+				questionText.setText("Delete this Group?");
+				
+				yesButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+					@Override
 						public void onClick(View v) {
-							mdba.open();
-							Log.d("Group to delete : " + groupId);
-							mdba.removeGroup(groupId);
-							mdba.close();
-							d.cancel();
-							EditGroup.this.finish();
-						}
-					});
+						mdba.open();
+						Log.d("Group to delete : " + groupId);
+						mdba.removeGroup(groupId);
+						mdba.close();
+						d.cancel();
+						EditGroup.this.finish();
+					}
+				});
 					
-					noButton.setOnClickListener(new OnClickListener() {
+				noButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
-						public void onClick(View v) {
-							d.cancel();
-						}
-					});
+					@Override
+					public void onClick(View v) {
+						d.cancel();
+					}
+				});
 					
-					d.show();
-				}
-			});
-		}
+				d.show();
+			}
+		});
 		
 		
 		
@@ -202,12 +178,8 @@ public class EditGroup extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(EditGroup.this, ContactsList.class);
-				if(callingState.equals("new")){
-					intent.putExtra("ORIGINATOR", "Group Add Activity");
-				}else if(callingState.equals("edit")){
-					intent.putExtra("ORIGINATOR", "Group Edit Activity");
-					intent.putExtra("GROUPID", groupId);
-				}
+				intent.putExtra("ORIGINATOR", "Group Edit Activity");
+				intent.putExtra("GROUPID", groupId);
 				ArrayList<String> idsString = new ArrayList<String>();
 				for(int i = 0; i< ids.size(); i++){
 					idsString.add(String.valueOf(ids.get(i)));
@@ -224,48 +196,28 @@ public class EditGroup extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				if(callingState.equals("new")){
-					Log.d("Size of Ids : " + ids.size());
-					mdba.open();
-					Log.d("Size of Ids : " + ids.size());
-					mdba.createGroup(groupName, ids);
+				mdba.open();
+				if(ids.size()>0){
+					ids2 = mdba.fetchIdsForGroups(groupId);
+					for(int i = 0; i< ids2.size(); i++){
+						mdba.removeContactFromGroup(ids2.get(i), groupId);
+					}
+					for(int i = 0; i< ids.size(); i++){
+						mdba.addContactToGroup(ids.get(i), groupId);
+					}
+					mdba.setGroupName(groupName, groupId);
 					mdba.close();
 					EditGroup.this.finish();
-				
-				
-				
-				}else if(callingState.equals("edit")){
-					mdba.open();
-					if(ids.size()>0){
-						ids2 = mdba.fetchIdsForGroups(groupId);
-						for(int i = 0; i< ids2.size(); i++){
-							mdba.removeContactFromGroup(ids2.get(i), groupId);
-						}
-						for(int i = 0; i< ids.size(); i++){
-							mdba.addContactToGroup(ids.get(i), groupId);
-						}
-						mdba.setGroupName(groupName, groupId);
-						mdba.close();
-						EditGroup.this.finish();
-					}else{
-						Toast.makeText(EditGroup.this, "Cannot make group with no Contact", Toast.LENGTH_LONG).show();
-					}
-					
-					
+				}else{
+					Toast.makeText(EditGroup.this, "Cannot make group with no Contact", Toast.LENGTH_LONG).show();
 				}
-				
-				
 			}
 		});
-		
 		
 		
 		loadContactsForGroups();
 		myAdapter = new MyAdapter();
 		groupContactsList.setAdapter(myAdapter);
-		
-		
-		
 	}
 	
 	
@@ -273,62 +225,58 @@ public class EditGroup extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-		if(callingState.equals("new")){
-			EditGroup.this.finish();
-		}else if(callingState.equals("edit")){
-			boolean isChanged = false;
-			if(ids.size() != ids2.size()){
-				isChanged = true;
-			}else{
-				for(int i = 0; i< ids.size(); i++){
-					if (!ids.get(i).equals(ids2.get(i))){
-						isChanged = true;
-						break;
-					}
+		boolean isChanged = false;
+		if(ids.size() != ids2.size()){
+			isChanged = true;
+		}else{
+			for(int i = 0; i< ids.size(); i++){
+				if (!ids.get(i).equals(ids2.get(i))){
+					isChanged = true;
+					break;
 				}
 			}
-			if(isChanged){
-				final Dialog d = new Dialog(EditGroup.this);
-				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				d.setContentView(R.layout.confirmation_dialog);
+		}
+		if(isChanged){
+			final Dialog d = new Dialog(EditGroup.this);
+			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			d.setContentView(R.layout.confirmation_dialog);
+		
+			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
+			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+			
+			questionText.setText("Discard the changes?");
+			yesButton.setText("");
+			noButton.setText("");
+			yesButton.setOnClickListener(new OnClickListener() {
 				
-				TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-				Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-				Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-				
-				questionText.setText("Discard the changes?");
-				yesButton.setText("");
-				noButton.setText("");
-				yesButton.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						mdba.open();
-						ids = mdba.fetchIdsForGroups(groupId);
-						for(int i = 0; i< ids.size(); i++){
-							mdba.removeContactFromGroup(ids.get(i), groupId);
-						}
-						for(int i = 0; i< ids2.size(); i++){
-							mdba.addContactToGroup(ids2.get(i), groupId);
-						}
-						mdba.close();
-						d.cancel();
-						EditGroup.this.finish();
+				@Override
+				public void onClick(View v) {
+					mdba.open();
+					ids = mdba.fetchIdsForGroups(groupId);
+					for(int i = 0; i< ids.size(); i++){
+						mdba.removeContactFromGroup(ids.get(i), groupId);
 					}
-				});
-				
-				noButton.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						d.cancel();
+					for(int i = 0; i< ids2.size(); i++){
+						mdba.addContactToGroup(ids2.get(i), groupId);
 					}
-				});
+					mdba.close();
+					d.cancel();
+					EditGroup.this.finish();
+				}
+			});
+			
+			noButton.setOnClickListener(new OnClickListener() {
 				
-				d.show();
-			}else{
-				EditGroup.this.finish();
-			}
+				@Override
+				public void onClick(View v) {
+					d.cancel();
+				}
+			});
+			
+			d.show();
+		}else{
+			EditGroup.this.finish();
 		}
 	}
 	
@@ -396,14 +344,7 @@ public class EditGroup extends Activity {
 				@Override
 				public void onClick(View v) {
 					Log.d("List position :" + _position);
-//					if(callingState.equals("edit")){
-//						mdba.open();
-//						mdba.removeContactFromGroup(Long.parseLong(newGroupContacts.get(_position).content_uri_id), groupId);
-//						mdba.close();
-//					}
-//					mdba.open();
-//					Cursor cur = mdba.fetchIdsForGroups(groupId);
-					if(newGroupContacts.size()==1 && callingState.equals("edit")){
+					if(newGroupContacts.size()==1){
 						
 						final Dialog d = new Dialog(EditGroup.this);
 						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -444,7 +385,8 @@ public class EditGroup extends Activity {
 						});
 						
 						d.show();
-					}else{
+					}
+					else{
 						newGroupContacts.remove(_position);
 						ids.remove(_position);
 						MyAdapter.this.notifyDataSetChanged();
@@ -461,24 +403,20 @@ public class EditGroup extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
-		if(callingState.equals("new")){
+		String isCancelled = data.getStringExtra("CANCEL");
+		if(isCancelled.equals("yes")){
 			EditGroup.this.finish();
-		}else{
-			String isCancelled = data.getStringExtra("CANCEL");
-			if(isCancelled.equals("yes")){
-				EditGroup.this.finish();
-			}
-			if(isCancelled.equals("no")){
-				ArrayList<String> idsString = new ArrayList<String>();
-				idsString = data.getStringArrayListExtra("IDSLIST");
-				ids.clear();
+		}
+		if(isCancelled.equals("no")){
+			ArrayList<String> idsString = new ArrayList<String>();
+			idsString = data.getStringArrayListExtra("IDSLIST");
+			ids.clear();
 				
-				for(int i = 0; i< idsString.size(); i++){
-					ids.add(Long.parseLong(idsString.get(i)));
-				}
-				loadContactsForGroups();
-				myAdapter.notifyDataSetChanged();
+			for(int i = 0; i< idsString.size(); i++){
+				ids.add(Long.parseLong(idsString.get(i)));
 			}
+			loadContactsForGroups();
+			myAdapter.notifyDataSetChanged();
 		}
 	}
 	
@@ -490,6 +428,4 @@ public class EditGroup extends Activity {
 		TextView 	contactNumber;
 		ImageView 	contactRemoveButton;
 	}
-	
-	
 }

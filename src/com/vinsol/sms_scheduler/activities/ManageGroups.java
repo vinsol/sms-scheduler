@@ -61,7 +61,7 @@ public class ManageGroups extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(ManageGroups.this, EditGroup.class);
-				intent.putExtra("STATE", "new");
+				intent.putExtra("ORIGINATOR", "Group Add Activity");
 				startActivity(intent);
 			}
 		});
@@ -71,8 +71,8 @@ public class ManageGroups extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ManageGroups.this, EditGroup.class);
-				intent.putExtra("STATE", "new");
+				Intent intent = new Intent(ManageGroups.this, ContactsList.class);
+				intent.putExtra("ORIGINATOR", "Group Add Activity");
 				startActivity(intent);
 			}
 		});
@@ -198,7 +198,7 @@ public class ManageGroups extends Activity {
 //						idsString.add(String.valueOf(ids.get(i)));
 //					}
 					Intent intent = new Intent(ManageGroups.this, EditGroup.class);
-					intent.putExtra("STATE", "edit");
+					//intent.putExtra("STATE", "edit");
 					intent.putExtra("GROUPNAME", grpNamesArray.get(position));
 					intent.putExtra("GROUPID", grpIdsArray.get(position));
 					//intent.putStringArrayListExtra("IDARRAY", idsString);

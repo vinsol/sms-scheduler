@@ -2,7 +2,7 @@ package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
-public class Recipient {
+public class Recipient{
 
 	public long recipientId;
 	public int type;
@@ -25,6 +25,4 @@ public class Recipient {
 		this.contactId = contactId;
 		this.smsId = smsId;
 	}
-	
-	
 }

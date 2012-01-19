@@ -348,8 +348,8 @@ public class SelectContacts extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(SelectContacts.this, EditGroup.class);
-				intent.putExtra("STATE", "new");
+				Intent intent = new Intent(SelectContacts.this, ContactsList.class);
+				intent.putExtra("ORIGINATOR", "Group Add Activity");
 				startActivity(intent);
 			}
 		});

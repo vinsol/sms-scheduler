@@ -25,6 +25,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	
 	private boolean isDraft = false;
 	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

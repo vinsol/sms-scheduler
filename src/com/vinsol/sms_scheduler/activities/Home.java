@@ -568,7 +568,6 @@ public class Home extends Activity {
     	childData.add(groupChildDraft);
     	childData.add(groupChildSch);
     	childData.add(groupChildSent);
-    	
     	//-------------------------------------------------------------------------end of drafts load--------
     	
     	
@@ -591,19 +590,19 @@ public class Home extends Activity {
     	Intent intent;
 		switch (item.getItemId()) {
 	        case R.id.template_opt_menu:
-	        					intent = new Intent(Home.this, ManageTemplates.class);
-	        					startActivity(intent);
-	                            break;
+	        	intent = new Intent(Home.this, ManageTemplates.class);
+	        	startActivity(intent);
+	            break;
 	        case R.id.group_opt_menu:
-	        					if(SmsSchedulerApplication.isDataLoaded){
-	        						intent = new Intent(Home.this, ManageGroups.class);
-		                            startActivity(intent);
-	        					}else{
-	        						dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
-	        						toOpen = 1;
-	        						dataLoadWaitDialog.show();
-	        					}
-	                            break;
+	        	if(SmsSchedulerApplication.isDataLoaded){
+	        		intent = new Intent(Home.this, ManageGroups.class);
+		            startActivity(intent);
+	        	}else{
+	        		dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
+	        		toOpen = 1;
+	        		dataLoadWaitDialog.show();
+	        	}
+	            break;
 	    }
 	    return true;
 	}

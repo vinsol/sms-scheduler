@@ -257,6 +257,16 @@ public class DBAdapter {
 		return cur;
 	}
 	
+	
+//	
+//	public Cursor fetchNextScheduled(){
+//		String sql = "SELECT * FROM smsTable, recipientTable "
+//			+ "WHERE recipientTable.recipient_id ="
+//					+ "(SELECT recipientTable.recipient_id FROM smsTable, recipientTable "
+//						+ "WHERE recipientTable.recipient_id=
+//					)
+//	}
+//	
 
 	
 	public long scheduleSms(String message, String date, int parts, long timeInMilis){

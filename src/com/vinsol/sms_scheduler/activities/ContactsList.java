@@ -34,7 +34,6 @@ public class ContactsList extends Activity {
 	private Button doneButton;
 	private Button cancelButton;
 	
-	private boolean newCall;
 	private String groupName = "";
 	
 	private ArrayList<Contact> contacts = new ArrayList<Contact>();
@@ -58,28 +57,31 @@ public class ContactsList extends Activity {
 		contacts = SmsSchedulerApplication.contactsList;
 		callingActivity = intent.getStringExtra("ORIGINATOR");
 		
+		if(callingActivity.equals("Group Edit Activity")){
+			idsString.clear();
+			idsString = intent.getStringArrayListExtra("IDARRAY");
+			for(int i = 0; i< idsString.size(); i++){
+				ids.add(Long.parseLong(idsString.get(i)));
+				ids2.add(Long.parseLong(idsString.get(i)));
+			}
 		
-		idsString.clear();
-		idsString = intent.getStringArrayListExtra("IDARRAY");
-		for(int i = 0; i< idsString.size(); i++){
-			ids.add(Long.parseLong(idsString.get(i)));
-			ids2.add(Long.parseLong(idsString.get(i)));
-		}
-		
-		for(int i = 0; i< contacts.size(); i++){
-			contacts.get(i).checked = false;
-			for(int j = 0; j< ids.size(); j++){
-				if(contacts.get(i).content_uri_id == ids.get(j)){
-					contacts.get(i).checked = true;
+			for(int i = 0; i< contacts.size(); i++){
+				contacts.get(i).checked = false;
+				for(int j = 0; j< ids.size(); j++){
+					if(contacts.get(i).content_uri_id == ids.get(j)){
+						contacts.get(i).checked = true;
+					}
 				}
 			}
-		}
 		
-		if(callingActivity.equals("Group Edit Activity")){
 			doneButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 			intent.getLongExtra("GROUPID", 0);
-		}else if(callingActivity.equals("Group Add Activity") || callingActivity.equals("Group Add Activity From Contacts")){
-			newCall = intent.getBooleanExtra("NEWCALL", true);
+			
+		}else if(callingActivity.equals("Group Add Activity")){
+			intent.getBooleanExtra("NEWCALL", true);
+			for(int i = 0; i< contacts.size(); i++){
+				contacts.get(i).checked = false;
+			}
 		}
 		Log.d("Contacts size : " + String.valueOf(contacts.size()));
 		
@@ -97,7 +99,6 @@ public class ContactsList extends Activity {
 					idsStringChanged.add(String.valueOf(ids.get(i)));
 				}
 				if(callingActivity.equals("Group Add Activity")){
-					intent.putExtra("NEWCALL", newCall);
 					if(ids.size()==0){
 						Toast.makeText(ContactsList.this, "Cannot create Group with no Contacts. Add few..", Toast.LENGTH_LONG).show();
 					}else{
@@ -141,7 +142,6 @@ public class ContactsList extends Activity {
 											mdba.open();
 											mdba.createGroup(groupName, ids);
 											mdba.close();
-											setResult(10, intent);
 											ContactsList.this.finish();
 										}
 									}
@@ -164,6 +164,7 @@ public class ContactsList extends Activity {
 								mdba.open();
 								mdba.createGroup(groupName, ids);
 								mdba.close();
+								
 								setResult(10, intent);
 								ContactsList.this.finish();
 							}
@@ -184,14 +185,14 @@ public class ContactsList extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent();
-				intent.putStringArrayListExtra("IDSLIST", idsString);
-				intent.putExtra("CANCEL", "back");
-						
-				if(callingActivity.equals("Group Add Activity")){
-					intent.putExtra("NEWCALL", newCall);
+				if(callingActivity.equals("Group Edit Activity")){
+					Intent intent = new Intent();
+					intent.putStringArrayListExtra("IDSLIST", idsString);
+					intent.putExtra("CANCEL", "back");
+					
+					setResult(10, intent);
 				}
-				setResult(10, intent);
+				
 				ContactsList.this.finish();
 			}
 		});
@@ -204,10 +205,12 @@ public class ContactsList extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent();
-		intent.putStringArrayListExtra("IDSLIST", idsString);
-		intent.putExtra("CANCEL", "back");
-		setResult(10, intent);
+		if(callingActivity.equals("Group Edit Activity")){
+			Intent intent = new Intent();
+			intent.putStringArrayListExtra("IDSLIST", idsString);
+			intent.putExtra("CANCEL", "back");
+			setResult(10, intent);
+		}
 		ContactsList.this.finish();
 	}
 	
@@ -265,26 +268,6 @@ public class ContactsList extends Activity {
 				}
 			});
     		
-//    		contactCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-//				
-//				@Override
-//				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//						Log.i("MSG", "position : " + position);
-//						
-//						if(isChecked){
-//							ids.add(Long.parseLong(contacts.get(_position).content_uri_id));
-//							contacts.get(_position).checked = true;	
-//						}else{
-//							for(int i = 0; i< ids.size(); i++){
-//								if(ids.get(i) == Long.parseLong(contacts.get(_position).content_uri_id)){
-//									ids.remove(i);
-//									contacts.get(_position).checked = false;
-//								}
-//							}
-//						}
-//					MyAdapter.this.notifyDataSetChanged();
-//				}
-//			});
     		
     		convertView.setOnClickListener(new OnClickListener() {
 				
