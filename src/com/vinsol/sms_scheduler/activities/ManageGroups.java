@@ -49,7 +49,6 @@ public class ManageGroups extends Activity {
 		blankLayout			= (LinearLayout)findViewById(R.id.group_manager_blank_layout);
 		blankListAddButton 	= (Button) 		findViewById(R.id.blank_list_add_button);
 		
-
 		loadGroupsData();
 		
 		myAdapter = new MyAdapter();
@@ -60,9 +59,7 @@ public class ManageGroups extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ManageGroups.this, EditGroup.class);
-				intent.putExtra("ORIGINATOR", "Group Add Activity");
-				startActivity(intent);
+				startNewGroupActivity();
 			}
 		});
 		
@@ -71,29 +68,27 @@ public class ManageGroups extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ManageGroups.this, ContactsList.class);
-				intent.putExtra("ORIGINATOR", "Group Add Activity");
-				startActivity(intent);
+				startNewGroupActivity();
 			}
 		});
 	}
+	
 	
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
 		mdba.open();
-		cur = mdba.fetchAllGroups();
-		if(cur.getCount()==0){
+		if((cur = mdba.fetchAllGroups()).getCount()==0){
 			listLayout.setVisibility(LinearLayout.GONE);
 			blankLayout.setVisibility(LinearLayout.VISIBLE);
 		}else{
 			listLayout.setVisibility(LinearLayout.VISIBLE);
 			blankLayout.setVisibility(LinearLayout.GONE);
+			loadGroupsData();
+			myAdapter.notifyDataSetChanged();
 		}
 		mdba.close();
-		loadGroupsData();
-		myAdapter.notifyDataSetChanged();
 	}
 	
 	
@@ -198,6 +193,13 @@ public class ManageGroups extends Activity {
     		return convertView;
     	}
     }
+	
+	
+	private void startNewGroupActivity(){
+		Intent intent = new Intent(ManageGroups.this, ContactsList.class);
+		intent.putExtra("ORIGINATOR", "Group Add Activity");
+		startActivity(intent);
+	}
 	
 	
 	private class ManageGroupsListHolder{

@@ -3,14 +3,12 @@ package com.vinsol.sms_scheduler.activities;
 import java.util.ArrayList;
 import java.util.Date;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import com.vinsol.sms_scheduler.DBAdapter;
@@ -22,7 +20,6 @@ import com.vinsol.sms_scheduler.utils.Log;
 public class EditScheduledSms extends AbstractScheduleSms {
 	
 	private TextView headerText;
-	
 	private boolean isDraft = false;
 	
 	
@@ -31,10 +28,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		super.onCreate(savedInstanceState);
 		
 		mode = 2;
-		
-		dataLoadWaitDialog = new Dialog(EditScheduledSms.this);
-		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		inputMethodManager =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		
 		headerText	= (TextView)findViewById(R.id.header);
 		
@@ -48,8 +41,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		characterCountText.setText(String.valueOf(messageText.getText().toString().length()));
 		editedSms = SMS.keyId;
 		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
-
-		Recipients.clear();
 		
 		mdba.open();
 		recipientIds = mdba.fetchRecipientIdsForSms(editedSms);
@@ -90,12 +81,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		mdba.close();
 		refreshSpannableString(false);
-		loadGroupsData();
-		
-		setSuperFunctionalities();
-		
-		myAutoCompleteAdapter = new AutoCompleteAdapter(this);
-		numbersText.setAdapter(myAutoCompleteAdapter);
 	}
 	
 	

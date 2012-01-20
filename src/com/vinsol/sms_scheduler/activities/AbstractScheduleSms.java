@@ -234,6 +234,19 @@ abstract class AbstractScheduleSms extends Activity{
         }
 		//---------------------------------------------------------------------
         
+        dataLoadWaitDialog = new Dialog(AbstractScheduleSms.this);
+		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		
+		Recipients.clear();
+		
+		setSuperFunctionalities();
+		loadGroupsData();
+		
+		myAutoCompleteAdapter = (AutoCompleteAdapter) new AutoCompleteAdapter(this);
+		numbersText.setAdapter(myAutoCompleteAdapter);
+        
 
         dataloadIntentFilter = new IntentFilter();
         dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);

@@ -75,18 +75,7 @@ public class ManageTemplates extends Activity{
 			public void onClick(View v) {
 				listLayout.setVisibility(LinearLayout.VISIBLE);
 				blankLayout.setVisibility(LinearLayout.GONE);
-				if(newTemplateSpaceLayout.getVisibility()==LinearLayout.VISIBLE){
-					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-					inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
-					templatesList.requestFocus();
-				}else{
-					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
-					newTemplateBody.setText("");
-					newTemplateBody.requestFocus();
-					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
-					isEditing = false;
-					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-				}
+				handleAddNewRequisites();
 			}
 		});
 		
@@ -95,19 +84,7 @@ public class ManageTemplates extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				
-				if(newTemplateSpaceLayout.getVisibility()==LinearLayout.VISIBLE){
-					newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-					inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
-					templatesList.requestFocus();
-				}else{
-					inputMethodManager.showSoftInput(newTemplateBody, 0);
-					newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
-					newTemplateBody.setText("");
-					newTemplateBody.requestFocus();
-					newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
-					isEditing = false;
-				}
+				handleAddNewRequisites();
 			}
 		});
 		
@@ -136,6 +113,7 @@ public class ManageTemplates extends Activity{
 					if(!z){
 						Toast.makeText(ManageTemplates.this, "Template already exists", Toast.LENGTH_SHORT).show();
 					}else{
+						mdba.open();
 						if(isEditing){
 							mdba.editTemplate(templatesIdArray.get(editRowId), newTemplateBody.getText().toString());
 						}else{
@@ -143,7 +121,7 @@ public class ManageTemplates extends Activity{
 							templatesArray.add(newTemplateBody.getText().toString());
 							templatesIdArray.add(newId);
 						}
-						
+						mdba.close();
 						loadData();
 						mAdapter.notifyDataSetChanged();
 						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
@@ -154,7 +132,6 @@ public class ManageTemplates extends Activity{
 							Toast.makeText(ManageTemplates.this, "Template added", Toast.LENGTH_SHORT).show();
 						}
 					}
-					mdba.close();
 				}
 			}
 		});
@@ -167,39 +144,11 @@ public class ManageTemplates extends Activity{
 			public void onClick(View v) {
 				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 				newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
-				mdba.open();
-				Cursor cur = mdba.fetchAllTemplates();
-				mdba.close();
-				if(cur.getCount()==0){
-					listLayout.setVisibility(LinearLayout.GONE);
-					blankLayout.setVisibility(LinearLayout.VISIBLE);
-				}else{
-					listLayout.setVisibility(LinearLayout.VISIBLE);
-					blankLayout.setVisibility(LinearLayout.GONE);
-				}
+				loadData();
 			}
 		});
 	}
-	
-	
-	
-	
-	@Override
-	protected void onResume() {
-		mdba.open();
-		Cursor cur = mdba.fetchAllTemplates();
-		mdba.close();
-		if(cur.getCount()==0){
-			listLayout.setVisibility(LinearLayout.GONE);
-			blankLayout.setVisibility(LinearLayout.VISIBLE);
-		}else{
-			listLayout.setVisibility(LinearLayout.VISIBLE);
-			blankLayout.setVisibility(LinearLayout.GONE);
-		}
-		super.onResume();
-	}
-	
-	
+
 	
 	
 	private void loadData(){
@@ -211,17 +160,17 @@ public class ManageTemplates extends Activity{
 		}else{
 			listLayout.setVisibility(LinearLayout.VISIBLE);
 			blankLayout.setVisibility(LinearLayout.GONE);
+			
+			templatesArray.clear();
+			templatesIdArray.clear();
+			if(cur.moveToFirst()){
+				do{
+					templatesArray.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
+					templatesIdArray.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TEMP_ID)));
+				}while(cur.moveToNext());
+			}
 		}
 		mdba.close();
-		
-		templatesArray.clear();
-		templatesIdArray.clear();
-		if(cur.moveToFirst()){
-			do{
-				templatesArray.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)));
-				templatesIdArray.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TEMP_ID)));
-			}while(cur.moveToNext());
-		}
 	}
 	
 	
@@ -312,6 +261,20 @@ public class ManageTemplates extends Activity{
     }
 	
 	
+	private void handleAddNewRequisites(){
+		if(newTemplateSpaceLayout.getVisibility()==LinearLayout.VISIBLE){
+			newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
+			inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
+			templatesList.requestFocus();
+		}else{
+			newTemplateSpaceLayout.setVisibility(LinearLayout.VISIBLE);
+			newTemplateBody.setText("");
+			newTemplateBody.requestFocus();
+			newTemplateAddButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
+			isEditing = false;
+			inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+		}
+	}
 	
 	
 	private class TemplateViewHolder{

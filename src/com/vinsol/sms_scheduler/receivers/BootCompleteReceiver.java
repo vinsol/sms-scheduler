@@ -50,7 +50,4 @@ public class BootCompleteReceiver extends BroadcastReceiver{
 		}
 		mdba.close();
 	}
-
-	
-	
 }

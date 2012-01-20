@@ -1,12 +1,10 @@
 package com.vinsol.sms_scheduler.activities;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,30 +13,14 @@ import com.vinsol.sms_scheduler.R;
 
 public class ScheduleNewSms extends AbstractScheduleSms {
 	
-	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		mode = 1;
-		
-		dataLoadWaitDialog = new Dialog(ScheduleNewSms.this);
-		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-		inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-		
-		Recipients.clear();
-		
-		setSuperFunctionalities();
-		loadGroupsData();
-		
-		myAutoCompleteAdapter = (AutoCompleteAdapter) new AutoCompleteAdapter(this);
-		numbersText.setAdapter(myAutoCompleteAdapter);
 	}
 	
 	
-		
 	@Override
 	public void onBackPressed() {
 		
