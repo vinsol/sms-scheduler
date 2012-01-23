@@ -1,6 +1,7 @@
 package com.vinsol.sms_scheduler.activities;
 
 import java.util.Date;
+
 import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Sms;
@@ -174,6 +177,35 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			});
 				
 			d.show();
+		}
+	}
+
+
+
+	@Override
+	protected void scheduleButtonOnClickListener() {
+		boolean isSending = false;
+		mdba.open();
+		for(int i = 0; i< recipientIds.size(); i++){
+			if(isSending){
+				break;
+			}
+			Cursor cur = mdba.fetchRecipientDetails(recipientIds.get(i));
+			if(cur.moveToFirst()){
+				do{
+					if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
+						isSending = true;
+						break;
+					}
+				}while(cur.moveToNext());
+			}
+		}
+		
+		if(isSending){
+			Toast.makeText(this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+			finish();
+		}else{
+			onScheduleButtonPressTasks();
 		}
 	}
 }

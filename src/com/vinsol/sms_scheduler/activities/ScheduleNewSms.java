@@ -96,4 +96,10 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			ScheduleNewSms.this.finish();
 		}
 	}
+
+
+	@Override
+	protected void scheduleButtonOnClickListener() {
+		onScheduleButtonPressTasks();
+	}
 }

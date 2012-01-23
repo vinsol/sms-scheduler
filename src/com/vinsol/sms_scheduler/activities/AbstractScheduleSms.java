@@ -11,16 +11,6 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.vinsol.sms_scheduler.Constants;
-import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.R;
-
-import com.vinsol.sms_scheduler.models.Contact;
-import com.vinsol.sms_scheduler.models.Recipient;
-import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
-import com.vinsol.sms_scheduler.utils.Log;
-import com.vinsol.sms_scheduler.SmsSchedulerApplication;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -49,17 +39,19 @@ import android.text.style.ClickableSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -70,10 +62,17 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.TimePicker.OnTimeChangedListener;
+import android.widget.Toast;
+
+import com.vinsol.sms_scheduler.Constants;
+import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
+import com.vinsol.sms_scheduler.models.Contact;
+import com.vinsol.sms_scheduler.models.Recipient;
+import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
+import com.vinsol.sms_scheduler.utils.Log;
 
 
 abstract class AbstractScheduleSms extends Activity{
@@ -472,33 +471,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				if(mode==1){
-					onScheduleButtonPressTasks();
-				}else if(mode==2){
-					boolean isSending = false;
-					mdba.open();
-					for(int i = 0; i< recipientIds.size(); i++){
-						if(isSending){
-							break;
-						}
-						Cursor cur = mdba.fetchRecipientDetails(recipientIds.get(i));
-						if(cur.moveToFirst()){
-							do{
-								if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
-									isSending = true;
-									break;
-								}
-							}while(cur.moveToNext());
-						}
-					}
-					
-					if(isSending){
-						Toast.makeText(AbstractScheduleSms.this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
-						AbstractScheduleSms.this.finish();
-					}else{
-						onScheduleButtonPressTasks();
-					}
-				}
+				scheduleButtonOnClickListener();
 			}
 		});
 		
@@ -841,6 +814,7 @@ abstract class AbstractScheduleSms extends Activity{
 	}
 	
 	
+	protected abstract void scheduleButtonOnClickListener(); 
 	
 	
 	//=======================setting up voice recognition functionality============================
