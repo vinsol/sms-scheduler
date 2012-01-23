@@ -1,9 +1,7 @@
 package com.vinsol.sms_scheduler.activities;
 
-import java.util.ArrayList;
 import java.util.Date;
 import android.app.Dialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -14,8 +12,6 @@ import android.widget.TextView;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Sms;
-import com.vinsol.sms_scheduler.models.Recipient;
-import com.vinsol.sms_scheduler.utils.Log;
 
 public class EditScheduledSms extends AbstractScheduleSms {
 	
@@ -31,47 +27,50 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		headerText	= (TextView)findViewById(R.id.header);
 		
-		Intent intent = getIntent();
-		Sms SMS = intent.getParcelableExtra("SMS DATA");
-		Log.d("Key Message : " + SMS.keyMessage);
+		Sms SMS = getIntent().getParcelableExtra("SMS DATA");
+		
 		numbersText.setText(SMS.keyNumber);
 		messageText.setText(SMS.keyMessage);
 		originalMessage = SMS.keyMessage;
 		processDate = new Date(SMS.keyTimeMilis);
 		characterCountText.setText(String.valueOf(messageText.getText().toString().length()));
 		editedSms = SMS.keyId;
+		
+		Recipients.clear();
+		originalRecipients.clear();
+		Recipients = originalRecipients = SMS.keyRecipients;
+		
 		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
 		
 		mdba.open();
 		recipientIds = mdba.fetchRecipientIdsForSms(editedSms);
 		
-		originalRecipients.clear();
-		
-		for(int i = 0; i< recipientIds.size(); i++){
-			Cursor spanCur = mdba.fetchRecipientDetails(recipientIds.get(i));
-			spanCur.moveToFirst();
-			Recipients.add(new Recipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
-					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
-					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
-					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
-					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SMS_ID))));
-			ArrayList<Long> groupIds = mdba.fetchGroupsForRecipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
-			ArrayList<Integer> groupTypes = mdba.fetchGroupTypesForSpan(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
-			
-			originalRecipients.add(new Recipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
-					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
-					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
-					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
-					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SMS_ID))));
-			
-			for(int k = 0; k < groupIds.size(); k++){
-				Recipients.get(i).groupIds.add(groupIds.get(k));
-				Recipients.get(i).groupTypes.add(groupTypes.get(k));
-				originalRecipients.get(i).groupIds.add(groupIds.get(k));
-				originalRecipients.get(i).groupTypes.add(groupTypes.get(k));
-			}
-		}
-		
+//		
+//		for(int i = 0; i< recipientIds.size(); i++){
+//			Cursor spanCur = mdba.fetchRecipientDetails(recipientIds.get(i));
+//			spanCur.moveToFirst();
+//			Recipients.add(new Recipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
+//					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
+//					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
+//					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
+//					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SMS_ID))));
+//			ArrayList<Long> groupIds = mdba.fetchGroupsForRecipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+//			ArrayList<Integer> groupTypes = mdba.fetchGroupTypesForSpan(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
+//			
+//			originalRecipients.add(new Recipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
+//					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
+//					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
+//					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
+//					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SMS_ID))));
+//			
+//			for(int k = 0; k < groupIds.size(); k++){
+//				Recipients.get(i).groupIds.add(groupIds.get(k));
+//				Recipients.get(i).groupTypes.add(groupTypes.get(k));
+//				originalRecipients.get(i).groupIds.add(groupIds.get(k));
+//				originalRecipients.get(i).groupTypes.add(groupTypes.get(k));
+//			}
+//		}
+//		
 		mdba.open();
 		isDraft = mdba.isDraft(editedSms); 
 		if(!isDraft){

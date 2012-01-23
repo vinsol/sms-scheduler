@@ -652,22 +652,24 @@ public class DBAdapter {
 		if(cur.moveToFirst()){
 			do{
 				if((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId)){// || (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
+					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + "=" + contactId, null);
 					contactExist = true;
 					break;
 				}
 				if(((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID))) == -1) && (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
+					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_CONTACT_ID + "=-1 AND " + KEY_RECENT_CONTACT_NUMBER + "=contactNumber", null);
 					contactExist = true;
 					break;
 				}
 			}while(cur.moveToNext());
 		}
-		if(!contactExist){
+		
 			ContentValues cv = new ContentValues();
 			cv.put(KEY_RECENT_CONTACT_CONTACT_ID, contactId);
 			cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);
 			if(cur.getCount()<20){
 				db.insert(DATABASE_RECENTS_TABLE, null, cv);
-			}else{
+			if(!contactExist){
 				cur.moveToFirst();
 				long idToDelete = cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_ID));
 				db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + "=" + idToDelete, null);

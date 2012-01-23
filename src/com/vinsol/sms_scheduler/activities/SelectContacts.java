@@ -123,144 +123,71 @@ public class SelectContacts extends Activity {
 		Intent intent = getIntent();
 		origin = intent.getStringExtra("ORIGIN");
 		
-		if(origin.equals("new")){
-			for(int i = 0; i < ScheduleNewSms.Recipients.size(); i++){
-				RecipientsTemp.add(ScheduleNewSms.Recipients.get(i));
-			}
-			for(int groupCount = 0; groupCount< ScheduleNewSms.nativeGroupData.size(); groupCount++){
-				boolean hasAChild = false;
-				HashMap<String, Object> group = new HashMap<String, Object>();
-				group.put(Constants.GROUP_ID, ScheduleNewSms.nativeGroupData.get(groupCount).get(Constants.GROUP_ID));
-				group.put(Constants.GROUP_NAME, ScheduleNewSms.nativeGroupData.get(groupCount).get(Constants.GROUP_NAME));
-				group.put(Constants.GROUP_IMAGE, ScheduleNewSms.nativeGroupData.get(groupCount).get(Constants.GROUP_IMAGE));
-				group.put(Constants.GROUP_TYPE, ScheduleNewSms.nativeGroupData.get(groupCount).get(Constants.GROUP_TYPE));
-				group.put(Constants.GROUP_CHECK, false);//ScheduleNewSms.nativeGroupData.get(groupCount).get(Constants.GROUP_CHECK));
-				
-				
-				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-				for(int childCount = 0; childCount< ScheduleNewSms.nativeChildData.get(groupCount).size(); childCount++){
-					
-					HashMap<String, Object> childParams = new HashMap<String, Object>();
-					childParams.put(Constants.CHILD_CONTACT_ID, ScheduleNewSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
-					childParams.put(Constants.CHILD_NAME, ScheduleNewSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
-					childParams.put(Constants.CHILD_NUMBER, ScheduleNewSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
-					childParams.put(Constants.CHILD_IMAGE, ScheduleNewSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
-					childParams.put(Constants.CHILD_CHECK, ScheduleNewSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
-					child.add(childParams);
-					if((Boolean) ScheduleNewSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK)){
-						hasAChild = true;
-					}
-				}
-				if(hasAChild){
-					group.put(Constants.GROUP_CHECK, true);
-				}
-				nativeGroupDataTemp.add(group);
-				nativeChildDataTemp.add(child);
-			}
-			
-			for(int groupCount = 0; groupCount< ScheduleNewSms.privateGroupData.size(); groupCount++){
-				boolean hasAChild = false;
-				HashMap<String, Object> group = new HashMap<String, Object>();
-				group.put(Constants.GROUP_ID, ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_ID));
-				group.put(Constants.GROUP_NAME, ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_NAME));
-				group.put(Constants.GROUP_IMAGE, ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_IMAGE));
-				group.put(Constants.GROUP_TYPE, ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_TYPE));
-				group.put(Constants.GROUP_CHECK, false);// ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
-				
-				
-				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-				for(int childCount = 0; childCount< ScheduleNewSms.privateChildData.get(groupCount).size(); childCount++){
-					
-					HashMap<String, Object> childParams = new HashMap<String, Object>();
-					childParams.put(Constants.CHILD_CONTACT_ID, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
-					childParams.put(Constants.CHILD_NAME, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
-					childParams.put(Constants.CHILD_NUMBER, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
-					childParams.put(Constants.CHILD_IMAGE, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
-					childParams.put(Constants.CHILD_CHECK, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
-					child.add(childParams);
-					if((Boolean) ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK)){
-						hasAChild = true;
-					}
-				}
-				if(hasAChild){
-					group.put(Constants.GROUP_CHECK, true);
-				}
-				privateGroupDataTemp.add(group);
-				privateChildDataTemp.add(child);
-			}
-			
-		}else if(origin.equals("edit")){
-			for(int i = 0; i < EditScheduledSms.Recipients.size(); i++){
-				RecipientsTemp.add(EditScheduledSms.Recipients.get(i));
-			}
-			
-			for(int groupCount = 0; groupCount< EditScheduledSms.nativeGroupData.size(); groupCount++){
-				boolean hasAChild = false;
-				HashMap<String, Object> group = new HashMap<String, Object>();
-				group.put(Constants.GROUP_ID, EditScheduledSms.nativeGroupData.get(groupCount).get(Constants.GROUP_ID));
-				group.put(Constants.GROUP_NAME, EditScheduledSms.nativeGroupData.get(groupCount).get(Constants.GROUP_NAME));
-				group.put(Constants.GROUP_IMAGE, EditScheduledSms.nativeGroupData.get(groupCount).get(Constants.GROUP_IMAGE));
-				group.put(Constants.GROUP_TYPE, EditScheduledSms.nativeGroupData.get(groupCount).get(Constants.GROUP_TYPE));
-				group.put(Constants.GROUP_CHECK, false);// EditScheduledSms.nativeGroupData.get(groupCount).get(Constants.GROUP_CHECK));
-				
-				
-				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-				Log.d(EditScheduledSms.nativeChildData.get(groupCount).size()+"child data size from edit activity");
-				for(int childCount = 0; childCount < EditScheduledSms.nativeChildData.get(groupCount).size(); childCount++){
-					
-					HashMap<String, Object> childParams = new HashMap<String, Object>();
-					childParams.put(Constants.CHILD_CONTACT_ID, EditScheduledSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
-					childParams.put(Constants.CHILD_NAME, EditScheduledSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
-					childParams.put(Constants.CHILD_NUMBER, EditScheduledSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
-					childParams.put(Constants.CHILD_IMAGE, EditScheduledSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
-					childParams.put(Constants.CHILD_CHECK, EditScheduledSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
-					child.add(childParams);
-					if((Boolean) EditScheduledSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK)){
-						hasAChild = true;
-					}
-				}
-				if(hasAChild){
-					group.put(Constants.GROUP_CHECK, true);
-				}
-				nativeGroupDataTemp.add(group);
-				nativeChildDataTemp.add(child);
-			}
-			
-			
-			
-			
-			for(int groupCount = 0; groupCount< EditScheduledSms.privateGroupData.size(); groupCount++){
-				boolean hasAChild = false;
-				HashMap<String, Object> group = new HashMap<String, Object>();
-				group.put(Constants.GROUP_ID, EditScheduledSms.privateGroupData.get(groupCount).get(Constants.GROUP_ID));
-				group.put(Constants.GROUP_NAME, EditScheduledSms.privateGroupData.get(groupCount).get(Constants.GROUP_NAME));
-				group.put(Constants.GROUP_IMAGE, EditScheduledSms.privateGroupData.get(groupCount).get(Constants.GROUP_IMAGE));
-				group.put(Constants.GROUP_TYPE, EditScheduledSms.privateGroupData.get(groupCount).get(Constants.GROUP_TYPE));
-				group.put(Constants.GROUP_CHECK, false);//EditScheduledSms.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
-				
-				
-				ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
-				Log.d(EditScheduledSms.privateChildData.get(groupCount).size()+"child data size from edit activity");
-				for(int childCount = 0; childCount < EditScheduledSms.privateChildData.get(groupCount).size(); childCount++){
-					
-					HashMap<String, Object> childParams = new HashMap<String, Object>();
-					childParams.put(Constants.CHILD_CONTACT_ID, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
-					childParams.put(Constants.CHILD_NAME, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
-					childParams.put(Constants.CHILD_NUMBER, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
-					childParams.put(Constants.CHILD_IMAGE, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
-					childParams.put(Constants.CHILD_CHECK, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
-					child.add(childParams);
-					if((Boolean) EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK)){
-						hasAChild = true;
-					}
-				}
-				if(hasAChild){
-					group.put(Constants.GROUP_CHECK, true);
-				}
-				privateGroupDataTemp.add(group);
-				privateChildDataTemp.add(child);
-			}
+		for(int i = 0; i < AbstractScheduleSms.Recipients.size(); i++){
+			RecipientsTemp.add(AbstractScheduleSms.Recipients.get(i));
 		}
+		for(int groupCount = 0; groupCount< AbstractScheduleSms.nativeGroupData.size(); groupCount++){
+			boolean hasAChild = false;
+			HashMap<String, Object> group = new HashMap<String, Object>();
+			group.put(Constants.GROUP_ID, AbstractScheduleSms.nativeGroupData.get(groupCount).get(Constants.GROUP_ID));
+			group.put(Constants.GROUP_NAME, AbstractScheduleSms.nativeGroupData.get(groupCount).get(Constants.GROUP_NAME));
+			group.put(Constants.GROUP_IMAGE, AbstractScheduleSms.nativeGroupData.get(groupCount).get(Constants.GROUP_IMAGE));
+			group.put(Constants.GROUP_TYPE, AbstractScheduleSms.nativeGroupData.get(groupCount).get(Constants.GROUP_TYPE));
+			group.put(Constants.GROUP_CHECK, false);
+				
+				
+			ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+			for(int childCount = 0; childCount< AbstractScheduleSms.nativeChildData.get(groupCount).size(); childCount++){
+					
+				HashMap<String, Object> childParams = new HashMap<String, Object>();
+				childParams.put(Constants.CHILD_CONTACT_ID, AbstractScheduleSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
+				childParams.put(Constants.CHILD_NAME, AbstractScheduleSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
+				childParams.put(Constants.CHILD_NUMBER, AbstractScheduleSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
+				childParams.put(Constants.CHILD_IMAGE, AbstractScheduleSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
+				childParams.put(Constants.CHILD_CHECK, AbstractScheduleSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
+				child.add(childParams);
+				if((Boolean) AbstractScheduleSms.nativeChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK)){
+					hasAChild = true;
+				}
+			}
+			if(hasAChild){
+				group.put(Constants.GROUP_CHECK, true);
+			}
+			nativeGroupDataTemp.add(group);
+			nativeChildDataTemp.add(child);
+		}
+			
+		for(int groupCount = 0; groupCount< AbstractScheduleSms.privateGroupData.size(); groupCount++){
+			boolean hasAChild = false;
+			HashMap<String, Object> group = new HashMap<String, Object>();
+			group.put(Constants.GROUP_ID, AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_ID));
+			group.put(Constants.GROUP_NAME, AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_NAME));
+			group.put(Constants.GROUP_IMAGE, AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_IMAGE));
+			group.put(Constants.GROUP_TYPE, AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_TYPE));
+			group.put(Constants.GROUP_CHECK, false);// ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
+				
+				
+			ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
+			for(int childCount = 0; childCount< AbstractScheduleSms.privateChildData.get(groupCount).size(); childCount++){
+					
+				HashMap<String, Object> childParams = new HashMap<String, Object>();
+				childParams.put(Constants.CHILD_CONTACT_ID, AbstractScheduleSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
+				childParams.put(Constants.CHILD_NAME, AbstractScheduleSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
+				childParams.put(Constants.CHILD_NUMBER, AbstractScheduleSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
+				childParams.put(Constants.CHILD_IMAGE, AbstractScheduleSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
+				childParams.put(Constants.CHILD_CHECK, AbstractScheduleSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
+				child.add(childParams);
+			if((Boolean) AbstractScheduleSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK)){
+					hasAChild = true;
+				}
+			}
+			if(hasAChild){
+				group.put(Constants.GROUP_CHECK, true);
+			}
+			privateGroupDataTemp.add(group);
+			privateChildDataTemp.add(child);
+		}
+		
 		
 		
 		
@@ -273,40 +200,21 @@ public class SelectContacts extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent();
-				if(origin.equals("new")){
-					ScheduleNewSms.nativeGroupData.clear();
-					ScheduleNewSms.nativeChildData.clear();
+				AbstractScheduleSms.nativeGroupData.clear();
+				AbstractScheduleSms.nativeChildData.clear();
+				
+				AbstractScheduleSms.nativeGroupData = nativeGroupDataTemp;
+				AbstractScheduleSms.nativeChildData = nativeChildDataTemp;
+				
+				AbstractScheduleSms.privateGroupData.clear();
+				AbstractScheduleSms.privateChildData.clear();
 
-					ScheduleNewSms.nativeGroupData = nativeGroupDataTemp;
-					ScheduleNewSms.nativeChildData = nativeChildDataTemp;
+				AbstractScheduleSms.privateGroupData = privateGroupDataTemp;
+				AbstractScheduleSms.privateChildData = privateChildDataTemp;
 					
-					ScheduleNewSms.privateGroupData.clear();
-					ScheduleNewSms.privateChildData.clear();
-
-					ScheduleNewSms.privateGroupData = privateGroupDataTemp;
-					ScheduleNewSms.privateChildData = privateChildDataTemp;
-					
-					ScheduleNewSms.Recipients.clear();
-					for(int i = 0; i< RecipientsTemp.size(); i++){
-						ScheduleNewSms.Recipients.add(RecipientsTemp.get(i));
-					}
-				}else if(origin.equals("edit")){
-					EditScheduledSms.nativeGroupData.clear();
-					EditScheduledSms.nativeChildData.clear();
-					
-					EditScheduledSms.nativeGroupData = nativeGroupDataTemp;
-					EditScheduledSms.nativeChildData = nativeChildDataTemp;
-					
-					EditScheduledSms.privateGroupData.clear();
-					EditScheduledSms.privateChildData.clear();
-					
-					EditScheduledSms.privateGroupData = privateGroupDataTemp;
-					EditScheduledSms.privateChildData = privateChildDataTemp;
-					
-					EditScheduledSms.Recipients.clear();
-					for(int i = 0; i< RecipientsTemp.size(); i++){
-						EditScheduledSms.Recipients.add(RecipientsTemp.get(i));
-					}
+				AbstractScheduleSms.Recipients.clear();
+				for(int i = 0; i< RecipientsTemp.size(); i++){
+					AbstractScheduleSms.Recipients.add(RecipientsTemp.get(i));
 				}
 					
 				setResult(2, intent);
@@ -403,6 +311,7 @@ public class SelectContacts extends Activity {
 		recentsAdapter = new RecentsAdapter();
 		recentsList.setAdapter(recentsAdapter);
 		mdba.close();
+		//---------------------------------------------------------------------------
 	}
 	
 	
@@ -732,7 +641,7 @@ public class SelectContacts extends Activity {
 							nativeGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, true);
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
 								if(!((Boolean)nativeChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
-									nativeAddCheck(groupPosition, i);
+									addCheck(groupPosition, i, nativeChildDataTemp, nativeGroupDataTemp);
 								}
 							}
 							nativeGroupAdapter.notifyDataSetChanged();
@@ -740,7 +649,7 @@ public class SelectContacts extends Activity {
 							nativeGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
 								if((Boolean)nativeChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK)){
-									nativeRemoveCheck(groupPosition, i);
+									removeCheck(groupPosition, i, nativeChildDataTemp, nativeGroupDataTemp);
 								}
 							}
 							nativeGroupAdapter.notifyDataSetChanged();
@@ -791,8 +700,7 @@ public class SelectContacts extends Activity {
 					@Override
 					public void onClick(View v) {
 						if(holder.childCheck.isChecked()){
-							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
-							nativeAddCheck(groupPosition, childPosition);
+							addCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
 							contactsAdapter.notifyDataSetChanged();
 							boolean areAllSelected = true;
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
@@ -806,7 +714,7 @@ public class SelectContacts extends Activity {
 								nativeGroupAdapter.notifyDataSetChanged();
 							}
 						}else{
-							nativeRemoveCheck(groupPosition, childPosition);
+							removeCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
 							contactsAdapter.notifyDataSetChanged();
 							boolean areAllDeselected = true;
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
@@ -832,7 +740,7 @@ public class SelectContacts extends Activity {
 					public void onClick(View v) {
 						if(holder.childCheck.isChecked()){
 							holder.childCheck.setChecked(false);
-							nativeRemoveCheck(groupPosition, childPosition);
+							removeCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
 							contactsAdapter.notifyDataSetChanged();
 							boolean areAllDeselected = true;
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
@@ -847,7 +755,7 @@ public class SelectContacts extends Activity {
 							}
 						}else{
 							holder.childCheck.setChecked(true);
-							nativeAddCheck(groupPosition, childPosition);
+							addCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
 							contactsAdapter.notifyDataSetChanged();
 							boolean areAllSelected = true;
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
@@ -970,7 +878,7 @@ public class SelectContacts extends Activity {
 							privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, true);
 							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
 								if(!((Boolean)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
-									privateAddCheck(groupPosition, i);
+									addCheck(groupPosition, i, privateChildDataTemp, privateGroupDataTemp);
 								}
 							}
 							privateGroupAdapter.notifyDataSetChanged();
@@ -978,7 +886,7 @@ public class SelectContacts extends Activity {
 							privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
 							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
 								if((Boolean)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK)){
-									privateRemoveCheck(groupPosition, i);
+									removeCheck(groupPosition, i, privateChildDataTemp, privateGroupDataTemp);
 								}
 							}
 							privateGroupAdapter.notifyDataSetChanged();
@@ -1036,7 +944,7 @@ public class SelectContacts extends Activity {
 					public void onClick(View v) {
 						if(holder.childCheck.isChecked()){
 							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
-							privateAddCheck(groupPosition, childPosition);
+							addCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
 							boolean areAllSelected = true;
 							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
 								if(!((Boolean) privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
@@ -1050,7 +958,7 @@ public class SelectContacts extends Activity {
 							}
 								
 						}else{
-							privateRemoveCheck(groupPosition, childPosition);
+							removeCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
 							
 							boolean areAllDeselected = true;
 							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
@@ -1077,7 +985,7 @@ public class SelectContacts extends Activity {
 						if(!holder.childCheck.isChecked()){
 							holder.childCheck.setChecked(true);
 							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
-							privateAddCheck(groupPosition, childPosition);
+							addCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
 							boolean areAllSelected = true;
 							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
 								if(!((Boolean) privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
@@ -1091,7 +999,7 @@ public class SelectContacts extends Activity {
 							}
 						}else{
 							holder.childCheck.setChecked(false);
-							privateRemoveCheck(groupPosition, childPosition);
+							removeCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
 							
 							boolean areAllDeselected = true;
 							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
@@ -1135,89 +1043,29 @@ public class SelectContacts extends Activity {
 	
 	
 	
-	private void nativeAddCheck(int groupPosition, int childPosition){
-		nativeChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
-		boolean spanExist = false;
-		for(int i = 0; i < RecipientsTemp.size(); i++){
-			if(RecipientsTemp.get(i).contactId == (Long)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)){
-				spanExist = true;
-				try{
-					RecipientsTemp.get(i).groupIds.add((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID));
-				}catch (ClassCastException e) {
-					RecipientsTemp.get(i).groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
-				}
-				RecipientsTemp.get(i).groupTypes.add(1);
-				break;
-			}
-		}
-		if(!spanExist){
-			Recipient recipient = new Recipient(-1, 2, (String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1);
-			try{
-				recipient.groupIds.add(((Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
-			}catch (ClassCastException e) {
-				recipient.groupIds.add(Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
-			}
-			recipient.groupTypes.add(1);
-			RecipientsTemp.add(recipient);
-			contactsAdapter.notifyDataSetChanged();
-		}
-	}
 	
-	
-	
-	
-	private void nativeRemoveCheck(int groupPosition, int childPosition){
-		nativeChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
-		for(int i = 0; i < RecipientsTemp.size(); i++){
-			if((Long)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)==RecipientsTemp.get(i).contactId){
-				for(int j = 0; j< RecipientsTemp.get(i).groupIds.size(); j++){
-					Long groupIdToRemove;
-					int groupTypeToRemove;
-					try{
-						groupIdToRemove = Long.parseLong((String)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID));
-					}catch (ClassCastException e) {
-						groupIdToRemove = (Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID);
-					}
-					groupTypeToRemove = 1;
-					
-					if(RecipientsTemp.get(i).groupIds.get(j) == groupIdToRemove && RecipientsTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
-						RecipientsTemp.get(i).groupIds.remove(j);
-						if(RecipientsTemp.get(i).groupIds.size()==0){
-							RecipientsTemp.remove(i);
-							contactsAdapter.notifyDataSetChanged();
-						}
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-	
-	
-	
-	private void privateAddCheck(int groupPosition, int childPosition){
+	private void addCheck(int groupPosition, int childPosition, ArrayList<ArrayList<HashMap<String, Object>>> ChildDataTemp, ArrayList<HashMap<String, Object>> GroupDataTemp){
 		Log.d("entering childcheck is checked true listner");
-		privateChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
+		ChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
 		for(int i = 0; i < RecipientsTemp.size(); i++){
-			if(RecipientsTemp.get(i).contactId == (Long) privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)){
+			if(RecipientsTemp.get(i).contactId == (Long) ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)){
 				spanExist = true;
 				try{
-					RecipientsTemp.get(i).groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+					RecipientsTemp.get(i).groupIds.add(Long.parseLong((String)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}catch (ClassCastException e) {
-					RecipientsTemp.get(i).groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+					RecipientsTemp.get(i).groupIds.add(((Long)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 				}
 				RecipientsTemp.get(i).groupTypes.add(2);
 				break;
 			}
 		}
 		if(!spanExist){
-			Recipient recipient = new Recipient(-1, 2, (String)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1);
+			Recipient recipient = new Recipient(-1, 2, (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1);
 			try{
-				recipient.groupIds.add(((Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+				recipient.groupIds.add(((Long)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}catch (ClassCastException e) {
-				recipient.groupIds.add(Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
+				recipient.groupIds.add(Long.parseLong((String)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}
 			recipient.groupTypes.add(2);
 			RecipientsTemp.add(recipient);
@@ -1228,17 +1076,17 @@ public class SelectContacts extends Activity {
 	
 	
 	
-	private void privateRemoveCheck(int groupPosition, int childPosition){
-		privateChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
+	private void removeCheck(int groupPosition, int childPosition, ArrayList<ArrayList<HashMap<String, Object>>> ChildDataTemp, ArrayList<HashMap<String, Object>> GroupDataTemp){
+		ChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
 		for(int i = 0; i < RecipientsTemp.size(); i++){
-			if((Long)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)==RecipientsTemp.get(i).contactId){
+			if((Long)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)==RecipientsTemp.get(i).contactId){
 				for(int j = 0; j< RecipientsTemp.get(i).groupIds.size(); j++){
 					Long groupIdToRemove;
 					int groupTypeToRemove;
 					try{
-						groupIdToRemove = Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID));
+						groupIdToRemove = Long.parseLong((String)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID));
 					}catch (ClassCastException e) {
-						groupIdToRemove = (Long)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID);
+						groupIdToRemove = (Long)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID);
 					}
 					groupTypeToRemove = 2;
 					if(RecipientsTemp.get(i).groupIds.get(j) == groupIdToRemove && RecipientsTemp.get(i).groupTypes.get(j) == groupTypeToRemove){
@@ -1481,11 +1329,11 @@ public class SelectContacts extends Activity {
         		group.put(Constants.GROUP_TYPE, 2);
         		group.put(Constants.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
-        		if(origin.equals("new")){
-        			ScheduleNewSms.privateGroupData.add(group);
-        		}else{
-        			EditScheduledSms.privateGroupData.add(group);
-        		}
+//        		if(origin.equals("new")){
+        			AbstractScheduleSms.privateGroupData.add(group);
+//        		}else{
+//        			EditScheduledSms.privateGroupData.add(group);
+//        		}
         		
         	
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
@@ -1512,11 +1360,11 @@ public class SelectContacts extends Activity {
         				}
         			}
         		}
-        		if(origin.equals("new")){
-        			ScheduleNewSms.privateChildData.add(child);
-        		}else{
-        			EditScheduledSms.privateChildData.add(child);
-        		}
+//        		if(origin.equals("new")){
+        			AbstractScheduleSms.privateChildData.add(child);
+//        		}else{
+//        			EditScheduledSms.privateChildData.add(child);
+//        		}
         	}while(groupsCursor.moveToNext());
         }
         

@@ -44,6 +44,8 @@ public class Sms implements Parcelable {
     	this.keyNumber = in.readString();
     	this.keyMessage = in.readString();
     	this.keyTimeMilis = in.readLong();
+    	keyRecipients = new ArrayList<Recipient>();
+    	in.readList(keyRecipients, Recipient.class.getClassLoader());
     };
     
     @Override
@@ -52,10 +54,17 @@ public class Sms implements Parcelable {
 		dest.writeString(this.keyNumber);
 		dest.writeString(this.keyMessage);
 		dest.writeLong(this.keyTimeMilis);
+		dest.writeList(this.keyRecipients);
     }
 
 	@Override
 	public int describeContents() {
 		return 0;
+	}
+	
+	public void printRecipients(){
+		for(int i = 0; i< keyRecipients.size(); i++){
+			keyRecipients.get(i).print();
+		}
 	}
 }

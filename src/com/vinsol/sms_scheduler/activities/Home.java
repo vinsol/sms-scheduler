@@ -570,7 +570,6 @@ public class Home extends Activity {
     	childData.add(groupChildSent);
     	//-------------------------------------------------------------------------end of drafts load--------
     	
-    	
     	mdba.close();
     }
 
@@ -606,7 +605,6 @@ public class Home extends Activity {
 	    }
 	    return true;
 	}
-	
 	
 	
 	

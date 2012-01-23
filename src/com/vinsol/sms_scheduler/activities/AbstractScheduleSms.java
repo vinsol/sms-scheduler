@@ -448,7 +448,7 @@ abstract class AbstractScheduleSms extends Activity{
 	                		 
 	                		 for(int j = 0; j< privateGroupData.size(); j++){
 	                			 for(int k = 0; k< privateChildData.get(j).size(); k++){
-	                				 if((Long.parseLong((String)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID))) == Recipients.get(i).contactId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
+	                				 if((Long)privateChildData.get(j).get(k).get(Constants.CHILD_CONTACT_ID) == Recipients.get(i).contactId && (Boolean)privateChildData.get(j).get(k).get(Constants.CHILD_CHECK)){
 	                					 privateChildData.get(j).get(k).put(Constants.CHILD_CHECK, false);
 	                				 }
 	                			 }
@@ -550,6 +550,24 @@ abstract class AbstractScheduleSms extends Activity{
 				//---------------------------------------end of DatePicker setup------
 				
 				
+
+				//---Setting TimePicker value change listner--------
+				timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
+					
+					@Override
+					public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
+							dateLabel.setVisibility(View.INVISIBLE);
+							pastTimeDateLabel.setVisibility(View.GONE);
+						} else {
+							dateLabel.setVisibility(View.VISIBLE);
+							pastTimeDateLabel.setVisibility(View.VISIBLE);
+						}
+					}
+				});
+				//--------------------------------------end of TimePicker setup-------
+				
+				
 				refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
 				refDate = refCal.getTime();
 //				String dateString = refDate.toString();
@@ -598,30 +616,6 @@ abstract class AbstractScheduleSms extends Activity{
 					}
 				});
 
-				
-				
-				
-				
-				
-				
-				//---Setting TimePicker value change listner--------
-				timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
-					
-					@Override
-					public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
-							dateLabel.setVisibility(View.INVISIBLE);
-							pastTimeDateLabel.setVisibility(View.GONE);
-						} else {
-							dateLabel.setVisibility(View.VISIBLE);
-							pastTimeDateLabel.setVisibility(View.VISIBLE);
-						}
-					}
-				});
-				//--------------------------------------end of TimePicker setup-------
-				
-				
-				
 				dateSelectDialog.show();
 			}
 		});
@@ -635,15 +629,10 @@ abstract class AbstractScheduleSms extends Activity{
 		messageText.addTextChangedListener(new TextWatcher() {
 			
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				
-			}
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 			
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				
-			}
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 			
 			@Override
 			public void afterTextChanged(Editable s) {
@@ -652,7 +641,6 @@ abstract class AbstractScheduleSms extends Activity{
 				characterCountText.setText(String.valueOf(length));
 			}
 		});
-		
 		//-------------------------------------------------------end of character count setup----------
 		
 		
@@ -1527,9 +1515,6 @@ abstract class AbstractScheduleSms extends Activity{
 		}
 		mdba.close();
 	}
-	
-	
-	
 	
 	
 	
