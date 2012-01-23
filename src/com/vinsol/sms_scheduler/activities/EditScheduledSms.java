@@ -12,7 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class EditScheduledSms extends AbstractScheduleSms {
 	
@@ -39,7 +41,10 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		Recipients.clear();
 		originalRecipients.clear();
-		Recipients = originalRecipients = SMS.keyRecipients;
+		Recipients = SMS.keyRecipients;
+		for(Recipient r : Recipients){
+			originalRecipients.add(r);
+		}
 		
 		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
 		
@@ -82,6 +87,8 @@ public class EditScheduledSms extends AbstractScheduleSms {
 				}
 			}
 		}else{
+			Log.d("Recipeints size : " + Recipients.size());
+			Log.d("originalRecipeints size : " + originalRecipients.size());
 			if(originalRecipients.size() != Recipients.size()){
 				isChanged = true;
 			}else if(!messageText.getText().toString().equals(originalMessage)){

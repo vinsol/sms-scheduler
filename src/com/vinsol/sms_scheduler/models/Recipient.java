@@ -72,11 +72,11 @@ public class Recipient implements Parcelable{
 	
 	public void print(){
 		Log.d("------------------------------------------------");
+		Log.d("Sms Id 		: " + this.smsId);
 		Log.d("Recipient Id : " + this.recipientId);
-		Log.d("Type : " + this.type);
+		Log.d("Type 		: " + this.type);
 		Log.d("Display Name : " + this.displayName);
-		Log.d("Contact Id : " + this.contactId);
-		Log.d("Sms Id : " + this.smsId);
+		Log.d("Contact Id 	: " + this.contactId);
 		Log.d("------------------------------------------------");
 	}
 }

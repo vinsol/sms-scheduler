@@ -542,8 +542,6 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
 				refDate = refCal.getTime();
-//				String dateString = refDate.toString();
-//				dateLabel.setText(dateString);
 				if(checkDateValidity(refDate)){
 					dateLabel.setVisibility(View.INVISIBLE);
 					pastTimeDateLabel.setVisibility(View.GONE);
@@ -1449,7 +1447,6 @@ abstract class AbstractScheduleSms extends Activity{
 						numbers.add(SmsSchedulerApplication.contactsList.get(j).number);
 						Log.d("added Display Name : " + SmsSchedulerApplication.contactsList.get(j).name);
 						long receivedRecipientId = mdba.addRecipient(smsId, SmsSchedulerApplication.contactsList.get(j).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
-//						long received_id = mdba.scheduleSms(SmsSchedulerApplication.contactsList.get(j).number, messageText.getText().toString(), dateString, parts.size(), groupId, cal.getTimeInMillis());
 						if(!Recipients.get(i).displayName.equals(" ")){
 							mdba.addRecentContact(Recipients.get(i).contactId, "");
 						}

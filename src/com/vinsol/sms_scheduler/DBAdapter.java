@@ -92,11 +92,11 @@ public class DBAdapter {
 
 	private final String DATABASE_CREATE_SMS_TABLE = "create table " + DATABASE_SMS_TABLE 
 			+ " (" 
-			+ KEY_ID          + " integer primary key autoincrement, "  
-			+ KEY_MESSAGE     + " text, " 
-			+ KEY_DATE        + " text, " 
-			+ KEY_TIME_MILLIS + " long, " 
-			+ KEY_MSG_PARTS   + " integer default 0, " 
+			+ KEY_ID          + " integer primary key autoincrement, "
+			+ KEY_MESSAGE     + " text, "
+			+ KEY_DATE        + " text, "
+			+ KEY_TIME_MILLIS + " long, "
+			+ KEY_MSG_PARTS   + " integer default 0, "
 			+ KEY_STATUS      + " integer default 1);";
 	
 	
