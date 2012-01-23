@@ -186,6 +186,13 @@ public class DBAdapter {
 	}
 	
 	
+	public boolean isSmsSent(long smsId){
+		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_STATUS}, KEY_ID + "=" + smsId, null, null, null, null);
+		cur.moveToFirst();
+		return (cur.getInt(cur.getColumnIndex(KEY_STATUS))>1);
+	}
+	
+	
 	public boolean isDraft(long smsId){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_STATUS}, KEY_ID + "=" + smsId, null, null, null, null);
 		cur.moveToFirst();
@@ -243,19 +250,6 @@ public class DBAdapter {
 		deleteRecipientGroupRelsForRecipient(recipientId);
 	}
 	
-	
-	
-//	public Cursor fetchAllScheduled(){
-//		String sql = "SELECT * FROM smsTable, recipientTable "
-//			+ "WHERE smsTable._id=recipientTable.sms_id "
-//			+ "AND (smsTable.status=1 OR smsTable.status=3) "
-//			+ "AND recipientTable.operated=0 "
-//			+ "ORDER BY smsTable.time_millis";
-//		
-//		Cursor cur = db.rawQuery(sql, null);
-//		Log.d("size of cur in db : " + cur.getCount());
-//		return cur;
-//	}
 	
 	
 	
@@ -394,7 +388,7 @@ public class DBAdapter {
 	}
 	
 	
-	public void deleteSms(long smsId, Context context){
+	public void deleteSms(long smsId,Context context){
 		ArrayList<Long> recipientIds = fetchRecipientIdsForSms(smsId);
 		for(int i = 0; i< recipientIds.size(); i++){
 			if(getCurrentPiId()==recipientIds.get(i)){

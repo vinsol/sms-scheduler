@@ -3,7 +3,6 @@ package com.vinsol.sms_scheduler.activities;
 import java.util.Date;
 
 import android.app.Dialog;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,7 +11,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Sms;
 
@@ -46,7 +44,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
 		
 		mdba.open();
-		recipientIds = mdba.fetchRecipientIdsForSms(editedSms);
 		
 
 		mdba.open();
@@ -64,23 +61,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	
 	@Override
 	public void onBackPressed() {
-		boolean isSending = false;
-		mdba.open();
-		for(int i = 0; i< recipientIds.size(); i++){
-			if(isSending){
-				break;
-			}
-			Cursor cur = mdba.fetchRecipientDetails(recipientIds.get(i));
-			if(cur.moveToFirst()){
-				do{
-					if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
-						isSending = true;
-						break;
-					}
-				}while(cur.moveToNext());
-			}
-		}
-		mdba.close();
 		
 		boolean isChanged = false;
 		
@@ -159,27 +139,13 @@ public class EditScheduledSms extends AbstractScheduleSms {
 
 	@Override
 	protected void scheduleButtonOnClickListener() {
-		boolean isSending = false;
 		mdba.open();
-		for(int i = 0; i< recipientIds.size(); i++){
-			if(isSending){
-				break;
-			}
-			Cursor cur = mdba.fetchRecipientDetails(recipientIds.get(i));
-			if(cur.moveToFirst()){
-				do{
-					if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT))>0){
-						isSending = true;
-						break;
-					}
-				}while(cur.moveToNext());
-			}
-		}
-		
-		if(isSending){
+		if(mdba.isSmsSent(editedSms)){
 			Toast.makeText(this, "Message has already been sent. Can't edit now", Toast.LENGTH_LONG).show();
 			finish();
+			mdba.close();
 		}else{
+			mdba.close();
 			onScheduleButtonPressTasks();
 		}
 	}

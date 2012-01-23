@@ -106,7 +106,6 @@ abstract class AbstractScheduleSms extends Activity{
 	//---------------------------------------------------------------
 	protected static ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
 	protected static ArrayList<Recipient> originalRecipients = new ArrayList<Recipient>();
-	protected ArrayList<Long> recipientIds;
 	protected SpannableStringBuilder ssb = new SpannableStringBuilder();
 	protected int spanStartPosition = 0;
 	protected static String originalMessage;
