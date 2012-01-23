@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2012 Vinayak Solutions Private Limited 
+ * See the file license.txt for copying permission.
+*/
+
 package com.vinsol.sms_scheduler.receivers;
 
 import java.util.ArrayList;
@@ -72,9 +77,8 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		}
 		try{
 			smsManager.sendMultipartTextMessage(number, null, parts, sentIntents, deliverIntents);
-		}catch(IllegalArgumentException iae){
-			
-		}
+		}catch(IllegalArgumentException iae){}
+		
 		mdba.open();
 		Cursor cur = mdba.fetchNextScheduled();
 		mdba.close();

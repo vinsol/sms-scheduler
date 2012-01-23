@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2012 Vinayak Solutions Private Limited 
+ * See the file license.txt for copying permission.
+*/
+
 package com.vinsol.sms_scheduler.activities;
 
 import java.util.Date;
@@ -48,9 +53,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
 		
-		mdba.open();
-		
-
 		mdba.open();
 		isDraft = mdba.isDraft(editedSms); 
 		if(!isDraft){

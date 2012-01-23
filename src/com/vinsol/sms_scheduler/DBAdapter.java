@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2012 Vinayak Solutions Private Limited 
+ * See the file license.txt for copying permission.
+*/
+
 package com.vinsol.sms_scheduler;
 
 import java.util.ArrayList;
@@ -661,17 +666,13 @@ public class DBAdapter {
 			}while(cur.moveToNext());
 		}
 		if(!contactExist){
-			
 			if(cur.getCount()>=20 && cur.moveToFirst()){
-				
 				long idToDelete = cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_ID));
 				db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + "=" + idToDelete, null);
 			}
-			
 		}
-		if(cur.getCount()<20){
-			db.insert(DATABASE_RECENTS_TABLE, null, cv);
-		}
+		
+		db.insert(DATABASE_RECENTS_TABLE, null, cv);
 	}
 	
 	

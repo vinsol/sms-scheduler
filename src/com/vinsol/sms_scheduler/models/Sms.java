@@ -1,4 +1,8 @@
-/* Class to structure data for sent and draft messages, referring them as 'unsent' */ 
+/**
+ * Copyright (c) 2012 Vinayak Solutions Private Limited 
+ * See the file license.txt for copying permission.
+*/
+
 package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;

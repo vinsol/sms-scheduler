@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2012 Vinayak Solutions Private Limited 
+ * See the file license.txt for copying permission.
+*/
+
 package com.vinsol.sms_scheduler.activities;
 
 import java.io.InputStream;
@@ -207,6 +212,8 @@ public class Home extends Activity {
     }
     
     
+    
+    
     @Override
     protected void onResume() {
     	super.onResume();
@@ -221,7 +228,6 @@ public class Home extends Activity {
     	registerReceiver(mUpdateReceiver, mIntentFilter);
     	registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
     }
-    
     
     
     

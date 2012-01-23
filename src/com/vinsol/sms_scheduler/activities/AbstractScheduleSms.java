@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2012 Vinayak Solutions Private Limited 
+ * See the file license.txt for copying permission.
+*/
+
 package com.vinsol.sms_scheduler.activities;
 
 import java.text.SimpleDateFormat;
@@ -1467,10 +1472,11 @@ abstract class AbstractScheduleSms extends Activity{
 				}
 			}else if(Recipients.get(i).type == 1){
 				long receivedRecipientId = mdba.addRecipient(smsId, Recipients.get(i).displayName, Recipients.get(i).displayName, 1, -1);
-				mdba.addRecentContact(-1, Recipients.get(i).displayName);
-				if((Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)")){
-					mdba.setAsDraft(receivedRecipientId);
-				}else{
+				if(!Recipients.get(i).displayName.equals(" ")){
+					mdba.addRecentContact(-1, Recipients.get(i).displayName);
+				}
+				
+				if(!((Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)"))){
 					if(mdba.getCurrentPiFiretime() == -1){
 						handlePiUpdate(Recipients.get(i).displayName, smsId, receivedRecipientId, cal.getTimeInMillis());
 					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
