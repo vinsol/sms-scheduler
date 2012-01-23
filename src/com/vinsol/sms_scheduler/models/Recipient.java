@@ -16,17 +16,21 @@ public class Recipient implements Parcelable{
 	public long contactId;
 	public long smsId;
 	public int keyImageRes;
+	public int sent;
+	public int delivered;
 	public ArrayList<Long> groupIds = new ArrayList<Long>();
 	public ArrayList<Integer> groupTypes = new ArrayList<Integer>();
 	
 	public Recipient(){}
 	
-	public Recipient(long recipientId, int type, String displayName, long contactId, long smsId){
+	public Recipient(long recipientId, int type, String displayName, long contactId, long smsId, int sent, int delivered){
 		this.recipientId = recipientId;
 		this.type = type;
 		this.displayName = displayName;
 		this.contactId = contactId;
 		this.smsId = smsId;
+		this.sent = sent;
+		this.delivered = delivered;
 	}
 	
 	

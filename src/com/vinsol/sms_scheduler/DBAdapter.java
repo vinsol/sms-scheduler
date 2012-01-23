@@ -26,7 +26,7 @@ public class DBAdapter {
 	private final String DATABASE_TEMPLATE_TABLE = "templateTable";
 	private final String DATABASE_GROUP_TABLE = "groupTable";
 	private final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
-	private final String DATABASE_RECIPIENT_GROUP_REL_TABLE = "span_grp_rel_table";
+	private final String DATABASE_RECIPIENT_GROUP_REL_TABLE = "recipient_grp_rel_table";
 	private final String DATABASE_RECENTS_TABLE = "recents_table";
 	private final int 	DATABASE_VERSION = 1;
 	
@@ -649,10 +649,13 @@ public class DBAdapter {
 	public void addRecentContact(long contactId, String contactNumber){
 		Cursor cur = db.query(DATABASE_RECENTS_TABLE, new String[]{KEY_RECENT_CONTACT_ID, KEY_RECENT_CONTACT_CONTACT_ID, KEY_RECENT_CONTACT_NUMBER}, null, null, null, null, KEY_RECENT_CONTACT_ID);
 		boolean contactExist = false;
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_RECENT_CONTACT_CONTACT_ID, contactId);
+		cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);
 		if(cur.moveToFirst()){
 			do{
 				if((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId)){// || (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
-					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + "=" + contactId, null);
+					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_CONTACT_ID + "=" + contactId, null);
 					contactExist = true;
 					break;
 				}
@@ -663,18 +666,17 @@ public class DBAdapter {
 				}
 			}while(cur.moveToNext());
 		}
-		
-			ContentValues cv = new ContentValues();
-			cv.put(KEY_RECENT_CONTACT_CONTACT_ID, contactId);
-			cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);
-			if(cur.getCount()<20){
-				db.insert(DATABASE_RECENTS_TABLE, null, cv);
-			if(!contactExist){
-				cur.moveToFirst();
+		if(!contactExist){
+			
+			if(cur.getCount()>=20 && cur.moveToFirst()){
+				
 				long idToDelete = cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_ID));
 				db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + "=" + idToDelete, null);
-				db.insert(DATABASE_RECENTS_TABLE, null, cv);
 			}
+			
+		}
+		if(cur.getCount()<20){
+			db.insert(DATABASE_RECENTS_TABLE, null, cv);
 		}
 	}
 	

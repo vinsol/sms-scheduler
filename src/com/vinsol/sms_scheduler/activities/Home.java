@@ -71,7 +71,7 @@ public class Home extends Activity {
 	private ArrayList<ArrayList<HashMap<String, Object>>> childData = new ArrayList<ArrayList<HashMap<String, Object>>>();
 	
 	private String[] numbersForSentDialog = new String[]{};
-	private ArrayList<Long> idsForSentDialog = new ArrayList<Long>();
+	private int smsPositionForSentDialog;
 	
 	private DBAdapter mdba = new DBAdapter(Home.this);
 	
@@ -462,7 +462,9 @@ public class Home extends Activity {
         											SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
         											SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
         											SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
-        											SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID)));
+        											SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID)),
+        											SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_SENT)),
+        											SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_DELIVER)));
         		if(SMS.keyNumber.equals("")){
         			SMS.keyNumber = SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
         		}else{
@@ -513,19 +515,17 @@ public class Home extends Activity {
     		int condition = 1;
     		
     		for(int k = 0; k< sentSMSs.get(i).keyRecipients.size(); k++){
-    			Cursor cur = mdba.fetchRecipientDetails(sentSMSs.get(i).keyRecipients.get(k).recipientId);
-    			cur.moveToFirst();
-    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) == 0){
+    			if(sentSMSs.get(i).keyRecipients.get(k).sent == 0){
     				condition = 1;
     				sentSMSs.get(i).keyImageRes = R.drawable.sent_failure_icon;
     				break;
     			}
-    			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !mdba.checkDelivery(sentSMSs.get(i).keyRecipients.get(k).recipientId)){
+    			if(sentSMSs.get(i).keyRecipients.get(k).sent > 0 && !mdba.checkDelivery(sentSMSs.get(i).keyRecipients.get(k).recipientId)){
     				condition = 2;
     				sentSMSs.get(i).keyImageRes = R.drawable.sending_sms_icon;
     				break;
     			}
-    			if(mdba.checkDelivery(sentSMSs.get(i).keyRecipients.get(k).recipientId)){
+    			if(sentSMSs.get(i).keyRecipients.get(k).sent == sentSMSs.get(i).keyRecipients.get(k).delivered){
     				condition = 3;
     			}
     		}
@@ -628,7 +628,7 @@ public class Home extends Activity {
 		TextView messageSpace = (TextView) sentInfoDialog.findViewById(R.id.sent_details_dialog_message_space);
 		mdba.open();
 		numbersForSentDialog = sentSMSs.get(childPos).keyNumber.split(", ");
-		idsForSentDialog = mdba.fetchRecipientIdsForSms(sentSMSs.get(childPos).keyId);
+		smsPositionForSentDialog = childPos;
 		timeLabel.setText(sentSMSs.get(childPos).keyDate);
 		messageSpace.setText(sentSMSs.get(childPos).keyMessage);
 		messageSpace.setMovementMethod(new ScrollingMovementMethod());
@@ -667,16 +667,12 @@ public class Home extends Activity {
 
     		holder.numberLabel.setText(numbersForSentDialog[position]);
     		
-    		long currentId = idsForSentDialog.get(position);
-    		
     		int condition = 1;
     		mdba.open();
-    		Cursor cur = mdba.fetchRecipientDetails(currentId);
-			cur.moveToFirst();
-			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_SENT)) > 0 && !(mdba.checkDelivery(currentId))){
+			if(sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).sent > 0 && (sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).recipientId != sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).recipientId)){
 				condition = 2;
 			}else
-			if(mdba.checkDelivery(currentId)){
+			if(sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).recipientId == sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).recipientId){
 				condition = 3;
 			}
 			
@@ -858,7 +854,6 @@ public class Home extends Activity {
 	private void deleteSms(){
 		mdba.open();
 		mdba.deleteSms(selectedSms, Home.this);
-		mdba.close();
 		Toast.makeText(Home.this, "Message Deleted", Toast.LENGTH_SHORT).show();
 		loadData();
 		mAdapter.notifyDataSetChanged();

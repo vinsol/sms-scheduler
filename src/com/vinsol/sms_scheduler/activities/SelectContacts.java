@@ -164,7 +164,7 @@ public class SelectContacts extends Activity {
 			group.put(Constants.GROUP_NAME, AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_NAME));
 			group.put(Constants.GROUP_IMAGE, AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_IMAGE));
 			group.put(Constants.GROUP_TYPE, AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_TYPE));
-			group.put(Constants.GROUP_CHECK, false);// ScheduleNewSms.privateGroupData.get(groupCount).get(Constants.GROUP_CHECK));
+			group.put(Constants.GROUP_CHECK, false);
 				
 				
 			ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
@@ -438,7 +438,7 @@ public class SelectContacts extends Activity {
 							}
 						}
 						if(!isPresent){
-							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, SmsSchedulerApplication.contactsList.get(position).content_uri_id, -1);
+							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, SmsSchedulerApplication.contactsList.get(position).content_uri_id, -1, -1, -1);
 							recipient.groupIds.add((long) -1);
 							recipient.groupTypes.add(-1);
 							RecipientsTemp.add(recipient);
@@ -507,7 +507,7 @@ public class SelectContacts extends Activity {
 							}
 						}
 						if(!isPresent){
-							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, SmsSchedulerApplication.contactsList.get(position).content_uri_id, -1);
+							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, SmsSchedulerApplication.contactsList.get(position).content_uri_id, -1, -1, -1);
 							recipient.groupIds.add((long) -1);
 							recipient.groupTypes.add(-1);
 							RecipientsTemp.add(recipient);
@@ -1061,7 +1061,7 @@ public class SelectContacts extends Activity {
 			}
 		}
 		if(!spanExist){
-			Recipient recipient = new Recipient(-1, 2, (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1);
+			Recipient recipient = new Recipient(-1, 2, (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1, -1, -1);
 			try{
 				recipient.groupIds.add(((Long)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}catch (ClassCastException e) {
@@ -1173,7 +1173,7 @@ public class SelectContacts extends Activity {
 						if(recentContactIds.get(_position)> -1){
 							for(int k = 0; k< SmsSchedulerApplication.contactsList.size(); k++){
 								if(SmsSchedulerApplication.contactsList.get(k).content_uri_id == recentContactIds.get(_position)){
-									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1);
+									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1, -1, -1);
 									break;
 								}
 							}
@@ -1183,7 +1183,7 @@ public class SelectContacts extends Activity {
 									
 								}
 							}
-							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1);
+							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1, -1, -1);
 						}
 						recipient.groupIds.add((long) -1);
 						recipient.groupTypes.add(-1);
@@ -1221,12 +1221,12 @@ public class SelectContacts extends Activity {
 						if(recentContactIds.get(_position)> -1){
 							for(int k = 0; k< SmsSchedulerApplication.contactsList.size(); k++){
 								if(SmsSchedulerApplication.contactsList.get(k).content_uri_id == recentContactIds.get(_position)){
-									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1);
+									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1, -1, -1);
 									break;
 								}
 							}
 						}else{
-							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1);
+							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1, -1, -1);
 						}
 						recipient.groupIds.add((long) -1);
 						recipient.groupTypes.add(-1);

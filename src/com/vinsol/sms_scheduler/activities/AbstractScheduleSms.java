@@ -376,7 +376,7 @@ abstract class AbstractScheduleSms extends Activity{
 								}
 							}
 							if(!isPresent){
-								Recipient recipient = new Recipient(-1, 1, numbersText.getText().toString().substring(start, pos-1), -1, -1);
+								Recipient recipient = new Recipient(-1, 1, numbersText.getText().toString().substring(start, pos-1), -1, -1, -1, -1);
 								Recipients.add(recipient);
 							}
 							refreshSpannableString(false);
@@ -405,7 +405,7 @@ abstract class AbstractScheduleSms extends Activity{
 					}
 				}
 				if(!isPresent){
-					final Recipient recipient = new Recipient(-1, 2, shortlist.get(position).name, shortlist.get(position).content_uri_id, -1);
+					final Recipient recipient = new Recipient(-1, 2, shortlist.get(position).name, shortlist.get(position).content_uri_id, -1, -1, -1);
 					Recipients.add(recipient);
 			
 				}
@@ -1435,9 +1435,11 @@ abstract class AbstractScheduleSms extends Activity{
 			mdba.setAsDraft(smsId);
 			
 		}
-		
+		if(mode==2){
+			mdba.deleteSms(editedSms, AbstractScheduleSms.this);
+		}
 		if(Recipients.size()==0){
-			Recipient recipient = new Recipient(-1, 1, " ", -1, -1);  // for adding as a fake span to create a draft
+			Recipient recipient = new Recipient(-1, 1, " ", -1, -1, -1, -1);  // for adding as a fake span to create a draft
 			Recipients.add(recipient);
 		}
 		

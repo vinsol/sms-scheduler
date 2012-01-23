@@ -48,32 +48,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		mdba.open();
 		recipientIds = mdba.fetchRecipientIdsForSms(editedSms);
 		
-//		
-//		for(int i = 0; i< recipientIds.size(); i++){
-//			Cursor spanCur = mdba.fetchRecipientDetails(recipientIds.get(i));
-//			spanCur.moveToFirst();
-//			Recipients.add(new Recipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
-//					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
-//					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
-//					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
-//					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SMS_ID))));
-//			ArrayList<Long> groupIds = mdba.fetchGroupsForRecipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
-//			ArrayList<Integer> groupTypes = mdba.fetchGroupTypesForSpan(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)));
-//			
-//			originalRecipients.add(new Recipient(spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
-//					spanCur.getInt(spanCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
-//					spanCur.getString(spanCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME)),
-//					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
-//					spanCur.getLong(spanCur.getColumnIndex(DBAdapter.KEY_SMS_ID))));
-//			
-//			for(int k = 0; k < groupIds.size(); k++){
-//				Recipients.get(i).groupIds.add(groupIds.get(k));
-//				Recipients.get(i).groupTypes.add(groupTypes.get(k));
-//				originalRecipients.get(i).groupIds.add(groupIds.get(k));
-//				originalRecipients.get(i).groupTypes.add(groupTypes.get(k));
-//			}
-//		}
-//		
+
 		mdba.open();
 		isDraft = mdba.isDraft(editedSms); 
 		if(!isDraft){
@@ -202,7 +177,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		}
 		
 		if(isSending){
-			Toast.makeText(this, "Message is already sent. Can't edit now", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Message has already been sent. Can't edit now", Toast.LENGTH_LONG).show();
 			finish();
 		}else{
 			onScheduleButtonPressTasks();
