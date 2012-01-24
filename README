@@ -1,0 +1,45 @@
+SMS Scheduler:
+==============
+
+Use SMS Scheduler and never forget to send those important sms! 
+
+SMS scheduler comes with a nice, simple and easy to use interface that allows you to schedule your messages to be sent on specific date and time. You can either schedule a message to be sent to an individual or a group.
+ 
+No more reminders needed, never miss birthdays, anniversaries, holiday greetings and important meetings. Simply set the date and time for the message to be delivered and leave the rest to your phone to send the message for you. The SMS would be sent automatically without any user interaction.
+
+So this holiday season don’t forget to send your wishes and greetings to your family, relatives and friends!
+
+
+Features:
+=========
+
+1.	Choose message text from pre-defined templates
+2.	Add custom messages to templates
+3.	Add your own groups
+4.	Recipients can be typed in directly or selected from contacts
+5.	Choose multiple recipients to send messages  
+6.	View history of sent and delivered messages 
+7.	Enter messages using Google voice
+8.	Messages are classified as Scheduled, Sent or Draft
+
+
+Features of Android SDK used:
+=============================
+
+1.	SMS Manager
+2.	Contacts
+
+
+Bug tracking
+============
+
+Have a bug? Please create an issue here on GitHub!
+
+https://github.com/vinsol/sms-scheduler/issues
+
+
+License
+=======
+
+see license.txt
+
