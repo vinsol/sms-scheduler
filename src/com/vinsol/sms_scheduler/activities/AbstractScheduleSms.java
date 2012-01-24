@@ -244,8 +244,8 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		Recipients.clear();
 		
-		setSuperFunctionalities();
-		loadGroupsData();
+//		setSuperFunctionalities();
+//		loadGroupsData();
 		
 		myAutoCompleteAdapter = (AutoCompleteAdapter) new AutoCompleteAdapter(this);
 		numbersText.setAdapter(myAutoCompleteAdapter);
@@ -482,9 +482,9 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		
 		//------------Date Select Button set to current date--------------------
-		Date currentDate = processDate;
-		dateButton.setText(sdf.format(currentDate));
-		processDate = currentDate; 
+		//Date currentDate = processDate;
+		dateButton.setText(sdf.format(processDate));
+//		processDate = currentDate; 
 		if(checkDateValidity(processDate)){
 			pastTimeDateLabel.setVisibility(View.GONE);
 		}else{

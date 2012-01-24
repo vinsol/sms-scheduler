@@ -60,6 +60,9 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			scheduleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_footer_states));
 		}
 		
+		setSuperFunctionalities();
+		loadGroupsData();
+		
 		mdba.close();
 		refreshSpannableString(false);
 	}

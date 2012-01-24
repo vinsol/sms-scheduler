@@ -924,7 +924,6 @@ public class SelectContacts extends Activity {
 						}else{
 							privateGroupExplList.expandGroup(groupPosition);
 						}
-						
 					}
 				});
     			
@@ -1060,8 +1059,6 @@ public class SelectContacts extends Activity {
 	
 	
 	
-	
-	
 	private void addCheck(int groupPosition, int childPosition, ArrayList<ArrayList<HashMap<String, Object>>> ChildDataTemp, ArrayList<HashMap<String, Object>> GroupDataTemp){
 		Log.d("entering childcheck is checked true listner");
 		ChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
@@ -1151,6 +1148,7 @@ public class SelectContacts extends Activity {
     		int i = 0;
     		
     		if(recentContactIds.get(position)> -1){
+    			
     			for(i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
     				if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == recentContactIds.get(position)){
     					holder.contactImage.setImageBitmap(SmsSchedulerApplication.contactsList.get(i).image);
@@ -1160,6 +1158,7 @@ public class SelectContacts extends Activity {
     		    		for(int j = 0; j< RecipientsTemp.size(); j++){
     		        		if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == RecipientsTemp.get(j).contactId){
     		        			holder.contactCheck.setChecked(true);
+    		        			Log.d(">-1");
     		        			break;
     		        		}else{
     		        			holder.contactCheck.setChecked(false);
@@ -1169,15 +1168,17 @@ public class SelectContacts extends Activity {
     				}
     			}
     		}else if(recentContactIds.get(position) == -1){
+    			
     			holder.contactImage.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
     			holder.nameText.setText(recentContactNumbers.get(position));
     			holder.numberText.setText("");
     			for(int j = 0; j< RecipientsTemp.size(); j++){
     				if(RecipientsTemp.get(j).displayName.equals(recentContactNumbers.get(position))){
     					holder.contactCheck.setChecked(true);
+    					Log.d("==-1");
     					break;
     				}else{
-    					holder.contactCheck.setChecked(true);
+    					holder.contactCheck.setChecked(false);
     				}
     			}
     		}

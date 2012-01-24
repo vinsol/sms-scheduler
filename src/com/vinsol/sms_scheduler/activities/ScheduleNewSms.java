@@ -23,6 +23,8 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		super.onCreate(savedInstanceState);
 		
 		mode = 1;
+		setSuperFunctionalities();
+		loadGroupsData();
 	}
 	
 	
