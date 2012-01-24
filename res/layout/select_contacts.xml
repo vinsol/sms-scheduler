@@ -167,15 +167,62 @@
 				</LinearLayout>
 				
 		     	<!-- Recents Tab -->
-		     	<ListView
-	     		    android:id = "@+id/contacts_tabs_recents_list"
-	     		    android:layout_height = "wrap_content"
-	     		    android:layout_width = "fill_parent"
-					android:layout_above="@+id/contacts_tabs_buttons_layout"
-					android:cacheColorHint="@color/transparent"
-					android:divider="@drawable/list_divider"
-        			>
-	     		</ListView>
+		     	<LinearLayout 
+		     	    android:id = "@+id/contacts_tabs_recents_layout"
+		     	    android:layout_height="fill_parent"
+		     	    android:layout_width ="fill_parent"
+		     	    android:layout_above="@+id/contacts_tabs_buttons_layout"
+		     	    >
+		     	    
+		     	    <LinearLayout 
+		     	        android:id="@+id/contacts_tabs_recents_blank_layout"
+		     	        android:layout_height = "fill_parent"
+		     	        android:layout_width = "fill_parent"
+		     	        android:orientation="vertical"
+		     	        android:gravity="center"
+		     	        android:cacheColorHint="@color/transparent">
+		     	        
+		     	        <TextView
+		     	            android:layout_height = "wrap_content"
+		     	            android:layout_width = "wrap_content"
+		     	            android:layout_gravity="center"
+		     	            android:text = "@string/recents_blank_text_heading"
+		     	            android:textSize="18sp"
+		     	            android:textColor="@color/black"/>
+		     	        
+		     	        <TextView
+		     	            android:layout_height = "wrap_content"
+		     	            android:layout_width = "wrap_content"
+		     	            android:layout_gravity="center_horizontal"
+		     	            android:gravity="center_horizontal"
+		     	            android:text = "@string/recents_blank_text_content"
+		     	            android:layout_marginTop="2dp"
+		     	            android:layout_marginLeft="15dp"
+		     	            android:layout_marginRight="15dp"
+		     	            android:textSize="14sp"
+		     	            android:textColor="@color/grey"/>
+		     	        
+		     	    </LinearLayout>
+		     	    
+		     	    <LinearLayout 
+		     	        android:id="@+id/contacts_tabs_recents_list_layout"
+		     	        android:layout_height = "fill_parent"
+		     	        android:layout_width = "fill_parent"
+		     	        android:cacheColorHint="@color/transparent">
+		     	        
+		     	        <ListView
+	     		    		android:id = "@+id/contacts_tabs_recents_list"
+	     		    		android:layout_height = "wrap_content"
+	     		    		android:layout_width = "fill_parent"
+							android:cacheColorHint="@color/transparent"
+							android:divider="@drawable/list_divider"
+        				>
+	     				</ListView>
+		     	        
+		     	    </LinearLayout>
+		     	    
+		     	</LinearLayout>
+		     	
      	  	</FrameLayout>
 	    </RelativeLayout>
 	</TabHost>

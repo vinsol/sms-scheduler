@@ -46,6 +46,8 @@ public class SelectContacts extends Activity {
 	private LinearLayout listLayout;
 	private LinearLayout blankLayout;
 	private Button blankListAddButton;
+	private LinearLayout recentsListLayout;
+	private LinearLayout recentsBlankLayout;
 	
 	
 	
@@ -111,7 +113,7 @@ public class SelectContacts extends Activity {
 
         TabSpec spec3=tabHost.newTabSpec("Tab 3");
         spec3.setIndicator("Recents", getResources().getDrawable(R.drawable.recent_tab_states));
-        spec3.setContent(R.id.contacts_tabs_recents_list);
+        spec3.setContent(R.id.contacts_tabs_recents_layout);
 
         tabHost.addTab(spec1);
         tabHost.addTab(spec2);
@@ -300,21 +302,32 @@ public class SelectContacts extends Activity {
         
 		
 		//--------------------setting up Recents Tab--------------------------------
-		recentIds.clear();
-		recentContactIds.clear();
-		recentContactNumbers.clear();
-		recentsList = (ListView) findViewById(R.id.contacts_tabs_recents_list);
+		recentsListLayout  = (LinearLayout) findViewById(R.id.contacts_tabs_recents_list_layout);
+		recentsBlankLayout = (LinearLayout) findViewById(R.id.contacts_tabs_recents_blank_layout);
+		
 		mdba.open();
 		Cursor cur = mdba.fetchAllRecents();
-		if(cur.moveToFirst()){
-			do{
-				recentIds.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_ID)));
-				recentContactIds.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_CONTACT_ID)));
-				recentContactNumbers.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_NUMBER)));
-			}while(cur.moveToNext());
+		if(cur.getCount()==0){
+			recentsListLayout.setVisibility(LinearLayout.GONE);
+			recentsBlankLayout.setVisibility(LinearLayout.VISIBLE);
+		}else{
+			recentsBlankLayout.setVisibility(LinearLayout.GONE);
+			recentsListLayout.setVisibility(LinearLayout.VISIBLE);
+			recentIds.clear();
+			recentContactIds.clear();
+			recentContactNumbers.clear();
+			recentsList = (ListView) findViewById(R.id.contacts_tabs_recents_list);
+			
+			if(cur.moveToFirst()){
+				do{
+					recentIds.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_ID)));
+					recentContactIds.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_CONTACT_ID)));
+					recentContactNumbers.add(cur.getString(cur.getColumnIndex(DBAdapter.KEY_RECENT_CONTACT_NUMBER)));
+				}while(cur.moveToNext());
+			}
+			recentsAdapter = new RecentsAdapter();
+			recentsList.setAdapter(recentsAdapter);
 		}
-		recentsAdapter = new RecentsAdapter();
-		recentsList.setAdapter(recentsAdapter);
 		mdba.close();
 		//---------------------------------------------------------------------------
 	}
