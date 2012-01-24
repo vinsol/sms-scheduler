@@ -15,6 +15,7 @@ public class Sms implements Parcelable {
 	public long 					keyId;
 	public String 					keyNumber;
 	public String 					keyMessage;
+	public int 						keyMessageParts;
 	public long						keyTimeMilis;
 	public String 					keyDate;
 	public int 						keyImageRes;
@@ -22,10 +23,11 @@ public class Sms implements Parcelable {
 	public ArrayList<Recipient>		keyRecipients;
 	
 	
-	public Sms(long keyid, String keynumber, String keymessage, long keytimemilis, String keydate, ArrayList<Recipient> keyrecipients){
+	public Sms(long keyid, String keynumber, String keymessage, int keymessageparts, long keytimemilis, String keydate, ArrayList<Recipient> keyrecipients){
 		this.keyId 			= keyid;
 		this.keyNumber 		= keynumber;
 		this.keyMessage 	= keymessage;
+		this.keyMessageParts= keymessageparts;
 		this.keyDate		= keydate;
 		this.keyTimeMilis 	= keytimemilis;
 		this.keyRecipients	= keyrecipients;
@@ -47,7 +49,8 @@ public class Sms implements Parcelable {
     	this.keyId = in.readLong();
     	this.keyNumber = in.readString();
     	this.keyMessage = in.readString();
-    	this.keyTimeMilis = in.readLong();
+    	this.keyMessageParts = in.readInt();
+     	this.keyTimeMilis = in.readLong();
     	keyRecipients = new ArrayList<Recipient>();
     	in.readList(keyRecipients, Recipient.class.getClassLoader());
     };
@@ -57,6 +60,7 @@ public class Sms implements Parcelable {
 		dest.writeLong(this.keyId);
 		dest.writeString(this.keyNumber);
 		dest.writeString(this.keyMessage);
+		dest.writeInt(this.keyMessageParts);
 		dest.writeLong(this.keyTimeMilis);
 		dest.writeList(this.keyRecipients);
     }

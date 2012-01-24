@@ -1334,12 +1334,7 @@ public class SelectContacts extends Activity {
         		group.put(Constants.GROUP_TYPE, 2);
         		group.put(Constants.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
-//        		if(origin.equals("new")){
-        			AbstractScheduleSms.privateGroupData.add(group);
-//        		}else{
-//        			EditScheduledSms.privateGroupData.add(group);
-//        		}
-        		
+        		AbstractScheduleSms.privateGroupData.add(group);
         	
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
@@ -1365,11 +1360,7 @@ public class SelectContacts extends Activity {
         				}
         			}
         		}
-//        		if(origin.equals("new")){
-        			AbstractScheduleSms.privateChildData.add(child);
-//        		}else{
-//        			EditScheduledSms.privateChildData.add(child);
-//        		}
+        		AbstractScheduleSms.privateChildData.add(child);
         	}while(groupsCursor.moveToNext());
         }
         

@@ -460,6 +460,7 @@ public class Home extends Activity {
     				SMS = new Sms(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID)),
     						displayName,
     						SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+    						SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)),
     						SMSsCur.getLong	(SMSsCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
     						SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DATE)),
     						tempRecipients);
@@ -675,10 +676,10 @@ public class Home extends Activity {
     		
     		int condition = 1;
     		mdba.open();
-			if(sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).sent > 0 && (sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).recipientId != sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).recipientId)){
+			if(sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).sent > 0 && (sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).delivered != sentSMSs.get(smsPositionForSentDialog).keyMessageParts)){
 				condition = 2;
 			}else
-			if(sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).recipientId == sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).recipientId){
+			if(sentSMSs.get(smsPositionForSentDialog).keyRecipients.get(position).delivered == sentSMSs.get(smsPositionForSentDialog).keyMessageParts){
 				condition = 3;
 			}
 			
