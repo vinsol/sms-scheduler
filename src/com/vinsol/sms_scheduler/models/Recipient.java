@@ -23,6 +23,7 @@ public class Recipient implements Parcelable{
 	public int keyImageRes;
 	public int sent;
 	public int delivered;
+	public int operated;
 	public ArrayList<Long> groupIds = new ArrayList<Long>();
 	public ArrayList<Integer> groupTypes = new ArrayList<Integer>();
 	

@@ -14,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.telephony.SmsManager;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
@@ -103,7 +104,11 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			Log.d("no more records retrieved");
 			mdba.open();
 			mdba.updatePi(0, -1, -1);
-			mdba.close();
+			try{
+				mdba.close();
+			}catch (SQLiteException e) {
+				// TODO: handle exception
+			}
 		}
 	}
 }

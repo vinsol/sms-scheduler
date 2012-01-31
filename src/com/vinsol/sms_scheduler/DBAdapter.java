@@ -8,6 +8,7 @@ package com.vinsol.sms_scheduler;
 import java.util.ArrayList;
 import java.util.Random;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -19,6 +20,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.vinsol.sms_scheduler.models.Recipient;
+import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 import com.vinsol.sms_scheduler.utils.Log;
 
@@ -33,7 +36,7 @@ public class DBAdapter {
 	private final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
 	private final String DATABASE_RECIPIENT_GROUP_REL_TABLE = "recipient_grp_rel_table";
 	private final String DATABASE_RECENTS_TABLE = "recents_table";
-	private final int 	DATABASE_VERSION = 1;
+	private final int 	DATABASE_VERSION = 2;
 	
 	Cursor cur;
 	
@@ -736,6 +739,177 @@ public class DBAdapter {
 		}
 		
 		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			ArrayList<Sms> SMSs = new ArrayList<Sms>();
+			ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
+			
+			Cursor piCur = db.query(DATABASE_PI_TABLE, null, null, null, null, null, null);
+			piCur.moveToFirst();
+			Intent intent = new Intent(context, SMSHandleReceiver.class);
+			intent.setAction(Constants.PRIVATE_SMS_ACTION);
+			PendingIntent pi;
+			if(piCur.getLong(piCur.getColumnIndex(DBAdapter.KEY_TIME))>0){
+				intent.putExtra("ID", piCur.getLong(piCur.getColumnIndex(DBAdapter.KEY_SMS_ID)));
+				intent.putExtra("NUMBER", " ");
+				intent.putExtra("MESSAGE", " ");
+				
+				pi = PendingIntent.getBroadcast(context, (int)piCur.getLong(piCur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+				pi.cancel();
+			}
+			
+			String sql = "SELECT DISTINCT group_id, message, date, time_millis, msg_parts " +
+						 "FROM smsTable";
+			Cursor distinctSmsCursor = db.rawQuery(sql, null);
+			if(distinctSmsCursor.moveToFirst()){
+				do{
+					SMSs.add(new Sms(distinctSmsCursor.getLong(distinctSmsCursor.getColumnIndex("group_id")), "",
+							 distinctSmsCursor.getString(distinctSmsCursor.getColumnIndex("message")),
+							 distinctSmsCursor.getInt(distinctSmsCursor.getColumnIndex("msg_parts")),
+							 distinctSmsCursor.getLong(distinctSmsCursor.getColumnIndex("time_millis")),
+							 distinctSmsCursor.getString(distinctSmsCursor.getColumnIndex("date")),
+							 null));
+			
+					Cursor recipientsDataCur = db.query("smsTable", null, "group_id=" + distinctSmsCursor.getLong(distinctSmsCursor.getColumnIndex("group_id")), null, null, null, null);
+					if(recipientsDataCur.moveToFirst()){
+						do{
+							ArrayList<Long> groupIds = new ArrayList<Long>();
+							ArrayList<Integer>	groupTypes = new ArrayList<Integer>();
+							
+							Cursor spansDataCur = db.query("spanTable", null, "span_sms_id=" + recipientsDataCur.getLong(recipientsDataCur.getColumnIndex("_id")), null, null, null, null);
+							if(spansDataCur.moveToFirst()){
+								Cursor spansGroupRelCur = db.query("span_grp_rel_table", null, "span_grp_rel_span_id=" + spansDataCur.getLong(spansDataCur.getColumnIndex("_id")), null, null, null, null);
+								if(spansGroupRelCur.moveToFirst()){
+									do{
+										groupIds.add(spansGroupRelCur.getLong(spansGroupRelCur.getColumnIndex("span_grp_rel_grp_id")));
+										groupTypes.add(spansGroupRelCur.getInt(spansGroupRelCur.getColumnIndex("span_grp_rel_grp_type")));
+									}while(spansGroupRelCur.moveToNext());
+								}
+								Recipient recipient = new Recipient();
+								recipient.smsId = distinctSmsCursor.getLong(distinctSmsCursor.getColumnIndex("group_id"));
+								recipient.number = recipientsDataCur.getString(recipientsDataCur.getColumnIndex("number"));
+								recipient.sent = recipientsDataCur.getInt(recipientsDataCur.getColumnIndex("sent"));
+								recipient.delivered = recipientsDataCur.getInt(recipientsDataCur.getColumnIndex("deliver"));
+								recipient.operated = recipientsDataCur.getInt(recipientsDataCur.getColumnIndex("operation_done"));
+								recipient.displayName = spansDataCur.getString(spansDataCur.getColumnIndex("span_display_name"));
+								recipient.type = spansDataCur.getInt(spansDataCur.getColumnIndex("span_type"));
+								recipient.contactId = spansDataCur.getLong(spansDataCur.getColumnIndex("span_entity_id"));
+								recipient.groupIds = groupIds;
+								recipient.groupTypes = groupTypes;
+								Recipients.add(recipient);
+							}
+						}while(recipientsDataCur.moveToNext());
+					}
+				}while(distinctSmsCursor.moveToNext());
+			}
+			
+			
+			sql = "DROP TABLE smsTable";
+			db.execSQL(sql);
+			sql = "DROP TABLE spanTable";
+			db.execSQL(sql);
+			sql = "DROP TABLE span_grp_rel_table";
+			db.execSQL(sql);
+			sql = "DROP TABLE piTable";
+			db.execSQL(sql);
+			
+			db.execSQL(DATABASE_CREATE_SMS_TABLE);
+	        db.execSQL(DATABASE_CREATE_RECIPIENT_TABLE);
+	        db.execSQL(DATABASE_CREATE_RECIPIENT_GROUP_REL_TABLE);
+	        db.execSQL(DATABASE_CREATE_PI_TABLE);
+			
+	        ContentValues cv = new ContentValues();
+			for(Sms s: SMSs){
+				cv.put(KEY_MESSAGE, s.keyMessage);
+				cv.put(KEY_DATE, s.keyDate);
+				cv.put(KEY_TIME_MILLIS, s.keyTimeMilis);
+				cv.put(KEY_MSG_PARTS, s.keyMessageParts);
+				
+				long receivedSmsId = db.insert(DATABASE_SMS_TABLE, null, cv);
+				
+				int status = 0;
+				boolean areAllOperated = true;
+				for(Recipient r: Recipients){
+					if(r.smsId == s.keyId){
+						cv.clear();
+						cv.put(KEY_SMS_ID, receivedSmsId);
+						cv.put(KEY_NUMBER, r.number);
+						cv.put(KEY_DISPLAY_NAME, r.displayName);
+						cv.put(KEY_RECIPIENT_TYPE, r.type);
+						cv.put(KEY_SENT, r.sent);
+						cv.put(KEY_DELIVER, r.delivered);
+						cv.put(KEY_S_MILLIS, -1);
+						cv.put(KEY_D_MILLIS, -1);
+						cv.put(KEY_CONTACT_ID, r.contactId);
+						
+						long receivedRecipientId = db.insert(DATABASE_RECIPIENT_TABLE, null, cv);
+						
+						if(r.operated == 0){
+							areAllOperated = false;
+						}
+						
+						for(int i = 0; i< r.groupIds.size(); i++){
+							cv.clear();
+							
+							cv.put(KEY_RECIPIENT_GRP_REL_RECIPIENT_ID, receivedRecipientId);
+							cv.put(KEY_RECIPIENT_GRP_REL_GRP_ID, r.groupIds.get(i));
+							cv.put(KEY_RECIPIENT_GRP_REL_GRP_TYPE, r.groupTypes.get(i));
+							
+							db.insert(DATABASE_RECIPIENT_GROUP_REL_TABLE, null, cv);
+						}
+						if(areAllOperated){
+							status = 2;
+						}else{
+							status = 1;
+						}
+					}
+				}
+				
+				if(s.keyMessage.matches("(''|[' ']*)")){
+					status = 0;
+				}
+				cv.clear();
+				cv.put(KEY_STATUS, status);
+				
+				db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + receivedSmsId, null);
+			}
+
+			sql = "SELECT * FROM smsTable, recipientTable WHERE recipientTable.sms_id=smsTable._id AND recipientTable.recipient_id="
+				 + "(SELECT recipientTable.recipient_id FROM recipientTable, smsTable " 
+						+ "WHERE recipientTable.sms_id = smsTable._id AND recipientTable.operated=0 AND smsTable._id="
+					           + "(SELECT smsTable._id FROM smsTable WHERE  smsTable.time_millis="
+							          + "(SELECT MIN(smsTable.time_millis) FROM smsTable, recipientTable WHERE (smsTable.status=1 OR smsTable.status=3))))";
+			
+			Cursor cur = db.rawQuery(sql, null);
+			
+			if(cur.moveToFirst()){
+				intent = new Intent(context, SMSHandleReceiver.class);
+				intent.setAction(Constants.PRIVATE_SMS_ACTION);
+				intent.putExtra("SMS_ID", cur.getLong(cur.getColumnIndex(KEY_ID)));
+				intent.putExtra("RECIPIENT_ID", cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)));
+				intent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(KEY_NUMBER)));
+				intent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(KEY_MESSAGE)));
+				
+				Random rand = new Random();
+				int piNumber = rand.nextInt();
+				pi = PendingIntent.getBroadcast(context, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+				
+				cv.clear();
+				cv.put(KEY_PI_NUMBER, piNumber);
+				cv.put(KEY_SMS_ID, cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)));
+				cv.put(KEY_TIME, cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)));
+				
+				db.insert(DATABASE_PI_TABLE, null, cv);
+				
+				AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)), pi);
+			}else{
+				cv.clear();
+				cv.put(KEY_PI_NUMBER, 0);
+				cv.put(KEY_SMS_ID, -1);
+				cv.put(KEY_TIME, -1);
+				
+				db.insert(DATABASE_PI_TABLE, null, cv);
+			}
+		}
 	}
 }
