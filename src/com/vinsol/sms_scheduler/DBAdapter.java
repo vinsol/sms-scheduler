@@ -8,7 +8,6 @@ package com.vinsol.sms_scheduler;
 import java.util.ArrayList;
 import java.util.Random;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -743,7 +742,7 @@ public class DBAdapter {
 			ArrayList<Sms> SMSs = new ArrayList<Sms>();
 			ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
 			
-			//Canceling the existing Pending Intent if one exists
+			//------------Canceling the existing Pending Intent if one exists--------------
 			Cursor piCur = db.query(DATABASE_PI_TABLE, null, null, null, null, null, null);
 			piCur.moveToFirst();
 			Intent intent = new Intent(context, SMSHandleReceiver.class);
@@ -757,7 +756,7 @@ public class DBAdapter {
 				pi = PendingIntent.getBroadcast(context, (int)piCur.getLong(piCur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 				pi.cancel();
 			}
-			//------------------------------------------Pending Intent canceled------
+			//------------------------------------------Pending Intent canceled-------------
 			
 			
 			//--------------Extracting SMS and Recipient data from existing tables---------------
