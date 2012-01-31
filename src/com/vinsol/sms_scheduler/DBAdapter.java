@@ -743,6 +743,7 @@ public class DBAdapter {
 			ArrayList<Sms> SMSs = new ArrayList<Sms>();
 			ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
 			
+			//Canceling the existing Pending Intent if one exists
 			Cursor piCur = db.query(DATABASE_PI_TABLE, null, null, null, null, null, null);
 			piCur.moveToFirst();
 			Intent intent = new Intent(context, SMSHandleReceiver.class);
@@ -756,7 +757,11 @@ public class DBAdapter {
 				pi = PendingIntent.getBroadcast(context, (int)piCur.getLong(piCur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 				pi.cancel();
 			}
+			//------------------------------------------Pending Intent canceled------
 			
+			
+			//--------------Extracting SMS and Recipient data from existing tables---------------
+			//---------------and storing them in SMS and Recipient Object arrays----------------
 			String sql = "SELECT DISTINCT group_id, message, date, time_millis, msg_parts " +
 						 "FROM smsTable";
 			Cursor distinctSmsCursor = db.rawQuery(sql, null);
@@ -801,8 +806,10 @@ public class DBAdapter {
 					}
 				}while(distinctSmsCursor.moveToNext());
 			}
+			//------------------------------------------------Data extracted from previous tables-------------
 			
 			
+			//-------------Dropping previous tables--------------
 			sql = "DROP TABLE smsTable";
 			db.execSQL(sql);
 			sql = "DROP TABLE spanTable";
@@ -811,12 +818,18 @@ public class DBAdapter {
 			db.execSQL(sql);
 			sql = "DROP TABLE piTable";
 			db.execSQL(sql);
+			//-------------------------------------------------
 			
+			
+			//-------------Creating new tables--------------------
 			db.execSQL(DATABASE_CREATE_SMS_TABLE);
 	        db.execSQL(DATABASE_CREATE_RECIPIENT_TABLE);
 	        db.execSQL(DATABASE_CREATE_RECIPIENT_GROUP_REL_TABLE);
 	        db.execSQL(DATABASE_CREATE_PI_TABLE);
+	        //----------------------------------------------------
 			
+	        
+	        //--------------Inserting SMS and Recipient Data into new tables from Object arrays-------------
 	        ContentValues cv = new ContentValues();
 			for(Sms s: SMSs){
 				cv.put(KEY_MESSAGE, s.keyMessage);
@@ -872,7 +885,10 @@ public class DBAdapter {
 				
 				db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + receivedSmsId, null);
 			}
+			//-------------------------------------------data inserted into new tables-------------------
+			
 
+			//--------------------updating the PI table for next SMS-------------------------------------
 			sql = "SELECT * FROM smsTable, recipientTable WHERE recipientTable.sms_id=smsTable._id AND recipientTable.recipient_id="
 				 + "(SELECT recipientTable.recipient_id FROM recipientTable, smsTable " 
 						+ "WHERE recipientTable.sms_id = smsTable._id AND recipientTable.operated=0 AND smsTable._id="
@@ -910,6 +926,7 @@ public class DBAdapter {
 				
 				db.insert(DATABASE_PI_TABLE, null, cv);
 			}
+			//-----------------------------------------------------------PI table updated---------------------
 		}
 	}
 }
