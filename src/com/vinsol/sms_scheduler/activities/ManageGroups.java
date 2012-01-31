@@ -85,9 +85,11 @@ public class ManageGroups extends Activity {
 		super.onResume();
 		mdba.open();
 		if((cur = mdba.fetchAllGroups()).getCount()==0){
+			cur.close();
 			listLayout.setVisibility(LinearLayout.GONE);
 			blankLayout.setVisibility(LinearLayout.VISIBLE);
 		}else{
+			cur.close();
 			listLayout.setVisibility(LinearLayout.VISIBLE);
 			blankLayout.setVisibility(LinearLayout.GONE);
 			loadGroupsData();

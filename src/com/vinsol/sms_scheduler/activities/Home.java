@@ -491,6 +491,7 @@ public class Home extends Activity {
 				sentSMSs.add(SMS);
 			}
         }
+        SMSsCur.close();
         //------------------------------------------------Messages Extracted From Database---------------------
         
         
@@ -809,9 +810,12 @@ public class Home extends Activity {
 			    	    
 			    	    SmsSchedulerApplication.contactsList.add(contact);
 		    	    }
+		    	    phones.close();
 		    	  }
 		    	}while(cursor.moveToNext());
 		    }
+		    cursor.close();
+		    groupCursor.close();
 		}
 	}
 	
@@ -870,14 +874,15 @@ public class Home extends Activity {
 	
 	private void doScreenUpdate(){
 		mdba.open();
-        if(mdba.ifSmsExist()){
+		boolean ifSmsExist = mdba.ifSmsExist();
+		mdba.close();
+        if(ifSmsExist){
         	explList.setVisibility(LinearLayout.VISIBLE);
         	blankListLayout.setVisibility(LinearLayout.GONE);
         }else{
         	explList.setVisibility(LinearLayout.GONE);
             blankListLayout.setVisibility(LinearLayout.VISIBLE);
         }
-        mdba.close();
 	}
 	
 	

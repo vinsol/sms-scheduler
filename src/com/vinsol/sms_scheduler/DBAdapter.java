@@ -189,21 +189,27 @@ public class DBAdapter {
 	
 	public boolean ifSmsExist(){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, null, null, null, null, null, null);
-		return (cur.getCount()>0);
+		boolean ifSmsExist = (cur.getCount()>0);
+		cur.close();
+		return ifSmsExist;
 	}
 	
 	
 	public boolean isSmsSent(long smsId){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_STATUS}, KEY_ID + "=" + smsId, null, null, null, null);
 		cur.moveToFirst();
-		return (cur.getInt(cur.getColumnIndex(KEY_STATUS))>1);
+		boolean isSmsSent = (cur.getInt(cur.getColumnIndex(KEY_STATUS))>1);
+		cur.close();
+		return isSmsSent;
 	}
 	
 	
 	public boolean isDraft(long smsId){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_STATUS}, KEY_ID + "=" + smsId, null, null, null, null);
 		cur.moveToFirst();
-		return (cur.getInt(cur.getColumnIndex(KEY_STATUS))==0);
+		boolean isDraft = (cur.getInt(cur.getColumnIndex(KEY_STATUS))==0); 
+		cur.close();
+		return isDraft;
 	}
 	
 	
@@ -247,7 +253,7 @@ public class DBAdapter {
 				recipientIds.add(cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)));
 			}while(cur.moveToNext());
 		}
-		
+		cur.close();
 		return recipientIds;
 	}
 	
@@ -328,10 +334,14 @@ public class DBAdapter {
 	
 	public int getSent(long recipientId){
 		Cursor cur = db.query(DATABASE_RECIPIENT_TABLE, new String[] {KEY_SENT}, KEY_RECIPIENT_ID + "=" + recipientId, null, null, null, null);
-		if(cur.moveToFirst())
-			return cur.getInt(cur.getColumnIndex(KEY_SENT));
-		else 
+		if(cur.moveToFirst()){
+			int sent = cur.getInt(cur.getColumnIndex(KEY_SENT));
+			cur.close();
+			return sent;
+		}else{
+			cur.close();
 			return 0;
+		}
 	}
 	
 	
@@ -353,6 +363,7 @@ public class DBAdapter {
 				sentTimeSaver.put(KEY_S_MILLIS, System.currentTimeMillis());
 				db.update(DATABASE_RECIPIENT_TABLE, sentTimeSaver, KEY_RECIPIENT_ID + "=" + recipientId, null);
 			}
+			cur.close();
 			return true;
 		}catch(SQLiteException ex){
 			return false;
@@ -362,10 +373,14 @@ public class DBAdapter {
 	
 	public int getDelivers(long recipientId){
 		Cursor cur = db.query(DATABASE_RECIPIENT_TABLE, new String[] {KEY_DELIVER}, KEY_RECIPIENT_ID + "=" + recipientId, null, null, null, null);
-		if(cur.moveToFirst())
-			return cur.getInt(cur.getColumnIndex(KEY_DELIVER));
-		else 
+		if(cur.moveToFirst()){
+			int delivers = cur.getInt(cur.getColumnIndex(KEY_DELIVER));
+			cur.close();
+			return delivers;
+		}else{
+			cur.close();
 			return 0;
+		}
 	}
 	
 	
@@ -391,6 +406,7 @@ public class DBAdapter {
 		Cursor cur = fetchRecipientDetails(recipientId);
 		cur.moveToFirst();
 		boolean bool = ((cur.getInt(cur.getColumnIndex(KEY_DELIVER))) == (cur.getInt(cur.getColumnIndex(KEY_MSG_PARTS))));
+		cur.close();
 		return bool;
 	}
 	
@@ -406,6 +422,7 @@ public class DBAdapter {
 				intent.setAction(Constants.PRIVATE_SMS_ACTION);
 				PendingIntent pi = PendingIntent.getBroadcast(context, cur.getInt(cur.getColumnIndex(KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 				pi.cancel();
+				cur.close();
 			}
 			deleteRecipient(recipientIds.get(i));
 		}
@@ -430,6 +447,7 @@ public class DBAdapter {
 		}else{
 			updatePi(0, -1, -1);
 		}
+		cur.close();
 	}
 	//--------------------------------------------------------end of functions for SMS and Recipient tables---------------
 	
@@ -447,6 +465,7 @@ public class DBAdapter {
 		Cursor cur = db.query(DATABASE_PI_TABLE, new String[] {KEY_SMS_ID}, KEY_PI_ID + "=1", null, null, null, null);
 		cur.moveToFirst();
 		long currentSmsId = cur.getLong(cur.getColumnIndex(KEY_SMS_ID));
+		cur.close();
 		return currentSmsId;
 	}
 	
@@ -463,6 +482,7 @@ public class DBAdapter {
 					db.update(DATABASE_RECIPIENT_TABLE, cv, KEY_RECIPIENT_ID + "=" + getCurrentPiId(), null);
 				}
 			}
+			cur.close();
 		}
 		
 		cv.clear();
@@ -479,6 +499,7 @@ public class DBAdapter {
 		Cursor cur = db.query(DATABASE_PI_TABLE, new String[] {KEY_TIME}, KEY_PI_ID + "= 1", null, null, null, null);
 		cur.moveToFirst();
 		long currentPiFireTime = cur.getLong(cur.getColumnIndex(KEY_TIME));
+		cur.close();
 		return currentPiFireTime;
 	}
 	//--------------------------------------------------------end of functions for Pending Intent table---------
@@ -542,6 +563,7 @@ public class DBAdapter {
 				ids.add(cur.getLong(cur.getColumnIndex(KEY_CONTACTS_ID)));
 			}while(cur.moveToNext());
 		}
+		cur.close();
 		return ids;
 	}
 	
@@ -596,6 +618,7 @@ public class DBAdapter {
 				groupIds.add(cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_GRP_REL_GRP_ID)));
 			}while(cur.moveToNext());
 		}
+		cur.close();
 		return groupIds;
 	}
 	
@@ -608,6 +631,7 @@ public class DBAdapter {
 				groupTypes.add(cur.getInt(cur.getColumnIndex(KEY_RECIPIENT_GRP_REL_GRP_TYPE)));
 			}while(cur.moveToNext());
 		}
+		cur.close();
 		return groupTypes;
 	}
 	
@@ -620,6 +644,7 @@ public class DBAdapter {
 				recipientIds.add(cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_GRP_REL_RECIPIENT_ID)));
 			}while(cur.moveToNext());
 		}
+		cur.close();
 		return recipientIds;
 	}
 	
@@ -673,6 +698,7 @@ public class DBAdapter {
 				db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + "=" + idToDelete, null);
 			}
 		}
+		cur.close();
 		
 		db.insert(DATABASE_RECENTS_TABLE, null, cv);
 	}
@@ -756,6 +782,7 @@ public class DBAdapter {
 				pi = PendingIntent.getBroadcast(context, (int)piCur.getLong(piCur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 				pi.cancel();
 			}
+			piCur.close();
 			//------------------------------------------Pending Intent canceled-------------
 			
 			
@@ -801,10 +828,14 @@ public class DBAdapter {
 								recipient.groupTypes = groupTypes;
 								Recipients.add(recipient);
 							}
+							spansDataCur.close();
 						}while(recipientsDataCur.moveToNext());
+						recipientsDataCur.close();
 					}
 				}while(distinctSmsCursor.moveToNext());
 			}
+			distinctSmsCursor.close();
+			
 			//------------------------------------------------Data extracted from previous tables-------------
 			
 			
@@ -925,6 +956,7 @@ public class DBAdapter {
 				
 				db.insert(DATABASE_PI_TABLE, null, cv);
 			}
+			cur.close();
 			//-----------------------------------------------------------PI table updated---------------------
 		}
 	}

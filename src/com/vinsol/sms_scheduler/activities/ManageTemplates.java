@@ -175,6 +175,7 @@ public class ManageTemplates extends Activity{
 				}while(cur.moveToNext());
 			}
 		}
+		cur.close();
 		mdba.close();
 	}
 	

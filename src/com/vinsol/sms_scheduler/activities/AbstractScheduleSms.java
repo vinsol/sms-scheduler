@@ -864,6 +864,7 @@ abstract class AbstractScheduleSms extends Activity{
 	private void handlePiUpdate(String number, long smsId, long recipientid, long time){
 		//Cancel the pi conditionally----------------------
 		Cursor cur = mdba.getPiDetails();
+		startManagingCursor(cur);
 		cur.moveToFirst();
 		
 		Intent intent = new Intent(AbstractScheduleSms.this, SMSHandleReceiver.class);
@@ -1161,6 +1162,7 @@ abstract class AbstractScheduleSms extends Activity{
 	private void loadTemplates(){
 		mdba.open();
 		Cursor cur = mdba.fetchAllTemplates();
+		startManagingCursor(cur);
 		mdba.close();
 		
 		templatesArray.clear();
@@ -1367,6 +1369,7 @@ abstract class AbstractScheduleSms extends Activity{
         //---------------------------- Setting up private Groups data ------------------------------------
         mdba.open();
         Cursor groupsCursor = mdba.fetchAllGroups();
+        startManagingCursor(groupsCursor);
         if(groupsCursor.moveToFirst()){
         	do{
         		HashMap<String, Object> group = new HashMap<String, Object>();
@@ -1417,6 +1420,7 @@ abstract class AbstractScheduleSms extends Activity{
         		count++;
         	}while(groupsCursor.moveToNext());
         }
+        groupCursor.close();
         mdba.close();
 	}
 

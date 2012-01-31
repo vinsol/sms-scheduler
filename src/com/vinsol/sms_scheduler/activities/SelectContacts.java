@@ -278,6 +278,7 @@ public class SelectContacts extends Activity {
 			listLayout.setVisibility(LinearLayout.VISIBLE);
 			blankLayout.setVisibility(LinearLayout.GONE);
 		}
+		cur.close();
 		mdba.close();
 		
         LinearLayout groupTabs = (LinearLayout)findViewById( R.id.group_tabs );
@@ -307,6 +308,7 @@ public class SelectContacts extends Activity {
 		
 		mdba.open();
 		Cursor cur = mdba.fetchAllRecents();
+		startManagingCursor(cur);
 		if(cur.getCount()==0){
 			recentsListLayout.setVisibility(LinearLayout.GONE);
 			recentsBlankLayout.setVisibility(LinearLayout.VISIBLE);
