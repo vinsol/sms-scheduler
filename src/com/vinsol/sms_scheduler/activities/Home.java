@@ -154,7 +154,7 @@ public class Home extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
-					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
+					SmsSchedulerApplication.screenWidthInPixels = blankListLayout.getWidth();
 				}
 				Intent intent = new Intent(Home.this, ScheduleNewSms.class);
 				startActivity(intent);
@@ -167,7 +167,7 @@ public class Home extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
-					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
+					SmsSchedulerApplication.screenWidthInPixels = blankListLayout.getWidth();
 				}
 				Intent intent = new Intent(Home.this, ScheduleNewSms.class);
 				startActivity(intent);
