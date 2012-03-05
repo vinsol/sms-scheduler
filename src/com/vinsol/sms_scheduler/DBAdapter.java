@@ -680,7 +680,7 @@ public class DBAdapter {
 		cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);
 		if(cur.moveToFirst()){
 			do{
-				if((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId)){// || (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
+				if(contactId!=-1 && (cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId)){// || (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
 					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_CONTACT_ID + "=" + contactId, null);
 					contactExist = true;
 					break;

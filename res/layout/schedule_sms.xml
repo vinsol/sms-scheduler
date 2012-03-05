@@ -95,7 +95,7 @@
 		    	android:layout_height = "wrap_content"
 		    	android:layout_marginTop="6dp"
 		    	>
-		    	<AutoCompleteTextView
+		    	<!--<AutoCompleteTextView
 		    		android:id = "@+id/new_numbers_text"
 		    		android:layout_width = "fill_parent"
 		    		android:layout_height = "wrap_content"
@@ -106,7 +106,38 @@
 		    		android:layout_marginTop="4dip"
 		    		android:background="@drawable/auto_complete_bg"
 		    		>
-	    		</AutoCompleteTextView>
+	    		</AutoCompleteTextView>-->
+	    		
+	    		<LinearLayout 
+        			android:id="@+id/layouts_host"
+        			android:layout_height="wrap_content"
+        			android:layout_width="fill_parent"
+        			android:minHeight="80dp"
+        			android:layout_toLeftOf="@+id/new_add_from_contact_imgbutton"
+        			android:orientation="vertical"
+        			android:layout_marginTop="4dip"
+        			android:background="@drawable/auto_complete_bg">
+        
+        			<LinearLayout
+            			android:id="@+id/edit_text_host"
+            			android:layout_height="wrap_content"
+            			android:layout_width="fill_parent"
+            			android:orientation="horizontal">
+            
+            			<AutoCompleteTextView 
+        					android:background="#00000000"
+        					android:id="@+id/recipients_autocomplete_text"
+        					android:layout_height="30dp"
+        					android:layout_width="wrap_content"
+        					android:paddingLeft="1dp"
+        					android:minWidth="1dp"
+       						android:hint="Recipients"
+       						android:duplicateParentState="true"
+       						android:dropDownWidth="220dp"/>
+            
+       				</LinearLayout>
+        
+    			</LinearLayout>
 		    		
 		    	<ImageButton 
 		    		android:id = "@id/new_add_from_contact_imgbutton"
@@ -168,7 +199,7 @@
 					>
 				</ImageView>    
 				    
-	    		<!-- voice button -->    
+	    		<!-- voice button -->
 	    		<ImageButton 
 	    			android:id = "@+id/speech_imgbutton"
 	    			android:layout_height = "wrap_content"

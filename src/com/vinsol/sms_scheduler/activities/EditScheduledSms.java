@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.utils.Log;
@@ -37,7 +38,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		Sms SMS = getIntent().getParcelableExtra("SMS DATA");
 		
-		numbersText.setText(SMS.keyNumber);
+//		numbersText.setText(SMS.keyNumber);
 		messageText.setText(SMS.keyMessage);
 		originalMessage = SMS.keyMessage;
 		processDate = new Date(SMS.keyTimeMilis);
@@ -64,7 +65,16 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		loadGroupsData();
 		
 		mdba.close();
-		refreshSpannableString(false);
+		widthOfContainerInDp = (SmsSchedulerApplication.screenWidthInPixels - 159)*160/dpi;
+		displayViews();
+		
+		if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){
+			numbersText.setHint("Recipients");
+			Recipients.remove(0);
+		}else{
+			numbersText.setHint(" ");
+		}
+//		refreshSpannableString(false);
 	}
 	
 	

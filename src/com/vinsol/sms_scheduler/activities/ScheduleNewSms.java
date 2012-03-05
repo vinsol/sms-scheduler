@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class ScheduleNewSms extends AbstractScheduleSms {
 	
@@ -23,6 +24,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		super.onCreate(savedInstanceState);
 		
 		mode = 1;
+		widthOfContainerInDp = (SmsSchedulerApplication.screenWidthInPixels - 159)*160/dpi;
 		setSuperFunctionalities();
 		loadGroupsData();
 	}

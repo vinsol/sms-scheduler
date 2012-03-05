@@ -86,7 +86,7 @@
 	    android:gravity="center">
         
         <TextView 
-        	android:text = "No Groups"
+        	android:text = "@string/private_groups_blank_text_heading"
         	android:layout_height = "wrap_content"
         	android:layout_width = "wrap_content"
         	android:gravity="center_vertical"
@@ -103,6 +103,18 @@
         	android:background="@drawable/add_a_group_button_states"
        		>
      	</Button>
+     	
+    	<TextView 
+    		android:layout_height="wrap_content"
+    		android:layout_width="fill_parent"
+    		android:layout_marginLeft="10dp"
+    		android:layout_marginRight="10dp"
+    		android:layout_marginTop="5dp"
+    		android:gravity="center_horizontal"
+    		android:text="@string/private_groups_blank_text_content"
+    		android:textSize="14sp"
+    		android:textColor="@color/text_grey"/>
+    	
     </LinearLayout>
 
 </LinearLayout>

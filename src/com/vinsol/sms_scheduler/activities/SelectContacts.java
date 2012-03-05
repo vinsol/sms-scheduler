@@ -426,7 +426,7 @@ public class SelectContacts extends Activity {
 				holder.contactImage 	= (ImageView) 	convertView.findViewById(R.id.contact_list_row_contact_pic);
 	    		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_name);
 	    		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_number);
-	    		holder.contactCheck     = (CheckBox) convertView.findViewById(R.id.contact_list_row_contact_check);
+	    		holder.contactCheck     = (CheckBox) 	convertView.findViewById(R.id.contact_list_row_contact_check);
 	    		convertView.setTag(holder);
 			}else{
 				holder = (ContactsListHolder) convertView.getTag();

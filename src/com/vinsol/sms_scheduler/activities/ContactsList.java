@@ -57,7 +57,7 @@ public class ContactsList extends Activity {
 		contactsList = (ListView) findViewById(R.id.contacts_list_main_list);
 		doneButton = (Button) findViewById(R.id.contacts_list_layout_done_button);
 		cancelButton = (Button) findViewById(R.id.contacts_list_layout_cancel_button);
-		
+
 		Intent intent = getIntent();
 		contacts = SmsSchedulerApplication.contactsList;
 		callingActivity = intent.getStringExtra("ORIGINATOR");

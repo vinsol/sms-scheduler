@@ -153,6 +153,9 @@ public class Home extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
+				if(SmsSchedulerApplication.screenWidthInPixels==0){
+					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
+				}
 				Intent intent = new Intent(Home.this, ScheduleNewSms.class);
 				startActivity(intent);
 			}
@@ -163,6 +166,9 @@ public class Home extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
+				if(SmsSchedulerApplication.screenWidthInPixels==0){
+					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
+				}
 				Intent intent = new Intent(Home.this, ScheduleNewSms.class);
 				startActivity(intent);
 			}
@@ -174,12 +180,18 @@ public class Home extends Activity {
 			@Override
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
 				if(groupPosition == 1){
+					if(SmsSchedulerApplication.screenWidthInPixels==0){
+						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
+					}
 					Intent intent = new Intent(Home.this, EditScheduledSms.class);
 					intent.putExtra("SMS DATA", scheduledSMSs.get(childPosition));
 					startActivity(intent);
 				}else if(groupPosition == 2){
 					showSentInfoDialog(childPosition);
 				}else if(groupPosition == 0){
+					if(SmsSchedulerApplication.screenWidthInPixels==0){
+						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
+					}
 					Intent intent = new Intent(Home.this, EditScheduledSms.class);
 					intent.putExtra("SMS DATA", drafts.get(childPosition));
 					startActivity(intent);
@@ -389,6 +401,8 @@ public class Home extends Activity {
 							showDeleteDialog(drafts, childPosition, "Delete this Draft?");
 						}
     				});
+    			}else if(groupPosition == 2){
+    				holder.statusImageView.setClickable(false);
     			}
     			return convertView;
 			}
@@ -802,7 +816,10 @@ public class Home extends Activity {
 		    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contact.content_uri_id);
 			    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
 			    	    try{
-			    	    	contact.image = BitmapFactory.decodeStream(input);
+			    	    	BitmapFactory.Options o = new BitmapFactory.Options();
+			    	        o.inPurgeable = true;
+			    	        o.inInputShareable = true;
+			    	    	contact.image = BitmapFactory.decodeStream(input, null, o);
 			    	    	contact.image.getHeight();
 			    	    } catch (NullPointerException e){
 			    	    	contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);

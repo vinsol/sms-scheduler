@@ -13,4 +13,5 @@ public class SmsSchedulerApplication extends Application {
 
 	public static ArrayList<Contact> contactsList = new ArrayList<Contact>();
 	public static boolean isDataLoaded = false;
+	public static int screenWidthInPixels = 0;
 }

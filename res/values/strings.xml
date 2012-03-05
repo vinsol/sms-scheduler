@@ -12,4 +12,12 @@
         Recent contacts get added automatically when you schedule an SMS.
     </string>
     
+    <string name="private_groups_blank_text_heading">
+        No Groups
+    </string>
+    
+    <string name="private_groups_blank_text_content">
+        These groups of contacts will remain private to this application.
+    </string>
+    
 </resources>
