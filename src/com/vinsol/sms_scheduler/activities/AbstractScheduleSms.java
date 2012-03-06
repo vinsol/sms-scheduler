@@ -1560,6 +1560,7 @@ abstract class AbstractScheduleSms extends Activity{
 
 
 		ArrayList<String> numbers = new ArrayList<String>();
+		parts 		 	= smsManager.divideMessage(messageText.getText().toString());
 		mdba.open();
 		long smsId = mdba.scheduleSms(messageText.getText().toString(), dateString, parts.size(), cal.getTimeInMillis());
 		

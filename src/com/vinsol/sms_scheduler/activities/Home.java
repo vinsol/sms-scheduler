@@ -17,6 +17,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.FeatureInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -33,11 +34,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -87,6 +90,8 @@ public class Home extends Activity {
 	private final String RECEIVER = "receiver";
 	
 	private final int MENU_DELETE =	R.id.home_options_delete;
+	private final int MENU_RESCHEDULE = R.id.home_options_reschedule;
+	private final int MENU_ADD_TO_TEMPLATE = R.id.home_options_add_to_template;
 	
 	private Dialog sentInfoDialog;
 	
@@ -187,7 +192,8 @@ public class Home extends Activity {
 					intent.putExtra("SMS DATA", scheduledSMSs.get(childPosition));
 					startActivity(intent);
 				}else if(groupPosition == 2){
-					showSentInfoDialog(childPosition);
+					openContextMenu(view);
+//					showSentInfoDialog(childPosition);
 				}else if(groupPosition == 0){
 					if(SmsSchedulerApplication.screenWidthInPixels==0){
 						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
@@ -256,6 +262,14 @@ public class Home extends Activity {
 			final String MENU_TITLE_DELETE = "Delete";
 			CharSequence menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
 			menu.add(0, MENU_DELETE, 1, menu_title);
+		
+			final String MENU_TITLE_RESCHEDULE = "Reschedule";
+			menu_title = MENU_TITLE_RESCHEDULE.subSequence(0, MENU_TITLE_RESCHEDULE.length());
+			menu.add(0, MENU_RESCHEDULE, 2, menu_title);
+		
+			final String MENU_TITLE_ADD_TO_TEMPLATES = "Add to Templates";
+			menu_title = MENU_TITLE_ADD_TO_TEMPLATES.subSequence(0, MENU_TITLE_ADD_TO_TEMPLATES.length());
+			menu.add(0, MENU_ADD_TO_TEMPLATE, 3, menu_title);
 		}
     }
     
@@ -273,7 +287,7 @@ public class Home extends Activity {
 			
 			switch (item.getItemId()) {
 				case MENU_DELETE:
-					//--------------------------------------Delete context option ------------------------------------
+					
 					mdba.open();
 					
 					if(groupPos == 1){
@@ -284,9 +298,20 @@ public class Home extends Activity {
 						selectedSms = drafts.get(childPos).keyId;
 					}
 					deleteSms();
-			        
 			        break;
-					//--------------------------------------------------------------------------------------------------
+			     
+				case MENU_RESCHEDULE:
+					if(SmsSchedulerApplication.screenWidthInPixels==0){
+						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
+					}
+					Intent intent = new Intent(Home.this, EditScheduledSms.class);
+					intent.putExtra("SMS DATA", sentSMSs.get(childPos));
+					startActivity(intent);
+					break;
+				
+				case MENU_ADD_TO_TEMPLATE:
+					showAddToTemplateDialog(sentSMSs.get(childPos).keyMessage);
+					break;
 			}
 		}
 		return super.onContextItemSelected(item);
@@ -296,7 +321,64 @@ public class Home extends Activity {
     
     
     
-    private void setExplData(){
+    private void showAddToTemplateDialog(String keyMessage) {
+		final Dialog dialog = new Dialog(Home.this);
+//		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.setContentView(R.layout.add_to_templates_dialog);
+		dialog.setTitle("Add to Templates");
+		
+		final EditText templateText 		= (EditText) dialog.findViewById(R.id.new_template_dialog_input_edit_text);
+		Button addTemplateButton 	= (Button) dialog.findViewById(R.id.new_template_dialog_add_button);
+		Button cancelTemplateButton = (Button) dialog.findViewById(R.id.new_template_dialog_cancel_button);
+		
+		templateText.setText(keyMessage);
+		addTemplateButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(templateText.getText().toString().equals("")){
+					Toast.makeText(Home.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
+				}else{
+					mdba.open();
+					Cursor cur = mdba.fetchAllTemplates();
+					mdba.close();
+					boolean z = true;
+					if(cur.moveToFirst()){
+						do{
+							if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)).equals(templateText.getText().toString())){
+								z = false;
+								break;
+							}
+						}while(cur.moveToNext());
+					}
+					if(!z){
+						Toast.makeText(Home.this, "Template already exists", Toast.LENGTH_SHORT).show();
+					}else{
+						mdba.open();
+						long newId = mdba.addTemplate(templateText.getText().toString());
+						mdba.close();
+						Toast.makeText(Home.this, "Template added", Toast.LENGTH_SHORT).show();
+						dialog.cancel();
+					}
+				}
+			}
+		});
+		
+		cancelTemplateButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.cancel();
+			}
+		});
+		
+		dialog.show();
+	}
+
+
+
+
+	private void setExplData(){
     	loadData();
     	
     	final LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -402,7 +484,14 @@ public class Home extends Activity {
 						}
     				});
     			}else if(groupPosition == 2){
-    				holder.statusImageView.setClickable(false);
+    				holder.statusImageView.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							showSentInfoDialog(childPosition);
+						}
+					});
+						
     			}
     			return convertView;
 			}

@@ -26,7 +26,8 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	
 	private TextView headerText;
 	private boolean isDraft = false;
-	
+	private boolean isReschedule = false;
+	Sms SMS;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		headerText	= (TextView)findViewById(R.id.header);
 		
-		Sms SMS = getIntent().getParcelableExtra("SMS DATA");
+		SMS = getIntent().getParcelableExtra("SMS DATA");
 		
 //		numbersText.setText(SMS.keyNumber);
 		messageText.setText(SMS.keyMessage);
@@ -52,13 +53,24 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			originalRecipients.add(r);
 		}
 		
-		cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
-		
 		mdba.open();
+		if(SMS.keyTimeMilis < System.currentTimeMillis())
+			isReschedule = true;
+			
 		isDraft = mdba.isDraft(editedSms); 
-		if(!isDraft){
+		
+		if(!isReschedule)
+			cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
+		
+		if(!isDraft && !isReschedule){
 			headerText.setText("Edit SMS");
 			scheduleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_footer_states));
+		}
+		
+		if(isReschedule){
+			mode = 1;
+			headerText.setText("Reschedule SMS");
+			processDate = new Date(System.currentTimeMillis());
 		}
 		
 		setSuperFunctionalities();
@@ -162,7 +174,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	@Override
 	protected void scheduleButtonOnClickListener() {
 		mdba.open();
-		if(mdba.isSmsSent(editedSms)){
+		if(mdba.isSmsSent(editedSms) && !isReschedule){
 			Toast.makeText(this, "Message has already been sent. Can't edit now", Toast.LENGTH_LONG).show();
 			finish();
 			mdba.close();

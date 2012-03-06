@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="home_options_delete" type="id"/>
+    <item name="home_options_reschedule" type="id"/>
+    <item name="home_options_add_to_template" type="id"/>
 </resources>
