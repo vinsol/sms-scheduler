@@ -872,7 +872,7 @@ public class Home extends Activity {
 		    Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 		    if(cursor.moveToFirst()){
 		    	do{
-		    	  if(!(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("0"))){
+//		    	  if(!(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("0"))){
 		    		String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
 		    		Cursor phones = cr.query(Phone.CONTENT_URI, null, Phone.CONTACT_ID + " = " + id, null, null);
 		    	    if(phones.moveToFirst()){
@@ -917,7 +917,7 @@ public class Home extends Activity {
 			    	    SmsSchedulerApplication.contactsList.add(contact);
 		    	    }
 		    	    phones.close();
-		    	  }
+//		    	  }
 		    	}while(cursor.moveToNext());
 		    }
 		    cursor.close();

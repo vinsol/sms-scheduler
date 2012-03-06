@@ -219,6 +219,18 @@ abstract class AbstractScheduleSms extends Activity{
 					Intent intent = new Intent(AbstractScheduleSms.this, SelectContacts.class);
 					intent.putExtra("ORIGIN", "edit");
 					startActivityForResult(intent, 2);
+				}else if(toOpen==2){
+					toOpen = 0;
+					numbersText.requestFocus();
+					if(Recipients.size()>0){
+						if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){
+							numbersText.setHint("Recipients");
+						}else{
+							numbersText.setHint(" ");
+						}
+						
+					}
+					inputMethodManager.toggleSoftInput(inputMethodManager.SHOW_FORCED, 0);
 				}
 			}
 		}
@@ -254,16 +266,24 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				numbersText.requestFocus();
-				if(Recipients.size()>0){
-					if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){
-						numbersText.setHint("Recipients");
-					}else{
-						numbersText.setHint(" ");
+				if(!SmsSchedulerApplication.isDataLoaded){
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
+					dataLoadWaitDialog.setCancelable(false);
+					dataLoadWaitDialog.show();
+					toOpen = 2;
+				}else{
+					numbersText.requestFocus();
+					if(Recipients.size()>0){
+						if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){
+							numbersText.setHint("Recipients");
+						}else{
+							numbersText.setHint(" ");
+						}
+						
 					}
-					
+					inputMethodManager.showSoftInput(numbersText, 0);
 				}
-				inputMethodManager.showSoftInput(numbersText, 0);
+				
 			}
 		});
         
@@ -288,16 +308,24 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				numbersText.requestFocus();
-				if(Recipients.size()>0){
-					if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){
-						numbersText.setHint("Recipients");
-					}else{
-						numbersText.setHint(" ");
+				if(SmsSchedulerApplication.isDataLoaded){
+					numbersText.requestFocus();
+					if(Recipients.size()>0){
+						if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){
+							numbersText.setHint("Recipients");
+						}else{
+							numbersText.setHint(" ");
+						}
 					}
+					inputMethodManager.showSoftInput(numbersText, 0);
+					Log.d("Width of ll : " + firstRow.ll.getWidth()*160/dpi);
+				}else{
+					toOpen = 2;
+					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
+					dataLoadWaitDialog.setCancelable(false);
+					dataLoadWaitDialog.show();
 				}
-				inputMethodManager.showSoftInput(numbersText, 0);
-				Log.d("Width of ll : " + firstRow.ll.getWidth()*160/dpi);
+				
 			}
 		});
 		
@@ -587,6 +615,7 @@ abstract class AbstractScheduleSms extends Activity{
 				}else{
 					toOpen = 1;
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
+					dataLoadWaitDialog.setCancelable(false);
 					dataLoadWaitDialog.show();
 				}
 			}
@@ -602,6 +631,7 @@ abstract class AbstractScheduleSms extends Activity{
 //					numbersText.setSelection(numbersText.getText().toString().length());
 					inputMethodManager.restartInput(numbersText);
 				} else {
+					toOpen = 2;
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 					dataLoadWaitDialog.show();
@@ -1751,6 +1781,11 @@ abstract class AbstractScheduleSms extends Activity{
 					
 					@Override
 					public void onClick(View v) {
+						if(!SmsSchedulerApplication.isDataLoaded){
+							dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
+							dataLoadWaitDialog.setCancelable(false);
+							dataLoadWaitDialog.show();
+						}
 						numbersText.requestFocus();
 						numbersText.bringToFront();
 						if(Recipients.size()>0){
