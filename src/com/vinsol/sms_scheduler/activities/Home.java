@@ -159,7 +159,7 @@ public class Home extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
-					SmsSchedulerApplication.screenWidthInPixels = blankListLayout.getWidth();
+					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
 				}
 				Intent intent = new Intent(Home.this, ScheduleNewSms.class);
 				startActivity(intent);

@@ -281,6 +281,9 @@ abstract class AbstractScheduleSms extends Activity{
 		dpi = metrics.densityDpi;
 		
 		
+		numbersText.setDropDownAnchor(R.id.layouts_host);
+		numbersText.setDropDownWidth((SmsSchedulerApplication.screenWidthInPixels-130));
+		
 		hll.setOnClickListener(new OnClickListener() {
 			
 			@Override
