@@ -95,6 +95,9 @@
 		    	android:layout_height = "wrap_content"
 		    	android:layout_marginTop="6dp"
 		    	>
+		    	
+			    
+			    
 		    	<!--<AutoCompleteTextView
 		    		android:id = "@+id/new_numbers_text"
 		    		android:layout_width = "fill_parent"
@@ -107,37 +110,77 @@
 		    		android:background="@drawable/auto_complete_bg"
 		    		>
 	    		</AutoCompleteTextView>-->
+
+	    		<RelativeLayout
+	    		    android:id="@+id/autocomplete_wrapper"
+	    		    android:layout_width="fill_parent"
+	    		    android:layout_height="wrap_content"
+	    		    android:layout_marginTop="0dp"
+	    		    android:layout_toLeftOf="@+id/new_add_from_contact_imgbutton"
+	    		    android:background="@drawable/auto_complete_bg" >
+	    		    
+	    		    <LinearLayout 
+        				android:id="@+id/layouts_host"
+        				android:layout_toLeftOf="@+id/details_button_layout"
+        				android:layout_height="wrap_content"
+        				android:layout_width="fill_parent"
+        				android:layout_centerVertical="true"
+        				android:minHeight="75dp"
+        				android:orientation="vertical"
+        				>
+        
+        				<LinearLayout
+            				android:id="@+id/edit_text_host"
+            				android:layout_height="wrap_content"
+            				android:layout_width="fill_parent"
+            				android:orientation="horizontal">
+            
+            				<AutoCompleteTextView 
+        						android:background="#00000000"
+        						android:id="@+id/recipients_autocomplete_text"
+        						android:layout_height="30dp"
+        						android:layout_width="wrap_content"
+        						android:paddingLeft="1dp"
+        						android:minWidth="1dp"
+       							android:hint="Recipients"
+       							android:duplicateParentState="true"/>
+            
+       					</LinearLayout>
+       					
+    				</LinearLayout>
+    				
+	    		    
+	    		    <RelativeLayout
+	    		        android:id="@id/details_button_layout"
+	    		        android:layout_width="wrap_content"
+	    		        android:layout_height="match_parent"
+	    		        android:layout_alignParentRight="true"
+	    		        android:layout_centerVertical="true"
+	    		        android:layout_marginBottom="4dp"
+	    		        android:gravity="center_vertical" >
+        				
+	    		        <ImageView 
+	    		            android:src="@drawable/horizontal_divider_list"
+	    		            android:layout_height="wrap_content"
+	    		            android:layout_width="wrap_content"
+	    		            android:layout_alignBaseline="@+id/recipients_detail_image"
+	    		            android:layout_alignParentLeft="true"
+	    		            android:fadingEdge="vertical"
+	    		            android:fadingEdgeLength="2dp"/>
+			        
+			        	<ImageView 
+			            	android:id="@+id/recipients_detail_image"
+			            	android:layout_height="20dp"
+			            	android:layout_width="20dp"
+			            	android:layout_centerVertical="true"
+			            	android:layout_marginLeft="5dp"
+			            	android:paddingLeft="5dp"
+			            	android:background="@drawable/dropdown_states"/>
+			        
+			    	</RelativeLayout>
+	    		    
+	    		</RelativeLayout>
 	    		
-	    		<LinearLayout 
-        			android:id="@+id/layouts_host"
-        			android:layout_height="wrap_content"
-        			android:layout_width="fill_parent"
-        			android:minHeight="80dp"
-        			android:layout_toLeftOf="@+id/new_add_from_contact_imgbutton"
-        			android:orientation="vertical"
-        			android:layout_marginTop="4dip"
-        			android:background="@drawable/auto_complete_bg">
-        
-        			<LinearLayout
-            			android:id="@+id/edit_text_host"
-            			android:layout_height="wrap_content"
-            			android:layout_width="fill_parent"
-            			android:orientation="horizontal">
-            
-            			<AutoCompleteTextView 
-        					android:background="#00000000"
-        					android:id="@+id/recipients_autocomplete_text"
-        					android:layout_height="30dp"
-        					android:layout_width="wrap_content"
-        					android:paddingLeft="1dp"
-        					android:minWidth="1dp"
-       						android:hint="Recipients"
-       						android:duplicateParentState="true"
-       						android:dropDownWidth="220dp"/>
-            
-       				</LinearLayout>
-        
-    			</LinearLayout>
 		    		
 		    	<ImageButton 
 		    		android:id = "@id/new_add_from_contact_imgbutton"

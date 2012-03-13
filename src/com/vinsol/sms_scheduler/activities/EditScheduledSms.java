@@ -9,6 +9,7 @@ import java.util.Date;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -67,7 +68,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			scheduleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_footer_states));
 		}
 		
-		if(isReschedule){
+		if(isReschedule && !isDraft){
 			mode = 1;
 			headerText.setText("Reschedule SMS");
 			processDate = new Date(System.currentTimeMillis());
@@ -77,7 +78,9 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		loadGroupsData();
 		
 		mdba.close();
-		widthOfContainerInDp = (SmsSchedulerApplication.screenWidthInPixels - 159)*160/dpi;
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		widthOfContainerInDp = (int)((metrics.widthPixels - 159)/dpi);
 		displayViews();
 		
 		if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){

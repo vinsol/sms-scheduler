@@ -3,31 +3,49 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="1dp"
-    android:background="@drawable/customshape">
+    android:padding="1dp">
     
-    <TextView
-        android:id="@+id/text"
+    
+    <LinearLayout
+        android:id="@+id/container_linear"
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:gravity="center_vertical"
-        android:textSize="14sp"
-        android:drawingCacheQuality="high"
-        android:textColor="#ffffff"
-        android:text="default text"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="5dp"/>
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:background="@drawable/element_states"
+        android:gravity="center">
+     
+    	
+        <TextView
+        	android:id="@+id/text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:clickable="false"
+        	android:gravity="center_vertical"
+        	android:textSize="14sp"
+        	android:drawingCacheQuality="high"
+       		android:textColor="#ffffff"
+        	android:text="default text"
+        	android:layout_marginRight="3dp"
+        	android:layout_marginTop="-1dp" />
+        
     
-    <ImageView 
+    </LinearLayout>
+    
+    <!-- <ImageView 
         android:id="@+id/cancel_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:padding="5dp"
-        android:src="@drawable/delete_button_states"
-        android:layout_gravity="center_vertical"/>
+        android:layout_width="25dp"
+        android:layout_height="26dp"
+        android:layout_gravity="center_vertical"/> -->
         
     <TextView 
         android:id="@+id/recipient_id"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:visibility="gone"/>
+    
+    <TextView 
+        android:id="@+id/recipient_name"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:visibility="gone"/>

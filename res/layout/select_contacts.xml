@@ -41,15 +41,60 @@
 	    		>
 	     
 	    	    <!-- contacts tab -->
-		     	<ListView
-	     		    android:id = "@+id/contacts_tabs_native_contacts_list"
-	     		    android:layout_width="fill_parent"
-	     		    android:layout_height="fill_parent"
-	     		    android:cacheColorHint="@color/transparent"
-	     			android:layout_above="@+id/contacts_tabs_buttons_layout"
-	     			android:divider="@drawable/list_divider"
+	    	    <LinearLayout 
+	    	        android:id="@+id/contacts_tab"
+	    	        android:orientation="vertical"
+	    	        android:layout_height="match_parent"
+	    	        android:layout_width="match_parent">
+	    	        
+	    	        <RelativeLayout 
+	    	            android:layout_height="wrap_content"
+	    	            android:layout_width="fill_parent"
+	    	            android:background="@drawable/auto_complete_bg">
+	    	            
+	    	            <EditText 
+	    	            	android:id="@+id/filter_text"
+	    	            	android:background="#00000000"
+	    	            	android:layout_width="match_parent"
+	    	            	android:layout_height="wrap_content"
+	    	            	android:singleLine="true"
+	    	            	android:layout_marginTop="3dp"
+	    	            	android:layout_toLeftOf="@+id/vertical_splitter"
+	    	            	android:hint="Filter"/>
+	    	            
+	    	            <ImageView 
+	    	                android:id="@id/vertical_splitter"
+	    	                android:layout_height="30dp"
+	    	                android:layout_marginRight="6dp"
+	    	                android:layout_width="wrap_content"
+	    	                android:background="@drawable/vertical_seprator"
+	    	                android:layout_toLeftOf="@+id/clear_filter_button"/>
+	    	            
+	    	            <ImageView 
+	    	                android:id="@id/clear_filter_button"
+	    	                android:layout_height="wrap_content"
+	    	                android:layout_width="wrap_content"
+	    	                android:layout_marginTop="2dp"
+	    	                android:padding="5dp"
+	    	                android:background="@drawable/delete_icon_states"
+	    	                android:layout_alignParentRight="true"/>
+	    	            
+	    	        </RelativeLayout>
+	    	        
+	    	        
+	    	        
+	    	        <ListView
+	     		    	android:id = "@+id/contacts_tabs_native_contacts_list"
+	     		    	android:layout_width="fill_parent"
+	     		    	android:layout_height="fill_parent"
+	     		    	android:cacheColorHint="@color/transparent"
+	     				android:layout_above="@+id/contacts_tabs_buttons_layout"
+	     				android:divider="@drawable/list_divider"
 	     		    >
-     		    </ListView>
+     		    	</ListView>
+	    	        
+	    	    </LinearLayout>
+		     	
 		     	
 		     	<!-- group tab -->    
 		     	<LinearLayout

@@ -6,7 +6,11 @@
 package com.vinsol.sms_scheduler.activities;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +19,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,10 +28,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
@@ -34,6 +42,7 @@ import android.widget.TextView;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
@@ -53,11 +62,17 @@ public class SelectContacts extends Activity {
 	
 	//---------------- Variables relating to Contacts tab -----------------------
 	private ListView nativeContactsList;
+	private EditText filterField;
+	private ImageView clearFilterButton;
 	private Button doneButton;
 	private Button cancelButton;
 	
 	private ContactsAdapter contactsAdapter;
 	private String origin;
+	private String filterText = "";
+	
+	ArrayList<Contact> sortedContacts = new ArrayList<Contact>(); 
+	
 	
 	private ArrayList<Recipient> RecipientsTemp 	= new ArrayList<Recipient>();
 	//---------------------------------------------------------------------------
@@ -96,6 +111,12 @@ public class SelectContacts extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.select_contacts);
 		
+		for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+			sortedContacts.add(SmsSchedulerApplication.contactsList.get(i));
+		}
+		
+		filterField = (EditText) findViewById(R.id.filter_text);
+		clearFilterButton = (ImageView) findViewById(R.id.clear_filter_button);
 		
 		//----------------------Setting up the Tabs--------------------------------
 		final TabHost tabHost=(TabHost)findViewById(R.id.tabHost);
@@ -104,7 +125,7 @@ public class SelectContacts extends Activity {
         tabHost.getTabWidget().setDividerDrawable(R.drawable.vertical_seprator);
         
         TabSpec spec1=tabHost.newTabSpec("Tab 1");
-        spec1.setContent(R.id.contacts_tabs_native_contacts_list);
+        spec1.setContent(R.id.contacts_tab);
         spec1.setIndicator("Contacts", getResources().getDrawable(R.drawable.contacts_tab_states));
 
         TabSpec spec2=tabHost.newTabSpec("Tab 2");
@@ -123,6 +144,67 @@ public class SelectContacts extends Activity {
             tabHost.getTabWidget().getChildAt(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_bg_selector));
         }
     	//----------------------------------------------------end of Tabs Setup-----------
+        
+        
+        
+        filterField.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				if(s.equals("")){
+					sortedContacts.clear();
+					for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+						sortedContacts.add(SmsSchedulerApplication.contactsList.get(i));
+					}
+					contactsAdapter.notifyDataSetChanged();
+				}else{
+					sortedContacts.clear();
+					for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+						Pattern p = Pattern.compile(s.toString(), Pattern.CASE_INSENSITIVE);
+						SmsSchedulerApplication.contactsList.get(i).number = AbstractScheduleSms.refineNumber(SmsSchedulerApplication.contactsList.get(i).number);
+						Matcher m = p.matcher(SmsSchedulerApplication.contactsList.get(i).name);
+						if(m.find()) {
+							sortedContacts.add(SmsSchedulerApplication.contactsList.get(i));
+						} else {
+							m = p.matcher(SmsSchedulerApplication.contactsList.get(i).number);
+							if(m.find()) {
+								sortedContacts.add(SmsSchedulerApplication.contactsList.get(i));
+							}
+						}
+					}
+					contactsAdapter.notifyDataSetChanged();
+				}
+			}
+		});
+        
+        
+        
+        clearFilterButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				filterField.setText("");
+				filterField.setHint("Filter");
+				sortedContacts.clear();
+				for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+					sortedContacts.add(SmsSchedulerApplication.contactsList.get(i));
+				}
+				contactsAdapter.notifyDataSetChanged();
+			}
+		});
         
         
         
@@ -247,7 +329,7 @@ public class SelectContacts extends Activity {
         
         //------------------Setting up the Contacts Tab ---------------------------------------------
         nativeContactsList 	= (ListView) findViewById(R.id.contacts_tabs_native_contacts_list);
-		contactsAdapter = new ContactsAdapter();
+		contactsAdapter = new ContactsAdapter(this, sortedContacts);
         nativeContactsList.setAdapter(contactsAdapter);
         //------------------------------------------------------------end of setting up Contacts Tab--------
         
@@ -409,12 +491,45 @@ public class SelectContacts extends Activity {
 	//**************************** in Contacts Tab ********************************************
 	
 	@SuppressWarnings("rawtypes")
-	private class ContactsAdapter extends ArrayAdapter {
+	private class ContactsAdapter extends ArrayAdapter<Contact> implements SectionIndexer{
 		
+		HashMap<String, Integer> alphaIndexer;
+        String[] sections;
+        ArrayList<Contact> contacts;
 		@SuppressWarnings("unchecked")
-		ContactsAdapter(){
-    		super(SelectContacts.this, R.layout.contacts_list_row, SmsSchedulerApplication.contactsList);
+		ContactsAdapter(Context context, ArrayList<Contact> _contacts){
+    		super(SelectContacts.this, R.layout.contacts_list_row, _contacts);
+    		
+    		contacts = _contacts;
+    		
+    		alphaIndexer = new HashMap<String, Integer>();
+            int size = contacts.size();
+ 
+            for (int x = 0; x < size; x++) {
+                Contact c = contacts.get(x);
+ 
+		// get the first letter of the store
+                String ch =  c.name.substring(0, 1);
+		// convert to uppercase otherwise lowercase a -z will be sorted after upper A-Z
+                ch = ch.toUpperCase();
+ 
+		// HashMap will prevent duplicates
+                alphaIndexer.put(ch, x);
+            }
+ 
+            Set<String> sectionLetters = alphaIndexer.keySet();
+ 
+	    // create a list from the set to sort
+            ArrayList<String> sectionList = new ArrayList<String>(sectionLetters); 
+ 
+            Collections.sort(sectionList);
+ 
+            sections = new String[sectionList.size()];
+ 
+            sectionList.toArray(sections);
     	}
+		
+		
 		
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
@@ -431,13 +546,13 @@ public class SelectContacts extends Activity {
 			}else{
 				holder = (ContactsListHolder) convertView.getTag();
 			}
-    		holder.contactImage.setImageBitmap(SmsSchedulerApplication.contactsList.get(position).image);
-    		holder.nameText.setText(SmsSchedulerApplication.contactsList.get(position).name);
-    		holder.numberText.setText(SmsSchedulerApplication.contactsList.get(position).number);
+    		holder.contactImage.setImageBitmap(contacts.get(position).image);
+    		holder.nameText.setText(contacts.get(position).name);
+    		holder.numberText.setText(contacts.get(position).number);
     		
     		for(int i = 0; i< RecipientsTemp.size(); i++){
     			
-        		if(SmsSchedulerApplication.contactsList.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
+        		if(contacts.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
         			holder.contactCheck.setChecked(true);
         			break;
         		}else{
@@ -452,20 +567,20 @@ public class SelectContacts extends Activity {
 					if(holder.contactCheck.isChecked()){
 						boolean isPresent = false;
 						for(int i = 0; i< RecipientsTemp.size(); i++){
-							if(RecipientsTemp.get(i).contactId == SmsSchedulerApplication.contactsList.get(position).content_uri_id){
+							if(RecipientsTemp.get(i).contactId == contacts.get(position).content_uri_id){
 								isPresent = true;
 								break;
 							}
 						}
 						if(!isPresent){
-							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, SmsSchedulerApplication.contactsList.get(position).content_uri_id, -1, -1, -1);
+							Recipient recipient = new Recipient(-1, 2, contacts.get(position).name, contacts.get(position).content_uri_id, -1, -1, -1);
 							recipient.groupIds.add((long) -1);
 							recipient.groupTypes.add(-1);
 							RecipientsTemp.add(recipient);
 						}
 					}else{
 						for(int i = 0; i<RecipientsTemp.size(); i++){
-				    		if(SmsSchedulerApplication.contactsList.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
+				    		if(contacts.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
 				    			for(int j = 0; j< nativeGroupDataTemp.size(); j++){
 				    				int noOfChecks = 0;
 				    				for(int k = 0; k< nativeChildDataTemp.get(j).size(); k++){
@@ -521,13 +636,13 @@ public class SelectContacts extends Activity {
 						holder.contactCheck.setChecked(true);
 						boolean isPresent = false;
 						for(int i = 0; i< RecipientsTemp.size(); i++){
-							if(RecipientsTemp.get(i).contactId == SmsSchedulerApplication.contactsList.get(position).content_uri_id){
+							if(RecipientsTemp.get(i).contactId == contacts.get(position).content_uri_id){
 								isPresent = true;
 								break;
 							}
 						}
 						if(!isPresent){
-							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(position).name, SmsSchedulerApplication.contactsList.get(position).content_uri_id, -1, -1, -1);
+							Recipient recipient = new Recipient(-1, 2, contacts.get(position).name, contacts.get(position).content_uri_id, -1, -1, -1);
 							recipient.groupIds.add((long) -1);
 							recipient.groupTypes.add(-1);
 							RecipientsTemp.add(recipient);
@@ -535,7 +650,7 @@ public class SelectContacts extends Activity {
 					}else{	
 						holder.contactCheck.setChecked(false);
 						for(int i = 0; i<RecipientsTemp.size(); i++){
-				    		if(SmsSchedulerApplication.contactsList.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
+				    		if(contacts.get(position).content_uri_id == RecipientsTemp.get(i).contactId){
 				    			for(int j = 0; j< nativeGroupDataTemp.size(); j++){
 				    				int noOfChecks = 0;
 				    				for(int k = 0; k< nativeChildDataTemp.get(j).size(); k++){
@@ -579,6 +694,30 @@ public class SelectContacts extends Activity {
 			});
     		
     		return convertView;
+		}
+
+
+
+		@Override
+		public int getPositionForSection(int section) {
+			// TODO Auto-generated method stub
+			return alphaIndexer.get(sections[section]);
+		}
+
+
+
+		@Override
+		public int getSectionForPosition(int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+
+
+		@Override
+		public Object[] getSections() {
+			// TODO Auto-generated method stub
+			return sections;
 		}
 	}
 	//************************************************************** end of ContactsAdapter******************

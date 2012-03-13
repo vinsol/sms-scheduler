@@ -6,7 +6,9 @@
 package com.vinsol.sms_scheduler.activities;
 
 import android.app.Dialog;
+
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -24,7 +26,9 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		super.onCreate(savedInstanceState);
 		
 		mode = 1;
-		widthOfContainerInDp = (SmsSchedulerApplication.screenWidthInPixels - 159)*160/dpi;
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		widthOfContainerInDp = (int)((metrics.widthPixels - 159)/dpi);
 		setSuperFunctionalities();
 		loadGroupsData();
 	}

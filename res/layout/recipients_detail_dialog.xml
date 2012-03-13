@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@color/white">
+    
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/header_bg"
+        android:gravity="center"
+        android:text="Recipients"
+        android:textColor="@color/white"
+        android:textSize="20sp" 
+        android:textStyle="bold"
+        >
+    </TextView>
+    
+    <ListView 
+        android:id="@+id/recipients_detail_list"
+        android:layout_below="@id/header"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:layout_above="@+id/bottom_buttons"
+        />
+
+    <LinearLayout 
+        android:id="@id/bottom_buttons"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:padding="1dp"
+        android:background="@drawable/footer_bg">
+        
+        <Button 
+            android:id="@+id/confirm_button"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:layout_marginTop="1dp"
+            android:text="Confirm"/>
+        
+        <Button 
+            android:id="@+id/cancel_button"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:layout_marginTop="1dp"
+            android:text="Cancel"/>
+        
+    </LinearLayout>
+</RelativeLayout>
