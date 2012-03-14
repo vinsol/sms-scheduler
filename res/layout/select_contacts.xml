@@ -90,6 +90,7 @@
 	     		    	android:cacheColorHint="@color/transparent"
 	     				android:layout_above="@+id/contacts_tabs_buttons_layout"
 	     				android:divider="@drawable/list_divider"
+	     				android:fastScrollEnabled="true"
 	     		    >
      		    	</ListView>
 	    	        

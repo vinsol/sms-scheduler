@@ -26,6 +26,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -64,6 +65,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
@@ -155,9 +157,14 @@ abstract class AbstractScheduleSms extends Activity{
 	boolean oncePressed = false;
 	//-----------------------------------------------------------------------------------------------
 	
-	
+	ImageView undoButton;
+	RecipientStack recipientStack = new RecipientStack();
 	ArrayList<Recipient> prunedRecipients = new ArrayList<Recipient>();
 	MyAdapter detailsRecipientsAdapter;
+	
+	public static final String PREFS_NAME = "MyPrefsFile";
+	boolean showMessage;
+	
 	
 	protected int [] images = {
 			 R.drawable.emoticon_01, R.drawable.emoticon_02,
@@ -275,17 +282,25 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		detailsRecipientsAdapter = new MyAdapter();
 		
+		
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		showMessage = settings.getBoolean("SHOW_MESSAGE", true);
+		
+		
 		//-----------------------declarations related to new autocomplete implementation-------------------------
 		inflater = AbstractScheduleSms.this.getLayoutInflater();
 		ac_wrapper = (RelativeLayout) findViewById(R.id.autocomplete_wrapper);
 		hll = (LinearLayout) findViewById(R.id.layouts_host);
         recipientDetailsButton = (ImageView) findViewById(R.id.recipients_detail_image);
 		
+        
         firstRow.ll = (LinearLayout) findViewById(R.id.edit_text_host);
         firstRow.ll.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
+//				showMessagePreference();
+				
 				if(!SmsSchedulerApplication.isDataLoaded){
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
@@ -312,6 +327,8 @@ abstract class AbstractScheduleSms extends Activity{
 			@Override
 			public void onClick(View v) {
 				if(Recipients.size()>0){
+					recipientStack.recipients.clear();
+					recipientStack.positions.clear();
 					prunedRecipients.clear();
 					for(int i = 0; i< Recipients.size(); i++){
 						prunedRecipients.add(Recipients.get(i));
@@ -324,7 +341,10 @@ abstract class AbstractScheduleSms extends Activity{
 					ListView detailsList = (ListView) d.findViewById(R.id.recipients_detail_list);
 					Button confirmButton = (Button) d.findViewById(R.id.confirm_button);
 					Button cancelButton = (Button) d.findViewById(R.id.cancel_button);
+					undoButton = (ImageView) d.findViewById(R.id.undo_button);
 					
+					undoButton.setEnabled(false);
+					undoButton.setBackgroundResource(R.drawable.undo_button_pressed);
 //					detailsRecipientsAdapter = new MyAdapter();
 					detailsList.setAdapter(detailsRecipientsAdapter);
 					
@@ -365,6 +385,25 @@ abstract class AbstractScheduleSms extends Activity{
 						@Override
 						public void onClick(View v) {
 							d.cancel();
+						}
+					});
+					
+					undoButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							if(recipientStack.recipients.size()>0){
+								Recipient r = recipientStack.popRecipient();
+								int p = recipientStack.popPosition();
+								prunedRecipients.add(p, r);
+								detailsRecipientsAdapter.notifyDataSetChanged();
+								if(recipientStack.recipients.size()==0){
+									undoButton.setEnabled(false);
+									undoButton.setBackgroundResource(R.drawable.undo_button_pressed);
+								}
+									
+									
+							}
 						}
 					});
 					
@@ -415,10 +454,23 @@ abstract class AbstractScheduleSms extends Activity{
 		numbersText.setDropDownAnchor(R.id.autocomplete_wrapper);
 		
 		
+		ac_wrapper.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+//				showMessagePreference();
+				numbersText.requestFocus();
+				inputMethodManager.showSoftInput(numbersText, 0);
+			}
+		});
+		
+		
 		hll.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
+//				showMessagePreference();
+				
 				if(widthOfacWrapper==0){
 					widthOfacWrapper = ac_wrapper.getWidth();
 					numbersText.setDropDownWidth(widthOfacWrapper);
@@ -518,7 +570,7 @@ abstract class AbstractScheduleSms extends Activity{
 					oncePressed = false;
 				}
 				
-				float textWidth = paint.measureText(numbersText.getText().toString()) + 3;
+				float textWidth = paint.measureText(numbersText.getText().toString()) + 5;
 				if((currentRow.elementsWidth + textWidth)>widthOfContainerInDp){
 					Row newRow = new Row(false);
 					((LinearLayout)numbersText.getParent()).removeView(numbersText);
@@ -677,7 +729,8 @@ abstract class AbstractScheduleSms extends Activity{
 		myAutoCompleteAdapter = (AutoCompleteAdapter) new AutoCompleteAdapter(this);
 		numbersText.setAdapter(myAutoCompleteAdapter);
         
-
+		showMessagePreference();
+		
         dataloadIntentFilter = new IntentFilter();
         dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);
 	}
@@ -800,6 +853,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			@Override
 			public void onClick(View v) {
+//				showMessagePreference();
 				if(widthOfacWrapper==0){
 					widthOfacWrapper = ac_wrapper.getWidth();
 					numbersText.setDropDownWidth(widthOfacWrapper);
@@ -1977,6 +2031,8 @@ abstract class AbstractScheduleSms extends Activity{
 					
 					@Override
 					public void onClick(View v) {
+//						showMessagePreference();
+						
 						if(widthOfacWrapper==0){
 							widthOfacWrapper = ac_wrapper.getWidth();
 							numbersText.setDropDownWidth(widthOfacWrapper);
@@ -2335,8 +2391,14 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				@Override
 				public void onClick(View v) {
+					if(recipientStack.recipients.size()==0){
+						undoButton.setEnabled(true);
+						undoButton.setBackgroundDrawable(getApplication().getResources().getDrawable(R.drawable.undo_button_states));
+					}
+					recipientStack.push(prunedRecipients.get(position), position);
 					prunedRecipients.remove(prunedRecipients.get(position));
 					detailsRecipientsAdapter.notifyDataSetChanged();
+					
 				}
 			});
     		
@@ -2351,6 +2413,55 @@ abstract class AbstractScheduleSms extends Activity{
 	private class TemplateViewHolder{
 		TextView templateBodyLabel;
 		ImageView deleteTemplateButton;
+	}
+	
+	
+	
+	public class RecipientStack{
+		ArrayList<Recipient> recipients = new ArrayList<Recipient>();
+		ArrayList<Integer> positions = new ArrayList<Integer>();
+		
+		public Recipient popRecipient(){
+			return recipients.remove(recipients.size()-1);
+		}
+		
+		public int popPosition(){
+			return positions.remove(positions.size()-1);
+		}
+		
+		public void push(Recipient r, int p){
+			recipients.add(r);
+			positions.add(p);
+		}
+	}
+	
+	
+	public void showMessagePreference(){
+		Log.d("getting into showprefs");
+		if(showMessage){
+			final Dialog d = new Dialog(AbstractScheduleSms.this);
+			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			d.setCancelable(false);
+			d.setContentView(R.layout.show_message_dialog);
+			
+			final CheckBox checkBox = (CheckBox) d.findViewById(R.id.show_again_check);
+			Button okButton = (Button) d.findViewById(R.id.ok_button);
+			
+			okButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(checkBox.isChecked()){
+						SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+					    SharedPreferences.Editor editor = settings.edit();
+					    editor.putBoolean("SHOW_MESSAGE", false);
+					    editor.commit();
+					}
+					d.cancel();
+				}
+			});
+			d.show();
+		}
 	}
 	
 }

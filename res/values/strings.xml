@@ -20,4 +20,13 @@
         These groups of contacts will remain private to this application.
     </string>
     
+    <string name="add_number_message">
+        To enter a number, which is not in Contacts, type the number and then press SPACE button.
+    </string>
+    
+    <string name="dont_show_message_again">
+        Don\'t show this message again.
+    </string>
+    
+    
 </resources>

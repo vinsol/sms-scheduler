@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    
+    <TextView
+        	android:id="@+id/header_text"
+        	android:layout_toLeftOf="@+id/undo_button"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:background="@drawable/header_bg"
+        	android:gravity="center"
+        	android:text="Information!"
+        	android:textColor="@color/white"
+        	android:textSize="20sp" 
+        	android:textStyle="bold"
+        	>   
+    </TextView>
+    
+    <TextView 
+        android:layout_margin="4dp"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:text="@string/add_number_message"
+        android:textSize="16sp"
+        android:gravity="center_horizontal"/>
+    
+    <RelativeLayout 
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="horizontal">
+        
+        <CheckBox
+            android:id="@+id/show_again_check" 
+        	android:layout_height="wrap_content"
+        	android:layout_width="wrap_content"
+        	android:layout_margin="5dp"
+        	/>
+        
+        <TextView
+            android:layout_toRightOf="@id/show_again_check" 
+            android:layout_alignBaseline="@id/show_again_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dont_show_message_again"
+            android:textSize="13sp"/>
+        
+    </RelativeLayout>
+    
+    <LinearLayout 
+        android:id="@id/bottom_buttons"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:paddingTop="4dp"
+        android:gravity="center_horizontal"
+        android:background="@drawable/footer_bg">
+        
+        <Button 
+            android:id="@+id/ok_button"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="@drawable/ok_dialog_states"
+            android:text=""/>
+        
+    </LinearLayout>
+
+</LinearLayout>

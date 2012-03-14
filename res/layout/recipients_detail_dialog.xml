@@ -5,18 +5,42 @@
     android:orientation="vertical" 
     android:background="@color/white">
     
-    <TextView
+    <RelativeLayout 
         android:id="@+id/header"
-        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
         android:background="@drawable/header_bg"
-        android:gravity="center"
-        android:text="Recipients"
-        android:textColor="@color/white"
-        android:textSize="20sp" 
-        android:textStyle="bold"
+        android:paddingLeft="40dp"
         >
-    </TextView>
+        
+        <TextView
+        	android:id="@+id/header_text"
+        	android:layout_toLeftOf="@+id/undo_button"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:background="@drawable/header_bg"
+        	android:gravity="center"
+        	android:text="Recipients"
+        	android:textColor="@color/white"
+        	android:textSize="20sp" 
+        	android:textStyle="bold"
+        	>   
+    	</TextView>
+    	
+        <ImageView 
+            android:id="@id/undo_button"
+            android:background="@drawable/undo_button_states"
+            android:layout_height="37dp"
+            android:layout_width="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            />
+        
+    </RelativeLayout>
+    
+    
     
     <ListView 
         android:id="@+id/recipients_detail_list"
@@ -31,7 +55,7 @@
         android:layout_alignParentBottom="true"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:padding="1dp"
+        android:paddingTop="4dp"
         android:background="@drawable/footer_bg">
         
         <Button 
@@ -40,15 +64,18 @@
             android:layout_width="fill_parent"
             android:layout_weight="1"
             android:layout_marginTop="1dp"
-            android:text="Confirm"/>
+            android:layout_margin="2dp"
+            android:background="@drawable/done_footer_states"
+            android:text=""/>
         
         <Button 
             android:id="@+id/cancel_button"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:layout_weight="1"
-            android:layout_marginTop="1dp"
-            android:text="Cancel"/>
+            android:layout_margin="2dp"
+            android:background="@drawable/cancel_footer_states"
+            android:text=""/>
         
     </LinearLayout>
 </RelativeLayout>
