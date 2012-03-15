@@ -253,16 +253,14 @@ public class Home extends Activity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
     	
+    	//TODO
     	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
-		int type  = ExpandableListView.getPackedPositionType (info.packedPosition);
-		ExpandableListView.getPackedPositionGroup(info.packedPosition);
+		int group = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 		ExpandableListView.getPackedPositionChild(info.packedPosition);
 		
-		if(type == 1){
-			final String MENU_TITLE_DELETE = "Delete";
-			CharSequence menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
-			menu.add(0, MENU_DELETE, 1, menu_title);
+		CharSequence menu_title;
 		
+		if(group == 2){
 			final String MENU_TITLE_RESCHEDULE = "Reschedule";
 			menu_title = MENU_TITLE_RESCHEDULE.subSequence(0, MENU_TITLE_RESCHEDULE.length());
 			menu.add(0, MENU_RESCHEDULE, 2, menu_title);
@@ -271,6 +269,10 @@ public class Home extends Activity {
 			menu_title = MENU_TITLE_ADD_TO_TEMPLATES.subSequence(0, MENU_TITLE_ADD_TO_TEMPLATES.length());
 			menu.add(0, MENU_ADD_TO_TEMPLATE, 3, menu_title);
 		}
+		
+		final String MENU_TITLE_DELETE = "Delete";
+		menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
+		menu.add(0, MENU_DELETE, 1, menu_title);
     }
     
     
@@ -287,9 +289,7 @@ public class Home extends Activity {
 			
 			switch (item.getItemId()) {
 				case MENU_DELETE:
-					
 					mdba.open();
-					
 					if(groupPos == 1){
 						selectedSms = scheduledSMSs.get(childPos).keyId;
 					}else if(groupPos == 2){

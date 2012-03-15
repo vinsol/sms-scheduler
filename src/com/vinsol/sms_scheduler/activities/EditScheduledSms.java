@@ -74,13 +74,16 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			processDate = new Date(System.currentTimeMillis());
 		}
 		
+		if(isDraft)
+			cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
+		
 		setSuperFunctionalities();
 		loadGroupsData();
 		
 		mdba.close();
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		widthOfContainerInDp = (int)((metrics.widthPixels - 159)/dpi);
+		widthOfContainerInDp = (int)(metrics.widthPixels/dpi - 128);
 		displayViews();
 		
 		if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){

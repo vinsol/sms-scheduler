@@ -357,25 +357,8 @@ abstract class AbstractScheduleSms extends Activity{
 								Recipients.add(prunedRecipients.get(i));
 							}
 							
-							if(numbersTextHolder!=null){
-								numbersTextHolder.ll.removeView(numbersText);
-							}else{
-								currentRow.ll.removeView(numbersText);
-							}
+							refreshRecipientViews();
 							
-							hll.removeAllViews();
-							firstRow.ll.removeAllViews();
-							
-							hll.addView(firstRow.ll);
-							firstRow.ll.addView(numbersText);
-							currentRow = firstRow;
-							
-							displayViews();
-							if(Recipients.size()>0){
-								numbersText.setHint(" ");
-							}else{
-								numbersText.setHint("Recipients");
-							}
 							d.cancel();
 						}
 					});
@@ -659,6 +642,16 @@ abstract class AbstractScheduleSms extends Activity{
 							
 					}
 					
+					if(hll.getChildCount()==1){
+						((LinearLayout)numbersText.getParent()).removeView(numbersText);
+						firstRow = currentRow;
+						firstRow.ll.addView(numbersText);
+					}
+					
+					if(Recipients.size()==0){
+						numbersText.setHint("Recipients");
+					}
+					
 					numbersText.bringToFront();
 					numbersText.requestFocus();
 				}
@@ -766,58 +759,7 @@ abstract class AbstractScheduleSms extends Activity{
             showMatchesDialog();
         }
         else if(resultCode == 2) {
-//        	refreshSpannableString(false);
-        	
-        	if(numbersTextHolder!=null){
-        		numbersTextHolder.ll.removeView(numbersText);
-        		hll.removeView(numbersTextHolder.ll);
-        		numbersTextHolder = null;
-        	}else{
-        		if(((LinearLayout)numbersText.getParent())!=null)
-        		((LinearLayout)numbersText.getParent()).removeView(numbersText);
-        	}
-        	
-        	for(int i = rows.size()-1; i>=0; i--){
-        		hll.removeView(rows.get(i).ll);
-        		rows.remove(i);
-        	}
-        	firstRow = new Row(false);
-        	hll.addView(firstRow.ll);
-        	rows.add(firstRow);
-        	currentRow = firstRow;
-        	//TODO
-//        	numbersText.setText("haha");
-//        	if(((LinearLayout)numbersText.getParent()).equals(null) || ((LinearLayout)numbersText.getParent()).getWidth() == 0){
-//        		((LinearLayout)numbersText.getParent()).removeView(numbersText);
-//        		currentRow.ll.addView(numbersText);
-//        	}
-        	
-//        	for(int i = firstRow.views.size()-1; i>=0; i--){
-//        		firstRow.ll.removeView(firstRow.views.get(i));
-//        		firstRow.views.remove(i);
-//        	}
-//        	firstRow.ll.addView(numbersText);
-        	
-        	displayViews();
-        	
-        	
-        	numbersText.requestFocus();
-        	numbersText.setText("");
-        	if(Recipients.size()>0){
-        		if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){
-					numbersText.setHint("Recipients");
-				}else{
-					numbersText.setHint(" ");
-				}
-        	}else{
-        		currentRow.ll.addView(numbersText);
-        		numbersText.setHint("Recipients");
-        	}
-        	if(numbersText.getParent()==null){
-        		currentRow.ll.addView(numbersText);
-        		numbersText.requestFocus();
-        		numbersText.bringToFront();
-        	}
+        	refreshRecipientViews();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -2065,6 +2007,7 @@ abstract class AbstractScheduleSms extends Activity{
 				addView(view);
 			}
 		}
+		firstRow = rows.get(0);
 	}
 	
 	
@@ -2099,7 +2042,6 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		return view;
 	}
-	
 	
 	
 	
@@ -2324,7 +2266,7 @@ abstract class AbstractScheduleSms extends Activity{
     		numbersTextHolder = null;
     	}else{
     		if(((LinearLayout)numbersText.getParent())!=null)
-    		((LinearLayout)numbersText.getParent()).removeView(numbersText);
+    			((LinearLayout)numbersText.getParent()).removeView(numbersText);
     	}
     	
     	for(int i = rows.size()-1; i>=0; i--){
@@ -2402,9 +2344,6 @@ abstract class AbstractScheduleSms extends Activity{
 				}
 			});
     		
-    		
-    		
-    		
     		return convertView;
     	}
     }
@@ -2446,6 +2385,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			final CheckBox checkBox = (CheckBox) d.findViewById(R.id.show_again_check);
 			Button okButton = (Button) d.findViewById(R.id.ok_button);
+			TextView tv = (TextView) d.findViewById(R.id.dont_show_msg_text);
 			
 			okButton.setOnClickListener(new OnClickListener() {
 				
@@ -2460,6 +2400,20 @@ abstract class AbstractScheduleSms extends Activity{
 					d.cancel();
 				}
 			});
+			
+			
+			
+			tv.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(checkBox.isChecked())
+						checkBox.setChecked(false);
+					else
+						checkBox.setChecked(true);
+				}
+			});
+			
 			d.show();
 		}
 	}

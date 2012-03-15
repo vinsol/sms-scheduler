@@ -507,19 +507,12 @@ public class SelectContacts extends Activity {
  
             for (int x = 0; x < size; x++) {
                 Contact c = contacts.get(x);
- 
-		// get the first letter of the store
                 String ch =  c.name.substring(0, 1);
-		// convert to uppercase otherwise lowercase a -z will be sorted after upper A-Z
                 ch = ch.toUpperCase();
- 
-		// HashMap will prevent duplicates
                 alphaIndexer.put(ch, x);
             }
  
             Set<String> sectionLetters = alphaIndexer.keySet();
- 
-	    // create a list from the set to sort
             ArrayList<String> sectionList = new ArrayList<String>(sectionLetters); 
  
             Collections.sort(sectionList);

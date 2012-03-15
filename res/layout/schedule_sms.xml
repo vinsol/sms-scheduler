@@ -28,7 +28,7 @@
 	    >
 	    <TextView
         	android:id="@+id/new_date_label"
-        	android:layout_width="320dp"
+        	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
         	android:paddingLeft="10dip"
         	android:paddingBottom="3dip"
@@ -126,7 +126,7 @@
         				android:layout_height="wrap_content"
         				android:layout_width="fill_parent"
         				android:layout_centerVertical="true"
-        				android:minHeight="75dp"
+        				android:minHeight="35dp"
         				android:orientation="vertical"
         				>
         
@@ -161,7 +161,7 @@
 	    		        android:gravity="center_vertical" >
         				
 	    		        <ImageView 
-	    		            android:src="@drawable/vertical_seprator"
+	    		            android:src="@drawable/vertical_divider_for_message_header"
 	    		            android:layout_height="wrap_content"
 	    		            android:layout_width="wrap_content"
 	    		            android:layout_alignBaseline="@+id/recipients_detail_image"
@@ -176,7 +176,7 @@
 			            	android:layout_centerVertical="true"
 			            	android:layout_marginLeft="5dp"
 			            	android:paddingLeft="5dp"
-			            	android:background="@drawable/dropdown_states"/>
+			            	android:background="@drawable/ic_menu_more_states"/>
 			        
 			    	</RelativeLayout>
 	    		    
@@ -185,11 +185,12 @@
 		    		
 		    	<ImageButton 
 		    		android:id = "@id/new_add_from_contact_imgbutton"
-		    		android:layout_width = "wrap_content"
-		    		android:layout_height = "wrap_content"
-		    		android:background="@drawable/choose_contact_button_states"
+		    		android:layout_width = "45dp"
+		    		android:layout_height = "45dp"
+		    		android:src="@drawable/choose_contact_button_states"
+		    		android:background="@drawable/add_from_contacts_bg_states"
 		    		android:layout_alignParentRight="true"
-		    		android:layout_marginLeft="10dp"
+		    		android:layout_marginLeft="5dp"
 		    		android:layout_centerVertical="true"
 		    		>
 	    		</ImageButton>		

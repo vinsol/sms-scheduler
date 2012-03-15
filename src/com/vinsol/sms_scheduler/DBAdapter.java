@@ -686,7 +686,7 @@ public class DBAdapter {
 					break;
 				}
 				if(((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID))) == -1) && (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
-					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_CONTACT_ID + "=-1 AND " + KEY_RECENT_CONTACT_NUMBER + "=contactNumber", null);
+					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_CONTACT_ID + "=-1 AND " + KEY_RECENT_CONTACT_NUMBER + "=" + contactNumber, null);
 					contactExist = true;
 					break;
 				}

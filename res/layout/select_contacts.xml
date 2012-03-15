@@ -67,7 +67,7 @@
 	    	                android:layout_height="30dp"
 	    	                android:layout_marginRight="6dp"
 	    	                android:layout_width="wrap_content"
-	    	                android:background="@drawable/vertical_seprator"
+	    	                android:background="@drawable/list_divider_holo_dark"
 	    	                android:layout_toLeftOf="@+id/clear_filter_button"/>
 	    	            
 	    	            <ImageView 
