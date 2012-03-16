@@ -50,7 +50,7 @@
 	    	        <RelativeLayout 
 	    	            android:layout_height="wrap_content"
 	    	            android:layout_width="fill_parent"
-	    	            android:background="@drawable/auto_complete_bg">
+	    	            android:background="@drawable/textfield_default">
 	    	            
 	    	            <EditText 
 	    	            	android:id="@+id/filter_text"

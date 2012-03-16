@@ -263,16 +263,22 @@ public class Home extends Activity {
 		if(group == 2){
 			final String MENU_TITLE_RESCHEDULE = "Reschedule";
 			menu_title = MENU_TITLE_RESCHEDULE.subSequence(0, MENU_TITLE_RESCHEDULE.length());
-			menu.add(0, MENU_RESCHEDULE, 2, menu_title);
+			menu.add(0, MENU_RESCHEDULE, 1, menu_title);
 		
 			final String MENU_TITLE_ADD_TO_TEMPLATES = "Add to Templates";
 			menu_title = MENU_TITLE_ADD_TO_TEMPLATES.subSequence(0, MENU_TITLE_ADD_TO_TEMPLATES.length());
-			menu.add(0, MENU_ADD_TO_TEMPLATE, 3, menu_title);
+			menu.add(0, MENU_ADD_TO_TEMPLATE, 2, menu_title);
+			
+			final String MENU_TITLE_DELETE = "Delete";
+			menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
+			menu.add(0, MENU_DELETE, 3, menu_title);
+		}else{
+			final String MENU_TITLE_DELETE = "Delete";
+			menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
+			menu.add(0, MENU_DELETE, 1, menu_title);
 		}
 		
-		final String MENU_TITLE_DELETE = "Delete";
-		menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
-		menu.add(0, MENU_DELETE, 1, menu_title);
+		
     }
     
     

@@ -140,7 +140,7 @@ public class SelectContacts extends Activity {
         tabHost.addTab(spec2);
         tabHost.addTab(spec3);
         
-        for(int i=0;i<tabHost.getTabWidget().getChildCount();i++) {
+        for(int i=0;i<tabHost.getTabWidget().getChildCount(); i++) {
             tabHost.getTabWidget().getChildAt(i).setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_bg_selector));
         }
     	//----------------------------------------------------end of Tabs Setup-----------
@@ -156,8 +156,7 @@ public class SelectContacts extends Activity {
 			}
 			
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -702,7 +701,7 @@ public class SelectContacts extends Activity {
 		@Override
 		public int getSectionForPosition(int position) {
 			// TODO Auto-generated method stub
-			return 0;
+			return 1;
 		}
 
 

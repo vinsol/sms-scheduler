@@ -358,7 +358,12 @@ abstract class AbstractScheduleSms extends Activity{
 							}
 							
 							refreshRecipientViews();
-							
+							if(rows.size()==1){
+								if(numbersText.getParent()!=null){
+									((LinearLayout)numbersText.getParent()).removeView(numbersText);
+								}
+								currentRow.ll.addView(numbersText);
+							}
 							d.cancel();
 						}
 					});
