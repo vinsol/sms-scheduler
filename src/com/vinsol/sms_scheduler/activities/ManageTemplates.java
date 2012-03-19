@@ -89,6 +89,10 @@ public class ManageTemplates extends Activity{
 			
 			@Override
 			public void onClick(View v) {
+				if(templatesArray.size()==0){
+					blankLayout.setVisibility(LinearLayout.GONE);
+					listLayout.setVisibility(LinearLayout.VISIBLE);
+				}
 				handleAddNewRequisites();
 			}
 		});
@@ -98,6 +102,7 @@ public class ManageTemplates extends Activity{
 			
 			@Override
 			public void onClick(View v) {
+				
 				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 				if(newTemplateBody.getText().toString().equals("")){
 					Toast.makeText(ManageTemplates.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
@@ -165,7 +170,7 @@ public class ManageTemplates extends Activity{
 		}else{
 			listLayout.setVisibility(LinearLayout.VISIBLE);
 			blankLayout.setVisibility(LinearLayout.GONE);
-			
+		}	
 			templatesArray.clear();
 			templatesIdArray.clear();
 			if(cur.moveToFirst()){
@@ -174,7 +179,7 @@ public class ManageTemplates extends Activity{
 					templatesIdArray.add(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TEMP_ID)));
 				}while(cur.moveToNext());
 			}
-		}
+		
 		cur.close();
 		mdba.close();
 	}

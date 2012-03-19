@@ -5,7 +5,6 @@
 
 package com.vinsol.sms_scheduler.activities;
 
-import java.awt.font.NumericShaper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -41,19 +39,15 @@ import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -357,6 +351,10 @@ abstract class AbstractScheduleSms extends Activity{
 								Recipients.add(prunedRecipients.get(i));
 							}
 							
+							for(int i = 0; i< recipientStack.recipients.size(); i++){
+								removeRecipientFromGroups(recipientStack.recipients.get(i).contactId, recipientStack.recipients.get(i).displayName);
+							}
+							
 							refreshRecipientViews();
 							
 							d.cancel();
@@ -397,7 +395,7 @@ abstract class AbstractScheduleSms extends Activity{
 					d.setContentView(R.layout.info_dialog);
 					TextView infoText = (TextView)d.findViewById(R.id.info_dialog_text);
 					Button okButton = (Button)d.findViewById(R.id.ok_button);
-					infoText.setText("Please select some Recipients to show details of!");
+					infoText.setText("Please select some recipients to show details of.");
 					okButton.setOnClickListener(new OnClickListener() {
 						
 						@Override
