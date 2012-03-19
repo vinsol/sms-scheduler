@@ -88,7 +88,6 @@
 	     		    	android:layout_width="fill_parent"
 	     		    	android:layout_height="fill_parent"
 	     		    	android:cacheColorHint="@color/transparent"
-	     				android:layout_above="@+id/contacts_tabs_buttons_layout"
 	     				android:divider="@drawable/list_divider"
 	     				android:fastScrollEnabled="true"
 	     		    >
@@ -130,7 +129,6 @@
 									android:id = "@+id/list_divider"
 									android:layout_height = "1dp"
 									android:layout_width = "fill_parent"
-									android:layout_alignParentTop="true"
 									android:src="@drawable/list_divider"
 							/>
 	                            
@@ -228,7 +226,6 @@
 		     	    android:id = "@+id/contacts_tabs_recents_layout"
 		     	    android:layout_height="fill_parent"
 		     	    android:layout_width ="fill_parent"
-		     	    android:layout_above="@+id/contacts_tabs_buttons_layout"
 		     	    >
 		     	    
 		     	    <LinearLayout 

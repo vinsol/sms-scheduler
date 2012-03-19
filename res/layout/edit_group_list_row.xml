@@ -36,7 +36,6 @@
     	android:layout_toRightOf="@id/group_add_edit_row_contact_pic"
         android:layout_toLeftOf="@id/group_add_edit_row_delete_button"
         android:layout_margin="5dp"
-        android:text = "Achin"
         android:textColor="#000000"
         android:textStyle="bold"
         android:singleLine="true"
@@ -55,7 +54,6 @@
         android:layout_marginLeft = "5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:text = "9811173722"
         android:textColor="@color/listing_text"
         >
     </TextView>

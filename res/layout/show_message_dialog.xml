@@ -6,14 +6,17 @@
     
     <TextView
         	android:id="@+id/header_text"
-        	android:layout_width="fill_parent"
+        	android:layout_width="fill_parent" 
         	android:layout_height="wrap_content"
         	android:background="@drawable/header_bg"
-        	android:gravity="center"
-        	android:text="Information!"
+        	android:gravity="center_vertical"
+        	android:text="Tip"
         	android:textColor="@color/white"
         	android:textSize="20sp" 
         	android:textStyle="bold"
+        	android:drawableLeft="@drawable/ic_dialog_info"
+        	android:drawablePadding="10dp"
+        	android:paddingLeft="10dp"
         	>   
     </TextView>
     
@@ -22,19 +25,13 @@
         android:layout_width="fill_parent"
         android:orientation="horizontal">
         
-        <ImageView 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_dialog_info"
-            android:layout_margin="10dp"/>
         
         <TextView 
-        	android:layout_margin="4dp"
         	android:layout_height="wrap_content"
         	android:layout_width="fill_parent"
         	android:text="@string/add_number_message"
         	android:textSize="16sp"
-        	android:gravity="center_horizontal"/>
+        	android:layout_margin="10dp"/>
         
     </LinearLayout>
     
@@ -50,6 +47,7 @@
         	android:layout_height="wrap_content"
         	android:layout_width="wrap_content"
         	android:layout_margin="5dp"
+        	android:checked="true"
         	/>
         
         <TextView
@@ -62,7 +60,7 @@
             android:paddingBottom="5dp"
             android:text="@string/dont_show_message_again"
             android:textColor="@color/msg_text_color_states"
-            android:textSize="13sp"/>
+            android:textSize="14sp"/>
         
     </RelativeLayout>
     

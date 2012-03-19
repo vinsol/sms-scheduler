@@ -358,12 +358,7 @@ abstract class AbstractScheduleSms extends Activity{
 							}
 							
 							refreshRecipientViews();
-							if(rows.size()==1){
-								if(numbersText.getParent()!=null){
-									((LinearLayout)numbersText.getParent()).removeView(numbersText);
-								}
-								currentRow.ll.addView(numbersText);
-							}
+							
 							d.cancel();
 						}
 					});
@@ -765,6 +760,7 @@ abstract class AbstractScheduleSms extends Activity{
         }
         else if(resultCode == 2) {
         	refreshRecipientViews();
+        	
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -2304,6 +2300,13 @@ abstract class AbstractScheduleSms extends Activity{
     		currentRow.ll.addView(numbersText);
     		numbersText.setHint("Recipients");
     	}
+    	
+    	if(rows.size()==1){
+			if(numbersText.getParent()!=null){
+				((LinearLayout)numbersText.getParent()).removeView(numbersText);
+			}
+			currentRow.ll.addView(numbersText);
+		}
 	}
 	//----------------------------------------------------------------------------------------------------
 	

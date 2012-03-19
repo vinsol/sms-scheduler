@@ -2,8 +2,8 @@
 <manifest 
   	xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vinsol.sms_scheduler"
-    android:versionCode="2"
-    android:versionName="1.1">
+    android:versionCode="3"
+    android:versionName="1.2">
     
     <uses-sdk android:minSdkVersion="8" />
 	
@@ -20,6 +20,7 @@
 	
 
     <application 
+        android:debuggable="true"
         android:name=".SmsSchedulerApplication" 
         android:icon="@drawable/icon" 
         android:label="SMS Scheduler" 

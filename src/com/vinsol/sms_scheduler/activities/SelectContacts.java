@@ -126,14 +126,14 @@ public class SelectContacts extends Activity {
         
         TabSpec spec1=tabHost.newTabSpec("Tab 1");
         spec1.setContent(R.id.contacts_tab);
-        spec1.setIndicator("Contacts", getResources().getDrawable(R.drawable.contacts_tab_states));
+        spec1.setIndicator("Contacts", getResources().getDrawable(R.drawable.tab_icon_contacts));
 
         TabSpec spec2=tabHost.newTabSpec("Tab 2");
-        spec2.setIndicator("Groups", getResources().getDrawable(R.drawable.groups_tab_states));
+        spec2.setIndicator("Groups", getResources().getDrawable(R.drawable.tab_icon_group));
         spec2.setContent(R.id.group_tabs);
 
         TabSpec spec3=tabHost.newTabSpec("Tab 3");
-        spec3.setIndicator("Recents", getResources().getDrawable(R.drawable.recent_tab_states));
+        spec3.setIndicator("Recents", getResources().getDrawable(R.drawable.tab_icon_recents));
         spec3.setContent(R.id.contacts_tabs_recents_layout);
 
         tabHost.addTab(spec1);

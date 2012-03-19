@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, SmsSchedulerExplActivity!</string>
-    <string name="app_name">SmsSchedulerExpl</string>
     <string name="update_action">Home Update Action</string>
     
     <string name="recents_blank_text_heading">
@@ -21,7 +19,7 @@
     </string>
     
     <string name="add_number_message">
-        To enter a number, which is not in Contacts, type the number and then press SPACE key.
+        To enter a number, which is not in contacts, type the number and then press SPACE key.
     </string>
     
     <string name="dont_show_message_again">

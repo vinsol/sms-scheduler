@@ -931,7 +931,7 @@ public class Home extends Activity {
 		    
 		    for(int i = 0; i< SmsSchedulerApplication.contactsList.size()-1; i++){
 		    	for(int j = i+1; j< SmsSchedulerApplication.contactsList.size(); j++){
-		    		if(SmsSchedulerApplication.contactsList.get(i).name.compareTo(SmsSchedulerApplication.contactsList.get(j).name)>0){
+		    		if(SmsSchedulerApplication.contactsList.get(i).name.toUpperCase().compareTo(SmsSchedulerApplication.contactsList.get(j).name.toUpperCase())>0){
 		    			SmsSchedulerApplication.contactsList.set(j, SmsSchedulerApplication.contactsList.set(i, SmsSchedulerApplication.contactsList.get(j)));
 		    		}
 		    	}

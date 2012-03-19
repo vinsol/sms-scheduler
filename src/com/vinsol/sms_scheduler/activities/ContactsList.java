@@ -122,7 +122,7 @@ public class ContactsList extends Activity {
 								public void onClick(View v) {
 									Log.d("GroupName : " + groupName);
 									if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
-										Toast.makeText(ContactsList.this, "Please enter the name for group", Toast.LENGTH_SHORT).show();
+										Toast.makeText(ContactsList.this, "Please enter a valid name for group", Toast.LENGTH_SHORT).show();
 										groupNameEdit.setText("");
 									}else{
 										boolean groupNameExists = false;

@@ -75,7 +75,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		}
 		
 		if(isDraft)
-			cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_footer_states));
+			cancelButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_footer_states));
 		
 		setSuperFunctionalities();
 		loadGroupsData();
