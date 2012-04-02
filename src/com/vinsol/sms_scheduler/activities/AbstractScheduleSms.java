@@ -48,6 +48,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -81,6 +82,7 @@ import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 import com.vinsol.sms_scheduler.models.Contact;
+import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 import com.vinsol.sms_scheduler.utils.Log;
@@ -316,6 +318,33 @@ abstract class AbstractScheduleSms extends Activity{
 			}
 		});
         
+        ac_wrapper.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				numbersText.showContextMenu();
+				return true;
+			}
+		});
+        
+        hll.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				numbersText.showContextMenu();
+				return true;
+			}
+		});
+        
+        firstRow.ll.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				numbersText.showContextMenu();
+				return true;
+			}
+		});
+        
         recipientDetailsButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -415,7 +444,7 @@ abstract class AbstractScheduleSms extends Activity{
         rows.add(firstRow);
         //TODO:
         final Row tempRow = new Row(false);
-        final View sampleElement = createElement(new Recipient(-1, 1, "sa", -2, -1, 0, 0));
+        final View sampleElement = createElement(new Recipient(-1, 1, "sa", -2, -1, 0, 0, null));
         tempRow.ll.addView(sampleElement);
         hll.addView(tempRow.ll);
         
@@ -529,7 +558,7 @@ abstract class AbstractScheduleSms extends Activity{
 							}
 						}
 						if(!isPresent){
-							Recipient recipient = new Recipient(-1, 1, numbersText.getText().toString().trim(), -1, -1, -1, -1);
+							Recipient recipient = new Recipient(-1, 1, numbersText.getText().toString().trim(), -1, -1, -1, -1, numbersText.getText().toString().trim());
 							Recipients.add(recipient);
 							View view = createElement(recipient);
 							addView(view);
@@ -663,7 +692,6 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			@Override
 			public void onGlobalLayout() {
-				// TODO Auto-generated method stub
 //				Log.d("" + firstRow.ll.getWidth()/dpi);
 				widthOfContainerInDp = (int) (firstRow.ll.getWidth()/dpi);
 //				Log.d("width of sample element : " + sampleElement.getWidth()/dpi);
@@ -1387,9 +1415,10 @@ abstract class AbstractScheduleSms extends Activity{
 			if(convertView == null) {
         		convertView = getLayoutInflater().inflate(R.layout.suggestions_dropdown_row, parent, false);
         		holder = new AutoCompleteListHolder();
-        		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.row_name_label);
-        		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.row_number_label);
-        		
+        		holder.nameText 			= (TextView) 	 convertView.findViewById(R.id.row_name_label);
+        		holder.numberText 			= (TextView) 	 convertView.findViewById(R.id.row_number_label);
+        		holder.extraNumbersLayout 	= (LinearLayout) convertView.findViewById(R.id.extra_numbers_layout);
+        		holder.primaryNumberLayout  = (LinearLayout) convertView.findViewById(R.id.primary_number_space);
         		convertView.setTag(holder);
     		} else {
     			holder = (AutoCompleteListHolder) convertView.getTag();
@@ -1397,7 +1426,7 @@ abstract class AbstractScheduleSms extends Activity{
     		
 			if(shortlist != null && shortlist.size() > position) {
 				holder.nameText.setText(shortlist.get(position).name);
-				holder.numberText.setText(shortlist.get(position).number);
+				holder.numberText.setText(shortlist.get(position).numbers.get(0).type + ": " + shortlist.get(position).numbers.get(0).number);//TODO
 			}
 			
 			convertView.setOnClickListener(new OnClickListener() {
@@ -1412,7 +1441,7 @@ abstract class AbstractScheduleSms extends Activity{
 						}
 					}
 					if(!isPresent){
-						final Recipient recipient = new Recipient(-1, 2, shortlist.get(position).name, shortlist.get(position).content_uri_id, -1, -1, -1);
+						final Recipient recipient = new Recipient(-1, 2, shortlist.get(position).name, shortlist.get(position).content_uri_id, -1, -1, -1, shortlist.get(position).numbers.get(0).number);
 						Recipients.add(recipient);
 						
 						View view = createElement(recipient);
@@ -1444,14 +1473,18 @@ abstract class AbstractScheduleSms extends Activity{
 	
 			Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
 			for(int i = 0; i < SmsSchedulerApplication.contactsList.size(); i++) {
-				SmsSchedulerApplication.contactsList.get(i).number = refineNumber(SmsSchedulerApplication.contactsList.get(i).number);
+				SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number = refineNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number);//TODO
 				Matcher m = p.matcher(SmsSchedulerApplication.contactsList.get(i).name);
 				if(m.find()) {
 					shortlist.add(SmsSchedulerApplication.contactsList.get(i));
 				} else {
-					m = p.matcher(SmsSchedulerApplication.contactsList.get(i).number);
-					if(m.find()) {
-						shortlist.add(SmsSchedulerApplication.contactsList.get(i));
+					for(int j = 0; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
+						SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number = AbstractScheduleSms.refineNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number);
+						m = p.matcher(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number);
+						if(m.find()) {
+							shortlist.add(SmsSchedulerApplication.contactsList.get(i));
+							break;
+						}
 					}
 				}
 			}
@@ -1491,6 +1524,8 @@ abstract class AbstractScheduleSms extends Activity{
 	private class AutoCompleteListHolder {
 		TextView nameText;
 		TextView numberText;
+		LinearLayout extraNumbersLayout;
+		LinearLayout primaryNumberLayout;
 	}
 	
 	
@@ -1660,7 +1695,7 @@ abstract class AbstractScheduleSms extends Activity{
        					}
        				}
        			}
-        		
+        		Log.d("checkpoint 1");
         		group.put(Constants.GROUP_TYPE, 1);
         		group.put(Constants.GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
         		
@@ -1675,9 +1710,10 @@ abstract class AbstractScheduleSms extends Activity{
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
         					
         					childParameters.put(Constants.CHILD_NAME, SmsSchedulerApplication.contactsList.get(i).name);
-        					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(i).number);
+        					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number);//TODO
         					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(i).image);
         					childParameters.put(Constants.CHILD_CHECK, false);//doubted
+        					Log.d("checkpoint2");
         					for(int k = 0; k< recipientIdsForGroup.size(); k++){
        							for(int m = 0; m< Recipients.size(); m++){
        								if(Recipients.get(m).recipientId == recipientIdsForGroup.get(k) && Recipients.get(m).contactId ==SmsSchedulerApplication.contactsList.get(i).content_uri_id){
@@ -1737,6 +1773,9 @@ abstract class AbstractScheduleSms extends Activity{
         	
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         		ArrayList<Long> contactIds = mdba.fetchIdsForGroups(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+        		ArrayList<String> contactNumbers = mdba.fetchNumbersForGroup(groupsCursor.getLong(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
+        		
+        		Log.d("Contact Numbers size : " + contactNumbers.size());
         		
         		boolean hasChild = false;
         		
@@ -1746,7 +1785,17 @@ abstract class AbstractScheduleSms extends Activity{
         					hasChild = true;
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
         					childParameters.put(Constants.CHILD_NAME, SmsSchedulerApplication.contactsList.get(j).name);
-        					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(j).number);
+        					ArrayList<ContactNumber> numbers = SmsSchedulerApplication.contactsList.get(j).numbers;
+        					String number = "";
+        					Log.d("Numbers size : " + numbers.size());
+        					for(int m = 0; m< numbers.size(); m++){
+        						if(numbers.get(m).number.equals(contactNumbers.get(i))){
+        							number = numbers.get(m).number;
+        							break;
+        						}
+        					}
+        					Log.d("Choosen Number : " + number);
+        					childParameters.put(Constants.CHILD_NUMBER, number);//TODO
         					childParameters.put(Constants.CHILD_CONTACT_ID, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
         					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(j).image);
         					childParameters.put(Constants.CHILD_CHECK, false);
@@ -1796,7 +1845,7 @@ abstract class AbstractScheduleSms extends Activity{
 			mdba.deleteSms(editedSms, AbstractScheduleSms.this);
 		}
 		if(Recipients.size()==0){
-			Recipient recipient = new Recipient(-1, 1, " ", -1, -1, -1, -1);  // for adding as a fake span to create a draft
+			Recipient recipient = new Recipient(-1, 1, " ", -1, -1, -1, -1, null);  // for adding as a fake span to create a draft
 			Recipients.add(recipient);
 		}
 		
@@ -1804,18 +1853,18 @@ abstract class AbstractScheduleSms extends Activity{
 			if(Recipients.get(i).type == 2){
 				for(int j = 0; j< SmsSchedulerApplication.contactsList.size(); j++){
 					if(Recipients.get(i).contactId == SmsSchedulerApplication.contactsList.get(j).content_uri_id){
-						numbers.add(SmsSchedulerApplication.contactsList.get(j).number);
+						numbers.add(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number);//TODO
 						Log.d("added Display Name : " + SmsSchedulerApplication.contactsList.get(j).name);
-						long receivedRecipientId = mdba.addRecipient(smsId, SmsSchedulerApplication.contactsList.get(j).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
+						long receivedRecipientId = mdba.addRecipient(smsId, SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);//TODO
 						if(!Recipients.get(i).displayName.equals(" ")){
 							mdba.addRecentContact(Recipients.get(i).contactId, "");
 						}
 						
 						if(!(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 							if(mdba.getCurrentPiFiretime() == -1){
-								handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).number, smsId, receivedRecipientId, cal.getTimeInMillis());
+								handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number, smsId, receivedRecipientId, cal.getTimeInMillis());//TODO
 							}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-								handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).number, smsId, receivedRecipientId, cal.getTimeInMillis());
+								handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number, smsId, receivedRecipientId, cal.getTimeInMillis());//TODO
 							}
 						}
 						
@@ -1989,6 +2038,15 @@ abstract class AbstractScheduleSms extends Activity{
 							numbersText.setHint(" ");
 						}
 						inputMethodManager.showSoftInput(numbersText, 0);
+					}
+				});
+				
+				ll.setOnLongClickListener(new OnLongClickListener() {
+					
+					@Override
+					public boolean onLongClick(View v) {
+						numbersText.showContextMenu();
+						return true;
 					}
 				});
 			}

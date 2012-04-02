@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
+<LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="56dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:clickable="false">
+
+<RelativeLayout 
+    android:id="@+id/contact_list_primary_contact_space"
+    android:layout_width="fill_parent"
+    android:layout_height="58dp"
     android:background="@drawable/list_item_states"
+    android:clickable="true"
     >
     <!-- Contact Image -->
     <ImageView 
@@ -11,6 +19,7 @@
         android:layout_height = "40dp"
         android:layout_width = "40dp"
         android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
         android:layout_margin = "10dp"
         >
     </ImageView>
@@ -23,6 +32,7 @@
         android:layout_gravity="center_vertical"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dip"
+        android:layout_centerVertical="true"
         >
     </CheckBox>    
     
@@ -55,4 +65,17 @@
         android:textColor="@color/listing_text"
         >
     </TextView>
-</RelativeLayout>
+    
+</RelativeLayout>   
+   
+<!-- List of Extra Numbers -->
+
+    <LinearLayout 
+        android:id="@+id/extra_numbers_layout"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="vertical">
+        
+    </LinearLayout>
+    
+</LinearLayout>  

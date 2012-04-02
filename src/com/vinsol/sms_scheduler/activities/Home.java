@@ -55,6 +55,7 @@ import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
+import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.utils.Log;
@@ -580,7 +581,8 @@ public class Home extends Activity {
         											SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_CONTACT_ID)),
         											SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID)),
         											SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_SENT)),
-        											SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_DELIVER)));
+        											SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_DELIVER)),
+        											SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_NUMBER)));
         		if(SMS.keyNumber.equals("")){
         			SMS.keyNumber = SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DISPLAY_NAME));
         		}else{
@@ -865,6 +867,150 @@ public class Home extends Activity {
 	
 	
 	//------------------------Contacts Data Load functions---------------------------------------------
+	public void loadContactsByPhone(){
+    	Long startTime = System.currentTimeMillis();
+    	
+    	if(SmsSchedulerApplication.contactsList.size()==0){
+    		ContentResolver cr = getContentResolver();
+    		
+    		ArrayList<String> contactIds = new ArrayList<String>();
+    		ArrayList<Long> groups = new ArrayList<Long>();
+    		
+    		String[] projection = new String[] {Groups._ID,};
+			Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
+    		groupCursor = cr.query(groupsUri, projection, null, null, null);
+    		while(groupCursor.moveToNext()){
+    			groups.add(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
+//    			Log.i("MSG", "Group : " + groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
+    		}
+    		
+    		Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null,null, null);
+        	
+    		Log.d("Cursor size : " + phones.getCount());
+        	
+    		while (phones.moveToNext())
+        	{
+        	  boolean isContactPresent = false;
+        	  String contactId = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+        	  ContactNumber cn = new ContactNumber(Long.parseLong(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))),
+        			    phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)), 
+					  	resolveType(phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE))));
+        	  
+        	  if(phones.getInt(phones.getColumnIndex(Phone.IS_PRIMARY))!=0){
+				  cn.isPrimary = true;
+			  }
+        	  
+        	  for(int i =0; i< SmsSchedulerApplication.contactsList.size(); i++){
+        		  if(Long.parseLong(contactId)==SmsSchedulerApplication.contactsList.get(i).content_uri_id){
+        			  isContactPresent = true;
+        			  SmsSchedulerApplication.contactsList.get(i).numbers.add(cn);
+        			  break;
+        		  }
+        	  }
+        	  if(!isContactPresent){
+        		  contactIds.add(contactId);
+        		  Contact contact = new Contact();
+        		  contact.content_uri_id = Long.parseLong(contactId);
+		    	  contact.name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+		    	  contact.numbers.add(cn);
+		    	  Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contact.content_uri_id);
+		    	  InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+		    	  try{
+		    		  BitmapFactory.Options o = new BitmapFactory.Options();
+		    	      o.inPurgeable = true;
+		    	      o.inInputShareable = true;
+		    	      contact.image = BitmapFactory.decodeStream(input, null, o);
+		    	      contact.image.getHeight();
+		    	  } catch (NullPointerException e){
+		    	      contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
+		    	  }
+		    	  
+		    	  SmsSchedulerApplication.contactsList.add(contact);
+		    	  
+        	  }
+        	}
+        	phones.close();
+		    	  
+		    	  String[] contactIdsArray = new String[contactIds.size()];
+		    	  for(int i = 0; i< contactIds.size(); i++){
+		    		  contactIdsArray[i] = contactIds.get(i);
+		    	  }
+		    	  
+		    	  Cursor cur = cr.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID}, null, null, null);
+		    	  
+		    	  if(cur.moveToFirst()){
+		    		  do{
+		    			  Long groupId = cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID));
+		    			  Long contactIdOfGroup = cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID));
+		    			  boolean isValid = false;
+  	    				  for(int m = 0; m< groups.size(); m++){
+  	    				    	if(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)) == groups.get(m)){
+  	    							isValid = true;
+  	    							break;
+  	    						}
+  	    				  }
+		    			  if(!(groupId==0) && isValid){
+		    				  for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+		    					  if(contactIdOfGroup==SmsSchedulerApplication.contactsList.get(i).content_uri_id){
+		    						  SmsSchedulerApplication.contactsList.get(i).groupRowId.add(groupId);
+//		    						  groups.remove(groupId);
+		    					  }
+		    				  }
+		    			  }
+		    				  
+		    		  }while(cur.moveToNext());
+		    	  }
+		    	  
+		    	  
+		    //To set primary number for contacts...	  
+		    for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+		    	boolean primaryPresent = false;
+		    	for(int j = 0; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
+		    		if(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).isPrimary){
+		    			SmsSchedulerApplication.contactsList.get(i).numbers.add(0, SmsSchedulerApplication.contactsList.get(i).numbers.remove(j));
+		    			primaryPresent = true;
+		    		}
+		    	}
+		    	if(!primaryPresent)
+		    		SmsSchedulerApplication.contactsList.get(i).numbers.get(0).isPrimary=true;
+		    }	  
+		    
+		    
+		    
+        	for(int i = 0; i< SmsSchedulerApplication.contactsList.size()-1; i++){
+		    	for(int j = i+1; j< SmsSchedulerApplication.contactsList.size(); j++){
+		    		if(SmsSchedulerApplication.contactsList.get(i).name.toUpperCase().compareTo(SmsSchedulerApplication.contactsList.get(j).name.toUpperCase())>0){
+		    			SmsSchedulerApplication.contactsList.set(j, SmsSchedulerApplication.contactsList.set(i, SmsSchedulerApplication.contactsList.get(j)));
+		    		}
+		    	}
+		    }
+        	
+        	for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+        		Log.d("=====================================================");
+        		Log.d(SmsSchedulerApplication.contactsList.get(i).name + " ; " + 
+        				SmsSchedulerApplication.contactsList.get(i).content_uri_id);
+        		
+        		for(int j = 0 ; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
+        			if(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).isPrimary){
+        				Log.d(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type + " : " +
+            					SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number + " PRIMARY");
+        			}else{
+        				Log.d(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type + " : " +
+            					SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number);
+        			}
+        		}
+        		for(int j = 0 ; j< SmsSchedulerApplication.contactsList.get(i).groupRowId.size(); j++){
+        			Log.d("Group : " + SmsSchedulerApplication.contactsList.get(i).groupRowId.get(j));
+        		}
+        	}
+    	}
+    	
+    	Long endTime = System.currentTimeMillis();
+		Log.d("===================================\nTime taken : " + (endTime-startTime));
+    }
+	
+	
+	
 	public void loadContactsData(){
 		if(SmsSchedulerApplication.contactsList.size()==0){
 			System.currentTimeMillis();
@@ -885,13 +1031,21 @@ public class Home extends Activity {
 		    	    	Contact contact = new Contact();
 			    		contact.content_uri_id = Long.parseLong(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID)));
 			    		contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-			    		contact.number = phones.getString(phones.getColumnIndex(Phone.NUMBER));
-
+			    		do{
+			    			contact.numbers.add(new ContactNumber(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID), phones.getString(phones.getColumnIndex(Phone.NUMBER)), resolveType(Integer.parseInt(phones.getString(phones.getColumnIndex(Phone.TYPE))))));
+			    		}while(phones.moveToNext());
 		    	    	Cursor cur = cr.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID}, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID + "=" + contact.content_uri_id, null, null);
 		    	    	if(cur.moveToFirst()){
 		    	    		do{
 		    	    			// SAZWQA: Should we add a rule that if GROUP_ROW_ID == 0 or it's equal to phone no. don't ADD it?
-		    	    			if(!String.valueOf(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))).equals(contact.number) && cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))!=0){
+		    	    			boolean equalsNumber = false;
+		    	    			for(int i=0; i< contact.numbers.size(); i++){
+		    	    				if(String.valueOf(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))).equals(contact.numbers.get(i))){
+		    	    					equalsNumber = true;
+		    	    					break;
+		    	    				}
+		    	    			}
+		    	    			if(!equalsNumber && cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))!=0){
 		    	    				boolean isValid = false;
 		    	    				if(groupCursor.moveToFirst()){
 		    	    					do{
@@ -940,11 +1094,62 @@ public class Home extends Activity {
 	}
 	
 	
+	
+	public String resolveType(int type){
+		switch(type){
+			case Phone.TYPE_ASSISTANT:
+				return "Assistant";
+			case Phone.TYPE_CALLBACK:
+				return "Callback";
+			case Phone.TYPE_CAR:
+				return "Car";
+			case Phone.TYPE_COMPANY_MAIN:
+				return "Company Main";
+			case Phone.TYPE_FAX_HOME:
+				return "Fax Home";
+			case Phone.TYPE_FAX_WORK:
+				return "Fax Work";
+			case Phone.TYPE_HOME:
+				return "Home";
+			case Phone.TYPE_ISDN:
+				return "ISDN";
+			case Phone.TYPE_MAIN:
+				return "Main";
+			case Phone.TYPE_MMS:
+				return "MMS";
+			case Phone.TYPE_MOBILE:
+				return "Mobile";
+			case Phone.TYPE_OTHER:
+				return "Other";
+			case Phone.TYPE_OTHER_FAX:
+				return "Other Fax";
+			case Phone.TYPE_PAGER:
+				return "Pager";
+			case Phone.TYPE_RADIO:
+				return "Radio";
+			case Phone.TYPE_TELEX:
+				return "Telex";
+			case Phone.TYPE_TTY_TDD:
+				return "TTY TDD";
+			case Phone.TYPE_WORK:
+				return "Work";
+			case Phone.TYPE_WORK_MOBILE:
+				return "Work Mobile";
+			case Phone.TYPE_WORK_PAGER:
+				return "Work Pager";
+			case Phone.TYPE_CUSTOM:
+				return "Custom";
+			default:
+				return "Other";
+		}
+	}
+	
+	
 	private class ContactsAsync extends AsyncTask<Void, Void, Void>{
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			loadContactsData();
+			loadContactsByPhone();
 			return null;
 		}
 		

@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical">
+    
+<LinearLayout
+    android:id="@+id/primary_number_space"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" 
     android:paddingLeft="10dip"
     android:paddingTop="5dip"
@@ -30,4 +36,13 @@
         android:textColor="@color/text_grey"
         >
     </TextView>
+</LinearLayout>
+
+<LinearLayout
+    android:id="@+id/extra_number_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"/>
+    
+
 </LinearLayout>

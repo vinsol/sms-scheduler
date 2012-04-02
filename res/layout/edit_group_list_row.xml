@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
+<LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="56dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:clickable="false">
+    
+<RelativeLayout 
+    android:id="@+id/primary_number_space"
+    android:layout_width="fill_parent"
+    android:layout_height="58dp"
     android:background="@drawable/list_item_states"
+    android:clickable="true"
     >    
 
     <!-- Contact Image -->
@@ -21,8 +29,8 @@
         android:id = "@+id/group_add_edit_row_delete_button"
         android:layout_height = "wrap_content"
         android:layout_width = "wrap_content"
-        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:layout_marginRight="10dip"
         android:src="@drawable/delete_icon_states"
         >
@@ -57,4 +65,16 @@
         android:textColor="@color/listing_text"
         >
     </TextView>
+
 </RelativeLayout>
+    
+    <!-- List of Extra Numbers -->
+    <LinearLayout 
+        android:id="@+id/extra_numbers_layout"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="vertical">
+        
+    </LinearLayout>
+
+</LinearLayout>

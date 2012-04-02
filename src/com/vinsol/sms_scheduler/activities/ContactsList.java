@@ -22,13 +22,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
+import com.vinsol.sms_scheduler.models.ContactNumber;
+import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
@@ -43,7 +47,9 @@ public class ContactsList extends Activity {
 	
 	private ArrayList<Contact> contacts = new ArrayList<Contact>();
 	private ArrayList<Long> ids = new ArrayList<Long>();
+	private ArrayList<String> numbers = new ArrayList<String>();
 	private ArrayList<Long> idsTemp = new ArrayList<Long>();
+	private ArrayList<String> numbersTemp = new ArrayList<String>();
 	private ArrayList<String> idsString = new ArrayList<String>();
 	
 	private String callingActivity;
@@ -65,6 +71,10 @@ public class ContactsList extends Activity {
 		if(callingActivity.equals("Group Edit Activity")){
 			idsString.clear();
 			idsString = intent.getStringArrayListExtra("IDARRAY");
+			numbers = intent.getStringArrayListExtra("NUMBERARRAY");
+			for(int i = 0; i< numbers.size(); i++){
+				numbersTemp.add(numbers.get(i));
+			}
 			for(int i = 0; i< idsString.size(); i++){
 				ids.add(Long.parseLong(idsString.get(i)));
 				idsTemp.add(Long.parseLong(idsString.get(i)));
@@ -73,12 +83,12 @@ public class ContactsList extends Activity {
 			for(int i = 0; i< contacts.size(); i++){
 				contacts.get(i).checked = false;
 				for(int j = 0; j< ids.size(); j++){
-					if(contacts.get(i).content_uri_id == ids.get(j)){
+					if(contacts.get(i).content_uri_id == ids.get(j) && contacts.get(i).numbers.get(0).number.equals(numbers.get(j))){
 						contacts.get(i).checked = true;
 					}
 				}
 			}
-		
+			
 			doneButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_footer_states));
 			intent.getLongExtra("GROUPID", 0);
 			
@@ -144,7 +154,7 @@ public class ContactsList extends Activity {
 											groupName = groupNameEdit.getText().toString();
 											
 											mdba.open();
-											mdba.createGroup(groupName, ids);
+											mdba.createGroup(groupName, ids, numbers);
 											mdba.close();
 											ContactsList.this.finish();
 										}
@@ -166,7 +176,7 @@ public class ContactsList extends Activity {
 								Toast.makeText(ContactsList.this, "No contacts selected, Please select some contacts", Toast.LENGTH_LONG).show();
 							}else{
 								mdba.open();
-								mdba.createGroup(groupName, ids);
+								mdba.createGroup(groupName, ids, numbers);
 								mdba.close();
 								
 								setResult(10, intent);
@@ -176,6 +186,7 @@ public class ContactsList extends Activity {
 					}
 				}else{
 					intent.putStringArrayListExtra("IDSLIST", idsStringChanged);
+					intent.putStringArrayListExtra("NUMBERSLIST", numbers);
 					intent.putExtra("CANCEL", false);
 					setResult(10, intent);
 					ContactsList.this.finish();
@@ -234,20 +245,45 @@ public class ContactsList extends Activity {
     			LayoutInflater inflater = getLayoutInflater();
         		convertView = inflater.inflate(R.layout.contacts_list_row, parent, false);
         		holder = new ContactsAddListHolder();
-        		holder.contactImage 	= (ImageView) 	convertView.findViewById(R.id.contact_list_row_contact_pic);
-        		holder.nameText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_name);
-        		holder.numberText 		= (TextView) 	convertView.findViewById(R.id.contact_list_row_contact_number);
-        		holder.contactCheck 	= (CheckBox) 	convertView.findViewById(R.id.contact_list_row_contact_check);
+        		holder.contactImage 		= (ImageView) 		convertView.findViewById(R.id.contact_list_row_contact_pic);
+        		holder.nameText 			= (TextView) 		convertView.findViewById(R.id.contact_list_row_contact_name);
+        		holder.numberText 			= (TextView) 		convertView.findViewById(R.id.contact_list_row_contact_number);
+        		holder.contactCheck 		= (CheckBox) 		convertView.findViewById(R.id.contact_list_row_contact_check);
+        		holder.primaryNumberLayout 	= (RelativeLayout) 	convertView.findViewById(R.id.contact_list_primary_contact_space);
+        		
         		convertView.setTag(holder);
     		} else {
     			holder = (ContactsAddListHolder) convertView.getTag();
     		}
     		final int _position  = position;
     		
+    		holder.extraNumbersLayout = (LinearLayout) convertView.findViewById(R.id.extra_numbers_layout);
+    		holder.extraNumbersViews = new ArrayList<View>();
+    		
     		holder.contactImage.setImageBitmap(contacts.get(position).image);
     		holder.nameText.setText(contacts.get(position).name);
-    		holder.numberText.setText(contacts.get(position).number);
+    		holder.numberText.setText(contacts.get(position).numbers.get(0).type + ": " + contacts.get(position).numbers.get(0).number);//TODO
     		holder.contactCheck.setChecked(contacts.get(position).checked);
+    		
+    		if(contacts.get(position).numbers.size()>1){
+    			holder.extraNumbersLayout.setVisibility(View.VISIBLE);
+    			holder.extraNumbersLayout.removeAllViews();
+    			holder.extraNumbersViews.clear();
+    			ArrayList<ContactNumber> extraNumbers = new ArrayList<ContactNumber>();
+        		for(int i=1; i< contacts.get(position).numbers.size(); i++){
+        			extraNumbers.add(contacts.get(position).numbers.get(i));
+        		}
+        		for(int i = 0; i< extraNumbers.size(); i++){
+        			View view = createView(extraNumbers.get(i), contacts.get(position), getLayoutInflater());
+        			holder.extraNumbersViews.add(view);
+        			
+        		}
+        		for(int i = 0; i< holder.extraNumbersViews.size(); i++){
+        			holder.extraNumbersLayout.addView(holder.extraNumbersViews.get(i));
+        		}
+    		}else{
+    			holder.extraNumbersLayout.setVisibility(View.GONE);
+    		}
     		
     		holder.contactCheck.setOnClickListener(new OnClickListener() {
 				
@@ -256,11 +292,13 @@ public class ContactsList extends Activity {
 					
 					if(holder.contactCheck.isChecked()){
 						ids.add(contacts.get(_position).content_uri_id);
+						numbers.add(contacts.get(_position).numbers.get(0).number);
 						contacts.get(_position).checked = true;	
 					}else{
 						for(int i = 0; i< ids.size(); i++){
-							if(ids.get(i) == contacts.get(_position).content_uri_id){
+							if(ids.get(i) == contacts.get(_position).content_uri_id && numbers.get(i).equals(contacts.get(_position).numbers.get(0).number)){
 								ids.remove(i);
+								numbers.remove(i);
 								contacts.get(_position).checked = false;
 							}
 						}
@@ -269,19 +307,21 @@ public class ContactsList extends Activity {
 			});
     		
     		
-    		convertView.setOnClickListener(new OnClickListener() {
+    		holder.primaryNumberLayout.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					if(!holder.contactCheck.isChecked()){
 						holder.contactCheck.setChecked(true);
 						ids.add(contacts.get(_position).content_uri_id);
+						numbers.add(contacts.get(_position).numbers.get(0).number);
 						contacts.get(_position).checked = true;	
 					}else{
 						holder.contactCheck.setChecked(false);
 						for(int i = 0; i< ids.size(); i++){
-							if(ids.get(i) == contacts.get(_position).content_uri_id){
+							if(ids.get(i) == contacts.get(_position).content_uri_id && numbers.get(i).equals(contacts.get(_position).numbers.get(0).number)){
 								ids.remove(i);
+								numbers.remove(i);
 								contacts.get(_position).checked = false;
 							}
 						}
@@ -296,10 +336,129 @@ public class ContactsList extends Activity {
 	
 	
 	
+	public View createView(final ContactNumber contactNumber, final Contact contact, LayoutInflater inflater){
+		
+		View view = inflater.inflate(R.layout.extra_numbers_list_row, null);
+		
+		TextView tv = (TextView) view.findViewById(R.id.extra_number);
+		final CheckBox cb = (CheckBox) view.findViewById(R.id.extra_number_checkbox);
+		
+		tv.setText(contactNumber.type + ": " + contactNumber.number);
+		
+//		for(int i = 0; i< RecipientsTemp.size(); i++){
+//			Log.d(i + " : " + RecipientsTemp.get(i).contactId + ", " + RecipientsTemp.get(i).number);
+//		}
+		Log.d("\nView Details : " + contactNumber.contactId + ", " + contactNumber.number);
+		
+//		for(int i = 0; i< RecipientsTemp.size(); i++){
+//			
+//    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
+//    			cb.setChecked(true);
+//    			break;
+//    		}else{
+//    			cb.setChecked(false);
+//    		}
+//    	}
+		
+		boolean hasEntry = false;
+		for(int i = 0; i< ids.size(); i++){
+			if(ids.get(i)==contact.content_uri_id && contactNumber.number.equals(numbers.get(i))){
+				hasEntry = true;
+				cb.setChecked(true);
+			}
+		}
+		if(!hasEntry){
+			cb.setChecked(false);
+		}
+		
+		view.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(!cb.isChecked()){
+					cb.setChecked(true);
+					ids.add(contact.content_uri_id);
+					numbers.add(contactNumber.number);
+				}else{
+					cb.setChecked(false);
+					for(int i = 0; i< ids.size(); i++){
+						if(ids.get(i) == contact.content_uri_id && numbers.get(i).equals(contactNumber.number)){
+							ids.remove(i);
+							numbers.remove(i);
+						}
+					}
+				}
+			}
+		});
+		
+		cb.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(cb.isChecked()){
+					ids.add(contact.content_uri_id);
+					numbers.add(contactNumber.number);
+				}else{
+					for(int i = 0; i< ids.size(); i++){
+						if(ids.get(i) == contact.content_uri_id && numbers.get(i).equals(contactNumber.number)){
+							ids.remove(i);
+							numbers.remove(i);
+						}
+					}
+				}
+			}
+		});
+		
+		
+//		cb.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				
+//				if(cb.isChecked()){
+//					boolean isPresent = false;
+//					for(int i = 0; i< RecipientsTemp.size(); i++){
+//						if(RecipientsTemp.get(i).contactId == contactNumber.contactId && RecipientsTemp.get(i).number.equals(contactNumber.number)){
+//							isPresent = true;
+//							break;
+//						}
+//					}
+//					if(!isPresent){
+//						int k;
+//						for(k = 0; k < SmsSchedulerApplication.contactsList.size(); k++){
+//							Log.d(SmsSchedulerApplication.contactsList.get(k).content_uri_id + " and " + contactNumber.contactId);
+//							if(SmsSchedulerApplication.contactsList.get(k).content_uri_id==contactNumber.contactId){
+//								break;
+//							}
+//						}
+//						Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, contactNumber.contactId, -1, -1, -1, contactNumber.number);
+//						recipient.groupIds.add((long) -1);
+//						recipient.groupTypes.add(-1);
+//						RecipientsTemp.add(recipient);
+//					}
+//				}else{
+//					for(int i = 0; i<RecipientsTemp.size(); i++){
+//			    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
+//			    			RecipientsTemp.remove(i);
+//			    		}
+//					}
+//				}
+//			}
+//		});
+		
+		return view;
+	}
+	
+	
+	
+	
 	private class ContactsAddListHolder{
 		ImageView contactImage;
 		TextView nameText;
 		TextView numberText;
 		CheckBox contactCheck;
+		LinearLayout extraNumbersLayout;
+		RelativeLayout primaryNumberLayout;
+		ArrayList<View> extraNumbersViews;
 	}
 }

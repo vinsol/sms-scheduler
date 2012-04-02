@@ -79,6 +79,7 @@ public class DBAdapter {
 	public static final String KEY_RELATION_ID = "_id";
 	public static final String KEY_GROUP_REL_ID = "group_rel_id";
 	public static final String KEY_CONTACTS_ID = "contacts_id";
+	public static final String KEY_CONTACTS_NUMBER = "contacts_number";
 	
 	//-------------------keys for recipient-groupId relation--------------------
 	public static final String KEY_RECIPIENT_GRP_REL_ID = "_id";
@@ -144,9 +145,10 @@ public class DBAdapter {
 	
 	private final String DATABASE_CREATE_GROUP_CONTACT_RELATION = "create table " +DATABASE_GROUP_CONTACT_RELATION 
 			+ " (" 
-			+ KEY_RELATION_ID  + " integer primary key autoincrement, " 
-			+ KEY_GROUP_REL_ID + " integer, " 
-			+ KEY_CONTACTS_ID  + " integer);";
+			+ KEY_RELATION_ID  		+ " integer primary key autoincrement, " 
+			+ KEY_GROUP_REL_ID 		+ " integer, " 
+			+ KEY_CONTACTS_ID  		+ " integer, "
+			+ KEY_CONTACTS_NUMBER 	+ " text);";
 	
 	
 	private final String DATABASE_CREATE_RECIPIENT_GROUP_REL_TABLE = "create table " + DATABASE_RECIPIENT_GROUP_REL_TABLE 
@@ -568,21 +570,36 @@ public class DBAdapter {
 	}
 	
 	
-	public long createGroup(String name, ArrayList<Long> contactIds){
+	
+	public ArrayList<String> fetchNumbersForGroup(long groupId){
+		ArrayList<String> numbers = new ArrayList<String>();
+		Cursor cur = db.query(DATABASE_GROUP_CONTACT_RELATION, new String[]{KEY_CONTACTS_NUMBER}, KEY_GROUP_REL_ID + "=" + groupId, null, null, null, null);
+		if(cur.moveToFirst()){
+			do{
+				numbers.add(cur.getString(cur.getColumnIndex(KEY_CONTACTS_NUMBER)));
+			}while(cur.moveToNext());
+		}
+		cur.close();
+		return numbers;
+	}
+	
+	
+	public long createGroup(String name, ArrayList<Long> contactIds, ArrayList<String> contactNumbers){
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_GROUP_NAME, name);
 		long grpid = db.insert(DATABASE_GROUP_TABLE, null, cv);
 		for(int i = 0; i< contactIds.size(); i++){
-			addContactToGroup(contactIds.get(i), grpid);
+			addContactToGroup(contactIds.get(i), grpid, contactNumbers.get(i));
 		}
 		return grpid;
 	}
 	
 	
-	public void addContactToGroup(long contactId, long groupId){
+	public void addContactToGroup(long contactId, long groupId, String contactNumber){
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_GROUP_REL_ID, groupId);
 		cv.put(KEY_CONTACTS_ID, contactId);
+		cv.put(KEY_CONTACTS_NUMBER, contactNumber);
 		db.insert(DATABASE_GROUP_CONTACT_RELATION, null, cv);
 	}
 	

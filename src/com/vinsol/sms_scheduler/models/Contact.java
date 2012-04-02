@@ -13,9 +13,8 @@ public class Contact {
 
 	public long content_uri_id;
 	public String name;
-	public String number;
+	public ArrayList<ContactNumber> numbers = new ArrayList<ContactNumber>();
 	public Bitmap image;
 	public ArrayList<Long> groupRowId = new ArrayList<Long>(); 
 	public boolean checked = false;
-	
 }

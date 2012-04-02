@@ -5,7 +5,7 @@
     android:versionCode="3"
     android:versionName="1.2">
     
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="8"/>
 	
 	<uses-permission android:name = "android.permission.SEND_SMS"/>
 	<uses-permission android:name="android.permission.READ_CONTACTS"/>
@@ -20,7 +20,7 @@
 	
 
     <application 
-        android:debuggable="true"
+        android:debuggable="false"
         android:name=".SmsSchedulerApplication" 
         android:icon="@drawable/icon" 
         android:label="SMS Scheduler" 

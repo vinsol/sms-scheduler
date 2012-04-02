@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +31,7 @@ import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 import com.vinsol.sms_scheduler.models.Contact;
+import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.utils.Log;
 
 
@@ -51,7 +54,10 @@ public class EditGroup extends Activity {
 	
 	private ArrayList<Long> ids = new ArrayList<Long>();
 	private ArrayList<Long> idsTemp = new ArrayList<Long>();
+	private ArrayList<String> numbers = new ArrayList<String>();
+	private ArrayList<String> numbersTemp = new ArrayList<String>();
 	private ArrayList<Contact> newGroupContacts = new ArrayList<Contact>();
+	private ArrayList<GroupMember> groupMembers = new ArrayList<GroupMember>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,9 @@ public class EditGroup extends Activity {
 		ids.clear();
 		mdba.open();
 		ids = idsTemp = mdba.fetchIdsForGroups(groupId);
+		numbers = numbersTemp = mdba.fetchNumbersForGroup(groupId);
+		
+		groupMembers = organizeIds(ids, numbers);
 		
 		mdba.close();
 		groupNameLabel.setText(groupName);
@@ -188,6 +197,7 @@ public class EditGroup extends Activity {
 					idsString.add(String.valueOf(ids.get(i)));
 				}
 				intent.putStringArrayListExtra("IDARRAY", idsString);
+				intent.putStringArrayListExtra("NUMBERARRAY", numbers);
 				startActivityForResult(intent, 1);
 			}
 		});
@@ -206,7 +216,7 @@ public class EditGroup extends Activity {
 						mdba.removeContactFromGroup(idsTemp.get(i), groupId);
 					}
 					for(int i = 0; i< ids.size(); i++){
-						mdba.addContactToGroup(ids.get(i), groupId);
+						mdba.addContactToGroup(ids.get(i), groupId, numbers.get(i));
 					}
 					mdba.setGroupName(groupName, groupId);
 					mdba.close();
@@ -226,6 +236,52 @@ public class EditGroup extends Activity {
 	
 	
 	
+	private ArrayList<GroupMember> organizeIds(ArrayList<Long> ids, ArrayList<String> numbers) {
+		ArrayList<GroupMember> groupMembers = new ArrayList<EditGroup.GroupMember>();
+		for(int i = 0; i< ids.size(); i++){
+			boolean isPresent = false;
+			for(int j=0; j< groupMembers.size(); j++){
+				if(groupMembers.get(j).contactId == ids.get(i)){
+					isPresent = true;
+				}
+			}
+			if(!isPresent){
+				GroupMember groupMember = new GroupMember(ids.get(i));
+				
+				ContactNumber cn = new ContactNumber(ids.get(i), numbers.get(i), getType(ids.get(i), numbers.get(i)));
+				groupMember.numbers.add(cn);
+				
+				for(int k = i+1; k< ids.size(); k++){
+					if(ids.get(i).equals(ids.get(k))){
+						cn = new ContactNumber(ids.get(i), numbers.get(k), getType(ids.get(i), numbers.get(k)));
+						groupMember.numbers.add(cn);
+					}
+				}
+				groupMembers.add(groupMember);
+			}
+		}
+		return groupMembers;
+	}
+	
+	
+	
+	
+	private String getType(long id, String number){
+		for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+			if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == id){
+				for(int j = 0; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
+					if(number.equals(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number)){
+						return SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+
+
+
 	@Override
 	public void onBackPressed() {
 		boolean isChanged = false;
@@ -261,7 +317,7 @@ public class EditGroup extends Activity {
 						mdba.removeContactFromGroup(ids.get(i), groupId);
 					}
 					for(int i = 0; i< idsTemp.size(); i++){
-						mdba.addContactToGroup(idsTemp.get(i), groupId);
+						mdba.addContactToGroup(idsTemp.get(i), groupId, numbersTemp.get(i));
 					}
 					mdba.close();
 					d.cancel();
@@ -288,13 +344,10 @@ public class EditGroup extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		
 	}
 	
 	
 	private void loadContactsForGroups(){
-		Log.d("Ids Size in LoadData : " + ids.size());
 		newGroupContacts.clear();
 		for(int j = 0; j< ids.size(); j++){
 			for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
@@ -302,7 +355,7 @@ public class EditGroup extends Activity {
 					Contact Contact = new Contact();
 					Contact.content_uri_id = SmsSchedulerApplication.contactsList.get(i).content_uri_id;
 					Contact.name = SmsSchedulerApplication.contactsList.get(i).name;
-					Contact.number = SmsSchedulerApplication.contactsList.get(i).number;
+					Contact.numbers.add(new ContactNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(0).contactId, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).type));//TODO
 					Contact.image = SmsSchedulerApplication.contactsList.get(i).image;
 					newGroupContacts.add(Contact);
 				}
@@ -313,15 +366,30 @@ public class EditGroup extends Activity {
 	
 	
 	
+	
+	
 	@SuppressWarnings("rawtypes")
-	private class MyAdapter extends ArrayAdapter{
+	private class MyAdapter extends ArrayAdapter<GroupMember>{
 		@SuppressWarnings("unchecked")
 		MyAdapter(){
-    		super(EditGroup.this, R.layout.edit_group_list_row, ids);
+    		super(EditGroup.this, R.layout.edit_group_list_row, groupMembers);
     	}
+		
+		
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return groupMembers.size();
+		}
+		
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			Log.d("position : " + position + "; groupmember size : " + groupMembers.size());
+			if(position > groupMembers.size()-1){
+				View view = new View(EditGroup.this);
+				return null;
+			}
 			GroupsAddListHolder holder;
 			if(convertView==null){
 				LayoutInflater inflater = getLayoutInflater();
@@ -331,6 +399,7 @@ public class EditGroup extends Activity {
 	    		holder.contactName 				= (TextView) 	convertView.findViewById(R.id.group_add_edit_row_contact_name);
 	    		holder.contactNumber 			= (TextView) 	convertView.findViewById(R.id.group_add_edit_row_contact_number);
 	    		holder.contactRemoveButton 		= (ImageView) 	convertView.findViewById(R.id.group_add_edit_row_delete_button);
+	    		holder.extraNumbersLayout 		= (LinearLayout) convertView.findViewById(R.id.extra_numbers_layout);
 	    		convertView.setTag(holder);
 			}else{
 				holder = (GroupsAddListHolder) convertView.getTag();
@@ -338,16 +407,37 @@ public class EditGroup extends Activity {
 			
     		final int _position = position;
     		
-    		holder.contactImage.setImageBitmap(newGroupContacts.get(position).image);
-    		holder.contactName.setText(newGroupContacts.get(position).name);
-    		holder.contactNumber.setText(newGroupContacts.get(position).number);
+    		holder.contactImage.setImageBitmap(groupMembers.get(position).image);
+    		holder.contactName.setText(groupMembers.get(position).displayName);
+    		holder.contactNumber.setText(groupMembers.get(position).numbers.get(0).type + ": " + groupMembers.get(position).numbers.get(0).number);//TODO
+    		
+    		
+    		if(groupMembers.get(position).numbers.size()>1){
+    			holder.extraNumbersLayout.setVisibility(View.VISIBLE);
+    			holder.extraNumbersLayout.removeAllViews();
+    			holder.extraNumbersViews.clear();
+    			ArrayList<ContactNumber> extraNumbers = new ArrayList<ContactNumber>();
+        		for(int i=1; i< groupMembers.get(position).numbers.size(); i++){
+        			extraNumbers.add(groupMembers.get(position).numbers.get(i));
+        		}
+        		for(int i = 0; i< extraNumbers.size(); i++){
+        			View view = createView(extraNumbers.get(i), groupMembers.get(position), getLayoutInflater());
+        			holder.extraNumbersViews.add(view);
+        		}
+        		for(int i = 0; i< holder.extraNumbersViews.size(); i++){
+        			holder.extraNumbersLayout.addView(holder.extraNumbersViews.get(i));
+        		}
+    		}else{
+    			holder.extraNumbersLayout.setVisibility(View.GONE);
+    		}
     		
     		holder.contactRemoveButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					Log.d("List position :" + _position);
-					if(newGroupContacts.size()==1){
+					
+					if(ids.size()==1){
 						
 						final Dialog d = new Dialog(EditGroup.this);
 						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -391,7 +481,15 @@ public class EditGroup extends Activity {
 					}
 					else{
 						newGroupContacts.remove(_position);
-						ids.remove(_position);
+						for(int i = 0; i< ids.size(); i++){
+							if(ids.get(i)==groupMembers.get(_position).contactId && numbers.get(i).equals(groupMembers.get(_position).numbers.get(0).number)){
+								ids.remove(i);
+								numbers.remove(i);
+								groupMembers = organizeIds(ids, numbers);
+								Log.d("groupMembers size : " + groupMembers.size());
+								break;
+							}
+						}
 						MyAdapter.this.notifyDataSetChanged();
 					}
 				}
@@ -400,6 +498,40 @@ public class EditGroup extends Activity {
 			return convertView;
 		}
 	}
+	
+	
+	
+	private View createView(final ContactNumber contactNumber, final GroupMember groupMember, LayoutInflater inflater){
+		View view = inflater.inflate(R.layout.extra_numbers_list_row_del, null);
+		
+		TextView tv = (TextView) view.findViewById(R.id.extra_number);
+		ImageView delButton = (ImageView) view.findViewById(R.id.extra_number_del_button);
+		
+		tv.setText(contactNumber.type +": "+contactNumber.number);
+		
+		delButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				for(int i = 0; i< ids.size(); i++){
+					if(ids.get(i)==contactNumber.contactId && numbers.get(i).equals(contactNumber.number)){
+						groupMember.numbers.remove(contactNumber);
+						if(groupMember.numbers.size()==0){
+							groupMembers.remove(groupMember);
+						}
+						ids.remove(i);
+						numbers.remove(i);
+						groupMembers = organizeIds(ids, numbers);
+						break;
+					}
+				}
+				myAdapter.notifyDataSetChanged();
+			}
+		});
+		
+		return view;
+	}
+	
 	
 	
 	@Override
@@ -411,10 +543,12 @@ public class EditGroup extends Activity {
 			ArrayList<String> idsString = new ArrayList<String>();
 			idsString = data.getStringArrayListExtra("IDSLIST");
 			ids.clear();
-				
+			numbers.clear();
 			for(int i = 0; i< idsString.size(); i++){
 				ids.add(Long.parseLong(idsString.get(i)));
 			}
+			numbers = data.getStringArrayListExtra("NUMBERSLIST");
+			groupMembers = organizeIds(ids, numbers);
 			loadContactsForGroups();
 			myAdapter.notifyDataSetChanged();
 		}
@@ -427,5 +561,27 @@ public class EditGroup extends Activity {
 		TextView 	contactName;
 		TextView 	contactNumber;
 		ImageView 	contactRemoveButton;
+		LinearLayout extraNumbersLayout;
+		
+		ArrayList<View> extraNumbersViews = new ArrayList<View>();
+	}
+	
+	
+	protected class GroupMember{
+		long contactId;
+		ArrayList<ContactNumber> numbers = new ArrayList<ContactNumber>();
+		String displayName;
+		Bitmap image;
+		
+		GroupMember(long id){
+			for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+				if(id == SmsSchedulerApplication.contactsList.get(i).content_uri_id){
+					this.displayName = SmsSchedulerApplication.contactsList.get(i).name;
+					this.image = SmsSchedulerApplication.contactsList.get(i).image;
+					this.contactId = SmsSchedulerApplication.contactsList.get(i).content_uri_id;
+					break;
+				}
+			}
+		}
 	}
 }

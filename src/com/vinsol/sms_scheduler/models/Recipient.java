@@ -7,6 +7,7 @@ package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 import com.vinsol.sms_scheduler.utils.Log;
 
 import android.os.Parcel;
@@ -29,7 +30,7 @@ public class Recipient implements Parcelable{
 	
 	public Recipient(){}
 	
-	public Recipient(long recipientId, int type, String displayName, long contactId, long smsId, int sent, int delivered){
+	public Recipient(long recipientId, int type, String displayName, long contactId, long smsId, int sent, int delivered, String number){
 		this.recipientId = recipientId;
 		this.type = type;
 		this.displayName = displayName;
@@ -37,6 +38,8 @@ public class Recipient implements Parcelable{
 		this.smsId = smsId;
 		this.sent = sent;
 		this.delivered = delivered;
+		this.number = number;
+		
 	}
 	
 	
