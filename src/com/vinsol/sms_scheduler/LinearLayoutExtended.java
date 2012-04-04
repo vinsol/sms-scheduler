@@ -23,7 +23,6 @@ public class LinearLayoutExtended extends LinearLayout{
         }else{
         	setOnClickListener(new OnClickListener() {
 				
-				@Override
 				public void onClick(View v) {
 					LinearLayoutExtended.this.getChildAt(0).setPressed(true);
 				}

@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.utils.Log;
@@ -30,7 +29,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	private boolean isReschedule = false;
 	Sms SMS;
 	
-	@Override
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
@@ -97,7 +96,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	
 	
 	
-	@Override
+	
 	public void onBackPressed() {
 		
 		boolean isChanged = false;
@@ -155,7 +154,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			
 			yesButton.setOnClickListener(new OnClickListener() {
 					
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					EditScheduledSms.this.finish();
@@ -164,7 +163,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			
 			noButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					numbersText.requestFocus();
@@ -177,7 +176,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 
 
 
-	@Override
+	
 	protected void scheduleButtonOnClickListener() {
 		mdba.open();
 		if(mdba.isSmsSent(editedSms) && !isReschedule){

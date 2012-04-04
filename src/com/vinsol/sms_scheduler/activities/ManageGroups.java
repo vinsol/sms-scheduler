@@ -43,7 +43,7 @@ public class ManageGroups extends Activity {
 	private ArrayList<Long> grpIdsArray = new ArrayList<Long>();
 	private ArrayList<String> grpNamesArray = new ArrayList<String>();
 	
-	@Override
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_groups);
@@ -62,7 +62,7 @@ public class ManageGroups extends Activity {
 
 		blankListAddButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				startNewGroupActivity();
 			}
@@ -71,7 +71,7 @@ public class ManageGroups extends Activity {
 
 		addGroupImageButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				startNewGroupActivity();
 			}
@@ -80,7 +80,7 @@ public class ManageGroups extends Activity {
 	
 	
 	
-	@Override
+	
 	protected void onResume() {
 		super.onResume();
 		mdba.open();
@@ -125,7 +125,7 @@ public class ManageGroups extends Activity {
     	}
     	
     	
-    	@Override
+    	
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		ManageGroupsListHolder holder;
     		if(convertView == null){
@@ -142,7 +142,7 @@ public class ManageGroups extends Activity {
     		
     		holder.groupDeleteButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					final Dialog d = new Dialog(ManageGroups.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -155,7 +155,7 @@ public class ManageGroups extends Activity {
 					
 					yesButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							mdba.open();
 							mdba.removeGroup(grpIdsArray.get(position));
@@ -176,7 +176,7 @@ public class ManageGroups extends Activity {
 					
 					noButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							d.cancel();
 						}
@@ -189,7 +189,7 @@ public class ManageGroups extends Activity {
     		
     		convertView.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					Intent intent = new Intent(ManageGroups.this, EditGroup.class);
 					intent.putExtra("GROUPNAME", grpNamesArray.get(position));

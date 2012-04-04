@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:layout_gravity="center_vertical"
+    android:background="@drawable/list_item_states"
+    >
+    <TextView
+        android:id="@+id/recipient_detail_contact_name"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:text="something"
+        android:textSize="18sp" 
+        android:textColor="@color/black"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_toLeftOf="@+id/manage_groups_row_group_delete_image"
+        >
+    </TextView>
+    
+    <TextView 
+        android:id="@+id/recipient_detail_contact_number"
+        android:layout_width="fill_parent"
+        android:layout_height="25dp"
+        android:textSize="14sp"
+        android:textColor="@color/text_grey"
+        android:layout_marginRight="10dp"
+        android:layout_below="@id/recipient_detail_contact_name"
+        android:layout_alignLeft="@id/recipient_detail_contact_name"/>
+
+    <ImageView
+        android:id="@+id/recipient_detail_delete_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/delete_icon_states" 
+        android:layout_marginRight="10dip"
+        android:layout_centerVertical="true"
+        >
+    </ImageView>
+</RelativeLayout>

@@ -55,7 +55,7 @@ public class Sms implements Parcelable {
     	in.readList(keyRecipients, Recipient.class.getClassLoader());
     };
     
-    @Override
+    
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(this.keyId);
 		dest.writeString(this.keyNumber);
@@ -65,7 +65,7 @@ public class Sms implements Parcelable {
 		dest.writeList(this.keyRecipients);
     }
 
-	@Override
+	
 	public int describeContents() {
 		return 0;
 	}

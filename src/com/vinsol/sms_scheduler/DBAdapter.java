@@ -690,6 +690,7 @@ public class DBAdapter {
 	
 	//----------------------------functions for recents table----------------------------------
 	public void addRecentContact(long contactId, String contactNumber){
+		contactNumber = refineNumber(contactNumber);
 		Cursor cur = db.query(DATABASE_RECENTS_TABLE, new String[]{KEY_RECENT_CONTACT_ID, KEY_RECENT_CONTACT_CONTACT_ID, KEY_RECENT_CONTACT_NUMBER}, null, null, null, null, KEY_RECENT_CONTACT_ID);
 		boolean contactExist = false;
 		ContentValues cv = new ContentValues();
@@ -697,8 +698,8 @@ public class DBAdapter {
 		cv.put(KEY_RECENT_CONTACT_NUMBER, contactNumber);
 		if(cur.moveToFirst()){
 			do{
-				if(contactId!=-1 && (cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId)){// || (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
-					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_CONTACT_ID + "=" + contactId, null);
+				if(contactId!=-1 && (cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId) && (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
+					db.delete(DATABASE_RECENTS_TABLE, /*KEY_RECENT_CONTACT_CONTACT_ID + "=" + contactId + " AND " + KEY_RECENT_CONTACT_NUMBER + "=" + contactNumber*/ KEY_RECENT_CONTACT_ID + " = " + cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_ID)), null);
 					contactExist = true;
 					break;
 				}
@@ -726,6 +727,33 @@ public class DBAdapter {
 		return cur;
 	}
 	//----------------------------------------------end of functions for recents table-----------------
+	
+	
+	
+	public static String refineNumber(String number) {
+		if(number.matches("[0-9]+")){
+			return number;
+		}
+		ArrayList<Character> chars = new ArrayList<Character>();
+		for(int i = 0; i< number.length(); i++){
+			chars.add(number.charAt(i));
+		}
+		for(int i = 0; i< chars.size(); i++){
+			if(!(chars.get(i)=='0' || chars.get(i)=='1' || chars.get(i)=='2' || chars.get(i)=='3' || chars.get(i)=='4' ||
+					chars.get(i)=='5' || chars.get(i)=='6' || chars.get(i)=='7' || chars.get(i)=='8' || chars.get(i)=='9'|| chars.get(i)=='+')){
+				chars.remove(i);
+				i--;
+			}
+		}
+		//if(number.matches("[0-9]{10}")){
+			number = new String();
+			for(int i = 0; i< chars.size(); i++){
+				number = number + chars.get(i);
+			}
+			return number;
+		//}
+	}
+	
 	
 	//----------------------------------------------------------end of functions--------------------------------
 	

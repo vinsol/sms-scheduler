@@ -32,7 +32,6 @@ import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
-import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
@@ -54,7 +53,7 @@ public class ContactsList extends Activity {
 	
 	private String callingActivity;
 	
-	@Override
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.contacts_list);
@@ -104,7 +103,7 @@ public class ContactsList extends Activity {
 		
 		doneButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				
 				final Intent intent = new Intent();
@@ -128,7 +127,7 @@ public class ContactsList extends Activity {
 							
 							groupNameOkButton.setOnClickListener(new OnClickListener() {
 								
-								@Override
+								
 								public void onClick(View v) {
 									Log.d("GroupName : " + groupName);
 									if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
@@ -164,7 +163,7 @@ public class ContactsList extends Activity {
 							
 							groupNameCancelButton.setOnClickListener(new OnClickListener() {
 								
-								@Override
+								
 								public void onClick(View v) {
 									d.cancel();
 								}
@@ -197,7 +196,7 @@ public class ContactsList extends Activity {
 		
 		cancelButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				if(callingActivity.equals("Group Edit Activity")){
 					handleBackForEdit();
@@ -211,7 +210,7 @@ public class ContactsList extends Activity {
 	
 	
 	
-	@Override
+	
 	public void onBackPressed() {
 		if(callingActivity.equals("Group Edit Activity")){
 			handleBackForEdit();
@@ -238,7 +237,7 @@ public class ContactsList extends Activity {
     	}
     	
     	
-    	@Override
+    	
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		final ContactsAddListHolder holder;
     		if(convertView == null) {
@@ -287,7 +286,7 @@ public class ContactsList extends Activity {
     		
     		holder.contactCheck.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					
 					if(holder.contactCheck.isChecked()){
@@ -309,7 +308,7 @@ public class ContactsList extends Activity {
     		
     		holder.primaryNumberLayout.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					if(!holder.contactCheck.isChecked()){
 						holder.contactCheck.setChecked(true);
@@ -373,7 +372,7 @@ public class ContactsList extends Activity {
 		
 		view.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				if(!cb.isChecked()){
 					cb.setChecked(true);
@@ -393,7 +392,7 @@ public class ContactsList extends Activity {
 		
 		cb.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				if(cb.isChecked()){
 					ids.add(contact.content_uri_id);
@@ -412,7 +411,7 @@ public class ContactsList extends Activity {
 		
 //		cb.setOnClickListener(new OnClickListener() {
 //			
-//			@Override
+//			
 //			public void onClick(View v) {
 //				
 //				if(cb.isChecked()){

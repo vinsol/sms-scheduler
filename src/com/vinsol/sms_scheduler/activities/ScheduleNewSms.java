@@ -17,11 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class ScheduleNewSms extends AbstractScheduleSms {
 	
-	@Override
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
@@ -34,7 +33,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 	}
 	
 	
-	@Override
+	
 	public void onBackPressed() {
 		
 		if(!(Recipients.size()==0) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
@@ -52,7 +51,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			
 			yesButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					Toast.makeText(ScheduleNewSms.this, "Message Scheduled", Toast.LENGTH_SHORT).show();
@@ -65,7 +64,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			
 			noButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					ScheduleNewSms.this.finish();
@@ -87,7 +86,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.no_dialog_states));
 			
 			yesButton.setOnClickListener(new View.OnClickListener() {
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					new AsyncScheduling().execute();
@@ -97,7 +96,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			
 			noButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					ScheduleNewSms.this.finish();
@@ -111,7 +110,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 	}
 
 
-	@Override
+	
 	protected void scheduleButtonOnClickListener() {
 		onScheduleButtonPressTasks();
 	}

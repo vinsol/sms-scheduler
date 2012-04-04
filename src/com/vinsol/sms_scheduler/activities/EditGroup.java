@@ -59,7 +59,7 @@ public class EditGroup extends Activity {
 	private ArrayList<Contact> newGroupContacts = new ArrayList<Contact>();
 	private ArrayList<GroupMember> groupMembers = new ArrayList<GroupMember>();
 	
-	@Override
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.edit_group);
@@ -87,7 +87,7 @@ public class EditGroup extends Activity {
 			
 		deleteGroupButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				final Dialog d = new Dialog(EditGroup.this);
 				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -100,7 +100,7 @@ public class EditGroup extends Activity {
 				
 				yesButton.setOnClickListener(new OnClickListener() {
 						
-					@Override
+					
 						public void onClick(View v) {
 						mdba.open();
 						mdba.removeGroup(groupId);
@@ -112,7 +112,7 @@ public class EditGroup extends Activity {
 					
 				noButton.setOnClickListener(new OnClickListener() {
 				
-					@Override
+					
 					public void onClick(View v) {
 						d.cancel();
 					}
@@ -127,7 +127,7 @@ public class EditGroup extends Activity {
 		
 		groupNameLabel.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				final Dialog d = new Dialog(EditGroup.this);
 				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -140,7 +140,7 @@ public class EditGroup extends Activity {
 				
 				groupNameOkButton.setOnClickListener(new OnClickListener() {
 					
-					@Override
+					
 					public void onClick(View v) {
 						if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
 							Toast.makeText(EditGroup.this, "Group name can't be blank", Toast.LENGTH_SHORT).show();
@@ -173,7 +173,7 @@ public class EditGroup extends Activity {
 				
 				groupNameCancelButton.setOnClickListener(new OnClickListener() {
 					
-					@Override
+					
 					public void onClick(View v) {
 						d.cancel();
 					}
@@ -187,7 +187,7 @@ public class EditGroup extends Activity {
 		
 		addContactsButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				Intent intent = new Intent(EditGroup.this, ContactsList.class);
 				intent.putExtra("ORIGINATOR", "Group Edit Activity");
@@ -206,7 +206,7 @@ public class EditGroup extends Activity {
 		saveGroupButton.setOnClickListener(new OnClickListener() {
 			
 		  
-			@Override
+			
 			public void onClick(View v) {
 				
 				mdba.open();
@@ -282,7 +282,7 @@ public class EditGroup extends Activity {
 
 
 
-	@Override
+	
 	public void onBackPressed() {
 		boolean isChanged = false;
 		if(ids.size() != idsTemp.size()){
@@ -309,7 +309,7 @@ public class EditGroup extends Activity {
 			noButton.setText("");
 			yesButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					mdba.open();
 					ids = mdba.fetchIdsForGroups(groupId);
@@ -327,7 +327,7 @@ public class EditGroup extends Activity {
 			
 			noButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 				}
@@ -341,7 +341,7 @@ public class EditGroup extends Activity {
 	
 	
 	
-	@Override
+	
 	protected void onResume() {
 		super.onResume();
 	}
@@ -368,26 +368,23 @@ public class EditGroup extends Activity {
 	
 	
 	
-	@SuppressWarnings("rawtypes")
 	private class MyAdapter extends ArrayAdapter<GroupMember>{
-		@SuppressWarnings("unchecked")
 		MyAdapter(){
     		super(EditGroup.this, R.layout.edit_group_list_row, groupMembers);
     	}
 		
 		
-		@Override
+		
 		public int getCount() {
 			// TODO Auto-generated method stub
 			return groupMembers.size();
 		}
 		
 		
-		@Override
+		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			Log.d("position : " + position + "; groupmember size : " + groupMembers.size());
 			if(position > groupMembers.size()-1){
-				View view = new View(EditGroup.this);
 				return null;
 			}
 			GroupsAddListHolder holder;
@@ -433,7 +430,7 @@ public class EditGroup extends Activity {
     		
     		holder.contactRemoveButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					Log.d("List position :" + _position);
 					
@@ -452,7 +449,7 @@ public class EditGroup extends Activity {
 						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 						yesButton.setOnClickListener(new OnClickListener() {
 							
-							@Override
+							
 							public void onClick(View v) {
 								
 								newGroupContacts.remove(_position);
@@ -471,7 +468,7 @@ public class EditGroup extends Activity {
 						
 						noButton.setOnClickListener(new OnClickListener() {
 							
-							@Override
+							
 							public void onClick(View v) {
 								d.cancel();
 							}
@@ -511,7 +508,7 @@ public class EditGroup extends Activity {
 		
 		delButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				for(int i = 0; i< ids.size(); i++){
 					if(ids.get(i)==contactNumber.contactId && numbers.get(i).equals(contactNumber.number)){
@@ -534,7 +531,7 @@ public class EditGroup extends Activity {
 	
 	
 	
-	@Override
+	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		

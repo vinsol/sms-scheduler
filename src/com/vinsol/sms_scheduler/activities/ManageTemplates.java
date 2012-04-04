@@ -52,7 +52,7 @@ public class ManageTemplates extends Activity{
 	
 	private InputMethodManager inputMethodManager;
 	
-	@Override
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_templates);
@@ -76,7 +76,7 @@ public class ManageTemplates extends Activity{
 		
 		addATemplateButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				listLayout.setVisibility(LinearLayout.VISIBLE);
 				blankLayout.setVisibility(LinearLayout.GONE);
@@ -87,7 +87,7 @@ public class ManageTemplates extends Activity{
 		
 		newTemplateButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				if(templatesArray.size()==0){
 					blankLayout.setVisibility(LinearLayout.GONE);
@@ -100,7 +100,7 @@ public class ManageTemplates extends Activity{
 		
 		newTemplateAddButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				
 				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
@@ -150,7 +150,7 @@ public class ManageTemplates extends Activity{
 		
 		newTemplateCancelButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 				newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
@@ -194,7 +194,7 @@ public class ManageTemplates extends Activity{
     	}
     	
     	
-    	@Override
+    	
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		final TemplateViewHolder holder;
     		if(convertView==null){
@@ -213,7 +213,7 @@ public class ManageTemplates extends Activity{
     		
     		holder.deleteTemplateButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					final Dialog d = new Dialog(ManageTemplates.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -226,7 +226,7 @@ public class ManageTemplates extends Activity{
 					
 					yesButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							mdba.open();
 							mdba.removeTemplate(templatesIdArray.get(_position));
@@ -241,7 +241,7 @@ public class ManageTemplates extends Activity{
 					
 					noButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							d.cancel();
 						}
@@ -253,7 +253,7 @@ public class ManageTemplates extends Activity{
     		
     		convertView.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					if(newTemplateSpaceLayout.getVisibility()==LinearLayout.GONE){
 						inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);

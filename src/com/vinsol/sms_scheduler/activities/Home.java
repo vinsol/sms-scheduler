@@ -17,7 +17,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.FeatureInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -34,7 +33,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -108,7 +106,7 @@ public class Home extends Activity {
 	
 	private BroadcastReceiver mUpdateReceiver = new BroadcastReceiver() {
 		
-		@Override
+		
 		public void onReceive(Context context, Intent intent) {
 			loadData();
 			mAdapter.notifyDataSetChanged();
@@ -119,7 +117,7 @@ public class Home extends Activity {
 	
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
 		
-		@Override
+		
 		public void onReceive(Context context, Intent intent) {
 			if(dataLoadWaitDialog.isShowing()){
 				dataLoadWaitDialog.cancel();
@@ -134,7 +132,7 @@ public class Home extends Activity {
 	
 	
 	
-    @Override
+    
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
@@ -157,7 +155,7 @@ public class Home extends Activity {
         
         newSmsButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View arg0) {
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
 					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
@@ -170,7 +168,7 @@ public class Home extends Activity {
         
         blankListAddButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View arg0) {
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
 					SmsSchedulerApplication.screenWidthInPixels = blankListLayout.getWidth();
@@ -183,7 +181,7 @@ public class Home extends Activity {
         
         explList.setOnChildClickListener(new OnChildClickListener() {
 			
-			@Override
+			
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
 				if(groupPosition == 1){
 					if(SmsSchedulerApplication.screenWidthInPixels==0){
@@ -211,7 +209,7 @@ public class Home extends Activity {
         
         optionsImageButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				openOptionsMenu();
 			}
@@ -233,7 +231,7 @@ public class Home extends Activity {
     
     
     
-    @Override
+    
     protected void onResume() {
     	super.onResume();
     	
@@ -250,7 +248,7 @@ public class Home extends Activity {
     
     
     
-    @Override
+    
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
     	
@@ -285,7 +283,7 @@ public class Home extends Activity {
     
     
     
-    @Override
+    
 	public boolean onContextItemSelected(MenuItem item) {
 		ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) item.getMenuInfo();
 		int groupPos = 0, childPos = 0;
@@ -341,7 +339,7 @@ public class Home extends Activity {
 		templateText.setText(keyMessage);
 		addTemplateButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				if(templateText.getText().toString().equals("")){
 					Toast.makeText(Home.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
@@ -362,7 +360,6 @@ public class Home extends Activity {
 						Toast.makeText(Home.this, "Template already exists", Toast.LENGTH_SHORT).show();
 					}else{
 						mdba.open();
-						long newId = mdba.addTemplate(templateText.getText().toString());
 						mdba.close();
 						Toast.makeText(Home.this, "Template added", Toast.LENGTH_SHORT).show();
 						dialog.cancel();
@@ -373,7 +370,7 @@ public class Home extends Activity {
 		
 		cancelTemplateButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				dialog.cancel();
 			}
@@ -400,7 +397,7 @@ public class Home extends Activity {
     	    	null,
     	    	new int[] {}
     	){
-    		@Override
+    		
 			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
     			GroupListHolder holder;
     			if(convertView == null) {
@@ -419,7 +416,7 @@ public class Home extends Activity {
     		}
 
 
-			@Override
+			
     		public android.view.View getChildView(int groupPosition, final int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
 				ChildRowHolder holder;
 				if(convertView==null){
@@ -476,7 +473,7 @@ public class Home extends Activity {
     			if(groupPosition == 1){
     				holder.statusImageView.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							showDeleteDialog(scheduledSMSs, childPosition, "Delete this Scheduled Message?");
 						}
@@ -485,7 +482,7 @@ public class Home extends Activity {
     			}else if(groupPosition == 0){
     				holder.statusImageView.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							showDeleteDialog(drafts, childPosition, "Delete this Draft?");
 						}
@@ -493,7 +490,7 @@ public class Home extends Activity {
     			}else if(groupPosition == 2){
     				holder.statusImageView.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							showSentInfoDialog(childPosition);
 						}
@@ -694,7 +691,7 @@ public class Home extends Activity {
 
 	
 	
-	@Override
+	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.options_menu, menu);
@@ -703,7 +700,7 @@ public class Home extends Activity {
 	
 	
 	
-	@Override
+	
 	public boolean onOptionsItemSelected(MenuItem item) {
     	Intent intent;
 		switch (item.getItemId()) {
@@ -728,7 +725,7 @@ public class Home extends Activity {
 	
 	
 	
-	@Override
+	
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(mUpdateReceiver);
@@ -770,7 +767,7 @@ public class Home extends Activity {
     	}
     	
     	
-    	@Override
+    	
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		SentDialogListHolder holder;
     		if(convertView == null) {
@@ -824,14 +821,10 @@ public class Home extends Activity {
 		if(number.length()<= 30){
 			return number;
 		}
-		int delimiterCount = 0;
-		int validDelimiterCount = 0;
 		int validLength = 0;
 		for(int i = 0; i< number.length(); i++){
 			if(number.charAt(i)==' ' && number.charAt(i-1)==','){
-				delimiterCount++;
 				if(i<=30){
-					validDelimiterCount++;
 					validLength = i;
 				}
 			}
@@ -893,7 +886,7 @@ public class Home extends Activity {
         	  boolean isContactPresent = false;
         	  String contactId = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
         	  ContactNumber cn = new ContactNumber(Long.parseLong(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))),
-        			    phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)), 
+        			    refineNumber(phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))), 
 					  	resolveType(phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE))));
         	  
         	  if(phones.getInt(phones.getColumnIndex(Phone.IS_PRIMARY))!=0){
@@ -1008,6 +1001,32 @@ public class Home extends Activity {
     	Long endTime = System.currentTimeMillis();
 		Log.d("===================================\nTime taken : " + (endTime-startTime));
     }
+	
+	
+	
+	public static String refineNumber(String number) {
+		if(number.matches("[0-9]+")){
+			return number;
+		}
+		ArrayList<Character> chars = new ArrayList<Character>();
+		for(int i = 0; i< number.length(); i++){
+			chars.add(number.charAt(i));
+		}
+		for(int i = 0; i< chars.size(); i++){
+			if(!(chars.get(i)=='0' || chars.get(i)=='1' || chars.get(i)=='2' || chars.get(i)=='3' || chars.get(i)=='4' ||
+					chars.get(i)=='5' || chars.get(i)=='6' || chars.get(i)=='7' || chars.get(i)=='8' || chars.get(i)=='9'|| chars.get(i)=='+')){
+				chars.remove(i);
+				i--;
+			}
+		}
+		//if(number.matches("[0-9]{10}")){
+			number = new String();
+			for(int i = 0; i< chars.size(); i++){
+				number = number + chars.get(i);
+			}
+			return number;
+		//}
+	}
 	
 	
 	
@@ -1147,13 +1166,13 @@ public class Home extends Activity {
 	
 	private class ContactsAsync extends AsyncTask<Void, Void, Void>{
 
-		@Override
+		
 		protected Void doInBackground(Void... params) {
 			loadContactsByPhone();
 			return null;
 		}
 		
-		@Override
+		
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			
@@ -1223,7 +1242,7 @@ public class Home extends Activity {
 		
 		yesButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				selectedSms = SMSList.get(childPosition).keyId;
 				deleteSms();
@@ -1233,7 +1252,7 @@ public class Home extends Activity {
 		
 		noButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				d.cancel();
 			}

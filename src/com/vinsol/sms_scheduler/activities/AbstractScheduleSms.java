@@ -229,7 +229,7 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
 		
-		@Override
+		
 		public void onReceive(Context context, Intent intent2) {
 			if(dataLoadWaitDialog.isShowing()){
 				dataLoadWaitDialog.cancel();
@@ -249,14 +249,14 @@ abstract class AbstractScheduleSms extends Activity{
 						}
 						
 					}
-					inputMethodManager.toggleSoftInput(inputMethodManager.SHOW_FORCED, 0);
+					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 				}
 			}
 		}
 	};
 	
 	
-	@Override
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule_sms);
@@ -293,7 +293,6 @@ abstract class AbstractScheduleSms extends Activity{
         firstRow.ll = (LinearLayout) findViewById(R.id.edit_text_host);
         firstRow.ll.setOnClickListener(new OnClickListener() {
 			
-			@Override
 			public void onClick(View v) {
 //				showMessagePreference();
 				
@@ -320,7 +319,6 @@ abstract class AbstractScheduleSms extends Activity{
         
         ac_wrapper.setOnLongClickListener(new OnLongClickListener() {
 			
-			@Override
 			public boolean onLongClick(View v) {
 				numbersText.showContextMenu();
 				return true;
@@ -329,7 +327,7 @@ abstract class AbstractScheduleSms extends Activity{
         
         hll.setOnLongClickListener(new OnLongClickListener() {
 			
-			@Override
+			
 			public boolean onLongClick(View v) {
 				numbersText.showContextMenu();
 				return true;
@@ -338,7 +336,7 @@ abstract class AbstractScheduleSms extends Activity{
         
         firstRow.ll.setOnLongClickListener(new OnLongClickListener() {
 			
-			@Override
+			
 			public boolean onLongClick(View v) {
 				numbersText.showContextMenu();
 				return true;
@@ -347,13 +345,14 @@ abstract class AbstractScheduleSms extends Activity{
         
         recipientDetailsButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				if(Recipients.size()>0){
 					recipientStack.recipients.clear();
 					recipientStack.positions.clear();
 					prunedRecipients.clear();
 					for(int i = 0; i< Recipients.size(); i++){
+						Log.d("Recipient.number : " + Recipients.get(i).number);
 						prunedRecipients.add(Recipients.get(i));
 					}
 					final Dialog d = new Dialog(AbstractScheduleSms.this);
@@ -373,7 +372,7 @@ abstract class AbstractScheduleSms extends Activity{
 					
 					confirmButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							Recipients.clear();
 							for(int i = 0; i< prunedRecipients.size(); i++){
@@ -392,7 +391,7 @@ abstract class AbstractScheduleSms extends Activity{
 					
 					cancelButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							d.cancel();
 						}
@@ -400,7 +399,7 @@ abstract class AbstractScheduleSms extends Activity{
 					
 					undoButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							if(recipientStack.recipients.size()>0){
 								Recipient r = recipientStack.popRecipient();
@@ -427,7 +426,7 @@ abstract class AbstractScheduleSms extends Activity{
 					infoText.setText("Please select some recipients to show details of.");
 					okButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							d.cancel();
 						}
@@ -466,7 +465,7 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		ac_wrapper.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 //				showMessagePreference();
 				numbersText.requestFocus();
@@ -477,7 +476,7 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		hll.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 //				showMessagePreference();
 				
@@ -509,16 +508,16 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		numbersText.addTextChangedListener(new TextWatcher() {
 			
-			@Override
+			
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 			
-			@Override
+			
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 				numbersText.bringToFront();
 				numbersText.requestFocus();
 			}
 			
-			@Override
+			
 			public void afterTextChanged(Editable s) {
 				
 				if(widthOfacWrapper==0){
@@ -611,7 +610,7 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		numbersText.setOnKeyListener(new OnKeyListener() {
 			
-			@Override
+			
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				
 				
@@ -690,7 +689,7 @@ abstract class AbstractScheduleSms extends Activity{
 		final ViewTreeObserver vto = hll.getViewTreeObserver();
 		vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 			
-			@Override
+			
 			public void onGlobalLayout() {
 //				Log.d("" + firstRow.ll.getWidth()/dpi);
 				widthOfContainerInDp = (int) (firstRow.ll.getWidth()/dpi);
@@ -708,7 +707,7 @@ abstract class AbstractScheduleSms extends Activity{
 		
 //		numbersText.setOnFocusChangeListener(new OnFocusChangeListener() {
 //			
-//			@Override
+//			
 //			public void onFocusChange(View v, boolean hasFocus) {
 //				if(!hasFocus){
 //					inputMethodManager.hideSoftInputFromWindow(numbersText.getWindowToken(), 0);
@@ -728,7 +727,7 @@ abstract class AbstractScheduleSms extends Activity{
         if (activities.size() != 0) {
             speechImageButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					startVoiceRecognitionActivity();
 				}
@@ -755,21 +754,21 @@ abstract class AbstractScheduleSms extends Activity{
 	}
 	
 	
-	@Override
+	
 	protected void onResume() {
 		super.onResume();
 		registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
 	}
 	
 	
-	@Override
+	
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(mDataLoadedReceiver);
 	}
 	
 	
-	@Override
+	
 	protected void onDestroy() {
 		super.onDestroy();
 		//TODO:
@@ -777,7 +776,7 @@ abstract class AbstractScheduleSms extends Activity{
 	}
 	
 	
-	@Override
+	
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
             // Fill the list view with the strings the recognizer thought it could have heard
@@ -798,7 +797,7 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		addFromContactsImgButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				//Log.i("MSG", "isDataLoaded : " + SmsSchedulerApplication.isDataLoaded);
 				if(SmsSchedulerApplication.isDataLoaded){
@@ -820,7 +819,7 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		numbersText.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 //				showMessagePreference();
 				if(widthOfacWrapper==0){
@@ -848,7 +847,7 @@ abstract class AbstractScheduleSms extends Activity{
 		//----------------functionality for schedule button----------------------------
 		scheduleButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				scheduleButtonOnClickListener();
 			}
@@ -867,7 +866,7 @@ abstract class AbstractScheduleSms extends Activity{
 		}
 		dateButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				dateSelectDialog = new Dialog(AbstractScheduleSms.this);
 				dateSelectDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -888,7 +887,7 @@ abstract class AbstractScheduleSms extends Activity{
 				final int mDay = processDate.getDate();
 				datePicker.init(mYear, mMonth, mDay, new OnDateChangedListener() {
 					
-					@Override
+					
 					public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 						if(checkDateValidity(new Date(year-1900, monthOfYear, dayOfMonth, timePicker.getCurrentHour(), timePicker.getCurrentMinute()))){
 							dateLabel.setVisibility(View.INVISIBLE);
@@ -906,7 +905,7 @@ abstract class AbstractScheduleSms extends Activity{
 				//---Setting TimePicker value change listner--------
 				timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
 					
-					@Override
+					
 					public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 						if(checkDateValidity(new Date(datePicker.getYear()-1900, datePicker.getMonth(), datePicker.getDayOfMonth(), hourOfDay, minute))){
 							dateLabel.setVisibility(View.INVISIBLE);
@@ -932,7 +931,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				okDateButton.setOnClickListener(new OnClickListener() {
 					
-					@Override
+					
 					public void onClick(View v) {
 						refCal = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
 						refDate = refCal.getTime();
@@ -953,7 +952,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				cancelDateButton.setOnClickListener(new OnClickListener() {
 					
-					@Override
+					
 					public void onClick(View v) {
 						if(checkDateValidity(processDate)){
 							dateLabel.setVisibility(View.INVISIBLE);
@@ -978,13 +977,13 @@ abstract class AbstractScheduleSms extends Activity{
 		//------------setting functionality of character count-------------------
 		messageText.addTextChangedListener(new TextWatcher() {
 			
-			@Override
+			
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
 			
-			@Override
+			
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 			
-			@Override
+			
 			public void afterTextChanged(Editable s) {
 				int length 		= s.length();
 				parts 		 	= smsManager.divideMessage(s.toString());
@@ -1000,7 +999,7 @@ abstract class AbstractScheduleSms extends Activity{
 		smileysGrid.setAdapter(new SmileysAdapter(this));
 		smileysGrid.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
+			
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				int cursorPos = messageText.getSelectionStart();
 				String beforeString = messageText.getText().toString().substring(0, cursorPos);
@@ -1045,7 +1044,7 @@ abstract class AbstractScheduleSms extends Activity{
 		//---------------functionality of template button-----------------------
 		templateImageButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 
 				loadTemplates();
@@ -1070,7 +1069,7 @@ abstract class AbstractScheduleSms extends Activity{
 		//-------------------functionality of add template button-------------------------------
 		addTemplateImageButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				if(messageText.getText().toString().matches("(''|[' ']*)")){
 					Toast.makeText(AbstractScheduleSms.this, "Empty message, can't add it as template", Toast.LENGTH_SHORT).show();
@@ -1107,7 +1106,7 @@ abstract class AbstractScheduleSms extends Activity{
 		//--------------------------functionality for Cancel Button--------------------------
 		cancelButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				if(!messageText.getText().toString().matches("(''|[' ']*)") || !numbersText.getText().toString().matches("(''|[' ']*)")){
 					final Dialog d = new Dialog(AbstractScheduleSms.this);
@@ -1128,7 +1127,7 @@ abstract class AbstractScheduleSms extends Activity{
 					
 					yesButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							if(mode==2){
 								mdba.open();
@@ -1142,7 +1141,7 @@ abstract class AbstractScheduleSms extends Activity{
 					
 					noButton.setOnClickListener(new OnClickListener() {
 						
-						@Override
+						
 						public void onClick(View v) {
 							d.cancel();
 						}
@@ -1159,7 +1158,7 @@ abstract class AbstractScheduleSms extends Activity{
 		//-------------------------functionality of speech input button------------------------------
 		speechImageButton.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
@@ -1218,7 +1217,7 @@ abstract class AbstractScheduleSms extends Activity{
         
         matchesList.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
+			
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
 				if(messageText.getText().toString().length()==0){
@@ -1297,7 +1296,7 @@ abstract class AbstractScheduleSms extends Activity{
 	        return 0;
 	    }
 
-		@Override
+		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			//pos = position;
 			ImageView imageView;
@@ -1330,12 +1329,12 @@ abstract class AbstractScheduleSms extends Activity{
 			mData = new ArrayList<Contact>();
 		}
 			
-		@Override
+		
 		public int getCount() {
 			return mData.size();
 		}
 		
-		@Override
+		
 		public Contact getItem(int position) {
 			if(mData.size()>position)
 				return mData.get(position);
@@ -1343,11 +1342,11 @@ abstract class AbstractScheduleSms extends Activity{
 				return null;
 		}
 		
-		@Override
+		
 		public Filter getFilter() {
 			Filter myFilter = new Filter() {
 					
-				@Override
+				
 				protected FilterResults performFiltering(final CharSequence constraint) {
 					
 					mData.clear();
@@ -1356,7 +1355,7 @@ abstract class AbstractScheduleSms extends Activity{
 					final Activity activity = (Activity) AbstractScheduleSms.this;
 					activity.runOnUiThread(new Runnable() {
 						
-						@Override
+						
 						public void run() {
 							String text= constraint == null ? " " : constraint.toString();
 							
@@ -1389,13 +1388,13 @@ abstract class AbstractScheduleSms extends Activity{
 					return filterResults;
 				}
 
-				@Override
+				
 				protected void publishResults(CharSequence constraints, FilterResults results) {
 					if(results != null && results.count > 0) {
 						final Activity activity = (Activity) AbstractScheduleSms.this;
 						activity.runOnUiThread(new Runnable() {
 							
-							@Override
+							
 							public void run() {
 								((AutoCompleteAdapter)numbersText.getAdapter()).notifyDataSetChanged();
 							}
@@ -1417,7 +1416,6 @@ abstract class AbstractScheduleSms extends Activity{
         		holder = new AutoCompleteListHolder();
         		holder.nameText 			= (TextView) 	 convertView.findViewById(R.id.row_name_label);
         		holder.numberText 			= (TextView) 	 convertView.findViewById(R.id.row_number_label);
-        		holder.extraNumbersLayout 	= (LinearLayout) convertView.findViewById(R.id.extra_numbers_layout);
         		holder.primaryNumberLayout  = (LinearLayout) convertView.findViewById(R.id.primary_number_space);
         		convertView.setTag(holder);
     		} else {
@@ -1429,13 +1427,36 @@ abstract class AbstractScheduleSms extends Activity{
 				holder.numberText.setText(shortlist.get(position).numbers.get(0).type + ": " + shortlist.get(position).numbers.get(0).number);//TODO
 			}
 			
-			convertView.setOnClickListener(new OnClickListener() {
+			holder.extraNumbersLayout 	= (LinearLayout) convertView.findViewById(R.id.extra_number_layout);
+			
+			if(shortlist.get(position).numbers.size()>1){
+    			holder.extraNumbersLayout.setVisibility(View.VISIBLE);
+    			holder.extraNumbersLayout.removeAllViews();
+    			holder.extraNumbersViews.clear();
+    			ArrayList<ContactNumber> extraNumbers = new ArrayList<ContactNumber>();
+        		for(int i=1; i< shortlist.get(position).numbers.size(); i++){
+        			extraNumbers.add(shortlist.get(position).numbers.get(i));
+        		}
+        		for(int i = 0; i< extraNumbers.size(); i++){
+        			View view = createView(extraNumbers.get(i), shortlist.get(position), getLayoutInflater());
+        			holder.extraNumbersViews.add(view);
+        			
+//        			holder.extraContactsLayout.refreshDrawableState();
+        		}
+        		for(int i = 0; i< holder.extraNumbersViews.size(); i++){
+        			holder.extraNumbersLayout.addView(holder.extraNumbersViews.get(i));
+        		}
+    		}else{
+    			holder.extraNumbersLayout.setVisibility(View.GONE);
+    		}
+			
+			holder.primaryNumberLayout.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					boolean isPresent = false;
 					for(int i = 0; i< Recipients.size(); i++){
-						if(Recipients.get(i).contactId == shortlist.get(position).content_uri_id) {
+						if(Recipients.get(i).contactId == shortlist.get(position).content_uri_id && Recipients.get(i).number.equals(shortlist.get(position).numbers.get(0).number)) {
 							isPresent = true;
 							break;
 						}
@@ -1447,7 +1468,7 @@ abstract class AbstractScheduleSms extends Activity{
 						View view = createElement(recipient);
 						addView(view);
 					}else{
-						Toast.makeText(AbstractScheduleSms.this, shortlist.get(position).name + " is already added", Toast.LENGTH_SHORT).show();
+						Toast.makeText(AbstractScheduleSms.this, shortlist.get(position).name + " " + shortlist.get(position).numbers.get(0).number + " is already added", Toast.LENGTH_SHORT).show();
 					}
 					numbersText.setText("");
 					if(Recipients.size()>0)
@@ -1459,6 +1480,44 @@ abstract class AbstractScheduleSms extends Activity{
 				}
 			});
     		return convertView;
+		}
+
+
+		private View createView(final ContactNumber contactNumber, final Contact contact, LayoutInflater inflater) {
+			View view = inflater.inflate(R.layout.suggestion_list_extra_numbers, null);
+			TextView tv = (TextView) view.findViewById(R.id.extra_row_number_label);
+			LinearLayout rowSpace = (LinearLayout) view.findViewById(R.id.extra_row_number_space);
+			tv.setText(contactNumber.type + ": " + contactNumber.number);
+			
+			rowSpace.setOnClickListener(new OnClickListener() {
+				
+				public void onClick(View v) {
+					boolean isPresent = false;
+					for(int i = 0; i< Recipients.size(); i++){
+						if(Recipients.get(i).contactId == contact.content_uri_id && Recipients.get(i).number.equals(contactNumber.number)) {
+							isPresent = true;
+							break;
+						}
+					}
+					if(!isPresent){
+						final Recipient recipient = new Recipient(-1, 2, contact.name, contact.content_uri_id, -1, -1, -1, contactNumber.number);
+						Recipients.add(recipient);
+						
+						View view = createElement(recipient);
+						addView(view);
+					}else{
+						Toast.makeText(AbstractScheduleSms.this, contact.name + " " + contactNumber.number + " is already added", Toast.LENGTH_SHORT).show();
+					}
+					numbersText.setText("");
+					if(Recipients.size()>0)
+		        		numbersText.setHint(" ");
+		        	else
+		        		numbersText.setHint("Recipients");
+					numbersText.requestFocus();
+					numbersText.dismissDropDown();
+				}
+			});
+			return view;
 		}
 	}
 	
@@ -1526,6 +1585,7 @@ abstract class AbstractScheduleSms extends Activity{
 		TextView numberText;
 		LinearLayout extraNumbersLayout;
 		LinearLayout primaryNumberLayout;
+		ArrayList<View> extraNumbersViews = new ArrayList<View>();
 	}
 	
 	
@@ -1541,7 +1601,7 @@ abstract class AbstractScheduleSms extends Activity{
 			super(AbstractScheduleSms.this, R.layout.template_list_row, templatesArray);
 		}
 		
-		@Override
+		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			TemplateHolder holder;
 			if(convertView==null){
@@ -1558,7 +1618,7 @@ abstract class AbstractScheduleSms extends Activity{
     		holder.templateText.setText(templatesArray.get(position));
     		convertView.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					if(messageText.getText().toString().equals("")){
 						messageText.setText(templatesArray.get(_position));
@@ -1625,7 +1685,7 @@ abstract class AbstractScheduleSms extends Activity{
 
 		Dialog dialog;
 		
-		@Override
+		
 		protected void onPreExecute() {
 			super.onPreExecute();
 			dialog = new Dialog(AbstractScheduleSms.this);
@@ -1638,14 +1698,14 @@ abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
-		@Override
+		
 		protected Void doInBackground(Void... params) {
 			doSmsSchedulingTask();
 			return null;
 		}
 		
 		
-		@Override
+		
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			dialog.cancel();
@@ -1670,8 +1730,6 @@ abstract class AbstractScheduleSms extends Activity{
 	              Groups.NOTES
              };
         Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
-        int count = 0;
-        
         ContentResolver cr = this.getContentResolver();
         Cursor groupCursor = cr.query(groupsUri, projection, null, null, null);
         if(groupCursor.moveToFirst()){
@@ -1729,8 +1787,6 @@ abstract class AbstractScheduleSms extends Activity{
         		
         		
         		nativeChildData.add(child);
-        		count++;
-        		
         		if(!hasChild){
         			nativeGroupData.remove(group);
         		}
@@ -1811,8 +1867,6 @@ abstract class AbstractScheduleSms extends Activity{
         			}
         		}
         		privateChildData.add(child);
-        		count++;
-        		
         		if(!hasChild){
         			privateGroupData.remove(group);
         		}
@@ -1857,7 +1911,7 @@ abstract class AbstractScheduleSms extends Activity{
 						Log.d("added Display Name : " + SmsSchedulerApplication.contactsList.get(j).name);
 						long receivedRecipientId = mdba.addRecipient(smsId, SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);//TODO
 						if(!Recipients.get(i).displayName.equals(" ")){
-							mdba.addRecentContact(Recipients.get(i).contactId, "");
+							mdba.addRecentContact(Recipients.get(i).contactId, Recipients.get(i).number);
 						}
 						
 						if(!(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
@@ -1917,7 +1971,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			yesButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					numbersText.requestFocus();
@@ -1926,7 +1980,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			noButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					AbstractScheduleSms.this.finish();
@@ -1949,7 +2003,7 @@ abstract class AbstractScheduleSms extends Activity{
 			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_recipients_dialog_states));
 			yesButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					new AsyncScheduling().execute();
@@ -1958,7 +2012,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			noButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					d.cancel();
 					numbersText.requestFocus();
@@ -1982,7 +2036,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				yesButton.setOnClickListener(new OnClickListener() {
 					
-					@Override
+					
 					public void onClick(View v) {
 						d.cancel();
 						new AsyncScheduling().execute();
@@ -1991,7 +2045,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				noButton.setOnClickListener(new OnClickListener() {
 					
-					@Override
+					
 					public void onClick(View v) {
 						messageText.requestFocus();
 						d.cancel();
@@ -2019,7 +2073,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				ll.setOnClickListener(new OnClickListener() {
 					
-					@Override
+					
 					public void onClick(View v) {
 //						showMessagePreference();
 						
@@ -2043,7 +2097,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				ll.setOnLongClickListener(new OnLongClickListener() {
 					
-					@Override
+					
 					public boolean onLongClick(View v) {
 						numbersText.showContextMenu();
 						return true;
@@ -2077,7 +2131,7 @@ abstract class AbstractScheduleSms extends Activity{
 		tv.setText(text);
 		view.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				removeElement(view);
 				Recipients.remove(recipient);
@@ -2088,7 +2142,7 @@ abstract class AbstractScheduleSms extends Activity{
 		
 		containerLayout.setOnClickListener(new OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				removeElement(view);
 				Recipients.remove(recipient);
@@ -2376,26 +2430,38 @@ abstract class AbstractScheduleSms extends Activity{
     	}
     	
     	
-    	@Override
+    	
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		final TemplateViewHolder holder;
     		if(convertView==null){
     			LayoutInflater inflater = getLayoutInflater();
-    			convertView = inflater.inflate(R.layout.manage_groups_list_row, parent, false);
+    			convertView = inflater.inflate(R.layout.recipients_detail_list_row, parent, false);
     			holder = new TemplateViewHolder();
-    			holder.templateBodyLabel = (TextView)convertView.findViewById(R.id.manage_groups_row_group_name);
-    			holder.deleteTemplateButton = (ImageView)convertView.findViewById(R.id.manage_groups_row_group_delete_image);
+    			holder.templateBodyLabel = (TextView)convertView.findViewById(R.id.recipient_detail_contact_name);
+    			holder.deleteTemplateButton = (ImageView)convertView.findViewById(R.id.recipient_detail_delete_image);
+    			holder.templateNumberLabel = (TextView) convertView.findViewById(R.id.recipient_detail_contact_number);
     			convertView.setTag(holder);
     		}else{
     			holder = (TemplateViewHolder) convertView.getTag();
     		}
-    		final int _position  = position;
-    		
     		holder.templateBodyLabel.setText(prunedRecipients.get(position).displayName);
+    		String type = "";
+    		Log.d("prunedRecipients.contactId : " + prunedRecipients.get(position).contactId);
+    		for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+    			if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == prunedRecipients.get(position).contactId){
+    				for(int j = 0; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
+    					if(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number.equals(prunedRecipients.get(position).number)){
+    						type = SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type;
+    					}
+    				}
+    			}
+    		}
+    		holder.templateNumberLabel.setText(type + ": " + prunedRecipients.get(position).number);
+    		Log.d("prunedRecipients.number : " + prunedRecipients.get(position).number);
     		
     		holder.deleteTemplateButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					if(recipientStack.recipients.size()==0){
 						undoButton.setEnabled(true);
@@ -2415,6 +2481,7 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	private class TemplateViewHolder{
 		TextView templateBodyLabel;
+		TextView templateNumberLabel;
 		ImageView deleteTemplateButton;
 	}
 	
@@ -2453,7 +2520,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			okButton.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					if(checkBox.isChecked()){
 						SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -2469,7 +2536,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			tv.setOnClickListener(new OnClickListener() {
 				
-				@Override
+				
 				public void onClick(View v) {
 					if(checkBox.isChecked())
 						checkBox.setChecked(false);
