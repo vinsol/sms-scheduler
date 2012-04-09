@@ -417,7 +417,7 @@ abstract class AbstractScheduleSms extends Activity{
 						
 						
 						public void onClick(View v) {
-							FlurryAgent.logEvent("Undo");
+							FlurryAgent.logEvent("Recipient Details: Undo");
 							if(recipientStack.recipients.size()>0){
 								Recipient r = recipientStack.popRecipient();
 								int p = recipientStack.popPosition();
@@ -578,10 +578,6 @@ abstract class AbstractScheduleSms extends Activity{
 							Recipients.add(recipient);
 							FlurryAgent.logEvent("Number added");
 							
-							HashMap<String, String> params = new HashMap<String, String>();
-							params.put("From", "Autocomplete");
-							params.put("Is Primary Number", "no");
-							FlurryAgent.logEvent("Recipient Added", params);
 							
 							View view = createElement(recipient);
 							addView(view);
@@ -827,7 +823,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			
 			public void onClick(View v) {
-				FlurryAgent.logEvent("Add From Contacts Button Clicked");
+				
 				//Log.i("MSG", "isDataLoaded : " + SmsSchedulerApplication.isDataLoaded);
 				if(SmsSchedulerApplication.isDataLoaded){
 					Log.d("entering into if and isDataLoaded : " + SmsSchedulerApplication.isDataLoaded);
@@ -1670,7 +1666,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				
 				public void onClick(View v) {
-					FlurryAgent.logEvent("Template Added");
+					FlurryAgent.logEvent("Template Used");
 					if(messageText.getText().toString().equals("")){
 						messageText.setText(templatesArray.get(_position));
 					}else{
@@ -1978,16 +1974,16 @@ abstract class AbstractScheduleSms extends Activity{
 					if(Recipients.get(i).contactId == SmsSchedulerApplication.contactsList.get(j).content_uri_id){
 						numbers.add(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number);//TODO
 						Log.d("added Display Name : " + SmsSchedulerApplication.contactsList.get(j).name);
-						long receivedRecipientId = mdba.addRecipient(smsId, SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);//TODO
+						long receivedRecipientId = mdba.addRecipient(smsId, Recipients.get(i).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);//TODO
 						if(!Recipients.get(i).displayName.equals(" ")){
 							mdba.addRecentContact(Recipients.get(i).contactId, Recipients.get(i).number);
 						}
 						
 						if(!(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 							if(mdba.getCurrentPiFiretime() == -1){
-								handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number, smsId, receivedRecipientId, cal.getTimeInMillis());//TODO
+								handlePiUpdate(Recipients.get(i).number, smsId, receivedRecipientId, cal.getTimeInMillis());//TODO
 							}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-								handlePiUpdate(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number, smsId, receivedRecipientId, cal.getTimeInMillis());//TODO
+								handlePiUpdate(Recipients.get(i).number, smsId, receivedRecipientId, cal.getTimeInMillis());//TODO
 							}
 						}
 						

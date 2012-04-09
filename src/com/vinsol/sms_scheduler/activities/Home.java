@@ -198,7 +198,7 @@ public class Home extends Activity {
 					intent.putExtra("SMS DATA", scheduledSMSs.get(childPosition));
 					startActivity(intent);
 				}else if(groupPosition == 2){
-					FlurryAgent.logEvent("Checked Sent Message");
+					FlurryAgent.logEvent("Details of Sent Message Viewed");
 					openContextMenu(view);
 //					showSentInfoDialog(childPosition);
 				}else if(groupPosition == 0){
@@ -300,8 +300,6 @@ public class Home extends Activity {
 			menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
 			menu.add(0, MENU_DELETE, 1, menu_title);
 		}
-		
-		
     }
     
     
@@ -334,7 +332,7 @@ public class Home extends Activity {
 						
 					}
 					
-					FlurryAgent.logEvent("Message Deleted", deletedGroup);
+					FlurryAgent.logEvent("Home: Message Deleted", deletedGroup);
 					deleteSms();
 			        break;
 			     
@@ -342,6 +340,8 @@ public class Home extends Activity {
 					if(SmsSchedulerApplication.screenWidthInPixels==0){
 						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
 					}
+					
+					FlurryAgent.logEvent("Home: ContextMenu: Rescheduling SMS");
 					Intent intent = new Intent(Home.this, EditScheduledSms.class);
 					intent.putExtra("SMS DATA", sentSMSs.get(childPos));
 					startActivity(intent);
@@ -532,7 +532,7 @@ public class Home extends Activity {
 					});
 						
     			}
-    			FlurryAgent.logEvent("Message Deleted", deletedGroup);
+    			FlurryAgent.logEvent("Home: Delete Button: Message Deleted", deletedGroup);
     			return convertView;
 			}
     	};

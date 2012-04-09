@@ -64,6 +64,8 @@ public class ManageGroups extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_groups);
 		
+		FlurryAgent.logEvent("Manage Groups Activity Started");
+		
 		addGroupImageButton = (ImageView) 	findViewById(R.id.manage_group_add_group_image_button);
 		groupsList 			= (ListView) 	findViewById(R.id.group_manager_list);
 		listLayout			= (LinearLayout)findViewById(R.id.group_manager_list_layout);
@@ -80,8 +82,7 @@ public class ManageGroups extends Activity {
 			
 			
 			public void onClick(View v) {
-				FlurryAgent.logEvent("New Group");
-				startNewGroupActivity();
+				startNewGroup();
 			}
 		});
 		
@@ -90,10 +91,16 @@ public class ManageGroups extends Activity {
 			
 			
 			public void onClick(View v) {
-				FlurryAgent.logEvent("New Group");
-				startNewGroupActivity();
+				startNewGroup();
 			}
 		});
+	}
+	
+	
+	
+	private void startNewGroup(){
+		FlurryAgent.logEvent("New Group");
+		startNewGroupActivity();
 	}
 	
 	

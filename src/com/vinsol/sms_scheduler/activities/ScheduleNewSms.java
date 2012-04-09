@@ -25,6 +25,8 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		FlurryAgent.logEvent("Schedule New Sms Activity Started");
+		
 		mode = 1;
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);

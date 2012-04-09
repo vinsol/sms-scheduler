@@ -300,8 +300,14 @@ public class SelectContacts extends Activity {
 			privateGroupDataTemp.add(group);
 			privateChildDataTemp.add(child);
 		}
+		Log.d("Private Group 2 size : " + privateChildDataTemp.get(1).size());
 		
-		
+		for(int i = 0; i< privateChildDataTemp.get(1).size(); i++){
+			Log.d("###############################################################");
+			Log.d("name : " + (String)privateChildDataTemp.get(1).get(i).get(Constants.CHILD_NAME));
+			Log.d("Is checked : " + (Boolean)privateChildDataTemp.get(1).get(i).get(Constants.CHILD_CHECK));
+			Log.d("###############################################################");
+		}
 		
 		groupedPrivateChildDataTemp = organizeChildData(AbstractScheduleSms.privateGroupData, AbstractScheduleSms.privateChildData);
 		
@@ -371,6 +377,7 @@ public class SelectContacts extends Activity {
 				SelectContacts.this.finish();
 			}
 		});
+        
         
         
         
@@ -466,6 +473,7 @@ public class SelectContacts extends Activity {
 	
 	public ArrayList<ArrayList<HashMap<String, Object>>> organizeChildData(ArrayList<HashMap<String, Object>> privateGroupData, ArrayList<ArrayList<HashMap<String, Object>>> privateChildData){
 		ArrayList<ArrayList<HashMap<String, Object>>> data = new ArrayList<ArrayList<HashMap<String,Object>>>();
+		
 		
 		for(int groupCount = 0; groupCount< privateGroupData.size(); groupCount++){
 			ArrayList<HashMap<String, Object>> groupMembers = new ArrayList<HashMap<String,Object>>();
@@ -711,6 +719,7 @@ public class SelectContacts extends Activity {
 							recipient.groupIds.add((long) -1);
 							recipient.groupTypes.add(-1);
 							RecipientsTemp.add(recipient);
+							recentsList.setAdapter(new RecentsAdapter());
 						}
 					}else{
 						for(int i = 0; i<RecipientsTemp.size(); i++){
@@ -755,9 +764,12 @@ public class SelectContacts extends Activity {
 				    			
 				    			nativeGroupAdapter.notifyDataSetChanged();
 				    			privateGroupAdapter.notifyDataSetChanged(); 
+				    			recentsList.setAdapter(new RecentsAdapter());
 				    		}
 				    	}
 					}
+//					if(recentsAdapter!=null)
+//						recentsAdapter.notifyDataSetChanged();
 				}
 			});
     		
@@ -789,6 +801,7 @@ public class SelectContacts extends Activity {
 							recipient.groupIds.add((long) -1);
 							recipient.groupTypes.add(-1);
 							RecipientsTemp.add(recipient);
+							recentsList.setAdapter(new RecentsAdapter());
 						}
 					}else{	
 						holder.contactCheck.setChecked(false);
@@ -834,9 +847,12 @@ public class SelectContacts extends Activity {
 				    			
 				    			nativeGroupAdapter.notifyDataSetChanged();
 				    			privateGroupAdapter.notifyDataSetChanged();
+				    			recentsList.setAdapter(new RecentsAdapter());
 				    		}
 				    	}
 					}
+					if(recentsAdapter!=null)
+						recentsAdapter.notifyDataSetChanged();
 				}
 			});
     		
@@ -877,11 +893,11 @@ public class SelectContacts extends Activity {
 		
 		tv.setText(contactNumber.type + ": " + contactNumber.number);
 		
-		for(int i = 0; i< RecipientsTemp.size(); i++){
-			Log.d(i + " : " + RecipientsTemp.get(i).contactId + ", " + RecipientsTemp.get(i).number);
-		}
-		Log.d("\nView Details : " + contactNumber.contactId + ", " + contactNumber.number);
-		
+//		for(int i = 0; i< RecipientsTemp.size(); i++){
+//			Log.d(i + " : " + RecipientsTemp.get(i).contactId + ", " + RecipientsTemp.get(i).number);
+//		}
+//		Log.d("\nView Details : " + contactNumber.contactId + ", " + contactNumber.number);
+//		
 		for(int i = 0; i< RecipientsTemp.size(); i++){
 			
     		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
@@ -923,6 +939,7 @@ public class SelectContacts extends Activity {
 						recipient.groupIds.add((long) -1);
 						recipient.groupTypes.add(-1);
 						RecipientsTemp.add(recipient);
+						recentsList.setAdapter(new RecentsAdapter());
 					}
 				}else{
 					HashMap<String, String> params = new HashMap<String, String>();
@@ -933,6 +950,7 @@ public class SelectContacts extends Activity {
 					for(int i = 0; i<RecipientsTemp.size(); i++){
 			    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
 			    			RecipientsTemp.remove(i);
+			    			recentsList.setAdapter(new RecentsAdapter());
 			    		}
 					}
 				}
@@ -970,6 +988,7 @@ public class SelectContacts extends Activity {
 						recipient.groupIds.add((long) -1);
 						recipient.groupTypes.add(-1);
 						RecipientsTemp.add(recipient);
+						recentsList.setAdapter(new RecentsAdapter());
 					}
 				}else{
 					HashMap<String, String> params = new HashMap<String, String>();
@@ -979,6 +998,7 @@ public class SelectContacts extends Activity {
 					for(int i = 0; i<RecipientsTemp.size(); i++){
 			    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
 			    			RecipientsTemp.remove(i);
+			    			recentsList.setAdapter(new RecentsAdapter());
 			    		}
 					}
 				}
@@ -1138,7 +1158,6 @@ public class SelectContacts extends Activity {
     			
     			holder.groupCheck.setOnClickListener(new OnClickListener() {
 					
-					
 					public void onClick(View v) {
 						if(holder.groupCheck.isChecked()){
 							nativeGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, true);
@@ -1148,6 +1167,8 @@ public class SelectContacts extends Activity {
 								}
 							}
 							nativeGroupAdapter.notifyDataSetChanged();
+							contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+							nativeContactsList.setAdapter(contactsAdapter);
 						}else{
 							nativeGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
@@ -1160,6 +1181,9 @@ public class SelectContacts extends Activity {
 								}
 							}
 							nativeGroupAdapter.notifyDataSetChanged();
+//							contactsAdapter.notifyDataSetChanged();
+							contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+							nativeContactsList.setAdapter(contactsAdapter);
 						}
 					}
 				});
@@ -1248,7 +1272,9 @@ public class SelectContacts extends Activity {
 							FlurryAgent.logEvent("Recipient Added", params);
 							
 							addCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
-							contactsAdapter.notifyDataSetChanged();
+//							contactsAdapter.notifyDataSetChanged();
+							contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+							nativeContactsList.setAdapter(contactsAdapter);
 							boolean areAllSelected = true;
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
 								if(!((Boolean) nativeChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
@@ -1266,8 +1292,9 @@ public class SelectContacts extends Activity {
 							FlurryAgent.logEvent("Recipient Removed", params);
 							
 							removeCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
-							contactsAdapter.notifyDataSetChanged();
-							boolean areAllDeselected = true;
+//							contactsAdapter.notifyDataSetChanged();
+							contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+							nativeContactsList.setAdapter(contactsAdapter);							boolean areAllDeselected = true;
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
 								if((Boolean) nativeChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK)){
 									areAllDeselected = false;
@@ -1297,8 +1324,9 @@ public class SelectContacts extends Activity {
 							FlurryAgent.logEvent("Recipient Removed", params);
 							
 							removeCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
-							contactsAdapter.notifyDataSetChanged();
-							boolean areAllDeselected = true;
+//							contactsAdapter.notifyDataSetChanged();
+							contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+							nativeContactsList.setAdapter(contactsAdapter);							boolean areAllDeselected = true;
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
 								if((Boolean) nativeChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK)){
 									areAllDeselected = false;
@@ -1318,8 +1346,9 @@ public class SelectContacts extends Activity {
 							FlurryAgent.logEvent("Recipient Added", params);
 							
 							addCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
-							contactsAdapter.notifyDataSetChanged();
-							boolean areAllSelected = true;
+//							contactsAdapter.notifyDataSetChanged();
+							contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+							nativeContactsList.setAdapter(contactsAdapter);							boolean areAllSelected = true;
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
 								if(!((Boolean) nativeChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
 									areAllSelected = false;
@@ -1372,10 +1401,10 @@ public class SelectContacts extends Activity {
 		
 		tv.setText(contactNumber.type + ": " + contactNumber.number);
 		//TODO
-		for(int i = 0; i< RecipientsTemp.size(); i++){
-			Log.d(i + " : " + RecipientsTemp.get(i).contactId + ", " + RecipientsTemp.get(i).number);
-		}
-		Log.d("\nView Details : " + contactNumber.contactId + ", " + contactNumber.number);
+//		for(int i = 0; i< RecipientsTemp.size(); i++){
+//			Log.d(i + " : " + RecipientsTemp.get(i).contactId + ", " + RecipientsTemp.get(i).number);
+//		}
+//		Log.d("\nView Details : " + contactNumber.contactId + ", " + contactNumber.number);
 		
 		boolean gotChecked = false;
 		for(int i = 0; i< RecipientsTemp.size() && !gotChecked; i++){
@@ -1403,8 +1432,9 @@ public class SelectContacts extends Activity {
 					
 					cb.setChecked(true);
 					addExtraCheck(groupPosition, childPosition, cb, contact.name, contact.content_uri_id, contactNumber, groupId);
-					contactsAdapter.notifyDataSetChanged();
-				}else{
+//					contactsAdapter.notifyDataSetChanged();
+					contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+					nativeContactsList.setAdapter(contactsAdapter);				}else{
 					cb.setChecked(false);
 					
 					HashMap<String, String> params = new HashMap<String, String>();
@@ -1412,8 +1442,9 @@ public class SelectContacts extends Activity {
 					FlurryAgent.logEvent("Recipient Removed", params);
 					
 					removeExtraCheck(groupPosition, childPosition, cb, contactNumber, groupId);
-					contactsAdapter.notifyDataSetChanged();
-				}
+//					contactsAdapter.notifyDataSetChanged();
+					contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+					nativeContactsList.setAdapter(contactsAdapter);				}
 			}
 		});
 		
@@ -1428,15 +1459,17 @@ public class SelectContacts extends Activity {
 					FlurryAgent.logEvent("Recipient Added", params);
 					
 					addExtraCheck(groupPosition, childPosition, cb, contact.name, contact.content_uri_id, contactNumber, groupId);
-					contactsAdapter.notifyDataSetChanged();
-				}else{
+//					contactsAdapter.notifyDataSetChanged();
+					contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+					nativeContactsList.setAdapter(contactsAdapter);				}else{
 					HashMap<String, String> params = new HashMap<String, String>();
 					params.put("From", "Native Group");
 					FlurryAgent.logEvent("Recipient Removed", params);
 					
 					removeExtraCheck(groupPosition, childPosition, cb, contactNumber, groupId);
-					contactsAdapter.notifyDataSetChanged();
-				}
+//					contactsAdapter.notifyDataSetChanged();
+					contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+					nativeContactsList.setAdapter(contactsAdapter);				}
 			}
 		});
 		
@@ -1462,6 +1495,7 @@ public class SelectContacts extends Activity {
     	    	null,
     	    	new int[] {}
     	){
+			
 			
 			
 			public Object getChild(int groupPosition, int childPosition) {
@@ -1526,7 +1560,11 @@ public class SelectContacts extends Activity {
 								if(!((Boolean)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
 									addCheck(groupPosition, i, privateChildDataTemp, privateGroupDataTemp);
 								}
+								
+								Log.d("i : " + i);
 							}
+
+							//TODO
 							privateGroupAdapter.notifyDataSetChanged();
 						}else{
 							privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
@@ -1584,32 +1622,39 @@ public class SelectContacts extends Activity {
     				holder = (ChildListHolder) convertView.getTag();
     			}
     			
-    			Long contactId = (Long)groupedPrivateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID);
+    			final Long contactId = (Long)groupedPrivateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID);
     			
     			String contactName = (String)groupedPrivateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME);
     			holder.childNameText.setText(contactName);
     			@SuppressWarnings("unchecked")
+				final
 				ArrayList<ContactNumber> numbers = (ArrayList<ContactNumber>)groupedPrivateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NUMBER);
     			
     			holder.childNumberText.setText(numbers.get(0).type + ": " + numbers.get(0).number);
     			holder.childContactImage.setImageBitmap((Bitmap)groupedPrivateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_IMAGE));
-    			boolean isChecked = false;
-    			for(int i = 0; i< privateChildDataTemp.get(groupPosition).get(childPosition).size(); i++){
-    				if(((Long)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID)).equals(contactId) &&((String) privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NUMBER)).equals(numbers.get(0).number)){
-    					if((Boolean)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CHECK)){
-    						isChecked = true;
-    						break;
-    					}
-    				}
-    			}
-    			holder.childCheck.setChecked(isChecked);
     			
+    			int i = 0;
+    			
+				for(i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
+					if(contactId == (Long)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CONTACT_ID) && ((String)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_NUMBER)).equals(numbers.get(0).number)){
+						break;
+					}
+				}
+				
+				final int reqChildPosition = i;
+				
+				if((Boolean)privateChildDataTemp.get(groupPosition).get(reqChildPosition).get(Constants.CHILD_CHECK)){
+					holder.childCheck.setChecked(true);
+				}else{
+					holder.childCheck.setChecked(false);
+				}
+				
     			holder.extraNumbersLayout	= (LinearLayout)convertView.findViewById(R.id.extra_numbers_layout);
     			
     			nativeExtraNumbers.get(groupPosition).add(new ArrayList<ContactNumber>());
     			
     			ArrayList<ContactNumber> prunedList = new ArrayList<ContactNumber>();
-    			for(int i = 1; i< numbers.size(); i++){
+    			for(i = 1; i< numbers.size(); i++){
     				prunedList.add(numbers.get(i));
 //    				nativeExtraNumbers.get(groupPosition).get(childPosition).add(prunedList.get(i));
     			}
@@ -1617,13 +1662,15 @@ public class SelectContacts extends Activity {
     				holder.extraNumbersLayout.setVisibility(View.VISIBLE);
         			holder.extraNumbersLayout.removeAllViews();
 //        			holder.extraNumbersViews.clear();
-        			for(int i = 0; i< prunedList.size(); i++){
+        			for(i = 0; i< prunedList.size(); i++){
         				View view = createPrivateExtraNumberView(groupPosition, childPosition, prunedList.get(i), contactName, contactId, getLayoutInflater(), Long.parseLong((String)privateGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
         				holder.extraNumbersLayout.addView(view);
         			}
     			}else{
     				holder.extraNumbersLayout.setVisibility(View.GONE);
     			}
+    			
+    			
     			
     			holder.childCheck.setOnClickListener(new OnClickListener() {
 					
@@ -1636,39 +1683,45 @@ public class SelectContacts extends Activity {
 							params.put("Is Primary Number", "yes");
 							FlurryAgent.logEvent("Recipient Added", params);
 							
+							
+							
 							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
-							addCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
+							addCheck(groupPosition, reqChildPosition, privateChildDataTemp, privateGroupDataTemp);
+							
 							boolean areAllSelected = true;
-							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
-								if(!((Boolean) privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
+							for(int j = 0; j< privateChildDataTemp.get(groupPosition).size(); j++){
+								if(!(Boolean)privateChildDataTemp.get(groupPosition).get(j).get(Constants.CHILD_CHECK)){
 									areAllSelected = false;
 									break;
 								}
 							}
+							
 							if(areAllSelected){
 								privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, true);
 								privateGroupAdapter.notifyDataSetChanged();
 							}
 								
 						}else{
-							removeCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
+							removeCheck(groupPosition, reqChildPosition, privateChildDataTemp, privateGroupDataTemp);
 							
 							HashMap<String, String> params = new HashMap<String, String>();
 							params.put("From", "Private Group");
 							FlurryAgent.logEvent("Recipient Removed", params);
 							
 							boolean areAllDeselected = true;
-							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
-								if((Boolean) privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK)){
+							for(int j = 0; j< privateChildDataTemp.get(groupPosition).size(); j++){
+								if((Boolean)privateChildDataTemp.get(groupPosition).get(j).get(Constants.CHILD_CHECK)){
 									areAllDeselected = false;
 									break;
 								}
 							}
+							
 							if(areAllDeselected){
 								privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
 								privateGroupAdapter.notifyDataSetChanged();
 							}
 						}
+						privateGroupAdapter.notifyDataSetChanged();
 					}
 				});
     			
@@ -1687,18 +1740,22 @@ public class SelectContacts extends Activity {
 							
 							holder.childCheck.setChecked(true);
 							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
-							addCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
+							addCheck(groupPosition, reqChildPosition, privateChildDataTemp, privateGroupDataTemp);
+
 							boolean areAllSelected = true;
-							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
-								if(!((Boolean) privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
+							for(int j = 0; j< privateChildDataTemp.get(groupPosition).size(); j++){
+								if(!(Boolean)privateChildDataTemp.get(groupPosition).get(j).get(Constants.CHILD_CHECK)){
 									areAllSelected = false;
 									break;
 								}
 							}
+							
 							if(areAllSelected){
 								privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, true);
 								privateGroupAdapter.notifyDataSetChanged();
 							}
+							
+//							
 						}else{
 							holder.childCheck.setChecked(false);
 							
@@ -1706,20 +1763,24 @@ public class SelectContacts extends Activity {
 							params.put("From", "Private Group");
 							FlurryAgent.logEvent("Recipient Removed", params);
 							
-							removeCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
+							removeCheck(groupPosition, reqChildPosition, privateChildDataTemp, privateGroupDataTemp);
 							
 							boolean areAllDeselected = true;
-							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
-								if((Boolean) privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK)){
+							for(int j = 0; j< privateChildDataTemp.get(groupPosition).size(); j++){
+								if((Boolean)privateChildDataTemp.get(groupPosition).get(j).get(Constants.CHILD_CHECK)){
 									areAllDeselected = false;
 									break;
 								}
 							}
+							
 							if(areAllDeselected){
 								privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
 								privateGroupAdapter.notifyDataSetChanged();
 							}
+							
+//							
 						}
+						privateGroupAdapter.notifyDataSetChanged();
 					}
 				});
     			
@@ -1735,23 +1796,20 @@ public class SelectContacts extends Activity {
 				
 				tv.setText(contactNumber.type + ": " + contactNumber.number);
 				
-				cb.setChecked(false);
-				boolean gotChecked = false;
-				for(int i = 0; i< RecipientsTemp.size() && !gotChecked; i++){
-					
-		    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
-		    			for(int j=0; j<RecipientsTemp.get(i).groupIds.size(); j++){
-		    				if(RecipientsTemp.get(i).groupIds.get(j)==groupId && RecipientsTemp.get(i).groupTypes.get(j)==2){
-		    					cb.setChecked(true);
-		    					gotChecked = true;
-		    					break;
-		    				}
-		    			}
-		    		}
-		    	}
+				int i = 0;
+    			
+				for(i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
+					if(contactNumber.contactId == (Long)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CONTACT_ID) && ((String)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_NUMBER)).equals(contactNumber.number)){
+						break;
+					}
+				}
+				
+				final int reqChildPosition = i;
+				
+				cb.setChecked((Boolean)privateChildDataTemp.get(groupPosition).get(reqChildPosition).get(Constants.CHILD_CHECK));
+				
 				
 				view.setOnClickListener(new OnClickListener() {
-					
 					
 					public void onClick(View v) {
 						if(!cb.isChecked()){
@@ -1761,8 +1819,24 @@ public class SelectContacts extends Activity {
 							FlurryAgent.logEvent("Recipient Added", params);
 							
 							cb.setChecked(true);
+//							
+							privateChildDataTemp.get(groupPosition).get(reqChildPosition).put(Constants.CHILD_CHECK, true);
 							
-							addExtraCheck(groupPosition, childPosition, cb, contactName, contactId, contactNumber, groupId);
+							addExtraCheck(groupPosition, reqChildPosition, cb, contactName, contactId, contactNumber, groupId);
+							
+							boolean areAllSelected = true;
+							for(int j = 0; j< privateChildDataTemp.get(groupPosition).size(); j++){
+								if(!(Boolean)privateChildDataTemp.get(groupPosition).get(j).get(Constants.CHILD_CHECK)){
+									areAllSelected = false;
+									break;
+								}
+							}
+							
+							if(areAllSelected){
+								privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, true);
+								privateGroupAdapter.notifyDataSetChanged();
+							}
+							
 						}else{
 							cb.setChecked(false);
 							
@@ -1770,10 +1844,29 @@ public class SelectContacts extends Activity {
 							params.put("From", "Priavte Group");
 							FlurryAgent.logEvent("Recipient Removed", params);
 							
-							removeExtraCheck(groupPosition, childPosition, cb, contactNumber, groupId);
+							privateChildDataTemp.get(groupPosition).get(reqChildPosition).put(Constants.CHILD_CHECK, false);
+							
+							removeExtraCheck(groupPosition, reqChildPosition, cb, contactNumber, groupId);
+							
+							boolean areAllDeselected = true;
+							for(int j = 0; j< privateChildDataTemp.get(groupPosition).size(); j++){
+								if((Boolean)privateChildDataTemp.get(groupPosition).get(j).get(Constants.CHILD_CHECK)){
+									areAllDeselected = false;
+									break;
+								}
+							}
+							
+							if(areAllDeselected){
+								privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
+								privateGroupAdapter.notifyDataSetChanged();
+							}
+							
 						}
-						contactsAdapter.notifyDataSetChanged();
-					}
+						
+						privateGroupAdapter.notifyDataSetChanged();
+//						contactsAdapter.notifyDataSetChanged();
+						contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+						nativeContactsList.setAdapter(contactsAdapter);					}
 				});
 				
 				cb.setOnClickListener(new OnClickListener() {
@@ -1785,17 +1878,51 @@ public class SelectContacts extends Activity {
 							params.put("From", "Private Group");
 							params.put("Is Primary Number", "no");
 							FlurryAgent.logEvent("Recipient Added", params);
+					
+							privateChildDataTemp.get(groupPosition).get(reqChildPosition).put(Constants.CHILD_CHECK, true);
 							
-							addExtraCheck(groupPosition, childPosition, cb, contactName, contactId, contactNumber, groupId);
+							addExtraCheck(groupPosition, reqChildPosition, cb, contactName, contactId, contactNumber, groupId);
+							
+							boolean areAllSelected = true;
+							for(int j = 0; j< privateChildDataTemp.get(groupPosition).size(); j++){
+								if(!(Boolean)privateChildDataTemp.get(groupPosition).get(j).get(Constants.CHILD_CHECK)){
+									areAllSelected = false;
+									break;
+								}
+							}
+							
+							if(areAllSelected){
+								privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, true);
+								privateGroupAdapter.notifyDataSetChanged();
+							}
+							
 						}else{
 							HashMap<String, String> params = new HashMap<String, String>();
 							params.put("From", "Private Group");
 							FlurryAgent.logEvent("Recipient Removed", params);
 							
-							removeExtraCheck(groupPosition, childPosition, cb, contactNumber, groupId);
+							privateChildDataTemp.get(groupPosition).get(reqChildPosition).put(Constants.CHILD_CHECK, true);
+							
+							removeExtraCheck(groupPosition, reqChildPosition, cb, contactNumber, groupId);
+							
+							boolean areAllDeselected = true;
+							for(int j = 0; j< privateChildDataTemp.get(groupPosition).size(); j++){
+								if((Boolean)privateChildDataTemp.get(groupPosition).get(j).get(Constants.CHILD_CHECK)){
+									areAllDeselected = false;
+									break;
+								}
+							}
+							
+							if(areAllDeselected){
+								privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
+								privateGroupAdapter.notifyDataSetChanged();
+							}
+							
 						}
-						contactsAdapter.notifyDataSetChanged();
-					}
+						privateGroupAdapter.notifyDataSetChanged();
+//						contactsAdapter.notifyDataSetChanged();
+						contactsAdapter = new ContactsAdapter(SelectContacts.this, sortedContacts);
+						nativeContactsList.setAdapter(contactsAdapter);					}
 				});
 				
 				return view;
@@ -1840,6 +1967,7 @@ public class SelectContacts extends Activity {
 			recipient.groupTypes.add(2);
 			RecipientsTemp.add(recipient);
 			contactsAdapter.notifyDataSetChanged();
+			
 		}
 	}
 	
@@ -1849,6 +1977,7 @@ public class SelectContacts extends Activity {
 		Log.d("entering childcheck is checked true listner");
 		ChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
+		Log.d("Recipient getting checked : " + (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME));
 		for(int i = 0; i < RecipientsTemp.size(); i++){
 			if(RecipientsTemp.get(i).contactId == (Long) ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID) && RecipientsTemp.get(i).number.equals((String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NUMBER))){
 				spanExist = true;
@@ -1863,6 +1992,7 @@ public class SelectContacts extends Activity {
 		}
 		if(!spanExist){
 			Recipient recipient = new Recipient(-1, 2, (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1, -1, -1, (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NUMBER));
+			Log.d("childposition : " + childPosition);
 			try{
 				recipient.groupIds.add(((Long)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}catch (ClassCastException e) {
@@ -1936,7 +2066,7 @@ public class SelectContacts extends Activity {
     	}
 		
 		
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView, ViewGroup parent) {
 			final RecentsListHolder holder;
 			final int _position  = position;
     		if(convertView == null){
@@ -1957,24 +2087,33 @@ public class SelectContacts extends Activity {
     		
     		if(recentContactIds.get(position)> -1){
     			
+//    			for (i = 0; i < RecipientsTemp.size(); i++) {
+//					if(recentContactIds.get(position) == RecipientsTemp.get(i).contactId && recentContactNumbers.get(position).equals(RecipientsTemp.))
+//				}
+    			
     			for(i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
     				if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == recentContactIds.get(position)){
     					holder.contactImage.setImageBitmap(SmsSchedulerApplication.contactsList.get(i).image);
     		    		holder.nameText.setText(SmsSchedulerApplication.contactsList.get(i).name);
     		    		holder.numberText.setText(recentContactNumbers.get(position)); //TODO
     		    		
-    		    		for(int j = 0; j< RecipientsTemp.size(); j++){
-    		        		if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == RecipientsTemp.get(j).contactId){//TODO
-    		        			holder.contactCheck.setChecked(true);
-    		        			Log.d(">-1");
-    		        			break;
-    		        		}else{
-    		        			holder.contactCheck.setChecked(false);
-    		        		}
-    		        	}
+    		    		
     		    		break;
     				}
     			}
+    			
+    			for(int j = 0; j< RecipientsTemp.size(); j++){
+	        		if((recentContactIds.get(position) == RecipientsTemp.get(j).contactId) && (recentContactNumbers.get(position).equals(RecipientsTemp.get(j).number))){//TODO
+	        			holder.contactCheck.setChecked(true);
+	        			Log.d(">-1");
+	        			break;
+	        		}
+	        		else{
+	        			Log.d("not equal");
+	        			holder.contactCheck.setChecked(false);
+	        		}
+	        	}
+    			
     		}else if(recentContactIds.get(position) == -1){
     			
     			holder.contactImage.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
@@ -2000,7 +2139,8 @@ public class SelectContacts extends Activity {
 						if(recentContactIds.get(_position)> -1){
 							for(int k = 0; k< SmsSchedulerApplication.contactsList.size(); k++){
 								if(SmsSchedulerApplication.contactsList.get(k).content_uri_id == recentContactIds.get(_position)){
-									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1, -1, -1, SmsSchedulerApplication.contactsList.get(k).numbers.get(0).number);//TODO
+									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1, -1, -1, recentContactNumbers.get(position));//TODO
+									
 									break;
 								}
 							}
@@ -2020,7 +2160,7 @@ public class SelectContacts extends Activity {
 						recipient.groupIds.add((long) -1);
 						recipient.groupTypes.add(-1);
 						RecipientsTemp.add(recipient);
-						contactsAdapter.notifyDataSetChanged();
+						nativeContactsList.setAdapter(new ContactsAdapter(SelectContacts.this, sortedContacts));
 					}else{
 						HashMap<String, String> params = new HashMap<String, String>();
 						params.put("From", "Recents");
@@ -2029,15 +2169,16 @@ public class SelectContacts extends Activity {
 						holder.contactCheck.setChecked(false);
 						for(int i = 0; i< RecipientsTemp.size(); i++){
 				    		if(recentContactIds.get(_position)>-1){
-				    			if(recentContactIds.get(_position) == RecipientsTemp.get(i).contactId){
+				    			if(recentContactIds.get(_position) == RecipientsTemp.get(i).contactId && recentContactNumbers.get(position).equals(RecipientsTemp.get(i).number)){
 				    				RecipientsTemp.remove(i);
-					    			contactsAdapter.notifyDataSetChanged();
+				    				nativeContactsList.setAdapter(new ContactsAdapter(SelectContacts.this, sortedContacts));
 					    			break;
 					    		}
 				    		}else{
 				    			if(RecipientsTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
 				    				RecipientsTemp.remove(i);
-				    				contactsAdapter.notifyDataSetChanged();
+				    				nativeContactsList.setAdapter(new ContactsAdapter(SelectContacts.this, sortedContacts));
+//				    				contactsAdapter.notifyDataSetChanged();
 				    				break;
 				    			}
 				    		}
@@ -2057,7 +2198,7 @@ public class SelectContacts extends Activity {
 						if(recentContactIds.get(_position)> -1){
 							for(int k = 0; k< SmsSchedulerApplication.contactsList.size(); k++){
 								if(SmsSchedulerApplication.contactsList.get(k).content_uri_id == recentContactIds.get(_position)){
-									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1, -1, -1, SmsSchedulerApplication.contactsList.get(k).numbers.get(0).number);
+									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1, -1, -1, recentContactNumbers.get(_position));
 									break;
 								}
 							}
@@ -2074,7 +2215,7 @@ public class SelectContacts extends Activity {
 						
 						RecipientsTemp.add(recipient);
 						
-						contactsAdapter.notifyDataSetChanged();
+						nativeContactsList.setAdapter(new ContactsAdapter(SelectContacts.this, sortedContacts));
 					}else{
 						HashMap<String, String> params = new HashMap<String, String>();
 						params.put("From", "Recents");
@@ -2082,15 +2223,15 @@ public class SelectContacts extends Activity {
 						
 						for(int i = 0; i< RecipientsTemp.size(); i++){
 				    		if(recentContactIds.get(_position)>-1){
-				    			if(recentContactIds.get(_position) == RecipientsTemp.get(i).contactId){
+				    			if(recentContactIds.get(_position) == RecipientsTemp.get(i).contactId && recentContactNumbers.get(position).equals(RecipientsTemp.get(i).number)){
 				    				RecipientsTemp.remove(i);
-					    			contactsAdapter.notifyDataSetChanged();
+				    				nativeContactsList.setAdapter(new ContactsAdapter(SelectContacts.this, sortedContacts));
 					    			break;
 					    		}
 				    		}else{
 				    			if(RecipientsTemp.get(i).displayName.equals(recentContactNumbers.get(_position))){
 				    				RecipientsTemp.remove(i);
-				    				contactsAdapter.notifyDataSetChanged();
+				    				nativeContactsList.setAdapter(new ContactsAdapter(SelectContacts.this, sortedContacts));
 				    				break;
 				    			}
 				    		}

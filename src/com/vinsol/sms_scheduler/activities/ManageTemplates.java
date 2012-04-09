@@ -73,6 +73,8 @@ public class ManageTemplates extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_templates);
 		
+		FlurryAgent.logEvent("Manage Templates Activity started");
+		
 		newTemplateButton 			= (ImageView) 		findViewById(R.id.new_template_image_button);
 		newTemplateSpaceLayout 		= (LinearLayout) 	findViewById(R.id.new_template_input_space);
 		newTemplateBody 			= (EditText) 		findViewById(R.id.new_template_input_edit_text);

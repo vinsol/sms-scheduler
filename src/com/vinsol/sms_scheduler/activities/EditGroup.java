@@ -81,6 +81,7 @@ public class EditGroup extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.edit_group);
 		
+		FlurryAgent.logEvent("Edit Group Activity Started");
 		Intent intent = getIntent();
 		
 		groupNameLabel 		= (TextView) 	findViewById(R.id.group_name_label);

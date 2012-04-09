@@ -49,6 +49,8 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		FlurryAgent.logEvent("Edit Scheduled Sms Activity started");
+		
 		mode = 2;
 		
 		headerText	= (TextView)findViewById(R.id.header);

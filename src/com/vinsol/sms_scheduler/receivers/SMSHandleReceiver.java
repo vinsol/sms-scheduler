@@ -44,6 +44,8 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		recipientId = intent.getLongExtra("RECIPIENT_ID", 0);
 		DBAdapter mdba = new DBAdapter(context);
 		
+		
+		
 		mdba.open();
 		mdba.makeOperated(recipientId);
 		mdba.setStatus(smsId, 3);
@@ -51,6 +53,11 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		parts = smsManager.divideMessage(message);
 		msgSize = parts.size();
 		
+		FlurryAgent.onStartSession(context, context.getResources().getString(R.string.flurry_key));
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("Message Size", msgSize+"");
+		FlurryAgent.logEvent("Sending Message", params);
+		FlurryAgent.onEndSession(context);
 		
 		ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
 		ArrayList<PendingIntent> deliverIntents = new ArrayList<PendingIntent>();
