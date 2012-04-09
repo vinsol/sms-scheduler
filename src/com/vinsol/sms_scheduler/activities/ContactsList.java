@@ -60,7 +60,7 @@ public class ContactsList extends Activity {
 	@Override
     protected void onStart() {
     	super.onStart();
-    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
     }
     
     @Override

@@ -5,6 +5,8 @@
 
 package com.vinsol.sms_scheduler.receivers;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,13 +25,16 @@ public class SentReceiver extends BroadcastReceiver{
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		FlurryAgent.onStartSession(context, context.getApplicationContext().getResources().getString(R.string.flurry_key_test));
+		
 		long smsId = (long)intent.getLongExtra("SMS_ID", 0);
 		long recipientId = (long)intent.getLongExtra("RECIPIENT_ID", 0);
 		Intent mIntent;
 		Log.d("Recipient ID in SentReceiver : " + recipientId);
 		Log.d("Sms ID in SentReceiver : " + smsId);
 		mdba = new DBAdapter(context);
+		
+		HashMap<String, String> params = new HashMap<String, String>();
+		
 		switch (getResultCode())
          { 	
              case Activity.RESULT_OK:

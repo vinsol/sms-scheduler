@@ -51,8 +51,6 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		parts = smsManager.divideMessage(message);
 		msgSize = parts.size();
 		
-		FlurryAgent.onStartSession(context, context.getApplicationContext().getResources().getString(R.string.flurry_key_test));
-		HashMap<String, String> params = new HashMap<String, String>();
 		
 		ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
 		ArrayList<PendingIntent> deliverIntents = new ArrayList<PendingIntent>();

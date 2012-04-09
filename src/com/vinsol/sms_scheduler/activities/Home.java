@@ -161,7 +161,7 @@ public class Home extends Activity {
 			
 			
 			public void onClick(View arg0) {
-				FlurryAgent.onEvent("New SMS");
+				FlurryAgent.logEvent("New SMS");
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
 					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
 				}
@@ -175,7 +175,7 @@ public class Home extends Activity {
 			
 			
 			public void onClick(View arg0) {
-				FlurryAgent.onEvent("New SMS");
+				FlurryAgent.logEvent("New SMS");
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
 					SmsSchedulerApplication.screenWidthInPixels = blankListLayout.getWidth();
 				}
@@ -190,7 +190,7 @@ public class Home extends Activity {
 			
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
 				if(groupPosition == 1){
-					FlurryAgent.onEvent("Edit Scheduled Message");
+					FlurryAgent.logEvent("Edit Scheduled Message");
 					if(SmsSchedulerApplication.screenWidthInPixels==0){
 						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
 					}
@@ -198,11 +198,11 @@ public class Home extends Activity {
 					intent.putExtra("SMS DATA", scheduledSMSs.get(childPosition));
 					startActivity(intent);
 				}else if(groupPosition == 2){
-					FlurryAgent.onEvent("Checked Sent Message");
+					FlurryAgent.logEvent("Checked Sent Message");
 					openContextMenu(view);
 //					showSentInfoDialog(childPosition);
 				}else if(groupPosition == 0){
-					FlurryAgent.onEvent("Edit Draft");
+					FlurryAgent.logEvent("Edit Draft");
 					if(SmsSchedulerApplication.screenWidthInPixels==0){
 						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
 					}
@@ -220,7 +220,7 @@ public class Home extends Activity {
 			
 			
 			public void onClick(View v) {
-				FlurryAgent.onEvent("Options Menu Button Clicked");
+				FlurryAgent.logEvent("Options Menu Button Clicked");
 				openOptionsMenu();
 			}
 		});
@@ -262,7 +262,7 @@ public class Home extends Activity {
     @Override
     protected void onStart() {
     	super.onStart();
-    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
     }
     
     @Override

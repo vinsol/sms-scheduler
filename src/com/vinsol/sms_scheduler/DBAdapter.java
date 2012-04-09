@@ -367,7 +367,7 @@ public class DBAdapter {
 			cur.moveToFirst();
 			int parts = cur.getInt(cur.getColumnIndex(KEY_MSG_PARTS));
 			if (sent == parts){
-				FlurryAgent.onStartSession(context, context.getResources().getString(R.string.flurry_key_test));
+				FlurryAgent.onStartSession(context, context.getString(R.string.flurry_key));
 				FlurryAgent.logEvent("All parts of message sent");
 				FlurryAgent.onEndSession(context);
 				ContentValues sentTimeSaver = new ContentValues();
@@ -403,7 +403,7 @@ public class DBAdapter {
 			db.update(DATABASE_RECIPIENT_TABLE, deliverValue, KEY_RECIPIENT_ID + "=" + recipientId, null);
 			if(checkDelivery(recipientId)){
 				
-				FlurryAgent.onStartSession(context, context.getResources().getString(R.string.flurry_key_test));
+				FlurryAgent.onStartSession(context, context.getString(R.string.flurry_key));
 				FlurryAgent.logEvent("All parts of message sent");
 				FlurryAgent.onEndSession(context);
 				

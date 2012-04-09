@@ -26,11 +26,7 @@
         Don\'t show this message again.
     </string>
     
-    <string name="flurry_key_prod">
-        Q9RDC6BK1CDUY7PYM77S
-    </string>
-    
-    <string name="flurry_key_test">
+    <string name="flurry_key">
         R5S88X72UM1NNGQV34X2
     </string>
     

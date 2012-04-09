@@ -115,8 +115,8 @@ public class SelectContacts extends Activity {
 	@Override
     protected void onStart() {
     	super.onStart();
-    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
-    	FlurryAgent.onEvent("Selecting from Contacts");
+    	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
+    	FlurryAgent.logEvent("Selecting from Contacts");
     }
     
     @Override

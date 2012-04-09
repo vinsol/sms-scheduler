@@ -38,9 +38,9 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 	@Override
     protected void onStart() {
     	super.onStart();
-    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
     	
-    	FlurryAgent.onEvent("New SMS");
+    	FlurryAgent.logEvent("New SMS");
     }
     
     @Override
