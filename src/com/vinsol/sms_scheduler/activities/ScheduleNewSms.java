@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.R;
 
 public class ScheduleNewSms extends AbstractScheduleSms {
@@ -31,6 +32,22 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		setSuperFunctionalities();
 		loadGroupsData();
 	}
+	
+	
+	
+	@Override
+    protected void onStart() {
+    	super.onStart();
+    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    	
+    	FlurryAgent.onEvent("New SMS");
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	FlurryAgent.onEndSession(this);
+    }
 	
 	
 	

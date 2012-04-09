@@ -40,6 +40,7 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
@@ -80,7 +81,7 @@ public class SelectContacts extends Activity {
 	
 	
 	
-	//----------- Variables relating to Groups Tab-------------------------------
+	//----------- Variables related to Groups Tab-------------------------------
 	private ExpandableListView nativeGroupExplList;
 	private ExpandableListView privateGroupExplList;
 	private ArrayList<ArrayList<HashMap<String, Object>>> nativeChildDataTemp = new ArrayList<ArrayList<HashMap<String, Object>>>();
@@ -109,6 +110,21 @@ public class SelectContacts extends Activity {
 	private RecentsAdapter recentsAdapter;
 	//------------------------------------------------------------------------------
 	
+	
+	
+	@Override
+    protected void onStart() {
+    	super.onStart();
+    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    	FlurryAgent.onEvent("Selecting from Contacts");
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	FlurryAgent.onEndSession(this);
+    }
+    
 	
 	
 	@SuppressWarnings("unchecked")
@@ -686,6 +702,11 @@ public class SelectContacts extends Activity {
 							}
 						}
 						if(!isPresent){
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Contacts List");
+							params.put("Is Primary Number", "yes");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							Recipient recipient = new Recipient(-1, 2, contacts.get(position).name, contacts.get(position).content_uri_id, -1, -1, -1, contacts.get(position).numbers.get(0).number);
 							recipient.groupIds.add((long) -1);
 							recipient.groupTypes.add(-1);
@@ -726,6 +747,10 @@ public class SelectContacts extends Activity {
 				    					privateGroupDataTemp.get(j).put(Constants.GROUP_CHECK, false);
 				    				}
 				    			}
+				    			HashMap<String, String> params = new HashMap<String, String>();
+								params.put("From", "Contacts List");
+								FlurryAgent.logEvent("Recipient Removed", params);
+								
 				    			RecipientsTemp.remove(i);
 				    			
 				    			nativeGroupAdapter.notifyDataSetChanged();
@@ -755,6 +780,11 @@ public class SelectContacts extends Activity {
 							}
 						}
 						if(!isPresent){
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Contacts List");
+							params.put("Is Primary Number", "yes");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							Recipient recipient = new Recipient(-1, 2, contacts.get(position).name, contacts.get(position).content_uri_id, -1, -1, -1, contacts.get(position).numbers.get(0).number);
 							recipient.groupIds.add((long) -1);
 							recipient.groupTypes.add(-1);
@@ -796,6 +826,10 @@ public class SelectContacts extends Activity {
 				    					privateGroupDataTemp.get(j).put(Constants.GROUP_CHECK, false);
 				    				}
 				    			}
+				    			HashMap<String, String> params = new HashMap<String, String>();
+								params.put("From", "Contacts List");
+								FlurryAgent.logEvent("Recipient Removed", params);
+								
 				    			RecipientsTemp.remove(i);
 				    			
 				    			nativeGroupAdapter.notifyDataSetChanged();
@@ -879,12 +913,22 @@ public class SelectContacts extends Activity {
 								break;
 							}
 						}
+						
+						HashMap<String, String> params = new HashMap<String, String>();
+						params.put("From", "Contacts List");
+						params.put("Is Primary Number", "no");
+						FlurryAgent.logEvent("Recipient Added", params);
+						
 						Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, contactNumber.contactId, -1, -1, -1, contactNumber.number);
 						recipient.groupIds.add((long) -1);
 						recipient.groupTypes.add(-1);
 						RecipientsTemp.add(recipient);
 					}
 				}else{
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("From", "Contacts List");
+					FlurryAgent.logEvent("Recipient Removed", params);
+					
 					cb.setChecked(false);
 					for(int i = 0; i<RecipientsTemp.size(); i++){
 			    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
@@ -916,12 +960,22 @@ public class SelectContacts extends Activity {
 								break;
 							}
 						}
+						
+						HashMap<String, String> params = new HashMap<String, String>();
+						params.put("From", "Contacts List");
+						params.put("Is Primary Number", "no");
+						FlurryAgent.logEvent("Recipient Added", params);
+						
 						Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, contactNumber.contactId, -1, -1, -1, contactNumber.number);
 						recipient.groupIds.add((long) -1);
 						recipient.groupTypes.add(-1);
 						RecipientsTemp.add(recipient);
 					}
 				}else{
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("From", "Contacts List");
+					FlurryAgent.logEvent("Recipient Removed", params);
+					
 					for(int i = 0; i<RecipientsTemp.size(); i++){
 			    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
 			    			RecipientsTemp.remove(i);
@@ -1098,6 +1152,10 @@ public class SelectContacts extends Activity {
 							nativeGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
 							for(int i = 0; i< nativeChildDataTemp.get(groupPosition).size(); i++){
 								if((Boolean)nativeChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK)){
+									HashMap<String, String> params = new HashMap<String, String>();
+									params.put("From", "Native Group");
+									FlurryAgent.logEvent("Recipient Removed", params);
+									
 									removeCheck(groupPosition, i, nativeChildDataTemp, nativeGroupDataTemp);
 								}
 							}
@@ -1184,6 +1242,11 @@ public class SelectContacts extends Activity {
 					
 					public void onClick(View v) {
 						if(holder.childCheck.isChecked()){
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Native Group");
+							params.put("Is Primary Number", "yes");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							addCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
 							contactsAdapter.notifyDataSetChanged();
 							boolean areAllSelected = true;
@@ -1198,6 +1261,10 @@ public class SelectContacts extends Activity {
 								nativeGroupAdapter.notifyDataSetChanged();
 							}
 						}else{
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Native Group");
+							FlurryAgent.logEvent("Recipient Removed", params);
+							
 							removeCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
 							contactsAdapter.notifyDataSetChanged();
 							boolean areAllDeselected = true;
@@ -1224,6 +1291,11 @@ public class SelectContacts extends Activity {
 					public void onClick(View v) {
 						if(holder.childCheck.isChecked()){
 							holder.childCheck.setChecked(false);
+							
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Native Group");
+							FlurryAgent.logEvent("Recipient Removed", params);
+							
 							removeCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
 							contactsAdapter.notifyDataSetChanged();
 							boolean areAllDeselected = true;
@@ -1239,6 +1311,12 @@ public class SelectContacts extends Activity {
 							}
 						}else{
 							holder.childCheck.setChecked(true);
+							
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Native Group");
+							params.put("Is Primary Number", "yes");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							addCheck(groupPosition, childPosition, nativeChildDataTemp, nativeGroupDataTemp);
 							contactsAdapter.notifyDataSetChanged();
 							boolean areAllSelected = true;
@@ -1318,11 +1396,21 @@ public class SelectContacts extends Activity {
 			
 			public void onClick(View v) {
 				if(!cb.isChecked()){
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("From", "Native Group");
+					params.put("Is Primary Number", "no");
+					FlurryAgent.logEvent("Recipient Added", params);
+					
 					cb.setChecked(true);
 					addExtraCheck(groupPosition, childPosition, cb, contact.name, contact.content_uri_id, contactNumber, groupId);
 					contactsAdapter.notifyDataSetChanged();
 				}else{
 					cb.setChecked(false);
+					
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("From", "Native Group");
+					FlurryAgent.logEvent("Recipient Removed", params);
+					
 					removeExtraCheck(groupPosition, childPosition, cb, contactNumber, groupId);
 					contactsAdapter.notifyDataSetChanged();
 				}
@@ -1334,9 +1422,18 @@ public class SelectContacts extends Activity {
 			
 			public void onClick(View v) {
 				if(cb.isChecked()){
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("From", "Native Group");
+					params.put("Is Primary Number", "no");
+					FlurryAgent.logEvent("Recipient Added", params);
+					
 					addExtraCheck(groupPosition, childPosition, cb, contact.name, contact.content_uri_id, contactNumber, groupId);
 					contactsAdapter.notifyDataSetChanged();
 				}else{
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("From", "Native Group");
+					FlurryAgent.logEvent("Recipient Removed", params);
+					
 					removeExtraCheck(groupPosition, childPosition, cb, contactNumber, groupId);
 					contactsAdapter.notifyDataSetChanged();
 				}
@@ -1435,6 +1532,10 @@ public class SelectContacts extends Activity {
 							privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, false);
 							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
 								if((Boolean)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK)){
+									HashMap<String, String> params = new HashMap<String, String>();
+									params.put("From", "Private Group");
+									FlurryAgent.logEvent("Recipient Removed", params);
+									
 									removeCheck(groupPosition, i, privateChildDataTemp, privateGroupDataTemp);
 								}
 							}
@@ -1529,6 +1630,12 @@ public class SelectContacts extends Activity {
 					
 					public void onClick(View v) {
 						if(holder.childCheck.isChecked()){
+							
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Private Group");
+							params.put("Is Primary Number", "yes");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
 							addCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
 							boolean areAllSelected = true;
@@ -1545,6 +1652,10 @@ public class SelectContacts extends Activity {
 								
 						}else{
 							removeCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
+							
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Private Group");
+							FlurryAgent.logEvent("Recipient Removed", params);
 							
 							boolean areAllDeselected = true;
 							for(int i = 0; i< privateChildDataTemp.get(groupPosition).size(); i++){
@@ -1569,6 +1680,11 @@ public class SelectContacts extends Activity {
 					
 					public void onClick(View v) {
 						if(!holder.childCheck.isChecked()){
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Private Group");
+							params.put("Is Primary Number", "yes");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							holder.childCheck.setChecked(true);
 							//check the contact in contact list if not checked and create span, add group in group ids of the span if contact already checked////
 							addCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
@@ -1585,6 +1701,11 @@ public class SelectContacts extends Activity {
 							}
 						}else{
 							holder.childCheck.setChecked(false);
+							
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Private Group");
+							FlurryAgent.logEvent("Recipient Removed", params);
+							
 							removeCheck(groupPosition, childPosition, privateChildDataTemp, privateGroupDataTemp);
 							
 							boolean areAllDeselected = true;
@@ -1634,10 +1755,21 @@ public class SelectContacts extends Activity {
 					
 					public void onClick(View v) {
 						if(!cb.isChecked()){
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Priavte Group");
+							params.put("Is Primary Number", "no");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							cb.setChecked(true);
+							
 							addExtraCheck(groupPosition, childPosition, cb, contactName, contactId, contactNumber, groupId);
 						}else{
 							cb.setChecked(false);
+							
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Priavte Group");
+							FlurryAgent.logEvent("Recipient Removed", params);
+							
 							removeExtraCheck(groupPosition, childPosition, cb, contactNumber, groupId);
 						}
 						contactsAdapter.notifyDataSetChanged();
@@ -1649,8 +1781,17 @@ public class SelectContacts extends Activity {
 					
 					public void onClick(View v) {
 						if(cb.isChecked()){
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Private Group");
+							params.put("Is Primary Number", "no");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							addExtraCheck(groupPosition, childPosition, cb, contactName, contactId, contactNumber, groupId);
 						}else{
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Private Group");
+							FlurryAgent.logEvent("Recipient Removed", params);
+							
 							removeExtraCheck(groupPosition, childPosition, cb, contactNumber, groupId);
 						}
 						contactsAdapter.notifyDataSetChanged();
@@ -1869,6 +2010,11 @@ public class SelectContacts extends Activity {
 									
 								}
 							}
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Recents");
+							params.put("Is Primary Number", "no");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1, -1, -1, null); //TODO
 						}
 						recipient.groupIds.add((long) -1);
@@ -1876,6 +2022,10 @@ public class SelectContacts extends Activity {
 						RecipientsTemp.add(recipient);
 						contactsAdapter.notifyDataSetChanged();
 					}else{
+						HashMap<String, String> params = new HashMap<String, String>();
+						params.put("From", "Recents");
+						FlurryAgent.logEvent("Recipient Removed", params);
+						
 						holder.contactCheck.setChecked(false);
 						for(int i = 0; i< RecipientsTemp.size(); i++){
 				    		if(recentContactIds.get(_position)>-1){
@@ -1917,10 +2067,19 @@ public class SelectContacts extends Activity {
 						recipient.groupIds.add((long) -1);
 						recipient.groupTypes.add(-1);
 						
+						HashMap<String, String> params = new HashMap<String, String>();
+						params.put("From", "Recents");
+						params.put("Is Primary Number", "no");
+						FlurryAgent.logEvent("Recipient Added", params);
+						
 						RecipientsTemp.add(recipient);
 						
 						contactsAdapter.notifyDataSetChanged();
 					}else{
+						HashMap<String, String> params = new HashMap<String, String>();
+						params.put("From", "Recents");
+						FlurryAgent.logEvent("Recipient Removed", params);
+						
 						for(int i = 0; i< RecipientsTemp.size(); i++){
 				    		if(recentContactIds.get(_position)>-1){
 				    			if(recentContactIds.get(_position) == RecipientsTemp.get(i).contactId){
@@ -2042,7 +2201,7 @@ public class SelectContacts extends Activity {
         							break;
         						}
         					}
-        					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number);//TODO
+        					childParameters.put(Constants.CHILD_NUMBER, number);//TODO
         					childParameters.put(Constants.CHILD_CONTACT_ID, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
         					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(j).image);
         					childParameters.put(Constants.CHILD_CHECK, false);
@@ -2120,5 +2279,8 @@ public class SelectContacts extends Activity {
 				privateChildDataTemp.add(child);
 			}
 		}
+        
+        
+        groupedPrivateChildDataTemp = organizeChildData(privateGroupDataTemp, privateChildDataTemp);
 	}
 }

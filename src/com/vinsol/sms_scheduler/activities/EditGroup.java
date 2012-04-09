@@ -6,6 +6,7 @@
 package com.vinsol.sms_scheduler.activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -27,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
@@ -58,6 +60,21 @@ public class EditGroup extends Activity {
 	private ArrayList<String> numbersTemp = new ArrayList<String>();
 	private ArrayList<Contact> newGroupContacts = new ArrayList<Contact>();
 	private ArrayList<GroupMember> groupMembers = new ArrayList<GroupMember>();
+	
+	
+	
+	@Override
+    protected void onStart() {
+    	super.onStart();
+    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	FlurryAgent.onEndSession(this);
+    }
+	
 	
 	
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +122,7 @@ public class EditGroup extends Activity {
 						mdba.open();
 						mdba.removeGroup(groupId);
 						mdba.close();
+						FlurryAgent.logEvent("Group Deleted");
 						d.cancel();
 						EditGroup.this.finish();
 					}
@@ -129,6 +147,8 @@ public class EditGroup extends Activity {
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("Group Name Change Label Clicked");
+				
 				final Dialog d = new Dialog(EditGroup.this);
 				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				d.setContentView(R.layout.group_name_input_dialog);
@@ -189,6 +209,7 @@ public class EditGroup extends Activity {
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("Add Contacts");
 				Intent intent = new Intent(EditGroup.this, ContactsList.class);
 				intent.putExtra("ORIGINATOR", "Group Edit Activity");
 				intent.putExtra("GROUPID", groupId);
@@ -220,6 +241,10 @@ public class EditGroup extends Activity {
 					}
 					mdba.setGroupName(groupName, groupId);
 					mdba.close();
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("Size", String.valueOf(ids.size()));
+					FlurryAgent.logEvent("Group Saved", params);
+					
 					EditGroup.this.finish();
 				}else{
 					Toast.makeText(EditGroup.this, "Cannot make group with no Contact", Toast.LENGTH_LONG).show();
@@ -432,6 +457,8 @@ public class EditGroup extends Activity {
 				
 				
 				public void onClick(View v) {
+					FlurryAgent.logEvent("Contact Removed From Group");
+					
 					Log.d("List position :" + _position);
 					
 					if(ids.size()==1){
@@ -510,6 +537,7 @@ public class EditGroup extends Activity {
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("Contact Removed From Group");
 				for(int i = 0; i< ids.size(); i++){
 					if(ids.get(i)==contactNumber.contactId && numbers.get(i).equals(contactNumber.number)){
 						groupMember.numbers.remove(contactNumber);

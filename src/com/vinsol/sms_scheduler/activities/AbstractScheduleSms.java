@@ -77,6 +77,7 @@ import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
@@ -257,6 +258,20 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
+	@Override
+    protected void onStart() {
+    	super.onStart();
+    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	FlurryAgent.onEndSession(this);
+    }
+	
+	
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule_sms);
@@ -347,6 +362,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("Recipients Details Checked");
 				if(Recipients.size()>0){
 					recipientStack.recipients.clear();
 					recipientStack.positions.clear();
@@ -401,6 +417,7 @@ abstract class AbstractScheduleSms extends Activity{
 						
 						
 						public void onClick(View v) {
+							FlurryAgent.logEvent("Undo");
 							if(recipientStack.recipients.size()>0){
 								Recipient r = recipientStack.popRecipient();
 								int p = recipientStack.popPosition();
@@ -559,6 +576,13 @@ abstract class AbstractScheduleSms extends Activity{
 						if(!isPresent){
 							Recipient recipient = new Recipient(-1, 1, numbersText.getText().toString().trim(), -1, -1, -1, -1, numbersText.getText().toString().trim());
 							Recipients.add(recipient);
+							FlurryAgent.logEvent("Number added");
+							
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Autocomplete");
+							params.put("Is Primary Number", "no");
+							FlurryAgent.logEvent("Recipient Added", params);
+							
 							View view = createElement(recipient);
 							addView(view);
 						}else{
@@ -622,6 +646,10 @@ abstract class AbstractScheduleSms extends Activity{
 							removeRecipientFromGroups(Recipients.get(Recipients.size()-1).contactId, Recipients.get(Recipients.size()-1).displayName);
 							Recipients.remove(Recipients.size()-1);
 //							refreshRecipientViews();
+							
+							HashMap<String, String> params = new HashMap<String, String>();
+							params.put("From", "Autocomplete Backspace");
+							FlurryAgent.logEvent("Recipient Removed", params);
 							
 //							removeElement(currentRow.views.get(currentRow.views.size()-1));
 							currentRow.elementsWidth = currentRow.elementsWidth - currentRow.views.get(currentRow.views.size()-1).getWidth()/dpi;
@@ -799,6 +827,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("Add From Contacts Button Clicked");
 				//Log.i("MSG", "isDataLoaded : " + SmsSchedulerApplication.isDataLoaded);
 				if(SmsSchedulerApplication.isDataLoaded){
 					Log.d("entering into if and isDataLoaded : " + SmsSchedulerApplication.isDataLoaded);
@@ -947,6 +976,7 @@ abstract class AbstractScheduleSms extends Activity{
 							String temp = sdf.format(new Date(processDate.getYear(), processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes()));
 							dateButton.setText(temp);
 						}
+						FlurryAgent.logEvent("Date Changed");
 					}
 				});
 				
@@ -1001,6 +1031,7 @@ abstract class AbstractScheduleSms extends Activity{
 
 			
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				FlurryAgent.logEvent("Smiley Added");
 				int cursorPos = messageText.getSelectionStart();
 				String beforeString = messageText.getText().toString().substring(0, cursorPos);
 				String afterString = messageText.getText().toString().substring(cursorPos, messageText.length());
@@ -1049,6 +1080,7 @@ abstract class AbstractScheduleSms extends Activity{
 
 				loadTemplates();
 				if(templatesArray.size()>0){
+					FlurryAgent.logEvent("Templates Dialog Opened");
 					TemplateAdapter templateAdapter = new TemplateAdapter();
 					templateDialog = new Dialog(AbstractScheduleSms.this);
 					templateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1071,6 +1103,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("Add Template Button Clicked");
 				if(messageText.getText().toString().matches("(''|[' ']*)")){
 					Toast.makeText(AbstractScheduleSms.this, "Empty message, can't add it as template", Toast.LENGTH_SHORT).show();
 				}else{
@@ -1133,6 +1166,11 @@ abstract class AbstractScheduleSms extends Activity{
 								mdba.open();
 								mdba.deleteSms(editedSms, AbstractScheduleSms.this);
 								mdba.close();
+								HashMap<String, String> deletedGroup = new HashMap<String, String>();
+								deletedGroup.put("deleted SMS", "Edited SMS");
+								FlurryAgent.logEvent("Message Deleted", deletedGroup);
+							}else{
+								FlurryAgent.logEvent("Scheduling Cancelled");
 							}
 							d.cancel();
 							AbstractScheduleSms.this.finish();
@@ -1144,6 +1182,7 @@ abstract class AbstractScheduleSms extends Activity{
 						
 						public void onClick(View v) {
 							d.cancel();
+							
 						}
 					});
 					
@@ -1160,6 +1199,7 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("Voice Input");
 				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
 		        // Specify the calling package to identify your application
@@ -1462,6 +1502,11 @@ abstract class AbstractScheduleSms extends Activity{
 						}
 					}
 					if(!isPresent){
+						HashMap<String, String> params = new HashMap<String, String>();
+						params.put("From", "Autocomplete Dropdown");
+						params.put("Is Primary Number", "yes");
+						FlurryAgent.logEvent("Recipient Added", params);
+						
 						final Recipient recipient = new Recipient(-1, 2, shortlist.get(position).name, shortlist.get(position).content_uri_id, -1, -1, -1, shortlist.get(position).numbers.get(0).number);
 						Recipients.add(recipient);
 						
@@ -1500,6 +1545,11 @@ abstract class AbstractScheduleSms extends Activity{
 						}
 					}
 					if(!isPresent){
+						HashMap<String, String> params = new HashMap<String, String>();
+						params.put("From", "Autocomplete Dropdown");
+						params.put("Is Primary Number", "no");
+						FlurryAgent.logEvent("Recipient Added", params);
+						
 						final Recipient recipient = new Recipient(-1, 2, contact.name, contact.content_uri_id, -1, -1, -1, contactNumber.number);
 						Recipients.add(recipient);
 						
@@ -1620,6 +1670,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				
 				public void onClick(View v) {
+					FlurryAgent.logEvent("Template Added");
 					if(messageText.getText().toString().equals("")){
 						messageText.setText(templatesArray.get(_position));
 					}else{
@@ -1875,6 +1926,8 @@ abstract class AbstractScheduleSms extends Activity{
         }
         groupCursor.close();
         mdba.close();
+        
+        
 	}
 
 
@@ -1891,10 +1944,26 @@ abstract class AbstractScheduleSms extends Activity{
 		mdba.open();
 		long smsId = mdba.scheduleSms(messageText.getText().toString(), dateString, parts.size(), cal.getTimeInMillis());
 		
+		boolean isDraft = false;
+		
 		if(Recipients.size()==0 || messageText.getText().toString().matches("(''|[' ']*)")){
 			mdba.setAsDraft(smsId);
-			
+			isDraft = true;
 		}
+		HashMap<String, String> params = new HashMap<String, String>();
+		if(isDraft){
+			params.put("Type", "Draft");
+		}else{
+			if(mode==2){
+				params.put("Type", "Edited");
+			}else{
+				params.put("Type", "New");
+			}
+		}
+		params.put("Recipients", String.valueOf(Recipients.size()));
+		params.put("Message Size", String.valueOf(parts));
+		FlurryAgent.logEvent("Message Scheduled", params);
+		
 		if(mode==2){
 			mdba.deleteSms(editedSms, AbstractScheduleSms.this);
 		}
@@ -2133,6 +2202,10 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			
 			public void onClick(View v) {
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put("From", "Autocomplete Element Click");
+				FlurryAgent.logEvent("Recipient Removed", params);
+				
 				removeElement(view);
 				Recipients.remove(recipient);
 				removeRecipientFromGroups(recipient.contactId, recipient.displayName);
@@ -2144,6 +2217,10 @@ abstract class AbstractScheduleSms extends Activity{
 			
 			
 			public void onClick(View v) {
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put("From", "Autocomplete Element Click");
+				FlurryAgent.logEvent("Recipient Removed", params);
+				
 				removeElement(view);
 				Recipients.remove(recipient);
 				removeRecipientFromGroups(recipient.contactId, recipient.displayName);
@@ -2463,6 +2540,10 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				
 				public void onClick(View v) {
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("From", "Details Delete Button");
+					FlurryAgent.logEvent("Recipient Removed", params);
+					
 					if(recipientStack.recipients.size()==0){
 						undoButton.setEnabled(true);
 						undoButton.setBackgroundDrawable(getApplication().getResources().getDrawable(R.drawable.undo_button_states));

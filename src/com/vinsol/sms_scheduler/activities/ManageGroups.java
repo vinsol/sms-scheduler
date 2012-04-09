@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 
@@ -42,6 +43,21 @@ public class ManageGroups extends Activity {
 	
 	private ArrayList<Long> grpIdsArray = new ArrayList<Long>();
 	private ArrayList<String> grpNamesArray = new ArrayList<String>();
+	
+	
+	
+	@Override
+    protected void onStart() {
+    	super.onStart();
+    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	FlurryAgent.onEndSession(this);
+    }
+	
 	
 	
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +80,7 @@ public class ManageGroups extends Activity {
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("New Group");
 				startNewGroupActivity();
 			}
 		});
@@ -73,6 +90,7 @@ public class ManageGroups extends Activity {
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.logEvent("New Group");
 				startNewGroupActivity();
 			}
 		});
@@ -160,6 +178,7 @@ public class ManageGroups extends Activity {
 							mdba.open();
 							mdba.removeGroup(grpIdsArray.get(position));
 							mdba.close();
+							FlurryAgent.logEvent("Group Deleted");
 							grpIdsArray.remove(position);
 							grpNamesArray.remove(position);
 							notifyDataSetChanged();
@@ -191,6 +210,7 @@ public class ManageGroups extends Activity {
 				
 				
 				public void onClick(View v) {
+					FlurryAgent.logEvent("Edit Group");
 					Intent intent = new Intent(ManageGroups.this, EditGroup.class);
 					intent.putExtra("GROUPNAME", grpNamesArray.get(position));
 					intent.putExtra("GROUPID", grpIdsArray.get(position));

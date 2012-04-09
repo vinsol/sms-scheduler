@@ -8,6 +8,7 @@ package com.vinsol.sms_scheduler.activities;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -49,6 +50,7 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
@@ -106,7 +108,6 @@ public class Home extends Activity {
 	
 	private BroadcastReceiver mUpdateReceiver = new BroadcastReceiver() {
 		
-		
 		public void onReceive(Context context, Intent intent) {
 			loadData();
 			mAdapter.notifyDataSetChanged();
@@ -132,10 +133,13 @@ public class Home extends Activity {
 	
 	
 	
+	
     
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
+        
+        FlurryAgent.logEvent("Home Activity Started");
         
         if(!SmsSchedulerApplication.isDataLoaded){
         	ContactsAsync contactsAsync = new ContactsAsync();
@@ -157,6 +161,7 @@ public class Home extends Activity {
 			
 			
 			public void onClick(View arg0) {
+				FlurryAgent.onEvent("New SMS");
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
 					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
 				}
@@ -170,6 +175,7 @@ public class Home extends Activity {
 			
 			
 			public void onClick(View arg0) {
+				FlurryAgent.onEvent("New SMS");
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
 					SmsSchedulerApplication.screenWidthInPixels = blankListLayout.getWidth();
 				}
@@ -184,6 +190,7 @@ public class Home extends Activity {
 			
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
 				if(groupPosition == 1){
+					FlurryAgent.onEvent("Edit Scheduled Message");
 					if(SmsSchedulerApplication.screenWidthInPixels==0){
 						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
 					}
@@ -191,9 +198,11 @@ public class Home extends Activity {
 					intent.putExtra("SMS DATA", scheduledSMSs.get(childPosition));
 					startActivity(intent);
 				}else if(groupPosition == 2){
+					FlurryAgent.onEvent("Checked Sent Message");
 					openContextMenu(view);
 //					showSentInfoDialog(childPosition);
 				}else if(groupPosition == 0){
+					FlurryAgent.onEvent("Edit Draft");
 					if(SmsSchedulerApplication.screenWidthInPixels==0){
 						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
 					}
@@ -211,6 +220,7 @@ public class Home extends Activity {
 			
 			
 			public void onClick(View v) {
+				FlurryAgent.onEvent("Options Menu Button Clicked");
 				openOptionsMenu();
 			}
 		});
@@ -246,6 +256,20 @@ public class Home extends Activity {
     	registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
     }
     
+    
+    
+    
+    @Override
+    protected void onStart() {
+    	super.onStart();
+    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	FlurryAgent.onEndSession(this);
+    }
     
     
     
@@ -295,13 +319,22 @@ public class Home extends Activity {
 			switch (item.getItemId()) {
 				case MENU_DELETE:
 					mdba.open();
+					HashMap<String, String> deletedGroup = new HashMap<String, String>();
 					if(groupPos == 1){
 						selectedSms = scheduledSMSs.get(childPos).keyId;
+						deletedGroup.put("deleted SMS", "Scheduled SMS");
+
 					}else if(groupPos == 2){
 						selectedSms = sentSMSs.get(childPos).keyId;
+						deletedGroup.put("deleted SMS", "Edited SMS");
+						
 					}else if(groupPos == 0){
 						selectedSms = drafts.get(childPos).keyId;
+						deletedGroup.put("deleted SMS", "Draft");
+						
 					}
+					
+					FlurryAgent.logEvent("Message Deleted", deletedGroup);
 					deleteSms();
 			        break;
 			     
@@ -468,7 +501,7 @@ public class Home extends Activity {
     			}
     			
     			
-    			
+    			final HashMap<String, String> deletedGroup = new HashMap<String, String>();
     			
     			if(groupPosition == 1){
     				holder.statusImageView.setOnClickListener(new OnClickListener() {
@@ -476,6 +509,7 @@ public class Home extends Activity {
 						
 						public void onClick(View v) {
 							showDeleteDialog(scheduledSMSs, childPosition, "Delete this Scheduled Message?");
+							deletedGroup.put("deleted SMS", "Scheduled SMS");
 						}
 					});
     				
@@ -485,6 +519,7 @@ public class Home extends Activity {
 						
 						public void onClick(View v) {
 							showDeleteDialog(drafts, childPosition, "Delete this Draft?");
+							deletedGroup.put("deleted SMS", "Draft");
 						}
     				});
     			}else if(groupPosition == 2){
@@ -497,6 +532,7 @@ public class Home extends Activity {
 					});
 						
     			}
+    			FlurryAgent.logEvent("Message Deleted", deletedGroup);
     			return convertView;
 			}
     	};
@@ -705,10 +741,12 @@ public class Home extends Activity {
     	Intent intent;
 		switch (item.getItemId()) {
 	        case R.id.template_opt_menu:
+	        	FlurryAgent.logEvent("Manage Templates");
 	        	intent = new Intent(Home.this, ManageTemplates.class);
 	        	startActivity(intent);
 	            break;
 	        case R.id.group_opt_menu:
+	        	FlurryAgent.logEvent("Manage Groups");
 	        	if(SmsSchedulerApplication.isDataLoaded){
 	        		intent = new Intent(Home.this, ManageGroups.class);
 		            startActivity(intent);
@@ -998,8 +1036,15 @@ public class Home extends Activity {
         	}
     	}
     	
+    	
+    	
     	Long endTime = System.currentTimeMillis();
 		Log.d("===================================\nTime taken : " + (endTime-startTime));
+		
+		HashMap<String, Long> param = new HashMap<String, Long>();
+		param.put("Time Taken", (endTime-startTime));
+		FlurryAgent.logEvent("Contacts Loaded", param);
+		
     }
 	
 	

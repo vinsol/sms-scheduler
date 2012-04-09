@@ -6,10 +6,13 @@
 package com.vinsol.sms_scheduler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +21,10 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 
+import com.flurry.android.FlurryAgent;
+import com.vinsol.sms_scheduler.activities.Home;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
@@ -35,7 +41,7 @@ public class DBAdapter {
 	private final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
 	private final String DATABASE_RECIPIENT_GROUP_REL_TABLE = "recipient_grp_rel_table";
 	private final String DATABASE_RECENTS_TABLE = "recents_table";
-	private final int 	DATABASE_VERSION = 2;
+	private final int 	DATABASE_VERSION = 3;
 	
 	Cursor cur;
 	
@@ -361,6 +367,9 @@ public class DBAdapter {
 			cur.moveToFirst();
 			int parts = cur.getInt(cur.getColumnIndex(KEY_MSG_PARTS));
 			if (sent == parts){
+				FlurryAgent.onStartSession(context, context.getResources().getString(R.string.flurry_key_test));
+				FlurryAgent.logEvent("All parts of message sent");
+				FlurryAgent.onEndSession(context);
 				ContentValues sentTimeSaver = new ContentValues();
 				sentTimeSaver.put(KEY_S_MILLIS, System.currentTimeMillis());
 				db.update(DATABASE_RECIPIENT_TABLE, sentTimeSaver, KEY_RECIPIENT_ID + "=" + recipientId, null);
@@ -393,6 +402,11 @@ public class DBAdapter {
 		try{
 			db.update(DATABASE_RECIPIENT_TABLE, deliverValue, KEY_RECIPIENT_ID + "=" + recipientId, null);
 			if(checkDelivery(recipientId)){
+				
+				FlurryAgent.onStartSession(context, context.getResources().getString(R.string.flurry_key_test));
+				FlurryAgent.logEvent("All parts of message sent");
+				FlurryAgent.onEndSession(context);
+				
 				ContentValues deliverTimeSaver = new ContentValues();
 				deliverTimeSaver.put(KEY_D_MILLIS, System.currentTimeMillis());
 				db.update(DATABASE_RECIPIENT_TABLE, deliverTimeSaver, KEY_RECIPIENT_ID + "=" + recipientId, null);
@@ -810,6 +824,20 @@ public class DBAdapter {
 		
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			
+			switch (oldVersion) {
+			case 1:
+				From1To2(db);
+
+			default:
+				From2To3(db);
+				break;
+		}
+			//-----------------------------------------------------------PI table updated---------------------
+		}
+		
+		
+		private void From1To2(SQLiteDatabase db){
 			ArrayList<Sms> SMSs = new ArrayList<Sms>();
 			ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
 			
@@ -1002,7 +1030,56 @@ public class DBAdapter {
 				db.insert(DATABASE_PI_TABLE, null, cv);
 			}
 			cur.close();
-			//-----------------------------------------------------------PI table updated---------------------
+		}
+		
+		
+		
+		private void From2To3(SQLiteDatabase db){
+			//------------------fetching the Recipients in a cursor--------------------------
+			Cursor groupContactRelBack = db.query(DATABASE_GROUP_CONTACT_RELATION, null, null, null, null, null, null);
+			
+			Log.d("groupContactRelBack size : " + groupContactRelBack.getCount());
+			ArrayList<GroupContactsBack> back = new ArrayList<GroupContactsBack>();
+			
+			if(groupContactRelBack.moveToFirst()){
+				do{
+					GroupContactsBack gcb = new GroupContactsBack();
+					gcb.contactId = groupContactRelBack.getLong(groupContactRelBack.getColumnIndex(KEY_CONTACTS_ID));
+					gcb.groupRelId = groupContactRelBack.getLong(groupContactRelBack.getColumnIndex(KEY_GROUP_REL_ID));
+					back.add(gcb);
+				}while(groupContactRelBack.moveToNext());
+			}
+			
+			Log.d("into 2 To 3");
+			
+			String sql = "DROP TABLE groupContactRelation";
+			db.execSQL(sql);
+			
+			Log.d("table recreated");
+			
+			db.execSQL(DATABASE_CREATE_GROUP_CONTACT_RELATION);
+			
+			
+			
+			ContentValues cv = new ContentValues();
+			for(int m = 0; m< back.size(); m++){
+				String number = "";
+				ContentResolver cr = context.getContentResolver();
+				Cursor phones = cr.query(Phone.CONTENT_URI, null, Phone.CONTACT_ID + " = " + back.get(m).contactId, null, null);
+				if(phones.moveToFirst())
+					number =  phones.getString(phones.getColumnIndex(Phone.NUMBER));
+				
+				cv.clear();
+				cv.put(KEY_GROUP_REL_ID, back.get(m).groupRelId);
+				cv.put(KEY_CONTACTS_ID, back.get(m).contactId);
+				cv.put(KEY_CONTACTS_NUMBER, number);
+				Log.d("entry created : " + (db.insert(DATABASE_GROUP_CONTACT_RELATION, null, cv)));
+			}
 		}
 	}
+			
+			class GroupContactsBack{
+				long groupRelId;
+				long contactId;
+			}
 }

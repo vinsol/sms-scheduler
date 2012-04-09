@@ -19,7 +19,6 @@
             android:id = "@+id/group_name_label"
     		android:layout_height = "wrap_content"
     		android:layout_width = "wrap_content"
-    		android:layout_toLeftOf="@+id/group_add_edit_add_contact_image_button"
     		android:textSize="20sp"
     		android:textColor="@color/white"
     		android:singleLine="true"

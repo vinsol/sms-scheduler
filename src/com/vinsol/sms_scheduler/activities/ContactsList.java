@@ -6,6 +6,7 @@
 package com.vinsol.sms_scheduler.activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -28,6 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
@@ -52,6 +54,21 @@ public class ContactsList extends Activity {
 	private ArrayList<String> idsString = new ArrayList<String>();
 	
 	private String callingActivity;
+	
+	
+	
+	@Override
+    protected void onStart() {
+    	super.onStart();
+    	FlurryAgent.onStartSession(this, this.getResources().getString(R.string.flurry_key_test));
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	FlurryAgent.onEndSession(this);
+    }
+	
 	
 	
 	protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +195,10 @@ public class ContactsList extends Activity {
 								mdba.createGroup(groupName, ids, numbers);
 								mdba.close();
 								
+								HashMap<String, String> params = new HashMap<String, String>();
+								params.put("Size", String.valueOf(ids.size()));
+								FlurryAgent.logEvent("Group Saved", params);
+								
 								setResult(10, intent);
 								ContactsList.this.finish();
 							}
@@ -201,6 +222,8 @@ public class ContactsList extends Activity {
 				if(callingActivity.equals("Group Edit Activity")){
 					handleBackForEdit();
 				}
+				
+				FlurryAgent.logEvent("New Group Cancelled");
 				
 				ContactsList.this.finish();
 			}

@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.telephony.SmsManager;
 
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.utils.Log;
@@ -22,6 +23,7 @@ public class SentReceiver extends BroadcastReceiver{
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		FlurryAgent.onStartSession(context, context.getApplicationContext().getResources().getString(R.string.flurry_key_test));
 		long smsId = (long)intent.getLongExtra("SMS_ID", 0);
 		long recipientId = (long)intent.getLongExtra("RECIPIENT_ID", 0);
 		Intent mIntent;

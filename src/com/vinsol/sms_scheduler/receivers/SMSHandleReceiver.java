@@ -6,6 +6,7 @@
 package com.vinsol.sms_scheduler.receivers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import android.app.AlarmManager;
@@ -16,8 +17,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.telephony.SmsManager;
+
+import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.utils.Log;
 
 
@@ -46,6 +50,9 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		
 		parts = smsManager.divideMessage(message);
 		msgSize = parts.size();
+		
+		FlurryAgent.onStartSession(context, context.getApplicationContext().getResources().getString(R.string.flurry_key_test));
+		HashMap<String, String> params = new HashMap<String, String>();
 		
 		ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
 		ArrayList<PendingIntent> deliverIntents = new ArrayList<PendingIntent>();
