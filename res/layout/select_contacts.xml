@@ -72,11 +72,11 @@
 	    	            
 	    	            <ImageView 
 	    	                android:id="@id/clear_filter_button"
-	    	                android:layout_height="wrap_content"
-	    	                android:layout_width="wrap_content"
-	    	                android:layout_marginTop="2dp"
+	    	                android:layout_height="18dp"
+	    	                android:layout_width="18dp"
+	    	                android:layout_marginTop="5dp"
 	    	                android:padding="5dp"
-	    	                android:background="@drawable/delete_icon_states"
+	    	                android:background="@drawable/cross_sign"
 	    	                android:layout_alignParentRight="true"/>
 	    	            
 	    	        </RelativeLayout>

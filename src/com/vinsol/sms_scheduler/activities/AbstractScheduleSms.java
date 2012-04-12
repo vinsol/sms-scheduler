@@ -551,7 +551,8 @@ abstract class AbstractScheduleSms extends Activity{
 				if(sizeOfS>0 && (str.charAt(sizeOfS - 1))==' '){
 					boolean isNumber = true;
 					for(int i=0; i<sizeOfS-1; i++){
-						if(!(str.charAt(i)== '0' ||
+						if(!((i==0 && str.charAt(i)=='+') || 
+								str.charAt(i)== '0' ||
 								str.charAt(i)== '1' ||
 								str.charAt(i)== '2' ||
 								str.charAt(i)== '3' ||
@@ -1572,7 +1573,14 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	private ArrayList<Contact> shortlistContacts(CharSequence constraint) {
 		
-		String text2 = (String) constraint;
+		String text1 = (String) constraint;
+		String text2 = "";
+		for(int i = 0; i< text1.length(); i++){
+			if(!(text1.charAt(i) == '.' || text1.charAt(i) == '+' || text1.charAt(i) == '*' || text1.charAt(i) == '(' || text1.charAt(i) == ')' || text1.charAt(i) == '{' ||
+					text1.charAt(i) == '}' || text1.charAt(i) == '[' || text1.charAt(i) == ']' || text1.charAt(i) == '\\' )){
+				text2 = text2 + text1.charAt(i);
+			}
+		}
 		
 		if(text2.length() > 0) {
 	
@@ -2529,8 +2537,13 @@ abstract class AbstractScheduleSms extends Activity{
     				}
     			}
     		}
-    		holder.templateNumberLabel.setText(type + ": " + prunedRecipients.get(position).number);
-    		Log.d("prunedRecipients.number : " + prunedRecipients.get(position).number);
+    		if(prunedRecipients.get(position).type==2){
+    			holder.templateNumberLabel.setText(type + ": " + prunedRecipients.get(position).number);
+        		Log.d("prunedRecipients.number : " + prunedRecipients.get(position).number);
+    		}else if(prunedRecipients.get(position).type==1){
+    			holder.templateNumberLabel.setText("");
+    		}
+    		
     		
     		holder.deleteTemplateButton.setOnClickListener(new OnClickListener() {
 				

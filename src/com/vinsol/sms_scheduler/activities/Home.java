@@ -53,6 +53,7 @@ import android.widget.Toast;
 import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
+import com.vinsol.sms_scheduler.utils.LinearLayoutExtended;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
@@ -139,7 +140,7 @@ public class Home extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
         
-        FlurryAgent.logEvent("Home Activity Started");
+        
         
         if(!SmsSchedulerApplication.isDataLoaded){
         	ContactsAsync contactsAsync = new ContactsAsync();
@@ -263,6 +264,8 @@ public class Home extends Activity {
     protected void onStart() {
     	super.onStart();
     	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
+    	
+    	FlurryAgent.logEvent("Home Activity Started");
     }
     
     @Override
@@ -455,8 +458,9 @@ public class Home extends Activity {
 				if(convertView==null){
 					convertView = layoutInflater.inflate(R.layout.home_expandable_list_child, null, false);
 					holder = new ChildRowHolder();
+					holder.containerLayout			= (LinearLayoutExtended) convertView.findViewById(R.id.container_layout);
 					holder.messageTextView  		= (TextView)  convertView.findViewById(R.id.main_row_message_area);
-	    			holder.statusImageView 			= (ImageView) convertView.findViewById(R.id.main_row_image_area);
+	    			holder.statusImageView 			= (com.vinsol.sms_scheduler.utils.ExtendedImageView) convertView.findViewById(R.id.main_row_image_area);
 	    			holder.dateTextView				= (TextView)  convertView.findViewById(R.id.main_row_date_area);
 	    			holder.receiverTextView 		= (TextView)  convertView.findViewById(R.id.main_row_recepient_area);
 	    			holder.extraReceiversTextView 	= (TextView)  convertView.findViewById(R.id.main_row_extra_recepient_area);
@@ -1237,8 +1241,9 @@ public class Home extends Activity {
 	
 	
 	private class ChildRowHolder{
+		com.vinsol.sms_scheduler.utils.LinearLayoutExtended containerLayout;
 		TextView messageTextView;
-		ImageView statusImageView;
+		com.vinsol.sms_scheduler.utils.ExtendedImageView statusImageView;
 		TextView dateTextView;
 		TextView receiverTextView;
 		TextView extraReceiversTextView;

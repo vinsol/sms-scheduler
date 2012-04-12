@@ -138,6 +138,7 @@ public class SelectContacts extends Activity {
 		
 		filterField = (EditText) findViewById(R.id.filter_text);
 		clearFilterButton = (ImageView) findViewById(R.id.clear_filter_button);
+		recentsList = (ListView) findViewById(R.id.contacts_tabs_recents_list);
 		
 		//----------------------Setting up the Tabs--------------------------------
 		final TabHost tabHost=(TabHost)findViewById(R.id.tabHost);
@@ -190,8 +191,18 @@ public class SelectContacts extends Activity {
 					contactsAdapter.notifyDataSetChanged();
 				}else{
 					sortedContacts.clear();
+					
+					String text1 = s.toString();
+					String text2 = "";
+					for(int i = 0; i< text1.length(); i++){
+						if(!(text1.charAt(i) == '.' || text1.charAt(i) == '+' || text1.charAt(i) == '*' || text1.charAt(i) == '(' || text1.charAt(i) == ')' || text1.charAt(i) == '{' ||
+								text1.charAt(i) == '}' || text1.charAt(i) == '[' || text1.charAt(i) == ']' || text1.charAt(i) == '\\' )){
+							text2 = text2 + text1.charAt(i);
+						}
+					}
+					
 					for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
-						Pattern p = Pattern.compile(s.toString(), Pattern.CASE_INSENSITIVE);
+						Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
 						
 						Matcher m = p.matcher(SmsSchedulerApplication.contactsList.get(i).name);
 						if(m.find()) {
@@ -300,37 +311,37 @@ public class SelectContacts extends Activity {
 			privateGroupDataTemp.add(group);
 			privateChildDataTemp.add(child);
 		}
-		Log.d("Private Group 2 size : " + privateChildDataTemp.get(1).size());
-		
-		for(int i = 0; i< privateChildDataTemp.get(1).size(); i++){
-			Log.d("###############################################################");
-			Log.d("name : " + (String)privateChildDataTemp.get(1).get(i).get(Constants.CHILD_NAME));
-			Log.d("Is checked : " + (Boolean)privateChildDataTemp.get(1).get(i).get(Constants.CHILD_CHECK));
-			Log.d("###############################################################");
-		}
-		
-		groupedPrivateChildDataTemp = organizeChildData(AbstractScheduleSms.privateGroupData, AbstractScheduleSms.privateChildData);
-		
-		Log.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		Log.d("Groups : " + groupedPrivateChildDataTemp.size());
-		for(int groupCount = 0; groupCount< AbstractScheduleSms.privateGroupData.size(); groupCount++){
-			Log.d("+++++++++++++++++++++++++++++++" + AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_NAME) + "++++++++++++++++++++++++++++++++++++++++"); 
-			
-			for(int childCount = 0; childCount< groupedPrivateChildDataTemp.get(groupCount).size(); childCount++){
-				Log.d("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-				Log.d("Name : " + (String)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
-				Log.d("Contact Id : " + (Long)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
-				Log.d("Numbers-----------------------------------------");
-				ArrayList<ContactNumber> numbers = new ArrayList<ContactNumber>();
-				numbers = (ArrayList<ContactNumber>)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER);
-				for(int i = 0; i< numbers.size(); i++){
-					Log.d(i + ". " + numbers.get(i).type + ": " + numbers.get(i).number);
-				}
-				Log.d("------------------------------------------------");
-				Log.d("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-			}
-		}
-		Log.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//		Log.d("Private Group 2 size : " + privateChildDataTemp.get(1).size());
+//		
+//		for(int i = 0; i< privateChildDataTemp.get(1).size(); i++){
+//			Log.d("###############################################################");
+//			Log.d("name : " + (String)privateChildDataTemp.get(1).get(i).get(Constants.CHILD_NAME));
+//			Log.d("Is checked : " + (Boolean)privateChildDataTemp.get(1).get(i).get(Constants.CHILD_CHECK));
+//			Log.d("###############################################################");
+//		}
+//		
+//		groupedPrivateChildDataTemp = organizeChildData(AbstractScheduleSms.privateGroupData, AbstractScheduleSms.privateChildData);
+//		
+//		Log.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//		Log.d("Groups : " + groupedPrivateChildDataTemp.size());
+//		for(int groupCount = 0; groupCount< AbstractScheduleSms.privateGroupData.size(); groupCount++){
+//			Log.d("+++++++++++++++++++++++++++++++" + AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_NAME) + "++++++++++++++++++++++++++++++++++++++++"); 
+//			
+//			for(int childCount = 0; childCount< groupedPrivateChildDataTemp.get(groupCount).size(); childCount++){
+//				Log.d("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+//				Log.d("Name : " + (String)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
+//				Log.d("Contact Id : " + (Long)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
+//				Log.d("Numbers-----------------------------------------");
+//				ArrayList<ContactNumber> numbers = new ArrayList<ContactNumber>();
+//				numbers = (ArrayList<ContactNumber>)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER);
+//				for(int i = 0; i< numbers.size(); i++){
+//					Log.d(i + ". " + numbers.get(i).type + ": " + numbers.get(i).number);
+//				}
+//				Log.d("------------------------------------------------");
+//				Log.d("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+//			}
+//		}
+//		Log.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		
 		
         doneButton			= (Button) 		findViewById(R.id.contacts_tab_done_button);
@@ -429,6 +440,8 @@ public class SelectContacts extends Activity {
         privateGroupExplList = (ExpandableListView) findViewById(R.id.private_list);
         nativeGroupExplList = (ExpandableListView) groupTabs.findViewById(R.id.native_list);
         
+        groupedPrivateChildDataTemp = organizeChildData(privateGroupDataTemp, privateChildDataTemp);
+        
         nativeGroupsAdapterSetup();
 		privateGroupsAdapterSetup();
 		
@@ -454,7 +467,7 @@ public class SelectContacts extends Activity {
 			recentIds.clear();
 			recentContactIds.clear();
 			recentContactNumbers.clear();
-			recentsList = (ListView) findViewById(R.id.contacts_tabs_recents_list);
+			
 			
 			if(cur.moveToFirst()){
 				do{
@@ -1515,6 +1528,7 @@ public class SelectContacts extends Activity {
     		
     		
     		public int getChildrenCount(int groupPosition) {
+    			Log.d("group's children size : " + groupedPrivateChildDataTemp.get(groupPosition).size());
     		   return groupedPrivateChildDataTemp.get(groupPosition).size();
     		}
     		 
@@ -1552,7 +1566,6 @@ public class SelectContacts extends Activity {
 
     			holder.groupCheck.setOnClickListener(new OnClickListener() {
 					
-					
 					public void onClick(View v) {
 						if(holder.groupCheck.isChecked()){
 							privateGroupDataTemp.get(groupPosition).put(Constants.GROUP_CHECK, true);
@@ -1560,7 +1573,6 @@ public class SelectContacts extends Activity {
 								if(!((Boolean)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
 									addCheck(groupPosition, i, privateChildDataTemp, privateGroupDataTemp);
 								}
-								
 								Log.d("i : " + i);
 							}
 
@@ -1586,8 +1598,7 @@ public class SelectContacts extends Activity {
     			
     			
     			convertView.setOnClickListener(new OnClickListener() {
-					
-					
+    				
 					public void onClick(View v) {
 						if(isExpanded){
 							privateGroupExplList.collapseGroup(groupPosition);

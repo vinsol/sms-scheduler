@@ -1,4 +1,4 @@
-package com.vinsol.sms_scheduler;
+package com.vinsol.sms_scheduler.utils;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,12 +9,13 @@ public class LinearLayoutExtended extends LinearLayout{
 
 	public LinearLayoutExtended(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 	
+	
 	public LinearLayoutExtended(Context context, AttributeSet attrs) { 
-        super(context, attrs); 
-	} 
+        super(context, attrs);
+	}
+	
 	
 	@Override
 	public void setPressed(boolean pressed) {
