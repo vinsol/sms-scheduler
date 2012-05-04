@@ -197,17 +197,37 @@
 	    		</ImageButton>		
 	    	</RelativeLayout>
 	    	
-		    <!-- Date time button -->
-		    <Button 
-			   	android:id = "@+id/new_date_button"
-			   	android:layout_width = "fill_parent"
-			   	android:layout_height = "wrap_content"
-			   	android:textColor="@color/text_grey"
-			   	android:textSize="18sp"
-			   	android:layout_marginTop="3dp"
-			   	android:background="@drawable/date_time_button_states"
+		    <!-- Date and Repeat time button -->
+		    <LinearLayout 
+		        android:layout_height="wrap_content"
+		        android:layout_width="fill_parent"
+		        android:orientation="horizontal">
+		        
+		        <Button 
+			   		android:id = "@+id/new_date_button"
+			   		android:layout_width = "fill_parent"
+			   		android:layout_height = "wrap_content"
+			   		android:layout_weight = "4"
+			   		android:textColor="@color/text_grey"
+			   		android:textSize="18sp"
+			   		android:layout_marginTop="3dp"
+			   		android:background="@drawable/date_time_button_states"
 			   	>
-	    	</Button>
+	    		</Button>
+	    	
+		    	<ImageButton 
+		        	android:id="@+id/repeat_button"
+		        	android:layout_width="58dp"
+		        	android:layout_height="35dp"
+		        	android:layout_marginLeft="7dp"
+		        	android:layout_marginTop="4dp"
+		        	android:src="@drawable/repeat_button_states"
+		        	android:background="@drawable/add_from_contacts_bg_states"
+		        	android:layout_weight="1"
+		        	android:text="Rep"/>
+		        
+		    </LinearLayout>
+		    
 	    	
 	     	<!-- message edit text -->
 	     	<!-- message top layout -->
@@ -301,10 +321,11 @@
 					android:id = "@+id/new_message_space" 
 		   			android:layout_width="fill_parent" 
 		   			android:layout_height="wrap_content"
-		   			android:inputType="textMultiLine"
+		   			android:inputType="textMultiLine|textCapSentences"
 		   			android:gravity="top"
 		   			android:hint="Type your Message here"
 		   			android:padding="5dp"
+		   			android:capitalize="sentences"
 		   			android:layout_below="@id/message_top_layout"
 		   			android:minLines="4"
 		   			android:background="@drawable/message_bg"

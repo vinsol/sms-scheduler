@@ -41,7 +41,7 @@ public class DBAdapter {
 	private final String DATABASE_GROUP_CONTACT_RELATION = "groupContactRelation";
 	private final String DATABASE_RECIPIENT_GROUP_REL_TABLE = "recipient_grp_rel_table";
 	private final String DATABASE_RECENTS_TABLE = "recents_table";
-	private final int 	DATABASE_VERSION = 3;
+	private final int 	DATABASE_VERSION = 4;
 	
 	Cursor cur;
 	
@@ -54,6 +54,9 @@ public class DBAdapter {
 	public static final String KEY_TIME_MILLIS = "time_millis";
 	public static final String KEY_MSG_PARTS = "msg_parts";
 	public static final String KEY_STATUS = "status";
+	public static final String KEY_REPEAT_MODE = "repeat_status";
+	public static final String KEY_REPEAT_STRING = "repeat_string";
+	
 	
 	//------------------keys for Recipients table-----------------------
 	public static final String KEY_RECIPIENT_ID = "recipient_id";
@@ -111,7 +114,9 @@ public class DBAdapter {
 			+ KEY_DATE        + " text, "
 			+ KEY_TIME_MILLIS + " long, "
 			+ KEY_MSG_PARTS   + " integer default 0, "
-			+ KEY_STATUS      + " integer default 1);";
+			+ KEY_STATUS      + " integer default 1, "
+			+ KEY_REPEAT_MODE + " integer, "
+			+ KEY_REPEAT_STRING + " text);";
 	
 	
 	private final String DATABASE_CREATE_RECIPIENT_TABLE = "create table " + DATABASE_RECIPIENT_TABLE 
@@ -129,7 +134,7 @@ public class DBAdapter {
 			+ KEY_RECIPIENT_TYPE 	+ " integer);";
 	
 	
-	private final String DATABASE_CREATE_PI_TABLE = "create table " + DATABASE_PI_TABLE 
+	private final String DATABASE_CREATE_PI_TABLE = "create table " + DATABASE_PI_TABLE
 			+ " (" 
 			+ KEY_PI_ID      + " integer primary key, " 
 			+ KEY_PI_NUMBER  + " integer, " 
@@ -194,6 +199,11 @@ public class DBAdapter {
 	// functions-----------------------------------------------------------------------------------------
 	
 	//------------------------functions for SMS and Recipient tables------------------------------
+	public Cursor fetchSmsDetails(long smsId){
+		Cursor cur = db.query(DATABASE_SMS_TABLE, null, KEY_ID + "=" + smsId, null, null, null, null);
+		return cur;
+	}
+	
 	
 	public boolean ifSmsExist(){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, null, null, null, null, null, null);
@@ -288,13 +298,15 @@ public class DBAdapter {
 	
 
 	
-	public long scheduleSms(String message, String date, int parts, long timeInMilis){
+	public long scheduleSms(String message, String date, int parts, long timeInMilis, int repeatMode, String repeatString){
 		ContentValues addValues = new ContentValues();
 		
 		addValues.put(KEY_MESSAGE, message);
 		addValues.put(KEY_DATE, date);
 		addValues.put(KEY_TIME_MILLIS, timeInMilis);
 		addValues.put(KEY_MSG_PARTS, parts);
+		addValues.put(KEY_REPEAT_MODE, repeatMode);
+		addValues.put(KEY_REPEAT_STRING, repeatString);
 		
 		return	db.insert(DATABASE_SMS_TABLE, null, addValues);
 	}
@@ -337,6 +349,14 @@ public class DBAdapter {
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_OPERATED, 1);
 		db.update(DATABASE_RECIPIENT_TABLE, cv, KEY_RECIPIENT_ID + "=" + recipientId, null);
+	}
+	
+	
+	public void removeRepitition(long smsId){
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_REPEAT_MODE, 0);
+		cv.put(KEY_REPEAT_STRING, "");
+		db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + smsId, null);
 	}
 	
 	
@@ -420,8 +440,9 @@ public class DBAdapter {
 	
 	public boolean checkDelivery(long recipientId){
 		Cursor cur = fetchRecipientDetails(recipientId);
-		cur.moveToFirst();
-		boolean bool = ((cur.getInt(cur.getColumnIndex(KEY_DELIVER))) == (cur.getInt(cur.getColumnIndex(KEY_MSG_PARTS))));
+		boolean bool = false;
+		if(cur.moveToFirst())
+			bool = ((cur.getInt(cur.getColumnIndex(KEY_DELIVER))) == (cur.getInt(cur.getColumnIndex(KEY_MSG_PARTS))));
 		cur.close();
 		return bool;
 	}
@@ -822,6 +843,7 @@ public class DBAdapter {
 	        //---------------------------------------------------------
 		}
 		
+		
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			
@@ -829,10 +851,13 @@ public class DBAdapter {
 			case 1:
 				From1To2(db);
 
-			default:
+			case 2:
 				From2To3(db);
-				break;
-		}
+				
+			case 3:
+				From3To4(db);
+			
+			}
 			//-----------------------------------------------------------PI table updated---------------------
 		}
 		
@@ -871,7 +896,8 @@ public class DBAdapter {
 							 distinctSmsCursor.getInt(distinctSmsCursor.getColumnIndex("msg_parts")),
 							 distinctSmsCursor.getLong(distinctSmsCursor.getColumnIndex("time_millis")),
 							 distinctSmsCursor.getString(distinctSmsCursor.getColumnIndex("date")),
-							 null));
+							 null,
+							 0, "no repeat"));
 			
 					Cursor recipientsDataCur = db.query("smsTable", null, "group_id=" + distinctSmsCursor.getLong(distinctSmsCursor.getColumnIndex("group_id")), null, null, null, null);
 					if(recipientsDataCur.moveToFirst()){
@@ -1076,10 +1102,55 @@ public class DBAdapter {
 				Log.d("entry created : " + (db.insert(DATABASE_GROUP_CONTACT_RELATION, null, cv)));
 			}
 		}
+		
+		
+		
+		private void From3To4(SQLiteDatabase db){
+			Cursor cur = db.query(DATABASE_SMS_TABLE, null, null, null, null, null, null);
+			ArrayList<Sms> SMSs = new ArrayList<Sms>();
+			
+			if(cur.moveToFirst()){
+				do{
+					Sms sms = new Sms(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)),
+										String.valueOf(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_STATUS))),
+										cur.getString(cur.getColumnIndex(DBAdapter.KEY_MESSAGE)),
+										cur.getInt(cur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)),
+										cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)), 
+										cur.getString(cur.getColumnIndex(DBAdapter.KEY_DATE)),
+										new ArrayList<Recipient>(), 0, "");
+					SMSs.add(sms);
+				}while(cur.moveToNext());
+			}
+			
+			String sql = "DROP TABLE smsTable";
+			db.execSQL(sql);
+			
+			Log.d("table recreated");
+			
+			db.execSQL(DATABASE_CREATE_SMS_TABLE);
+			
+			ContentValues cv = new ContentValues();
+			for(int i = 0; i < SMSs.size(); i++){
+				cv.clear();
+				cv.put(KEY_ID, SMSs.get(i).keyId);
+				cv.put(KEY_MESSAGE, SMSs.get(i).keyMessage);
+				cv.put(KEY_DATE, SMSs.get(i).keyDate);
+				cv.put(KEY_TIME_MILLIS, SMSs.get(i).keyTimeMilis);
+				cv.put(KEY_MSG_PARTS, SMSs.get(i).keyMessageParts);
+				cv.put(KEY_REPEAT_MODE, SMSs.get(i).keyRepeatMode);
+				cv.put(KEY_REPEAT_STRING, SMSs.get(i).keyRepeatString);
+				cv.put(KEY_STATUS, Integer.parseInt(SMSs.get(i).keyNumber));
+				
+				db.insert(DATABASE_SMS_TABLE, null, cv);
+			}
+			
+		}
+		
 	}
 			
-			class GroupContactsBack{
-				long groupRelId;
-				long contactId;
-			}
+	
+	class GroupContactsBack{
+		long groupRelId;
+		long contactId;
+	}
 }

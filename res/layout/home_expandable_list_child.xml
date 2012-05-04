@@ -37,7 +37,7 @@
    	<TextView 
   		android:id = "@+id/main_row_date_area"
   		android:layout_height = "wrap_content"
-  		android:layout_width = "250dp"
+  		android:layout_width = "205dp"
   		android:textColor="#000000"
   		android:textStyle="bold"
   		android:layout_alignParentLeft="true"
@@ -47,6 +47,16 @@
  		android:paddingRight="10dip"
   		>
  	</TextView>
+ 	
+   	<!-- repeat icon -->
+   	<ImageView 
+   	    android:id="@+id/repeat_icon"
+   	    android:layout_height="25dp"
+   	    android:layout_width="25dp"
+   	    android:layout_toRightOf="@id/main_row_date_area"
+   	    android:layout_marginTop="2dp"
+   	    android:layout_marginLeft="5dp"
+   	    android:src="@drawable/repeat_icon_big"/>
     
    	<!-- message -->    
    	<TextView 

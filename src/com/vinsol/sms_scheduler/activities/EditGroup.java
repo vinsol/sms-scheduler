@@ -34,6 +34,7 @@ import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
+import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
 
 
@@ -61,7 +62,7 @@ public class EditGroup extends Activity {
 	private ArrayList<Contact> newGroupContacts = new ArrayList<Contact>();
 	private ArrayList<GroupMember> groupMembers = new ArrayList<GroupMember>();
 	
-	
+	DisplayImage displayImage = new DisplayImage();
 	
 	@Override
     protected void onStart() {
@@ -382,7 +383,8 @@ public class EditGroup extends Activity {
 					Contact.content_uri_id = SmsSchedulerApplication.contactsList.get(i).content_uri_id;
 					Contact.name = SmsSchedulerApplication.contactsList.get(i).name;
 					Contact.numbers.add(new ContactNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(0).contactId, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).type));//TODO
-					Contact.image = SmsSchedulerApplication.contactsList.get(i).image;
+					
+//					Contact.image = SmsSchedulerApplication.contactsList.get(i).image;
 					newGroupContacts.add(Contact);
 				}
 			}
@@ -430,7 +432,8 @@ public class EditGroup extends Activity {
 			
     		final int _position = position;
     		
-    		holder.contactImage.setImageBitmap(groupMembers.get(position).image);
+    		displayImage.submitImage(holder.contactImage, groupMembers.get(position).contactId, EditGroup.this);
+//    		holder.contactImage.setImageBitmap(groupMembers.get(position).image);
     		holder.contactName.setText(groupMembers.get(position).displayName);
     		holder.contactNumber.setText(groupMembers.get(position).numbers.get(0).type + ": " + groupMembers.get(position).numbers.get(0).number);//TODO
     		
@@ -597,13 +600,13 @@ public class EditGroup extends Activity {
 		long contactId;
 		ArrayList<ContactNumber> numbers = new ArrayList<ContactNumber>();
 		String displayName;
-		Bitmap image;
+//		Bitmap image;
 		
 		GroupMember(long id){
 			for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
 				if(id == SmsSchedulerApplication.contactsList.get(i).content_uri_id){
 					this.displayName = SmsSchedulerApplication.contactsList.get(i).name;
-					this.image = SmsSchedulerApplication.contactsList.get(i).image;
+//					this.image = SmsSchedulerApplication.contactsList.get(i).image;
 					this.contactId = SmsSchedulerApplication.contactsList.get(i).content_uri_id;
 					break;
 				}

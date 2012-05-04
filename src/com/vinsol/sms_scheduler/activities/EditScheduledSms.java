@@ -18,10 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
+import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.utils.MyGson;
 
 public class EditScheduledSms extends AbstractScheduleSms {
 	
@@ -64,12 +66,25 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		characterCountText.setText(String.valueOf(messageText.getText().toString().length()));
 		editedSms = SMS.keyId;
 		
+		
+		//loading defaultRepeatHash...
+		defaultRepeatMode = SMS.keyRepeatMode;
+		if(defaultRepeatMode>0){
+			String repeatHashString = SMS.keyRepeatString;
+			Log.d("Repeat Hash String : " + repeatHashString);
+			defaultRepeatHash = new MyGson().deserializeRepeatHash(repeatHashString);
+//			Log.d("Date in Repeat Hash : " + (Date)defaultRepeatHash.get(Constants.REPEAT_HASH_END_DATE));
+		}
+		
+		
 		Recipients.clear();
 		originalRecipients.clear();
 		Recipients = SMS.keyRecipients;
 		for(Recipient r : Recipients){
 			originalRecipients.add(r);
 		}
+		
+		
 		
 		mdba.open();
 		if(SMS.keyTimeMilis < System.currentTimeMillis())
@@ -109,7 +124,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		}else{
 			numbersText.setHint(" ");
 		}
-//		refreshSpannableString(false);
 	}
 	
 	

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,7 +35,9 @@ import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
+import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.utils.MyGson;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class ContactsList extends Activity {
@@ -55,12 +58,26 @@ public class ContactsList extends Activity {
 	
 	private String callingActivity;
 	
+	MyAdapter myAdapter;
+	
+	
+	DisplayImage displayImage = new DisplayImage();
 	
 	
 	@Override
     protected void onStart() {
     	super.onStart();
     	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
+    	MyGson myGson = new MyGson();
+    	SharedPreferences contactData = getSharedPreferences(Home.PREFS_NAME, 0);
+		if(contactData.getString("isChanged", "1").equals("1") || SmsSchedulerApplication.contactsList.size()==0){
+			String data = contactData.getString("Data", "default");
+			contacts = SmsSchedulerApplication.contactsList = myGson.deserializer(data);
+		}
+		SharedPreferences.Editor editor = contactData.edit();
+	    editor.putString("isChanged", "0");
+	    editor.commit();
+	    myAdapter.notifyDataSetChanged();
     }
     
     @Override
@@ -115,7 +132,7 @@ public class ContactsList extends Activity {
 			}
 		}
 		
-		MyAdapter myAdapter = new MyAdapter();
+		myAdapter = new MyAdapter();
 		contactsList.setAdapter(myAdapter);
 		
 		doneButton.setOnClickListener(new OnClickListener() {
@@ -259,7 +276,10 @@ public class ContactsList extends Activity {
     		super(ContactsList.this, R.layout.contacts_list_row, contacts);
     	}
     	
-    	
+    	@Override
+    	public int getCount() {
+    		return contacts.size();
+    	}
     	
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		final ContactsAddListHolder holder;
@@ -282,7 +302,7 @@ public class ContactsList extends Activity {
     		holder.extraNumbersLayout = (LinearLayout) convertView.findViewById(R.id.extra_numbers_layout);
     		holder.extraNumbersViews = new ArrayList<View>();
     		
-    		holder.contactImage.setImageBitmap(contacts.get(position).image);
+    		displayImage.submitImage(holder.contactImage, contacts.get(position).content_uri_id, ContactsList.this);
     		holder.nameText.setText(contacts.get(position).name);
     		holder.numberText.setText(contacts.get(position).numbers.get(0).type + ": " + contacts.get(position).numbers.get(0).number);//TODO
     		holder.contactCheck.setChecked(contacts.get(position).checked);

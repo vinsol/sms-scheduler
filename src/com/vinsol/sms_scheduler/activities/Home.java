@@ -5,11 +5,8 @@
 
 package com.vinsol.sms_scheduler.activities;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -18,14 +15,18 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Groups;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -37,29 +38,34 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.TextView.BufferType;
 import android.widget.Toast;
+
 
 import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.utils.LinearLayoutExtended;
+import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.utils.MyGson;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
-import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class Home extends Activity {
@@ -88,6 +94,7 @@ public class Home extends Activity {
 	private final String NAME = "name";
 	private final String IMAGE = "image";
 	private final String DATE = "date";
+	private final String REPEAT_MODE = "repeat_mode";
 	private final String EXTRA_RECEIVERS = "ext_receivers";
 	private final String RECEIVER = "receiver";
 	
@@ -106,6 +113,17 @@ public class Home extends Activity {
 
 	private IntentFilter mIntentFilter;
 	private IntentFilter dataloadIntentFilter;
+	
+	private boolean showMessage;
+	
+	
+	//--------new contactload implementation vars---------//
+	public static String PREFS_NAME = "MyPrefsFile";
+	public Handler handler = new Handler();
+	MyContentObserver contentObserver = new MyContentObserver(handler, Home.this);
+	MyGson myGson = new MyGson();
+	//-------------------------------------------------------
+	
 	
 	private BroadcastReceiver mUpdateReceiver = new BroadcastReceiver() {
 		
@@ -133,6 +151,8 @@ public class Home extends Activity {
 	};
 	
 	
+	SharedPreferences contactData;
+    
 	
 	
     
@@ -140,9 +160,19 @@ public class Home extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
         
+        contactData = getSharedPreferences(PREFS_NAME, 0);
+        String isChanged = contactData.getString("isChanged", "1");
+        
+        this.getApplicationContext().getContentResolver().registerContentObserver (ContactsContract.Contacts.CONTENT_URI, true, contentObserver);
         
         
-        if(!SmsSchedulerApplication.isDataLoaded){
+        
+//        if(!SmsSchedulerApplication.isDataLoaded){
+//        	ContactsAsync contactsAsync = new ContactsAsync();
+//    		contactsAsync.execute();
+//        }
+        
+        if(!SmsSchedulerApplication.isDataLoaded || SmsSchedulerApplication.contactsList.size()==0 || isChanged.equals("1")){
         	ContactsAsync contactsAsync = new ContactsAsync();
     		contactsAsync.execute();
         }
@@ -154,6 +184,11 @@ public class Home extends Activity {
         blankListAddButton	= (Button) findViewById(R.id.blank_list_add_button);
         
         registerForContextMenu(explList);
+        
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		showMessage = settings.getBoolean("SHOW_NEW_FEATURES", true);
+		
+		showMessagePreference();
         
         dataLoadWaitDialog = new Dialog(Home.this);
 		dataLoadWaitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -264,9 +299,23 @@ public class Home extends Activity {
     protected void onStart() {
     	super.onStart();
     	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
-    	
     	FlurryAgent.logEvent("Home Activity Started");
+    	
+    	SharedPreferences contactData = getSharedPreferences(PREFS_NAME, 0);
+//    	String data = contactData.getString("Data", "default");
+    	
+//		if(contactData.getString("isChanged", "0").equals("1") || SmsSchedulerApplication.contactsList.size()==0){
+//			Log.d("is changed : Yes");
+//			String data = contactData.getString("Data", "default");
+//			Log.d("json string in onStart : " + data);
+//			SmsSchedulerApplication.contactsList = myGson.deserializer(data);
+//		}
+//		SharedPreferences.Editor editor = contactData.edit();
+//	    editor.putString("isChanged", "0");
+//	    editor.commit();
     }
+    
+    
     
     @Override
     protected void onStop() {
@@ -464,6 +513,7 @@ public class Home extends Activity {
 	    			holder.dateTextView				= (TextView)  convertView.findViewById(R.id.main_row_date_area);
 	    			holder.receiverTextView 		= (TextView)  convertView.findViewById(R.id.main_row_recepient_area);
 	    			holder.extraReceiversTextView 	= (TextView)  convertView.findViewById(R.id.main_row_extra_recepient_area);
+	    			holder.repeatModeIcon			= (ImageView) convertView.findViewById(R.id.repeat_icon);
 	    			convertView.setTag(holder);
 				}else{
 					holder = (ChildRowHolder) convertView.getTag();
@@ -477,6 +527,11 @@ public class Home extends Activity {
     				holder.extraReceiversTextView.setText(extraReceiversCal(scheduledSMSs.get(childPosition).keyNumber));
     				holder.messageTextView.setTextColor(getResources().getColor(R.color.black));
     				holder.receiverTextView.setTextColor(getResources().getColor(R.color.black));
+    				if(scheduledSMSs.get(childPosition).keyRepeatMode==0){
+    					holder.repeatModeIcon.setVisibility(View.GONE);
+    				}else{
+    					holder.repeatModeIcon.setVisibility(View.VISIBLE);
+    				}
     			} else if(groupPosition == 2) {
     				holder.messageTextView.setText(sentSMSs.get(childPosition).keyMessage);
     				holder.statusImageView.setImageResource(sentSMSs.get(childPosition).keyImageRes);
@@ -485,6 +540,7 @@ public class Home extends Activity {
     				holder.extraReceiversTextView.setText(extraReceiversCal(sentSMSs.get(childPosition).keyNumber));
     				holder.messageTextView.setTextColor(getResources().getColor(R.color.black));
     				holder.receiverTextView.setTextColor(getResources().getColor(R.color.black));
+    				holder.repeatModeIcon.setVisibility(View.GONE);
     			} else if(groupPosition == 0){
     				if(!drafts.get(childPosition).keyMessage.matches("^(''|[' ']*)$")){
     					holder.messageTextView.setText(drafts.get(childPosition).keyMessage);
@@ -502,6 +558,11 @@ public class Home extends Activity {
     					holder.receiverTextView.setTextColor(getResources().getColor(R.color.grey));
     					holder.extraReceiversTextView.setText("");
     				}
+    				if(drafts.get(childPosition).keyRepeatMode==0){
+    					holder.repeatModeIcon.setVisibility(View.GONE);
+    				}else{
+    					holder.repeatModeIcon.setVisibility(View.VISIBLE);
+    				}
     			}
     			
     			
@@ -509,7 +570,6 @@ public class Home extends Activity {
     			
     			if(groupPosition == 1){
     				holder.statusImageView.setOnClickListener(new OnClickListener() {
-						
 						
 						public void onClick(View v) {
 							showDeleteDialog(scheduledSMSs, childPosition, "Delete this Scheduled Message?");
@@ -545,7 +605,6 @@ public class Home extends Activity {
     
     private void loadData(){
     	
-    	Log.d("Into LoadData");
     	childData.clear();
     	
     	mdba.open();
@@ -585,7 +644,6 @@ public class Home extends Activity {
         int previousSmsType = -1;
         	
         Sms SMS = new Sms();
-        Log.d("size of SMSsCur : " + SMSsCur.getCount());
         if(SMSsCur.moveToFirst()){
         	do{
         		if(previousSmsId!=SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_ID))){
@@ -610,7 +668,9 @@ public class Home extends Activity {
     						SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_MSG_PARTS)),
     						SMSsCur.getLong	(SMSsCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)),
     						SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_DATE)),
-    						tempRecipients);
+    						tempRecipients,
+    						SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_REPEAT_MODE)),
+    						SMSsCur.getString(SMSsCur.getColumnIndex(DBAdapter.KEY_REPEAT_STRING)));
         		}
         		Recipient recipient = new Recipient(SMSsCur.getLong(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_ID)),
         											SMSsCur.getInt(SMSsCur.getColumnIndex(DBAdapter.KEY_RECIPIENT_TYPE)),
@@ -633,7 +693,6 @@ public class Home extends Activity {
         	if(previousSmsType == 0){
 				drafts.add(SMS);
 			}else if(previousSmsType == 1 || previousSmsType == 3){
-				Log.d("getting added to schedules");
 				scheduledSMSs.add(SMS);
 			}else if(previousSmsType == 2){
 				sentSMSs.add(SMS);
@@ -655,6 +714,7 @@ public class Home extends Activity {
     		child.put(DATE, scheduledSMSs.get(i).keyDate);
     		child.put(RECEIVER, scheduledSMSs.get(i).keyNumber);
     		child.put(EXTRA_RECEIVERS, extraReceiversCal(scheduledSMSs.get(i).keyNumber));
+    		child.put(REPEAT_MODE, scheduledSMSs.get(i).keyRepeatMode);
     		groupChildSch.add(child);
     	}
     	//-------------------------------------------------------------------------end of scheduled msgs load-------- 
@@ -692,6 +752,7 @@ public class Home extends Activity {
     		
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, sentSMSs.get(i).keyDate);
+    		child.put(REPEAT_MODE, sentSMSs.get(i).keyRepeatMode);
     		
     		child.put(RECEIVER, numbersLengthRectify(sentSMSs.get(i).keyNumber));
     		child.put(EXTRA_RECEIVERS, extraReceiversCal(sentSMSs.get(i).keyNumber));
@@ -712,6 +773,7 @@ public class Home extends Activity {
     		child.put(IMAGE, this.getResources().getDrawable(R.drawable.icon));
     		child.put(DATE, drafts.get(i).keyDate);
     		child.put(RECEIVER, numbersLengthRectify(drafts.get(i).keyNumber));
+    		child.put(REPEAT_MODE, drafts.get(i).keyRepeatMode);
     		try{
     			child.put(EXTRA_RECEIVERS, extraReceiversCal(sentSMSs.get(i).keyNumber));
     		}catch (IndexOutOfBoundsException e) {
@@ -921,8 +983,6 @@ public class Home extends Activity {
     		
     		Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null,null, null);
         	
-    		Log.d("Cursor size : " + phones.getCount());
-        	
     		while (phones.moveToNext())
         	{
         	  boolean isContactPresent = false;
@@ -948,17 +1008,24 @@ public class Home extends Activity {
         		  contact.content_uri_id = Long.parseLong(contactId);
 		    	  contact.name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 		    	  contact.numbers.add(cn);
-		    	  Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contact.content_uri_id);
-		    	  InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-		    	  try{
-		    		  BitmapFactory.Options o = new BitmapFactory.Options();
-		    	      o.inPurgeable = true;
-		    	      o.inInputShareable = true;
-		    	      contact.image = BitmapFactory.decodeStream(input, null, o);
-		    	      contact.image.getHeight();
-		    	  } catch (NullPointerException e){
-		    	      contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
-		    	  }
+		    	  
+		    	  
+//		    	  Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contact.content_uri_id);
+//		    	  InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+//		    	  try{
+//		    		  BitmapFactory.Options o = new BitmapFactory.Options();
+//		    	      o.inPurgeable = true;
+//		    	      o.inInputShareable = true;
+//		    	      contact.image = BitmapFactory.decodeStream(input, null, o);
+//		    	      contact.image.getHeight();
+//		    	  } catch (NullPointerException e){
+//		    	      contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
+//		    	  }
+//		    	  String[] projection1 = new String[]{ContactsContract.Contacts.TIMES_CONTACTED};
+//		    	  Cursor cur = cr.query(uri, projection1, null, null, null);
+//		    	  if(cur.moveToFirst()){
+//		    		  Log.d("&&&&&&&&&&&&&&&&&&&&&&&&" + contact.content_uri_id + " : " + cur.getString(cur.getColumnIndex(ContactsContract.Contacts.TIMES_CONTACTED)));
+//		    	  }
 		    	  
 		    	  SmsSchedulerApplication.contactsList.add(contact);
 		    	  
@@ -1020,30 +1087,30 @@ public class Home extends Activity {
 		    	}
 		    }
         	
-        	for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
-        		Log.d("=====================================================");
-        		Log.d(SmsSchedulerApplication.contactsList.get(i).name + " ; " + 
-        				SmsSchedulerApplication.contactsList.get(i).content_uri_id);
-        		
-        		for(int j = 0 ; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
-        			if(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).isPrimary){
-        				Log.d(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type + " : " +
-            					SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number + " PRIMARY");
-        			}else{
-        				Log.d(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type + " : " +
-            					SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number);
-        			}
-        		}
-        		for(int j = 0 ; j< SmsSchedulerApplication.contactsList.get(i).groupRowId.size(); j++){
-        			Log.d("Group : " + SmsSchedulerApplication.contactsList.get(i).groupRowId.get(j));
-        		}
-        	}
+//        	for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+//        		Log.d("=====================================================");
+//        		Log.d(SmsSchedulerApplication.contactsList.get(i).name + " ; " + 
+//        				SmsSchedulerApplication.contactsList.get(i).content_uri_id);
+//        		
+//        		for(int j = 0 ; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
+//        			if(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).isPrimary){
+//        				Log.d(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type + " : " +
+//            					SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number + " PRIMARY");
+//        			}else{
+//        				Log.d(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type + " : " +
+//            					SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number);
+//        			}
+//        		}
+//        		for(int j = 0 ; j< SmsSchedulerApplication.contactsList.get(i).groupRowId.size(); j++){
+//        			Log.d("Group : " + SmsSchedulerApplication.contactsList.get(i).groupRowId.get(j));
+//        		}
+//        	}
     	}
     	
     	
     	
     	Long endTime = System.currentTimeMillis();
-		Log.d("===================================\nTime taken : " + (endTime-startTime));
+//		Log.d("===================================\nTime taken : " + (endTime-startTime));
 		
 		HashMap<String, Long> param = new HashMap<String, Long>();
 		param.put("Time Taken", (endTime-startTime));
@@ -1131,16 +1198,16 @@ public class Home extends Activity {
 		    	    	}
 		    	    	cur.close();
 		    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contact.content_uri_id);
-			    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-			    	    try{
-			    	    	BitmapFactory.Options o = new BitmapFactory.Options();
-			    	        o.inPurgeable = true;
-			    	        o.inInputShareable = true;
-			    	    	contact.image = BitmapFactory.decodeStream(input, null, o);
-			    	    	contact.image.getHeight();
-			    	    } catch (NullPointerException e){
-			    	    	contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
-			    	    }
+//			    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+//			    	    try{
+//			    	    	BitmapFactory.Options o = new BitmapFactory.Options();
+//			    	        o.inPurgeable = true;
+//			    	        o.inInputShareable = true;
+//			    	    	contact.image = BitmapFactory.decodeStream(input, null, o);
+//			    	    	contact.image.getHeight();
+//			    	    } catch (NullPointerException e){
+//			    	    	contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
+//			    	    }
 			    	    
 			    	    SmsSchedulerApplication.contactsList.add(contact);
 		    	    }
@@ -1214,10 +1281,25 @@ public class Home extends Activity {
 	
 	
 	private class ContactsAsync extends AsyncTask<Void, Void, Void>{
-
 		
 		protected Void doInBackground(Void... params) {
-			loadContactsByPhone();
+			String data = contactData.getString("Data", "default");
+        	SmsSchedulerApplication.contactsList.clear();
+        	
+        	if(!data.equals("default")){
+        		long startTime = System.currentTimeMillis();
+        		SmsSchedulerApplication.contactsList = myGson.deserializer(data);
+        	}else{
+        		long startTime = System.currentTimeMillis();
+        		loadContactsByPhone();
+        		String jsonString = myGson.serializer(SmsSchedulerApplication.contactsList);
+        		SharedPreferences.Editor editor = contactData.edit();
+        	    editor.putString("Data", jsonString);
+        	    editor.commit();
+        	}
+        	SharedPreferences.Editor editor = contactData.edit();
+    	    editor.putString("isChanged", "0");
+    	    editor.commit();
 			return null;
 		}
 		
@@ -1247,6 +1329,7 @@ public class Home extends Activity {
 		TextView dateTextView;
 		TextView receiverTextView;
 		TextView extraReceiversTextView;
+		ImageView repeatModeIcon;
 	}
 	
 	
@@ -1292,7 +1375,6 @@ public class Home extends Activity {
 		
 		yesButton.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View v) {
 				selectedSms = SMSList.get(childPosition).keyId;
 				deleteSms();
@@ -1309,4 +1391,88 @@ public class Home extends Activity {
 		});
 		d.show();
 	}
+	
+	
+	//-----------functions for new Contacts load--------------------
+	private class MyContentObserver extends ContentObserver {
+		Context _context;
+        public MyContentObserver(Handler h, Context context) {
+            super(h);
+            _context = context;
+        }
+
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            reloadSP(_context);
+        }
+    }
+
+   
+	public void reloadSP(Context context){
+//		ArrayList<Contact> contactsList = new ArrayList<Contact>();
+		SharedPreferences contactData = getSharedPreferences(PREFS_NAME, 0);
+		System.currentTimeMillis();
+		SmsSchedulerApplication.contactsList.clear();
+		loadContactsByPhone();
+		String jsonString = myGson.serializer(SmsSchedulerApplication.contactsList);
+		SharedPreferences.Editor editor = contactData.edit();
+	    editor.putString("Data", jsonString);
+	    editor.putString("isChanged", "1");
+	    editor.commit();
+	}
+	//--------------------------------------------------------------
+	
+	
+	
+	private void showMessagePreference(){
+		Log.d("getting into showprefs");
+		if(showMessage){
+			final Dialog d = new Dialog(Home.this);
+			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			d.setCancelable(false);
+			d.setContentView(R.layout.show_message_dialog);
+			
+			final CheckBox checkBox = (CheckBox) d.findViewById(R.id.show_again_check);
+			Button okButton = (Button) d.findViewById(R.id.ok_button);
+			TextView tv = (TextView) d.findViewById(R.id.dont_show_msg_text);
+			TextView headerText = (TextView) d.findViewById(R.id.header_text);
+			TextView messageText = (TextView) d.findViewById(R.id.message_text);
+			
+			headerText.setText("New Features");
+			
+			messageText.setText(getString(R.string.new_feature_message));
+			
+			
+			
+			okButton.setOnClickListener(new OnClickListener() {
+				
+				
+				public void onClick(View v) {
+					if(checkBox.isChecked()){
+						SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+					    SharedPreferences.Editor editor = settings.edit();
+					    editor.putBoolean("SHOW_NEW_FEATURES", false);
+					    editor.commit();
+					}
+					d.cancel();
+				}
+			});
+			
+			
+			
+			tv.setOnClickListener(new OnClickListener() {
+				
+				
+				public void onClick(View v) {
+					if(checkBox.isChecked())
+						checkBox.setChecked(false);
+					else
+						checkBox.setChecked(true);
+				}
+			});
+			
+			d.show();
+		}
+	}
+	
 }

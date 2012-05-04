@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -47,7 +48,9 @@ import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
+import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.utils.MyGson;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class SelectContacts extends Activity {
@@ -61,6 +64,8 @@ public class SelectContacts extends Activity {
 	private LinearLayout recentsListLayout;
 	private LinearLayout recentsBlankLayout;
 	
+	
+	DisplayImage displayImage = new DisplayImage();
 	
 	
 	//---------------- Variables relating to Contacts tab -----------------------
@@ -115,8 +120,23 @@ public class SelectContacts extends Activity {
 	@Override
     protected void onStart() {
     	super.onStart();
+    	MyGson myGson = new MyGson();
     	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
     	FlurryAgent.logEvent("Selecting from Contacts");
+    	
+//    	SharedPreferences contactData = getSharedPreferences(Home.PREFS_NAME, 0);
+//		if(contactData.getString("isChanged", "1").equals("1") || SmsSchedulerApplication.contactsList.size()==0){
+//			Log.d("is Changed.....................!!!!!!!");
+//			String data = contactData.getString("Data", "default");
+//			sortedContacts = SmsSchedulerApplication.contactsList = myGson.deserializer(data);
+//			filterField.setText("");
+//			contactsAdapter.notifyDataSetChanged();
+//		}
+//		SharedPreferences.Editor editor = contactData.edit();
+//	    editor.putString("isChanged", "0");
+//	    editor.commit();
+	    
+	    
     }
     
     @Override
@@ -502,7 +522,7 @@ public class SelectContacts extends Activity {
 					HashMap<String, Object> child = new HashMap<String, Object>();
 					child.put(Constants.CHILD_NAME, privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
 					child.put(Constants.CHILD_CONTACT_ID, privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
-					child.put(Constants.CHILD_IMAGE, privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
+//					child.put(Constants.CHILD_IMAGE, privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
 					ArrayList<ContactNumber> numbers = new ArrayList<ContactNumber>();
 					ContactNumber number = new ContactNumber((Long)child.get(Constants.CHILD_CONTACT_ID), (String)privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER), getType((Long)child.get(Constants.CHILD_CONTACT_ID), (String)privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER)));
 					numbers.add(number);
@@ -666,7 +686,10 @@ public class SelectContacts extends Activity {
 				holder = (ContactsListHolder) convertView.getTag();
 			}
 			positionOfContact = position - 1;
-    		holder.contactImage.setImageBitmap(contacts.get(position).image);
+			
+			displayImage.submitImage(holder.contactImage, contacts.get(position).content_uri_id, SelectContacts.this);
+			
+//    		holder.contactImage.setImageBitmap(contacts.get(position).image);
     		holder.nameText.setText(contacts.get(position).name);
     		holder.numberText.setText(contacts.get(position).numbers.get(0).type + ": " + contacts.get(position).numbers.get(0).number);//TODO
     		
@@ -1249,7 +1272,11 @@ public class SelectContacts extends Activity {
 				
     			holder.childNameText.setText((String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME));
     			holder.childNumberText.setText(contact.numbers.get(0).type + ": " + (String)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NUMBER));
+    			
     			holder.childContactImage.setImageBitmap((Bitmap)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_IMAGE));
+//    			holder.childContactImage.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
+//    			displayImage.submitImage(holder.childContactImage, contactId, SelectContacts.this);
+//    			
     			holder.childCheck.setChecked((Boolean)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CHECK));
     			
     			holder.extraNumbersLayout	= (LinearLayout)convertView.findViewById(R.id.extra_numbers_layout);
@@ -1641,8 +1668,10 @@ public class SelectContacts extends Activity {
 				final
 				ArrayList<ContactNumber> numbers = (ArrayList<ContactNumber>)groupedPrivateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NUMBER);
     			
+    			holder.childContactImage.setImageBitmap((Bitmap)privateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_IMAGE));
     			holder.childNumberText.setText(numbers.get(0).type + ": " + numbers.get(0).number);
-    			holder.childContactImage.setImageBitmap((Bitmap)groupedPrivateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_IMAGE));
+//    			displayImage.submitImage(holder.childContactImage, contactId,SelectContacts.this);
+//    			holder.childContactImage.setImageBitmap((Bitmap)groupedPrivateChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_IMAGE));
     			
     			int i = 0;
     			
@@ -2104,7 +2133,9 @@ public class SelectContacts extends Activity {
     			
     			for(i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
     				if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == recentContactIds.get(position)){
-    					holder.contactImage.setImageBitmap(SmsSchedulerApplication.contactsList.get(i).image);
+    					
+    					displayImage.submitImage(holder.contactImage, SmsSchedulerApplication.contactsList.get(i).content_uri_id, SelectContacts.this);
+//    					holder.contactImage.setImageBitmap(SmsSchedulerApplication.contactsList.get(i).image);
     		    		holder.nameText.setText(SmsSchedulerApplication.contactsList.get(i).name);
     		    		holder.numberText.setText(recentContactNumbers.get(position)); //TODO
     		    		
@@ -2355,7 +2386,8 @@ public class SelectContacts extends Activity {
         					}
         					childParameters.put(Constants.CHILD_NUMBER, number);//TODO
         					childParameters.put(Constants.CHILD_CONTACT_ID, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
-        					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(j).image);
+        					displayImage.storeImage(SmsSchedulerApplication.contactsList.get(j).content_uri_id, childParameters, SelectContacts.this);
+//        					childParameters.put(Constants.CHILD_IMAGE, );
         					childParameters.put(Constants.CHILD_CHECK, false);
         					for(int k = 0; k< spanIdsForGroup.size(); k++){
        							for(int m = 0; m< RecipientsTemp.size(); m++){
@@ -2400,7 +2432,8 @@ public class SelectContacts extends Activity {
 					childParams.put(Constants.CHILD_CONTACT_ID, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
 					childParams.put(Constants.CHILD_NAME, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
 					childParams.put(Constants.CHILD_NUMBER, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
-					childParams.put(Constants.CHILD_IMAGE, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
+//					childParams.put(Constants.CHILD_IMAGE, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
+					displayImage.storeImage((Long)childParams.get(Constants.CHILD_CONTACT_ID), childParams, SelectContacts.this);
 					childParams.put(Constants.CHILD_CHECK, ScheduleNewSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
 
 					child.add(childParams);
@@ -2424,7 +2457,8 @@ public class SelectContacts extends Activity {
 					childParams.put(Constants.CHILD_CONTACT_ID, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
 					childParams.put(Constants.CHILD_NAME, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
 					childParams.put(Constants.CHILD_NUMBER, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
-					childParams.put(Constants.CHILD_IMAGE, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
+//					childParams.put(Constants.CHILD_IMAGE, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
+					displayImage.storeImage((Long)childParams.get(Constants.CHILD_CONTACT_ID), childParams, SelectContacts.this);
 					childParams.put(Constants.CHILD_CHECK, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
 					child.add(childParams);
 				}

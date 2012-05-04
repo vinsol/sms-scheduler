@@ -5,6 +5,9 @@
 
 package com.vinsol.sms_scheduler.activities;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import android.app.Dialog;
 
 import android.os.Bundle;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
+import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.R;
 
 public class ScheduleNewSms extends AbstractScheduleSms {
@@ -28,6 +32,22 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		FlurryAgent.logEvent("Schedule New Sms Activity Started");
 		
 		mode = 1;
+		
+		ArrayList<Boolean> weekBools = new ArrayList<Boolean>();
+		
+		defaultRepeatMode = 0;
+		for(int i = 0; i< 7; i++)
+			weekBools.add(false);
+		
+		
+		//setting RepeatHash
+		defaultRepeatHash.put(Constants.REPEAT_HASH_FREQ, 1);
+		defaultRepeatHash.put(Constants.REPEAT_HASH_WEEK_BOOL, weekBools);
+		defaultRepeatHash.put(Constants.REPEAT_HASH_END_MODE, 1);
+		defaultRepeatHash.put(Constants.REPEAT_HASH_END_FREQ, 1);
+		defaultRepeatHash.put(Constants.REPEAT_HASH_END_DATE, new Date());
+		defaultRepeatHash.put(Constants.REPEAT_HASH_LAST_SENT_TIME, 0);
+		
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		widthOfContainerInDp = (int)((metrics.widthPixels - 159)/dpi);

@@ -18,10 +18,13 @@ import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -56,13 +59,16 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -71,7 +77,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
@@ -86,7 +94,9 @@ import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
+import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.utils.MyGson;
 
 
 abstract class AbstractScheduleSms extends Activity{
@@ -104,6 +114,7 @@ abstract class AbstractScheduleSms extends Activity{
 	protected Button 					cancelButton;
 	protected GridView					smileysGrid;
 	protected LinearLayout				pastTimeDateLabel;
+	protected ImageButton				repeatButton;
 	//---------------------------------------------------------
 	
 	
@@ -152,6 +163,9 @@ abstract class AbstractScheduleSms extends Activity{
 	Paint paint;
 	
 	boolean oncePressed = false;
+	
+	HashMap<String, Object> defaultRepeatHash = new HashMap<String, Object>();
+	int defaultRepeatMode;
 	//-----------------------------------------------------------------------------------------------
 	
 	ImageView undoButton;
@@ -288,6 +302,7 @@ abstract class AbstractScheduleSms extends Activity{
 		cancelButton 				= (Button) 					findViewById(R.id.new_cancel_button);
 		smileysGrid					= (GridView) 				findViewById(R.id.smileysGrid);
 		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
+		repeatButton				= (ImageButton) 			findViewById(R.id.repeat_button);
 		
 //		numbersText.setRawInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		
@@ -458,7 +473,6 @@ abstract class AbstractScheduleSms extends Activity{
         currentRow = firstRow;
         
         rows.add(firstRow);
-        //TODO:
         final Row tempRow = new Row(false);
         final View sampleElement = createElement(new Recipient(-1, 1, "sa", -2, -1, 0, 0, null));
         tempRow.ll.addView(sampleElement);
@@ -774,6 +788,13 @@ abstract class AbstractScheduleSms extends Activity{
         
 		showMessagePreference();
 		
+		repeatButton.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				showRepeatDialog(defaultRepeatMode, defaultRepeatHash);
+			}
+		});
+		
         dataloadIntentFilter = new IntentFilter();
         dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);
 	}
@@ -796,7 +817,6 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	protected void onDestroy() {
 		super.onDestroy();
-		//TODO:
 //		inputMethodManager.hideSoftInputFromInputMethod(null, 0);
 	}
 	
@@ -979,7 +999,6 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				cancelDateButton.setOnClickListener(new OnClickListener() {
 					
-					
 					public void onClick(View v) {
 						if(checkDateValidity(processDate)){
 							dateLabel.setVisibility(View.INVISIBLE);
@@ -1109,7 +1128,7 @@ abstract class AbstractScheduleSms extends Activity{
 					boolean z = true;
 					if(cur.moveToFirst()){
 						do{
-							if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)).equals(messageText.getText().toString())){
+							if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)).equals(messageText.getText().toString().trim())){
 								z = false;
 								break;
 							}
@@ -1461,7 +1480,7 @@ abstract class AbstractScheduleSms extends Activity{
     		
 			if(shortlist != null && shortlist.size() > position) {
 				holder.nameText.setText(shortlist.get(position).name);
-				holder.numberText.setText(shortlist.get(position).numbers.get(0).type + ": " + shortlist.get(position).numbers.get(0).number);//TODO
+				holder.numberText.setText(shortlist.get(position).numbers.get(0).type + ": " + shortlist.get(position).numbers.get(0).number);
 			}
 			
 			holder.extraNumbersLayout 	= (LinearLayout) convertView.findViewById(R.id.extra_number_layout);
@@ -1586,7 +1605,7 @@ abstract class AbstractScheduleSms extends Activity{
 	
 			Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
 			for(int i = 0; i < SmsSchedulerApplication.contactsList.size(); i++) {
-				SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number = refineNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number);//TODO
+				SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number = refineNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number);
 				Matcher m = p.matcher(SmsSchedulerApplication.contactsList.get(i).name);
 				if(m.find()) {
 					shortlist.add(SmsSchedulerApplication.contactsList.get(i));
@@ -1602,6 +1621,31 @@ abstract class AbstractScheduleSms extends Activity{
 				}
 			}
 		}
+		
+		ContentResolver cr = getContentResolver();
+		for(int i = 0; i< shortlist.size(); i++){
+			Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, shortlist.get(i).content_uri_id);
+			
+			String[] projection1 = new String[]{ContactsContract.Contacts.TIMES_CONTACTED};
+	    	Cursor cur = cr.query(uri, projection1, null, null, null);
+	    	if(cur.moveToFirst()){
+	    		shortlist.get(i).timesContacted = Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.TIMES_CONTACTED)));
+	    	}else{
+	    	    shortlist.get(i).timesContacted = 0;
+	    	}
+		}
+		
+		Contact temp;
+  	  	for(int i = 0; i< shortlist.size()-1; i++){
+  	  		for(int j = i+1; j< shortlist.size(); j++){
+  	  			if(shortlist.get(j).timesContacted > shortlist.get(i).timesContacted){
+  	  				temp = shortlist.get(j);
+  	  				shortlist.set(j, shortlist.get(i));
+  	  				shortlist.set(i, temp);
+  	  			}
+  	  		}
+  	  	}
+  	  	
 		return shortlist;
 	}
 	
@@ -1771,6 +1815,8 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	protected void loadGroupsData(){
 		
+		DisplayImage displayImage = new DisplayImage();
+		
 		nativeGroupData.clear();
 		nativeChildData.clear();
 		
@@ -1822,9 +1868,11 @@ abstract class AbstractScheduleSms extends Activity{
         					hasChild = true;
         					HashMap<String, Object> childParameters = new HashMap<String, Object>();
         					
+        					childParameters.put(Constants.CHILD_CONTACT_ID, SmsSchedulerApplication.contactsList.get(i).content_uri_id);
         					childParameters.put(Constants.CHILD_NAME, SmsSchedulerApplication.contactsList.get(i).name);
-        					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number);//TODO
-        					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(i).image);
+        					childParameters.put(Constants.CHILD_NUMBER, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number);
+//        					childParameters.put(Constants.CHILD_IMAGE, );
+        					displayImage.storeImage((Long)childParameters.get(Constants.CHILD_CONTACT_ID), childParameters, AbstractScheduleSms.this);
         					childParameters.put(Constants.CHILD_CHECK, false);//doubted
         					Log.d("checkpoint2");
         					for(int k = 0; k< recipientIdsForGroup.size(); k++){
@@ -1834,7 +1882,7 @@ abstract class AbstractScheduleSms extends Activity{
        								}
        							}
        						}
-        					childParameters.put(Constants.CHILD_CONTACT_ID, SmsSchedulerApplication.contactsList.get(i).content_uri_id);
+        					
         					child.add(childParameters);
         				}
         			}
@@ -1906,9 +1954,10 @@ abstract class AbstractScheduleSms extends Activity{
         						}
         					}
         					Log.d("Choosen Number : " + number);
-        					childParameters.put(Constants.CHILD_NUMBER, number);//TODO
+        					childParameters.put(Constants.CHILD_NUMBER, number);
         					childParameters.put(Constants.CHILD_CONTACT_ID, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
-        					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(j).image);
+//        					childParameters.put(Constants.CHILD_IMAGE, SmsSchedulerApplication.contactsList.get(j).image);
+        					displayImage.storeImage((Long)childParameters.get(Constants.CHILD_CONTACT_ID), childParameters, AbstractScheduleSms.this);
         					childParameters.put(Constants.CHILD_CHECK, false);
         					for(int k = 0; k< spanIdsForGroup.size(); k++){
        							for(int m = 0; m< Recipients.size(); m++){
@@ -1945,8 +1994,12 @@ abstract class AbstractScheduleSms extends Activity{
 
 		ArrayList<String> numbers = new ArrayList<String>();
 		parts 		 	= smsManager.divideMessage(messageText.getText().toString());
+		
+		
+		String repeatHashString = new MyGson().serializeRepeatHash(defaultRepeatHash);
+		
 		mdba.open();
-		long smsId = mdba.scheduleSms(messageText.getText().toString(), dateString, parts.size(), cal.getTimeInMillis());
+		long smsId = mdba.scheduleSms(messageText.getText().toString(), dateString, parts.size(), cal.getTimeInMillis(), defaultRepeatMode, repeatHashString);
 		
 		boolean isDraft = false;
 		
@@ -1980,18 +2033,18 @@ abstract class AbstractScheduleSms extends Activity{
 			if(Recipients.get(i).type == 2){
 				for(int j = 0; j< SmsSchedulerApplication.contactsList.size(); j++){
 					if(Recipients.get(i).contactId == SmsSchedulerApplication.contactsList.get(j).content_uri_id){
-						numbers.add(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number);//TODO
+						numbers.add(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number);
 						Log.d("added Display Name : " + SmsSchedulerApplication.contactsList.get(j).name);
-						long receivedRecipientId = mdba.addRecipient(smsId, Recipients.get(i).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);//TODO
+						long receivedRecipientId = mdba.addRecipient(smsId, Recipients.get(i).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
 						if(!Recipients.get(i).displayName.equals(" ")){
 							mdba.addRecentContact(Recipients.get(i).contactId, Recipients.get(i).number);
 						}
 						
 						if(!(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 							if(mdba.getCurrentPiFiretime() == -1){
-								handlePiUpdate(Recipients.get(i).number, smsId, receivedRecipientId, cal.getTimeInMillis());//TODO
+								handlePiUpdate(Recipients.get(i).number, smsId, receivedRecipientId, cal.getTimeInMillis());
 							}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
-								handlePiUpdate(Recipients.get(i).number, smsId, receivedRecipientId, cal.getTimeInMillis());//TODO
+								handlePiUpdate(Recipients.get(i).number, smsId, receivedRecipientId, cal.getTimeInMillis());
 							}
 						}
 						
@@ -2636,6 +2689,668 @@ abstract class AbstractScheduleSms extends Activity{
 			});
 			
 			d.show();
+		}
+	}
+	
+	
+	
+	public void showRepeatDialog(int mode, HashMap<String, Object> values){
+		final Dialog d = new Dialog(AbstractScheduleSms.this);
+		d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		d.setCancelable(false);
+		d.setContentView(R.layout.repeat_dialog);
+		
+		final RepeatDialogHolder h  = new RepeatDialogHolder(mode, values, d);
+		
+		h.summaryText 				= (TextView) 	d.findViewById(R.id.summary_text);
+		
+		h.repeatModeSpinner 		= (Spinner) 	d.findViewById(R.id.repeat_mode_spinner);
+		
+		h.repeatFrequencyLayout		= (LinearLayout)d.findViewById(R.id.repeat_freq_layout);
+		h.repeatFrequencySpinner 	= (Spinner) 	d.findViewById(R.id.repeat_freq_spinner);
+		h.repeatUnitText 			= (TextView) 	d.findViewById(R.id.repeat_unit_text);
+		
+		h.weekdaysLayout 			= (LinearLayout)d.findViewById(R.id.weekdays_layout);
+		h.cbSunday 					= (CheckBox) 	d.findViewById(R.id.cb_sunday);
+		h.cbMonday 					= (CheckBox) 	d.findViewById(R.id.cb_monday);
+		h.cbTuesday 				= (CheckBox) 	d.findViewById(R.id.cb_tuesday);
+		h.cbWednesday 				= (CheckBox) 	d.findViewById(R.id.cb_wednesday);
+		h.cbThursday 				= (CheckBox) 	d.findViewById(R.id.cb_thursday);
+		h.cbFriday 					= (CheckBox) 	d.findViewById(R.id.cb_friday);
+		h.cbSaturday 				= (CheckBox) 	d.findViewById(R.id.cb_saturday);
+		
+		h.endNeverRadio				= (RadioButton) d.findViewById(R.id.end_never_radio);
+		h.endAfterRadio				= (RadioButton) d.findViewById(R.id.end_after_radio);
+		h.endOnRadio				= (RadioButton) d.findViewById(R.id.end_on_radio);
+		
+		h.repeatOccurSpinner		= (Spinner) 	d.findViewById(R.id.repeat_occr_spinner);
+		h.dateText					= (TextView) 	d.findViewById(R.id.date_text);
+		
+		h.doneButton				= (Button) 		d.findViewById(R.id.repeat_ok_button);
+		h.cancelButton				= (Button) 		d.findViewById(R.id.repeat_cancel_button);
+		
+		
+		h.doInitialSetup();
+		
+		d.show();
+	}
+	
+	
+	
+	private class RepeatDialogHolder{
+		private int mode, modeTemp;
+		private int endMode = 0;
+		Dialog d = new Dialog(AbstractScheduleSms.this);
+		Date dateTemp = new Date();
+		private HashMap<String, Object> values;
+		private boolean isInitialSetup = true;
+		
+		private TextView summaryText;
+		
+		private Spinner repeatModeSpinner;
+		
+		private LinearLayout repeatFrequencyLayout;
+		private Spinner repeatFrequencySpinner;
+		private TextView repeatUnitText;
+		
+		private LinearLayout weekdaysLayout;
+		private CheckBox cbSunday;
+		private CheckBox cbMonday;
+		private CheckBox cbTuesday;
+		private CheckBox cbWednesday;
+		private CheckBox cbThursday;
+		private CheckBox cbFriday;
+		private CheckBox cbSaturday;
+		
+		private RadioButton endNeverRadio;
+		private RadioButton endAfterRadio;
+		private RadioButton endOnRadio;
+		
+		private Spinner repeatOccurSpinner;
+		private TextView dateText;
+		
+		private Button doneButton;
+		private Button cancelButton;
+		
+		private ArrayAdapter<Integer> repeatFrequencyAdapter;
+		
+		private ArrayList<Integer> repeatOccurValues = new ArrayList<Integer>();
+		private ArrayList<String> modes = new ArrayList<String>();
+		
+		
+		
+		public RepeatDialogHolder(int mode, HashMap<String, Object> values, Dialog d){
+			this.mode = this.modeTemp = mode;
+			this.values = values;
+			if(mode==0){
+				this.dateTemp = new Date(System.currentTimeMillis());
+			}else{
+				try{
+					this.dateTemp = (Date) values.get(Constants.REPEAT_HASH_END_DATE); //TODO
+				}catch(ClassCastException cce){
+					this.dateTemp = new Date((String)values.get(Constants.REPEAT_HASH_END_DATE));
+				}
+			}
+			
+			
+//			Log.d("Type : " + values.get(Constants.REPEAT_HASH_END_DATE));
+//			Log.d("Year : " + dateTemp.getYear());
+			this.d = d;
+		}
+		
+		private void doInitialSetup(){
+			modes.add("No Repeat");
+			modes.add("Daily");
+			modes.add("Weekly");
+			modes.add("Monthly");
+			modes.add("Yearly");
+			
+			ArrayAdapter<String> modesAdapter = new ArrayAdapter<String>(AbstractScheduleSms.this, android.R.layout.simple_spinner_item, modes);
+			modesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			repeatModeSpinner.setAdapter(modesAdapter);
+			
+			for(int i = 1; i<= 60; i++){
+				repeatOccurValues.add(i);
+			}
+			
+//			Calendar c = Calendar.getInstance();
+//			c.set(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
+			Calendar c = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
+			setDateText(c);
+			
+			ArrayAdapter<Integer> repeatOccurAdapter = new ArrayAdapter<Integer>(AbstractScheduleSms.this, android.R.layout.simple_spinner_item, repeatOccurValues);
+			repeatOccurAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			repeatOccurSpinner.setAdapter(repeatOccurAdapter);
+			
+			
+			cancelButton.setOnClickListener(new OnClickListener() {
+				
+				public void onClick(View v) {
+					d.cancel();
+				}
+			});
+			
+			
+			doneButton.setOnClickListener(new OnClickListener() {
+				
+				public void onClick(View v) {
+					doOnDoneTask();
+					d.cancel();
+				}
+			});
+			
+			
+			endNeverRadio.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked){
+						selectEndNeverRadio();
+					}
+				}
+			});
+			
+			
+			
+			endAfterRadio.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked){
+						selectEndAfterRadio();
+					}
+				}
+			});
+			
+			endOnRadio.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked){
+						selectEndOnRadio();
+					}
+				}
+			});
+			
+			
+			
+			dateText.setOnClickListener(new OnClickListener() {
+				
+				public void onClick(View v) {
+					showDatePickerDialog(Calendar.getInstance());
+				}
+			});
+			
+			dateText.setOnKeyListener(new OnKeyListener() {
+				
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+					showDatePickerDialog(Calendar.getInstance());
+					return false;
+				}
+			});
+			
+			
+			
+			repeatModeSpinner.setSelection(mode);
+			
+			
+			
+			repeatModeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					modeTemp = position;
+					switch (position){
+						case 0:
+							setupNoRepeatMode(); 
+							repeatOccurSpinner.setSelection(0);
+							break;
+						case 1:
+							setupDailyRepeatMode();
+							
+							if(isInitialSetup){
+								try{
+									repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
+								}catch (ClassCastException e) {
+									repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
+								}
+							}
+							else
+								repeatOccurSpinner.setSelection(0);
+							
+							break;
+						case 2:
+							setupWeeklyRepeatMode();
+							
+							if(isInitialSetup){
+								try{
+									repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
+								}catch (ClassCastException e) {
+									repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
+								}
+								
+								ArrayList<Boolean> weekBool = (ArrayList<Boolean>)values.get(Constants.REPEAT_HASH_WEEK_BOOL);
+								
+								cbSunday.setChecked(weekBool.get(0));
+								cbMonday.setChecked(weekBool.get(1));
+								cbTuesday.setChecked(weekBool.get(2));
+								cbWednesday.setChecked(weekBool.get(3));
+								cbThursday.setChecked(weekBool.get(4));
+								cbFriday.setChecked(weekBool.get(5));
+								cbSaturday.setChecked(weekBool.get(6));
+							}else{
+								cbSunday.setChecked(false);
+								cbMonday.setChecked(false);
+								cbTuesday.setChecked(false);
+								cbWednesday.setChecked(false);
+								cbThursday.setChecked(false);
+								cbFriday.setChecked(false);
+								cbSaturday.setChecked(false);
+								
+								repeatOccurSpinner.setSelection(0);
+							}
+							break;
+						case 3:
+							setupMonthlyRepeatMode();
+							
+							if(isInitialSetup){
+								try{
+									repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
+								}catch (ClassCastException e) {
+									repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
+								}
+							}
+//								Log.d("Type of spinner input : " + values.get(Constants.REPEAT_HASH_FREQ).getClass().getName());
+							else
+								repeatOccurSpinner.setSelection(0);
+							
+							break;
+						case 4:
+							setupYearlyRepeatMode();
+							
+							if(isInitialSetup){
+
+//								try{
+//									repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
+//								}catch (ClassCastException e) {
+//									repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
+//								}
+							}
+//								Log.d("Type of spinner input : " + values.get(Constants.REPEAT_HASH_FREQ).getClass().getName());
+							else
+//								repeatOccurSpinner.setSelection(0);
+							
+							break;
+						default:
+							break;
+					}
+					
+					
+					
+					if(isInitialSetup){
+						if(mode>0){
+//							Log.d("repeat mode : " + ((Integer)values.get(Constants.REPEAT_HASH_END_MODE)));
+							int endMode;
+							try{
+								endMode = ((Double)values.get(Constants.REPEAT_HASH_END_MODE)).intValue();
+							}catch (ClassCastException e) {
+								endMode = ((Integer)values.get(Constants.REPEAT_HASH_END_MODE));
+							}
+							
+							switch (endMode){
+								case 0:
+									selectEndNeverRadio(); break;
+								case 1:
+									selectEndAfterRadio();
+									try{
+										repeatOccurSpinner.setSelection(((Integer)values.get(Constants.REPEAT_HASH_END_FREQ)-1), true);
+									}catch (ClassCastException e) {
+										repeatOccurSpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_END_FREQ)).intValue()-1, true);
+									}
+									
+									break;
+								case 2:
+									selectEndOnRadio();
+									Date date;
+									try{
+										date = (Date)values.get(Constants.REPEAT_HASH_END_DATE);
+									}catch (ClassCastException e) {
+										date = new Date((String)values.get(Constants.REPEAT_HASH_END_DATE));
+									}
+									
+									Calendar c = Calendar.getInstance();
+									c.set(date.getYear()+1900, date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
+									setDateText(c);
+									break;
+							}
+							
+						}
+						isInitialSetup = false;
+					}
+					
+					updateSummary();
+					
+				}
+
+				public void onNothingSelected(AdapterView<?> parent) {
+					
+				}
+			});
+			
+			
+			repeatFrequencySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					updateSummary();
+				}
+
+				public void onNothingSelected(AdapterView<?> parent) {
+					updateSummary();
+				}
+			});
+			
+			
+			repeatOccurSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					updateSummary();
+				}
+
+				public void onNothingSelected(AdapterView<?> parent) {
+					updateSummary();
+				}
+			});
+			
+		}
+		
+		
+		private void setupNoRepeatMode(){
+			weekdaysLayout.setVisibility(View.GONE);
+			repeatFrequencySpinner.setSelection(0);
+			repeatFrequencyLayout.setVisibility(View.VISIBLE);
+			repeatFrequencySpinner.setEnabled(false);
+			repeatUnitText.setText("");
+			endNeverRadio.setEnabled(false);
+			endAfterRadio.setEnabled(false);
+			endOnRadio.setEnabled(false);
+			endNeverRadio.setChecked(false);
+			endAfterRadio.setChecked(false);
+			endOnRadio.setChecked(false);
+			repeatOccurSpinner.setEnabled(false);
+			dateText.setEnabled(false);
+			updateSummary();
+		}
+		
+		
+		private void setupDailyRepeatMode(){
+			weekdaysLayout.setVisibility(View.GONE);
+			
+			ArrayList<Integer> items = new ArrayList<Integer>();
+			for(int i = 1; i<= 30; i++){
+				items.add(i);
+			}
+			
+			repeatFrequencyAdapter = new ArrayAdapter<Integer>(AbstractScheduleSms.this, android.R.layout.simple_spinner_item, items);
+			repeatFrequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			repeatFrequencySpinner.setAdapter(repeatFrequencyAdapter);
+			
+			if(isInitialSetup){
+				try{
+					repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
+				}catch (ClassCastException e) {
+					repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
+				}
+			}
+			else
+				repeatFrequencySpinner.setSelection(0, true);
+			repeatFrequencyLayout.setVisibility(View.VISIBLE);
+			repeatFrequencySpinner.setEnabled(true);
+			repeatUnitText.setText("Days");
+			endNeverRadio.setEnabled(true);
+			endAfterRadio.setEnabled(true);
+			endOnRadio.setEnabled(true);
+			endNeverRadio.setChecked(true);
+			repeatOccurSpinner.setEnabled(false);
+			dateText.setEnabled(false);
+			
+			
+			updateSummary();
+		}
+		
+		
+		private void setupWeeklyRepeatMode(){
+			ArrayList<Integer> items = new ArrayList<Integer>();
+			for(int i = 1; i<= 5; i++){
+				items.add(i);
+			}
+			
+			repeatFrequencyAdapter = new ArrayAdapter<Integer>(AbstractScheduleSms.this, android.R.layout.simple_spinner_item, items);
+			repeatFrequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			repeatFrequencySpinner.setAdapter(repeatFrequencyAdapter);
+			
+			weekdaysLayout.setVisibility(View.VISIBLE);
+			Log.d("is Initial : " + isInitialSetup);
+			if(isInitialSetup){
+				try{
+					repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
+				}catch (ClassCastException e) {
+					repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
+				}
+			}
+			else
+				repeatFrequencySpinner.setSelection(0, true);
+			repeatFrequencyLayout.setVisibility(View.VISIBLE);
+			repeatFrequencySpinner.setEnabled(true);
+			repeatUnitText.setText("Weeks");
+			endNeverRadio.setEnabled(true);
+			endAfterRadio.setEnabled(true);
+			endOnRadio.setEnabled(true);
+			endNeverRadio.setChecked(true);
+			repeatOccurSpinner.setEnabled(false);
+			dateText.setEnabled(false);
+			updateSummary();
+		}
+		
+		
+		private void setupMonthlyRepeatMode(){
+			weekdaysLayout.setVisibility(View.GONE);
+			
+			ArrayList<Integer> items = new ArrayList<Integer>();
+			for(int i = 1; i<= 12; i++){
+				items.add(i);
+			}
+			
+			repeatFrequencyAdapter = new ArrayAdapter<Integer>(AbstractScheduleSms.this, android.R.layout.simple_spinner_item, items);
+			repeatFrequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			repeatFrequencySpinner.setAdapter(repeatFrequencyAdapter);
+			
+			if(isInitialSetup){
+				try{
+					repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
+				}catch (ClassCastException e) {
+					repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
+				}
+			}
+			else
+				repeatFrequencySpinner.setSelection(0, true);
+			repeatFrequencyLayout.setVisibility(View.VISIBLE);
+			repeatFrequencySpinner.setEnabled(true);
+			repeatUnitText.setText("Months");
+			endNeverRadio.setEnabled(true);
+			endAfterRadio.setEnabled(true);
+			endOnRadio.setEnabled(true);
+			endNeverRadio.setChecked(true);
+			repeatOccurSpinner.setEnabled(false);
+			dateText.setEnabled(false);
+			
+			
+			updateSummary();
+		}
+		
+		
+		private void setupYearlyRepeatMode(){
+			weekdaysLayout.setVisibility(View.GONE);
+			repeatFrequencySpinner.setSelection(0);
+			repeatFrequencyLayout.setVisibility(View.GONE);
+			repeatFrequencySpinner.setEnabled(true);
+			repeatUnitText.setText("Years");
+			endNeverRadio.setEnabled(true);
+			endAfterRadio.setEnabled(true);
+			endOnRadio.setEnabled(true);
+			endNeverRadio.setChecked(true);
+			repeatOccurSpinner.setEnabled(false);
+			dateText.setEnabled(false);
+			updateSummary();
+		}
+		
+		
+		private void showDatePickerDialog(final Calendar c){
+			
+			final Date date = c.getTime();
+			
+			DatePickerDialog datePickerDialog = new DatePickerDialog(AbstractScheduleSms.this, new OnDateSetListener() {
+				
+				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+					Calendar cNew = Calendar.getInstance();
+					cNew.set(year, monthOfYear, dayOfMonth);
+					if(cNew.after(c)){
+						setDateText(cNew);
+						dateTemp = cNew.getTime();
+					}
+				}
+			}, 1900+date.getYear(), date.getMonth(), date.getDate());
+			
+			datePickerDialog.show();
+		}
+		
+		
+		private void setDateText(Calendar c){
+			Date date = c.getTime();
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+			dateText.setText(sdf.format(date));
+			updateSummary();
+		}
+		
+		
+		
+		private void selectEndNeverRadio(){
+			endMode = 0;
+			endNeverRadio.setChecked(true);
+			endAfterRadio.setChecked(false);
+			endOnRadio.setChecked(false);
+			repeatOccurSpinner.setEnabled(false);
+			dateText.setEnabled(false);
+			updateSummary();
+		}
+		
+		
+		private void selectEndAfterRadio(){
+			endMode = 1;
+			endAfterRadio.setChecked(true);
+			endNeverRadio.setChecked(false);
+			endOnRadio.setChecked(false);
+			repeatOccurSpinner.setEnabled(true);
+			dateText.setEnabled(false);
+			updateSummary();
+		}
+		
+		
+		private void selectEndOnRadio(){
+			endMode = 2;
+			endOnRadio.setChecked(true);
+			endNeverRadio.setChecked(false);
+			endAfterRadio.setChecked(false);
+			repeatOccurSpinner.setEnabled(false);
+			dateText.setEnabled(true);
+			updateSummary();
+		}
+		
+		
+		
+		private void updateSummary(){
+			
+			String summaryString = "";
+			
+			switch (repeatModeSpinner.getSelectedItemPosition()){
+				case 0:
+					summaryString += "No Repeat";
+					break;
+				case 1:
+					if((Integer)repeatFrequencySpinner.getSelectedItem() > 1)
+						summaryString += "Repeats Daily, after every " + repeatFrequencySpinner.getSelectedItem() + " days, ";
+					else
+						summaryString += "Repeats Daily, ";
+					break;
+				case 2:
+					if((Integer)repeatFrequencySpinner.getSelectedItem() > 1)
+						summaryString += "Repeats Weekly, after every " + repeatFrequencySpinner.getSelectedItem() + " weeks, ";
+					else
+						summaryString += "Repeats Weekly, ";
+					break;
+				case 3:
+					if((Integer)repeatFrequencySpinner.getSelectedItem() > 1)
+						summaryString += "Repeats Monthly, after every " + repeatFrequencySpinner.getSelectedItem() + " months, ";
+					else
+						summaryString += "Repeats Monthly, ";
+					break;
+				case 4:
+					summaryString += "Repeats Yearly, ";
+					break;
+				default:
+					break;
+			}
+			
+			if(repeatModeSpinner.getSelectedItemPosition()>0){
+				switch (endMode){
+				case 0:
+					Log.d("End Case 0");
+					summaryString += "never Ends.";
+					break;
+				case 1:
+					Log.d("End Case 1");
+					summaryString += "ends after " + repeatOccurSpinner.getSelectedItem() + (((Integer)repeatOccurSpinner.getSelectedItem()>1)?" times.":" time.");
+					break;
+				case 2:
+					Log.d("End Case 2");
+					summaryString += "ends on " + dateText.getText() + ".";
+					break;
+				default:
+					break;
+				}
+			}
+			
+			summaryText.setText(summaryString);
+		}
+		
+		
+		private void doOnDoneTask(){
+			defaultRepeatMode = modeTemp;
+			defaultRepeatHash = constructHash();
+		}
+		
+		private HashMap<String, Object> constructHash(){
+			ArrayList<Boolean> weekBools = new ArrayList<Boolean>();
+			
+			int newEndMode;
+			
+			if(endNeverRadio.isChecked()){
+				newEndMode = 0;
+			}else if(endAfterRadio.isChecked()){
+				newEndMode = 1;
+			}else{
+				newEndMode = 2;
+			}
+			
+			weekBools.add(cbSunday.isChecked()); weekBools.add(cbMonday.isChecked());
+			weekBools.add(cbTuesday.isChecked()); weekBools.add(cbWednesday.isChecked());
+			weekBools.add(cbThursday.isChecked()); weekBools.add(cbFriday.isChecked());
+			weekBools.add(cbSaturday.isChecked());
+			
+			HashMap<String, Object> newRepeatHash = new HashMap<String, Object>();
+			newRepeatHash.put(Constants.REPEAT_HASH_FREQ, repeatFrequencySpinner.getSelectedItem());
+			newRepeatHash.put(Constants.REPEAT_HASH_WEEK_BOOL, weekBools);
+			newRepeatHash.put(Constants.REPEAT_HASH_END_MODE, newEndMode);
+			newRepeatHash.put(Constants.REPEAT_HASH_END_FREQ, repeatOccurSpinner.getSelectedItem());
+			newRepeatHash.put(Constants.REPEAT_HASH_END_DATE, dateTemp);
+			newRepeatHash.put(Constants.REPEAT_HASH_LAST_SENT_TIME, 0);
+			
+			return newRepeatHash;
 		}
 	}
 	

@@ -21,9 +21,11 @@ public class Sms implements Parcelable {
 	public int 						keyImageRes;
 	public String 					keyExtraReceivers;
 	public ArrayList<Recipient>		keyRecipients;
+	public int						keyRepeatMode;
+	public String 					keyRepeatString;
 	
 	
-	public Sms(long keyid, String keynumber, String keymessage, int keymessageparts, long keytimemilis, String keydate, ArrayList<Recipient> keyrecipients){
+	public Sms(long keyid, String keynumber, String keymessage, int keymessageparts, long keytimemilis, String keydate, ArrayList<Recipient> keyrecipients, int keyrepeatmode, String keyrepeatstring){
 		this.keyId 			= keyid;
 		this.keyNumber 		= keynumber;
 		this.keyMessage 	= keymessage;
@@ -31,6 +33,8 @@ public class Sms implements Parcelable {
 		this.keyDate		= keydate;
 		this.keyTimeMilis 	= keytimemilis;
 		this.keyRecipients	= keyrecipients;
+		this.keyRepeatMode  = keyrepeatmode;
+		this.keyRepeatString= keyrepeatstring;
 	}
 	
 	public Sms(){}
@@ -53,6 +57,8 @@ public class Sms implements Parcelable {
      	this.keyTimeMilis = in.readLong();
     	keyRecipients = new ArrayList<Recipient>();
     	in.readList(keyRecipients, Recipient.class.getClassLoader());
+    	this.keyRepeatMode = in.readInt();
+    	this.keyRepeatString = in.readString();
     };
     
     
@@ -63,6 +69,8 @@ public class Sms implements Parcelable {
 		dest.writeInt(this.keyMessageParts);
 		dest.writeLong(this.keyTimeMilis);
 		dest.writeList(this.keyRecipients);
+		dest.writeInt(this.keyRepeatMode);
+		dest.writeString(this.keyRepeatString);
     }
 
 	
