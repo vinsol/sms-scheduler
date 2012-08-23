@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.telephony.SmsManager;
 
-import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
@@ -87,6 +86,7 @@ public class SentReceiver extends BroadcastReceiver{
 	
 
 	
+	@SuppressWarnings("unchecked")
 	private void handleRepitition(long smsId){
 		mdba.open();
 		Cursor smsDetailsCur = mdba.fetchSmsDetails(smsId);
@@ -193,6 +193,7 @@ public class SentReceiver extends BroadcastReceiver{
 				}catch (ClassCastException e) {
 					weekGap = ((Double)repeatHash.get(Constants.REPEAT_HASH_FREQ)).intValue();
 				}
+				@SuppressWarnings("unchecked")
 				ArrayList<Boolean> weekBools = (ArrayList<Boolean>)repeatHash.get(Constants.REPEAT_HASH_WEEK_BOOL);
 				Date previousDate = new Date(previousTimeInMillis);
 				Calendar cal = Calendar.getInstance();

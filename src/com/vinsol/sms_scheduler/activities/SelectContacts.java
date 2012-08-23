@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -50,7 +49,6 @@ import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
-import com.vinsol.sms_scheduler.utils.MyGson;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class SelectContacts extends Activity {
@@ -120,23 +118,8 @@ public class SelectContacts extends Activity {
 	@Override
     protected void onStart() {
     	super.onStart();
-    	MyGson myGson = new MyGson();
     	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
     	FlurryAgent.logEvent("Selecting from Contacts");
-    	
-//    	SharedPreferences contactData = getSharedPreferences(Home.PREFS_NAME, 0);
-//		if(contactData.getString("isChanged", "1").equals("1") || SmsSchedulerApplication.contactsList.size()==0){
-//			Log.d("is Changed.....................!!!!!!!");
-//			String data = contactData.getString("Data", "default");
-//			sortedContacts = SmsSchedulerApplication.contactsList = myGson.deserializer(data);
-//			filterField.setText("");
-//			contactsAdapter.notifyDataSetChanged();
-//		}
-//		SharedPreferences.Editor editor = contactData.edit();
-//	    editor.putString("isChanged", "0");
-//	    editor.commit();
-	    
-	    
     }
     
     @Override
@@ -147,7 +130,6 @@ public class SelectContacts extends Activity {
     
 	
 	
-	@SuppressWarnings("unchecked")
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.select_contacts);
@@ -190,7 +172,6 @@ public class SelectContacts extends Activity {
         
         
         filterField.addTextChangedListener(new TextWatcher() {
-			
 			
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				
@@ -400,7 +381,6 @@ public class SelectContacts extends Activity {
         
         
         cancelButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				Intent intent = new Intent();
@@ -678,18 +658,14 @@ public class SelectContacts extends Activity {
 	    		holder.numberText 			= (TextView) 		convertView.findViewById(R.id.contact_list_row_contact_number);
 	    		holder.contactCheck     	= (CheckBox) 		convertView.findViewById(R.id.contact_list_row_contact_check);
 	    		holder.primaryContactLayout = (RelativeLayout) 	convertView.findViewById(R.id.contact_list_primary_contact_space);
-//	    		holder.extraContacts	= (ListView) 	convertView.findViewById(R.id.extra_numbers_list);
-	    		
-	    		
-	    		
 			}else{
 				holder = (ContactsListHolder) convertView.getTag();
 			}
+			
 			positionOfContact = position - 1;
 			
 			displayImage.submitImage(holder.contactImage, contacts.get(position).content_uri_id, SelectContacts.this);
 			
-//    		holder.contactImage.setImageBitmap(contacts.get(position).image);
     		holder.nameText.setText(contacts.get(position).name);
     		holder.numberText.setText(contacts.get(position).numbers.get(0).type + ": " + contacts.get(position).numbers.get(0).number);//TODO
     		

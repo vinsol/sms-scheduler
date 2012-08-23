@@ -140,7 +140,7 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	//-------------------Variables related to new autocomplete implementation------------------------
-	LinearLayout hll;
+	LinearLayout hostlayout;
 	RelativeLayout ac_wrapper;
 	
 	ArrayList<Row> rows = new ArrayList<Row>();
@@ -163,10 +163,15 @@ abstract class AbstractScheduleSms extends Activity{
 	Paint paint;
 	
 	boolean oncePressed = false;
+	//----------------------------------------------------------------------------------------------
 	
+	
+	
+	//-----------------Repeat mode defaults-------------------------------------------------------
 	HashMap<String, Object> defaultRepeatHash = new HashMap<String, Object>();
 	int defaultRepeatMode;
 	//-----------------------------------------------------------------------------------------------
+	
 	
 	ImageView undoButton;
 	RecipientStack recipientStack = new RecipientStack();
@@ -215,8 +220,6 @@ abstract class AbstractScheduleSms extends Activity{
 	private Dialog dateSelectDialog;
 	private Dialog templateDialog;
 	
-	protected int positionTrack;
-	
 	protected boolean suggestionsBoolean = true;
 	private Date refDate = new Date();
 	private Calendar refCal = new GregorianCalendar();
@@ -244,7 +247,6 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
 		
-		
 		public void onReceive(Context context, Intent intent2) {
 			if(dataLoadWaitDialog.isShowing()){
 				dataLoadWaitDialog.cancel();
@@ -262,7 +264,6 @@ abstract class AbstractScheduleSms extends Activity{
 						}else{
 							numbersText.setHint(" ");
 						}
-						
 					}
 					inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 				}
@@ -285,7 +286,6 @@ abstract class AbstractScheduleSms extends Activity{
     }
 	
 	
-	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule_sms);
@@ -304,8 +304,6 @@ abstract class AbstractScheduleSms extends Activity{
 		pastTimeDateLabel			= (LinearLayout) 			findViewById(R.id.past_time_label);
 		repeatButton				= (ImageButton) 			findViewById(R.id.repeat_button);
 		
-//		numbersText.setRawInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-		
 		detailsRecipientsAdapter = new MyAdapter();
 		
 		
@@ -316,7 +314,7 @@ abstract class AbstractScheduleSms extends Activity{
 		//-----------------------declarations related to new autocomplete implementation-------------------------
 		inflater = AbstractScheduleSms.this.getLayoutInflater();
 		ac_wrapper = (RelativeLayout) findViewById(R.id.autocomplete_wrapper);
-		hll = (LinearLayout) findViewById(R.id.layouts_host);
+		hostlayout = (LinearLayout) findViewById(R.id.layouts_host);
         recipientDetailsButton = (ImageView) findViewById(R.id.recipients_detail_image);
 		
         
@@ -324,7 +322,6 @@ abstract class AbstractScheduleSms extends Activity{
         firstRow.ll.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-//				showMessagePreference();
 				
 				if(!SmsSchedulerApplication.isDataLoaded){
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
@@ -355,7 +352,7 @@ abstract class AbstractScheduleSms extends Activity{
 			}
 		});
         
-        hll.setOnLongClickListener(new OnLongClickListener() {
+        hostlayout.setOnLongClickListener(new OnLongClickListener() {
 			
 			
 			public boolean onLongClick(View v) {
@@ -476,7 +473,7 @@ abstract class AbstractScheduleSms extends Activity{
         final Row tempRow = new Row(false);
         final View sampleElement = createElement(new Recipient(-1, 1, "sa", -2, -1, 0, 0, null));
         tempRow.ll.addView(sampleElement);
-        hll.addView(tempRow.ll);
+        hostlayout.addView(tempRow.ll);
         
         
         paint = new Paint();
@@ -505,7 +502,7 @@ abstract class AbstractScheduleSms extends Activity{
 		});
 		
 		
-		hll.setOnClickListener(new OnClickListener() {
+		hostlayout.setOnClickListener(new OnClickListener() {
 			
 			
 			public void onClick(View v) {
@@ -620,7 +617,7 @@ abstract class AbstractScheduleSms extends Activity{
 					((LinearLayout)numbersText.getParent()).removeView(numbersText);
 					newRow.ll.addView(numbersText);
 					numbersTextHolder = newRow;
-					hll.addView(numbersTextHolder.ll);
+					hostlayout.addView(numbersTextHolder.ll);
 					numbersText.requestFocus();
 					numbersText.bringToFront();
 					numbersText.showDropDown();
@@ -629,7 +626,7 @@ abstract class AbstractScheduleSms extends Activity{
 				if(numbersTextHolder!=null){
 					if((currentRow.elementsWidth + textWidth)<widthOfContainerInDp){
 						numbersTextHolder.ll.removeView(numbersText);
-						hll.removeView(numbersTextHolder.ll);
+						hostlayout.removeView(numbersTextHolder.ll);
 						numbersTextHolder = null;
 						currentRow.ll.addView(numbersText);
 						numbersText.requestFocus();
@@ -675,7 +672,7 @@ abstract class AbstractScheduleSms extends Activity{
 								}else{
 									currentRow.ll.removeView(numbersText);
 								}
-								hll.removeView(currentRow.ll);
+								hostlayout.removeView(currentRow.ll);
 								rows.remove(currentRow);
 								currentRow = rows.get(rows.size()-1);
 								
@@ -691,7 +688,7 @@ abstract class AbstractScheduleSms extends Activity{
 									Row newRow = new Row(false);
 									newRow.ll.addView(numbersText);
 									numbersTextHolder = newRow;
-									hll.addView(numbersTextHolder.ll);
+									hostlayout.addView(numbersTextHolder.ll);
 								}
 							}
 							
@@ -707,7 +704,7 @@ abstract class AbstractScheduleSms extends Activity{
 							
 					}
 					
-					if(hll.getChildCount()==1){
+					if(hostlayout.getChildCount()==1){
 						((LinearLayout)numbersText.getParent()).removeView(numbersText);
 						firstRow = currentRow;
 						firstRow.ll.addView(numbersText);
@@ -725,7 +722,7 @@ abstract class AbstractScheduleSms extends Activity{
 		});
 		
 		
-		final ViewTreeObserver vto = hll.getViewTreeObserver();
+		final ViewTreeObserver vto = hostlayout.getViewTreeObserver();
 		vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 			
 			
@@ -737,7 +734,7 @@ abstract class AbstractScheduleSms extends Activity{
 				int widthOfTextInDp = (int) (paint.measureText("sa")/dpi);
 //				Log.d("width of extras : " + (sampleElement.getWidth()/dpi - widthOfTextInDp));
 				widthOfExtrasInDp = (int) (sampleElement.getWidth()/dpi - widthOfTextInDp);
-				hll.removeView(tempRow.ll);
+				hostlayout.removeView(tempRow.ll);
 //				if(vto.isAlive())
 //					vto.removeGlobalOnLayoutListener(this);
 			}
@@ -1979,8 +1976,6 @@ abstract class AbstractScheduleSms extends Activity{
         }
         groupCursor.close();
         mdba.close();
-        
-        
 	}
 
 
@@ -2199,10 +2194,7 @@ abstract class AbstractScheduleSms extends Activity{
 				
 				ll.setOnClickListener(new OnClickListener() {
 					
-					
 					public void onClick(View v) {
-//						showMessagePreference();
-						
 						if(widthOfacWrapper==0){
 							widthOfacWrapper = ac_wrapper.getWidth();
 							numbersText.setDropDownWidth(widthOfacWrapper);
@@ -2222,7 +2214,6 @@ abstract class AbstractScheduleSms extends Activity{
 				});
 				
 				ll.setOnLongClickListener(new OnLongClickListener() {
-					
 					
 					public boolean onLongClick(View v) {
 						numbersText.showContextMenu();
@@ -2342,14 +2333,14 @@ abstract class AbstractScheduleSms extends Activity{
 			if(numbersTextHolder!=null){
 				if((currentRow.elementsWidth + numbersText.getWidth())<widthOfContainerInDp){
 					numbersTextHolder.ll.removeView(numbersText);
-					hll.removeView(numbersTextHolder.ll);
+					hostlayout.removeView(numbersTextHolder.ll);
 					numbersTextHolder = null;
 					currentRow.ll.addView(numbersText);
 				}
 			}
 			if(currentRow.views.size()==0 && rows.size()>1){
 				currentRow.ll.removeView(numbersText);
-				hll.removeView(currentRow.ll);
+				hostlayout.removeView(currentRow.ll);
 				rows.remove(currentRow);
 				currentRow = rows.get(rows.size()-1);
 				if((rows.get(rows.size()-1).elementsWidth + numbersText.getWidth())<widthOfContainerInDp){
@@ -2358,7 +2349,7 @@ abstract class AbstractScheduleSms extends Activity{
 					Row newRow = new Row(false);
 					newRow.ll.addView(numbersText);
 					numbersTextHolder = newRow;
-					hll.addView(numbersTextHolder.ll);
+					hostlayout.addView(numbersTextHolder.ll);
 				}
 				numbersText.requestFocus();
 				numbersText.bringToFront();
@@ -2397,24 +2388,16 @@ abstract class AbstractScheduleSms extends Activity{
 			widthOfContainerInDp = (int)(currentRow.ll.getWidth()/dpi);
 		}
 		float textWidth = paint.measureText(((TextView)view.findViewById(R.id.text)).getText().toString());
-//		float widthOfExtras = 36*3/2;
-//		float widthOfExtrasInDp = widthOfExtras/dpi;
-//		float widthOfView = textWidth + widthOfExtras;
+
 		widthOfExtrasInDp = 35;
-		Log.d("width of extras : " + widthOfExtrasInDp);
-		Log.d("width of text : " + textWidth);
 		int widthOfViewInDp = (int) Math.ceil(textWidth/dpi + widthOfExtrasInDp + 1.5);
-		
-		Log.d("width of elements : " + currentRow.elementsWidth);
-		Log.d("width of view : " + widthOfViewInDp);
-		Log.d("width of container : " +widthOfContainerInDp);
 		
 		if((currentRow.elementsWidth + widthOfViewInDp)> widthOfContainerInDp){
 			
 			if(numbersTextHolder==null){
 				Log.d("entered for new layout");
 				Row newRow = new Row(false);
-				hll.addView(newRow.ll);
+				hostlayout.addView(newRow.ll);
 				currentRow.ll.removeView(numbersText);
 				newRow.ll.addView(numbersText);
 				rows.add(newRow);
@@ -2473,7 +2456,7 @@ abstract class AbstractScheduleSms extends Activity{
 			if(rows.get(k).equals(currentRow)){
 				rows.get(k).ll.removeView(numbersText);
 			}
-			hll.removeView(rows.get(k).ll);
+			hostlayout.removeView(rows.get(k).ll);
 			rows.remove(rows.get(k));
 		}
 		if(numbersTextHolder!=null){
@@ -2497,7 +2480,7 @@ abstract class AbstractScheduleSms extends Activity{
 			((LinearLayout)numbersText.getParent()).removeView(numbersText);
 			newRow.ll.addView(numbersText);
 			numbersTextHolder = newRow;
-			hll.addView(numbersTextHolder.ll);
+			hostlayout.addView(numbersTextHolder.ll);
 			numbersText.requestFocus();
 		}
 	}
@@ -2507,7 +2490,7 @@ abstract class AbstractScheduleSms extends Activity{
 	public void refreshRecipientViews(){
 		if(numbersTextHolder!=null){
     		numbersTextHolder.ll.removeView(numbersText);
-    		hll.removeView(numbersTextHolder.ll);
+    		hostlayout.removeView(numbersTextHolder.ll);
     		numbersTextHolder = null;
     	}else{
     		if(((LinearLayout)numbersText.getParent())!=null)
@@ -2515,19 +2498,13 @@ abstract class AbstractScheduleSms extends Activity{
     	}
     	
     	for(int i = rows.size()-1; i>=0; i--){
-    		hll.removeView(rows.get(i).ll);
+    		hostlayout.removeView(rows.get(i).ll);
     		rows.remove(i);
     	}
     	firstRow = new Row(false);
-    	hll.addView(firstRow.ll);
+    	hostlayout.addView(firstRow.ll);
     	rows.add(firstRow);
     	currentRow = firstRow;
-    	
-//    	for(int i = firstRow.views.size()-1; i>=0; i--){
-//    		firstRow.ll.removeView(firstRow.views.get(i));
-//    		firstRow.views.remove(i);
-//    	}
-//    	firstRow.ll.addView(numbersText);
     	
     	displayViews();
     	
@@ -2700,37 +2677,7 @@ abstract class AbstractScheduleSms extends Activity{
 		d.setCancelable(false);
 		d.setContentView(R.layout.repeat_dialog);
 		
-		final RepeatDialogHolder h  = new RepeatDialogHolder(mode, values, d);
-		
-		h.summaryText 				= (TextView) 	d.findViewById(R.id.summary_text);
-		
-		h.repeatModeSpinner 		= (Spinner) 	d.findViewById(R.id.repeat_mode_spinner);
-		
-		h.repeatFrequencyLayout		= (LinearLayout)d.findViewById(R.id.repeat_freq_layout);
-		h.repeatFrequencySpinner 	= (Spinner) 	d.findViewById(R.id.repeat_freq_spinner);
-		h.repeatUnitText 			= (TextView) 	d.findViewById(R.id.repeat_unit_text);
-		
-		h.weekdaysLayout 			= (LinearLayout)d.findViewById(R.id.weekdays_layout);
-		h.cbSunday 					= (CheckBox) 	d.findViewById(R.id.cb_sunday);
-		h.cbMonday 					= (CheckBox) 	d.findViewById(R.id.cb_monday);
-		h.cbTuesday 				= (CheckBox) 	d.findViewById(R.id.cb_tuesday);
-		h.cbWednesday 				= (CheckBox) 	d.findViewById(R.id.cb_wednesday);
-		h.cbThursday 				= (CheckBox) 	d.findViewById(R.id.cb_thursday);
-		h.cbFriday 					= (CheckBox) 	d.findViewById(R.id.cb_friday);
-		h.cbSaturday 				= (CheckBox) 	d.findViewById(R.id.cb_saturday);
-		
-		h.endNeverRadio				= (RadioButton) d.findViewById(R.id.end_never_radio);
-		h.endAfterRadio				= (RadioButton) d.findViewById(R.id.end_after_radio);
-		h.endOnRadio				= (RadioButton) d.findViewById(R.id.end_on_radio);
-		
-		h.repeatOccurSpinner		= (Spinner) 	d.findViewById(R.id.repeat_occr_spinner);
-		h.dateText					= (TextView) 	d.findViewById(R.id.date_text);
-		
-		h.doneButton				= (Button) 		d.findViewById(R.id.repeat_ok_button);
-		h.cancelButton				= (Button) 		d.findViewById(R.id.repeat_cancel_button);
-		
-		
-		h.doInitialSetup();
+		new RepeatDialogHolder(mode, values, d);
 		
 		d.show();
 	}
@@ -2792,13 +2739,42 @@ abstract class AbstractScheduleSms extends Activity{
 				}
 			}
 			
-			
-//			Log.d("Type : " + values.get(Constants.REPEAT_HASH_END_DATE));
-//			Log.d("Year : " + dateTemp.getYear());
 			this.d = d;
+			
+			initializeViews();
+			doInitialSetup();
 		}
 		
-		private void doInitialSetup(){
+		private void initializeViews() {
+			summaryText 			= (TextView) 	d.findViewById(R.id.summary_text);
+
+			repeatModeSpinner 		= (Spinner) 	d.findViewById(R.id.repeat_mode_spinner);
+			
+			repeatFrequencyLayout	= (LinearLayout)d.findViewById(R.id.repeat_freq_layout);
+			repeatFrequencySpinner 	= (Spinner) 	d.findViewById(R.id.repeat_freq_spinner);
+			repeatUnitText 			= (TextView) 	d.findViewById(R.id.repeat_unit_text);
+			
+			weekdaysLayout 			= (LinearLayout)d.findViewById(R.id.weekdays_layout);
+			cbSunday 				= (CheckBox) 	d.findViewById(R.id.cb_sunday);
+			cbMonday 				= (CheckBox) 	d.findViewById(R.id.cb_monday);
+			cbTuesday 				= (CheckBox) 	d.findViewById(R.id.cb_tuesday);
+			cbWednesday 			= (CheckBox) 	d.findViewById(R.id.cb_wednesday);
+			cbThursday 				= (CheckBox) 	d.findViewById(R.id.cb_thursday);
+			cbFriday 				= (CheckBox) 	d.findViewById(R.id.cb_friday);
+			cbSaturday 				= (CheckBox) 	d.findViewById(R.id.cb_saturday);
+			
+			endNeverRadio			= (RadioButton) d.findViewById(R.id.end_never_radio);
+			endAfterRadio			= (RadioButton) d.findViewById(R.id.end_after_radio);
+			endOnRadio				= (RadioButton) d.findViewById(R.id.end_on_radio);
+			
+			repeatOccurSpinner		= (Spinner) 	d.findViewById(R.id.repeat_occr_spinner);
+			dateText				= (TextView) 	d.findViewById(R.id.date_text);
+			
+			doneButton				= (Button) 		d.findViewById(R.id.repeat_ok_button);
+			cancelButton			= (Button) 		d.findViewById(R.id.repeat_cancel_button);
+		}
+		
+		private void doInitialSetup() {
 			modes.add("No Repeat");
 			modes.add("Daily");
 			modes.add("Weekly");
@@ -2813,8 +2789,6 @@ abstract class AbstractScheduleSms extends Activity{
 				repeatOccurValues.add(i);
 			}
 			
-//			Calendar c = Calendar.getInstance();
-//			c.set(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
 			Calendar c = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
 			setDateText(c);
 			
@@ -2925,6 +2899,7 @@ abstract class AbstractScheduleSms extends Activity{
 									repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
 								}
 								
+								@SuppressWarnings("unchecked")
 								ArrayList<Boolean> weekBool = (ArrayList<Boolean>)values.get(Constants.REPEAT_HASH_WEEK_BOOL);
 								
 								cbSunday.setChecked(weekBool.get(0));
@@ -2949,33 +2924,18 @@ abstract class AbstractScheduleSms extends Activity{
 						case 3:
 							setupMonthlyRepeatMode();
 							
-							if(isInitialSetup){
+							if(isInitialSetup) {
 								try{
 									repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
 								}catch (ClassCastException e) {
 									repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
 								}
-							}
-//								Log.d("Type of spinner input : " + values.get(Constants.REPEAT_HASH_FREQ).getClass().getName());
-							else
+							} else
 								repeatOccurSpinner.setSelection(0);
 							
 							break;
 						case 4:
 							setupYearlyRepeatMode();
-							
-							if(isInitialSetup){
-
-//								try{
-//									repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
-//								}catch (ClassCastException e) {
-//									repeatFrequencySpinner.setSelection((Integer)values.get(Constants.REPEAT_HASH_FREQ) - 1, true);
-//								}
-							}
-//								Log.d("Type of spinner input : " + values.get(Constants.REPEAT_HASH_FREQ).getClass().getName());
-							else
-//								repeatOccurSpinner.setSelection(0);
-							
 							break;
 						default:
 							break;
@@ -2983,9 +2943,8 @@ abstract class AbstractScheduleSms extends Activity{
 					
 					
 					
-					if(isInitialSetup){
+					if(isInitialSetup) {
 						if(mode>0){
-//							Log.d("repeat mode : " + ((Integer)values.get(Constants.REPEAT_HASH_END_MODE)));
 							int endMode;
 							try{
 								endMode = ((Double)values.get(Constants.REPEAT_HASH_END_MODE)).intValue();
@@ -2993,7 +2952,7 @@ abstract class AbstractScheduleSms extends Activity{
 								endMode = ((Integer)values.get(Constants.REPEAT_HASH_END_MODE));
 							}
 							
-							switch (endMode){
+							switch (endMode) {
 								case 0:
 									selectEndNeverRadio(); break;
 								case 1:
@@ -3060,7 +3019,7 @@ abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
-		private void setupNoRepeatMode(){
+		private void setupNoRepeatMode() {
 			weekdaysLayout.setVisibility(View.GONE);
 			repeatFrequencySpinner.setSelection(0);
 			repeatFrequencyLayout.setVisibility(View.VISIBLE);
@@ -3078,7 +3037,7 @@ abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
-		private void setupDailyRepeatMode(){
+		private void setupDailyRepeatMode() {
 			weekdaysLayout.setVisibility(View.GONE);
 			
 			ArrayList<Integer> items = new ArrayList<Integer>();
@@ -3115,7 +3074,7 @@ abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
-		private void setupWeeklyRepeatMode(){
+		private void setupWeeklyRepeatMode() {
 			ArrayList<Integer> items = new ArrayList<Integer>();
 			for(int i = 1; i<= 5; i++){
 				items.add(i);
@@ -3149,7 +3108,7 @@ abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
-		private void setupMonthlyRepeatMode(){
+		private void setupMonthlyRepeatMode() {
 			weekdaysLayout.setVisibility(View.GONE);
 			
 			ArrayList<Integer> items = new ArrayList<Integer>();
@@ -3161,7 +3120,7 @@ abstract class AbstractScheduleSms extends Activity{
 			repeatFrequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			repeatFrequencySpinner.setAdapter(repeatFrequencyAdapter);
 			
-			if(isInitialSetup){
+			if(isInitialSetup) {
 				try{
 					repeatFrequencySpinner.setSelection(((Double)values.get(Constants.REPEAT_HASH_FREQ)).intValue() - 1, true);
 				}catch (ClassCastException e) {
@@ -3180,7 +3139,6 @@ abstract class AbstractScheduleSms extends Activity{
 			endNeverRadio.setChecked(true);
 			repeatOccurSpinner.setEnabled(false);
 			dateText.setEnabled(false);
-			
 			
 			updateSummary();
 		}

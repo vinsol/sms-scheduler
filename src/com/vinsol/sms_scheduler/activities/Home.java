@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,8 +24,6 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Groups;
-import android.text.Html;
-import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -38,7 +35,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,7 +47,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
-import android.widget.TextView.BufferType;
 import android.widget.Toast;
 
 
@@ -300,19 +295,6 @@ public class Home extends Activity {
     	super.onStart();
     	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
     	FlurryAgent.logEvent("Home Activity Started");
-    	
-    	SharedPreferences contactData = getSharedPreferences(PREFS_NAME, 0);
-//    	String data = contactData.getString("Data", "default");
-    	
-//		if(contactData.getString("isChanged", "0").equals("1") || SmsSchedulerApplication.contactsList.size()==0){
-//			Log.d("is changed : Yes");
-//			String data = contactData.getString("Data", "default");
-//			Log.d("json string in onStart : " + data);
-//			SmsSchedulerApplication.contactsList = myGson.deserializer(data);
-//		}
-//		SharedPreferences.Editor editor = contactData.edit();
-//	    editor.putString("isChanged", "0");
-//	    editor.commit();
     }
     
     
@@ -328,7 +310,6 @@ public class Home extends Activity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
     	
-    	//TODO
     	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int group = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 		ExpandableListView.getPackedPositionChild(info.packedPosition);
@@ -1197,18 +1178,7 @@ public class Home extends Activity {
 		    	    		}while(cur.moveToNext());
 		    	    	}
 		    	    	cur.close();
-		    	    	Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contact.content_uri_id);
-//			    	    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-//			    	    try{
-//			    	    	BitmapFactory.Options o = new BitmapFactory.Options();
-//			    	        o.inPurgeable = true;
-//			    	        o.inInputShareable = true;
-//			    	    	contact.image = BitmapFactory.decodeStream(input, null, o);
-//			    	    	contact.image.getHeight();
-//			    	    } catch (NullPointerException e){
-//			    	    	contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
-//			    	    }
-			    	    
+		    	    	
 			    	    SmsSchedulerApplication.contactsList.add(contact);
 		    	    }
 		    	    phones.close();
@@ -1287,10 +1257,8 @@ public class Home extends Activity {
         	SmsSchedulerApplication.contactsList.clear();
         	
         	if(!data.equals("default")){
-        		long startTime = System.currentTimeMillis();
         		SmsSchedulerApplication.contactsList = myGson.deserializer(data);
         	}else{
-        		long startTime = System.currentTimeMillis();
         		loadContactsByPhone();
         		String jsonString = myGson.serializer(SmsSchedulerApplication.contactsList);
         		SharedPreferences.Editor editor = contactData.edit();

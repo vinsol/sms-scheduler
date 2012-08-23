@@ -16,14 +16,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.provider.ContactsContract.Contacts;
 import android.util.Log;
 import android.widget.ImageView;
 
 public class DisplayImage {
 
 	ExecutorService executor = Executors.newFixedThreadPool(5);
-	
 	
 	public void shutDownExecutor(){
     	executor.shutdownNow();
@@ -32,14 +30,6 @@ public class DisplayImage {
 	
 	
 	public void submitImage(final ImageView iv, long contactId, final Context context){
-//		Runnable action = new Runnable() {	
-//			public void run() {
-//				iv.setImageBitmap(BitmapFactory.decodeResource(context.getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
-//			}
-//		};
-//		Activity activity = (Activity) context;
-//		activity.runOnUiThread(action);
-//		
 		iv.setImageBitmap(BitmapFactory.decodeResource(context.getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
 		MyRunnable runnable = new MyRunnable(iv, contactId, context);
 		executor.execute(runnable);
@@ -93,9 +83,7 @@ public class DisplayImage {
   		o.inPurgeable = true;
   		o.inInputShareable = true;
   		Bitmap b = BitmapFactory.decodeStream(input, null, o);
-//  		if(b==null){
-//  			b = BitmapFactory.decodeResource(context.getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
-//  		}
+
   		return b;
 	}
 }

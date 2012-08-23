@@ -7,8 +7,6 @@ package com.vinsol.sms_scheduler.models;
 
 import java.util.ArrayList;
 
-import android.graphics.Bitmap;
-
 public class Contact {
 
 	public long content_uri_id;

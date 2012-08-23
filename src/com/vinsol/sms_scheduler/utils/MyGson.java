@@ -35,6 +35,7 @@ public class MyGson {
 		return contactsList;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> deserializeRepeatHash(String hashString){
 		HashMap<String, Object> repeatHash = new HashMap<String, Object>();
 		repeatHash = gson.fromJson(hashString, repeatHash.getClass());

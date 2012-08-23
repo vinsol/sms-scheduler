@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flurry.android.FlurryAgent;
-import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
