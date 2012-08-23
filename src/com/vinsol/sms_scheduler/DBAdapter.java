@@ -6,10 +6,8 @@
 package com.vinsol.sms_scheduler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -24,7 +22,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 
 import com.flurry.android.FlurryAgent;
-import com.vinsol.sms_scheduler.activities.Home;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;

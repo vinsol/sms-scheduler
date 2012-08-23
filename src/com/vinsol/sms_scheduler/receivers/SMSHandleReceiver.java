@@ -12,10 +12,12 @@ import java.util.Random;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.net.Uri;
 import android.telephony.SmsManager;
 
 import com.flurry.android.FlurryAgent;
@@ -90,6 +92,14 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		}
 		try{
 			smsManager.sendMultipartTextMessage(number, null, parts, sentIntents, deliverIntents);
+			
+			//make an entry in native outbox-----------------------------------------------
+			ContentValues values = new ContentValues();
+	        values.put("address", number);
+	        values.put("body", message); 
+	        context.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+	        //-----------------------------------------------------------------------------
+	        
 		}catch(IllegalArgumentException iae){}
 		
 		mdba.open();

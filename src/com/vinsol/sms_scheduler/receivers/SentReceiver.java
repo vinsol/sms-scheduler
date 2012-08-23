@@ -85,9 +85,9 @@ public class SentReceiver extends BroadcastReceiver{
    	 	mdba.close();
 	}
 	
+
 	
-	
-	public void handleRepitition(long smsId){
+	private void handleRepitition(long smsId){
 		mdba.open();
 		Cursor smsDetailsCur = mdba.fetchSmsDetails(smsId);
 		if(smsDetailsCur.moveToFirst()){
@@ -172,7 +172,7 @@ public class SentReceiver extends BroadcastReceiver{
 	
 	
 	
-	public long calculateNextScheduleTime(HashMap<String, Object> repeatHash, int repeatMode, long previousTimeInMillis){
+	private long calculateNextScheduleTime(HashMap<String, Object> repeatHash, int repeatMode, long previousTimeInMillis){
 		long time = 0;
 		
 		switch (repeatMode){

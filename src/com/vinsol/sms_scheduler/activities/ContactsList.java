@@ -435,7 +435,6 @@ public class ContactsList extends Activity {
 		
 		cb.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View v) {
 				if(cb.isChecked()){
 					ids.add(contact.content_uri_id);

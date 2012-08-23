@@ -1993,7 +1993,7 @@ abstract class AbstractScheduleSms extends Activity{
 
 
 		ArrayList<String> numbers = new ArrayList<String>();
-		parts 		 	= smsManager.divideMessage(messageText.getText().toString());
+		parts = smsManager.divideMessage(messageText.getText().toString());
 		
 		
 		String repeatHashString = new MyGson().serializeRepeatHash(defaultRepeatHash);
@@ -3099,6 +3099,7 @@ abstract class AbstractScheduleSms extends Activity{
 			}
 			else
 				repeatFrequencySpinner.setSelection(0, true);
+			
 			repeatFrequencyLayout.setVisibility(View.VISIBLE);
 			repeatFrequencySpinner.setEnabled(true);
 			repeatUnitText.setText("Days");
@@ -3169,6 +3170,7 @@ abstract class AbstractScheduleSms extends Activity{
 			}
 			else
 				repeatFrequencySpinner.setSelection(0, true);
+			
 			repeatFrequencyLayout.setVisibility(View.VISIBLE);
 			repeatFrequencySpinner.setEnabled(true);
 			repeatUnitText.setText("Months");
