@@ -3,7 +3,7 @@
  * See the file license.txt for copying permission.
 */
 
-package com.vinsol.sms_scheduler.activities;
+package com.vinsol.sms_scheduler.activities.Group;
 
 import java.util.ArrayList;
 
@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.activities.Contact.ContactsList;
 
 public class ManageGroups extends Activity {
 

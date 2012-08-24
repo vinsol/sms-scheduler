@@ -3,7 +3,7 @@
  * See the file license.txt for copying permission.
 */
 
-package com.vinsol.sms_scheduler.activities;
+package com.vinsol.sms_scheduler.activities.Contact;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.activities.Home;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.utils.DisplayImage;

@@ -3,7 +3,7 @@
  * See the file license.txt for copying permission.
 */
 
-package com.vinsol.sms_scheduler.activities;
+package com.vinsol.sms_scheduler.activities.ScheduleSms;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -97,9 +97,11 @@ import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.utils.MyGson;
+import com.vinsol.sms_scheduler.activities.Contact.SelectContacts;
+import com.vinsol.sms_scheduler.activities.Template.TemplateAdapter;
 
 
-abstract class AbstractScheduleSms extends Activity{
+public abstract class AbstractScheduleSms extends Activity{
 
 	//---------References to the widgets-----------------
 	protected AutoCompleteTextView 		numbersText;
@@ -119,17 +121,17 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	//-----------For expanded list data of contactsTabActivity------------------------
-	protected static ArrayList<ArrayList<HashMap<String, Object>>> nativeChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
-	protected static ArrayList<HashMap<String, Object>> nativeGroupData = new ArrayList<HashMap<String, Object>>();
+	public static ArrayList<ArrayList<HashMap<String, Object>>> nativeChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	public static ArrayList<HashMap<String, Object>> nativeGroupData = new ArrayList<HashMap<String, Object>>();
 	
-	protected static ArrayList<ArrayList<HashMap<String, Object>>> privateChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
-	protected static ArrayList<HashMap<String, Object>> privateGroupData = new ArrayList<HashMap<String, Object>>();
+	public static ArrayList<ArrayList<HashMap<String, Object>>> privateChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
+	public static ArrayList<HashMap<String, Object>> privateGroupData = new ArrayList<HashMap<String, Object>>();
 	//--------------------------------------------------------------------------------------
 	
 	
 	
 	//---------------------------------------------------------------
-	protected static ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
+	public static ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
 	protected static ArrayList<Recipient> originalRecipients = new ArrayList<Recipient>();
 	protected SpannableStringBuilder ssb = new SpannableStringBuilder();
 	protected int spanStartPosition = 0;
@@ -1094,11 +1096,11 @@ abstract class AbstractScheduleSms extends Activity{
 				loadTemplates();
 				if(templatesArray.size()>0){
 					FlurryAgent.logEvent("Templates Dialog Opened");
-					TemplateAdapter templateAdapter = new TemplateAdapter();
 					templateDialog = new Dialog(AbstractScheduleSms.this);
 					templateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					templateDialog.setContentView(R.layout.templates_dialog);
 					ListView templateList = (ListView) templateDialog.findViewById(R.id.dialog_template_list);
+					TemplateAdapter templateAdapter = new TemplateAdapter(templatesArray, messageText, templateDialog, AbstractScheduleSms.this);
 					templateList.setAdapter(templateAdapter);
 					templateDialog.show();
 				}else{
@@ -1215,28 +1217,14 @@ abstract class AbstractScheduleSms extends Activity{
 				FlurryAgent.logEvent("Voice Input");
 				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
-		        // Specify the calling package to identify your application
 		        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
 
-		        // Display an hint to the user about what he should say.
 		        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
 
-		        // Given an hint to the recognizer about what the user is going to say
 		        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
 		                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 
-		        // Specify how many results you want to receive. The results will be sorted
-		        // where the first result is the one with higher confidence.
 		        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
-
-		        // Specify the recognition language. This parameter has to be specified only if the
-		        // recognition has to be done in a specific language and not the default one (i.e., the
-		        // system locale). Most of the applications do not have to set this parameter.
-//		        if (!mSupportedLanguageView.getSelectedItem().toString().equals("Default")) {
-//		            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,
-//		                    mSupportedLanguageView.getSelectedItem().toString());
-//		        }
-
 		        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
 			}
 		});
@@ -1686,60 +1674,64 @@ abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	//------------------------------------------------
-	//Adapter for list in the templates dialog
-	//------------------------------------------------
-	@SuppressWarnings("rawtypes")
-	private class TemplateAdapter extends ArrayAdapter {
-		@SuppressWarnings("unchecked")
-		TemplateAdapter() {
-			super(AbstractScheduleSms.this, R.layout.template_list_row, templatesArray);
-		}
-		
-		
-		public View getView(int position, View convertView, ViewGroup parent) {
-			TemplateHolder holder;
-			if(convertView==null){
-				LayoutInflater inflater = getLayoutInflater();
-				convertView = inflater.inflate(R.layout.template_list_row, parent, false);
-				holder = new TemplateHolder();
-				holder.templateText = (TextView) convertView.findViewById(R.id.template_content_space);
-				convertView.setTag(holder);
-			}else{
-				holder = (TemplateHolder) convertView.getTag();
-			}
-			final int _position = position;
-		
-    		holder.templateText.setText(templatesArray.get(position));
-    		convertView.setOnClickListener(new OnClickListener() {
-				
-				
-				public void onClick(View v) {
-					FlurryAgent.logEvent("Template Used");
-					if(messageText.getText().toString().equals("")){
-						messageText.setText(templatesArray.get(_position));
-					}else{
-						messageText.setText(messageText.getText().toString() + "\n" + templatesArray.get(_position));
-					}
-					messageText.setSelection(messageText.getText().toString().length());
-					templateDialog.cancel();
-					messageText.requestFocus();
-					messageText.setSelection(messageText.getText().toString().length());
-				}
-			});
-    		
-			return convertView;
-		}
-	}
-	
-	
-	
-	//--------------------------------------
-	//Holder for Template Adapter
-	//--------------------------------------
-	private class TemplateHolder{
-		TextView templateText;
-	}
+//	//------------------------------------------------
+//	//Adapter for list in the templates dialog
+//	//------------------------------------------------
+//	@SuppressWarnings("rawtypes")
+//	private class TemplateAdapter extends ArrayAdapter {
+//		
+//		ArrayList<String> templatesArray;
+//		
+//		@SuppressWarnings("unchecked")
+//		TemplateAdapter(ArrayList<String> templatesArray) {
+//			super(AbstractScheduleSms.this, R.layout.template_list_row, templatesArray);
+//			this.templatesArray = templatesArray;
+//		}
+//		
+//		
+//		public View getView(int position, View convertView, ViewGroup parent) {
+//			TemplateHolder holder;
+//			if(convertView==null){
+//				LayoutInflater inflater = getLayoutInflater();
+//				convertView = inflater.inflate(R.layout.template_list_row, parent, false);
+//				holder = new TemplateHolder();
+//				holder.templateText = (TextView) convertView.findViewById(R.id.template_content_space);
+//				convertView.setTag(holder);
+//			}else{
+//				holder = (TemplateHolder) convertView.getTag();
+//			}
+//			final int _position = position;
+//		
+//    		holder.templateText.setText(templatesArray.get(position));
+//    		convertView.setOnClickListener(new OnClickListener() {
+//				
+//				
+//				public void onClick(View v) {
+//					FlurryAgent.logEvent("Template Used");
+//					if(messageText.getText().toString().equals("")){
+//						messageText.setText(templatesArray.get(_position));
+//					}else{
+//						messageText.setText(messageText.getText().toString() + "\n" + templatesArray.get(_position));
+//					}
+//					messageText.setSelection(messageText.getText().toString().length());
+//					templateDialog.cancel();
+//					messageText.requestFocus();
+//					messageText.setSelection(messageText.getText().toString().length());
+//				}
+//			});
+//    		
+//			return convertView;
+//		}
+//	}
+//	
+//	
+//	
+//	//--------------------------------------
+//	//Holder for Template Adapter
+//	//--------------------------------------
+//	private class TemplateHolder{
+//		TextView templateText;
+//	}
 	
 	
 	

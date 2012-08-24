@@ -36,13 +36,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name = ".activities.ScheduleNewSms" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name = ".activities.ManageTemplates" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name = ".activities.ContactsList" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name = ".activities.SelectContacts" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name = ".activities.ManageGroups" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name = ".activities.EditGroup" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name = ".activities.EditScheduledSms" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
+        <activity android:name = ".activities.ScheduleSms.ScheduleNewSms" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
+        <activity android:name = ".activities.Template.ManageTemplates" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
+        <activity android:name = ".activities.Contact.ContactsList" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
+        <activity android:name = ".activities.Contact.SelectContacts" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
+        <activity android:name = ".activities.Group.ManageGroups" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
+        <activity android:name = ".activities.Group.EditGroup" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation"/>
+        <activity android:name = ".activities.ScheduleSms.EditScheduledSms" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
         
         
        	<!--  receivers -->

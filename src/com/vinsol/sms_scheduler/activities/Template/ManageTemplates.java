@@ -3,7 +3,7 @@
  * See the file license.txt for copying permission.
 */
 
-package com.vinsol.sms_scheduler.activities;
+package com.vinsol.sms_scheduler.activities.Template;
 
 import java.util.ArrayList;
 

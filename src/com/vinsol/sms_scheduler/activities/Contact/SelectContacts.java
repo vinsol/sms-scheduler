@@ -3,7 +3,7 @@
  * See the file license.txt for copying permission.
 */
 
-package com.vinsol.sms_scheduler.activities;
+package com.vinsol.sms_scheduler.activities.Contact;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,12 +44,15 @@ import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
+import com.vinsol.sms_scheduler.SmsSchedulerApplication;
+import com.vinsol.sms_scheduler.activities.ScheduleSms.AbstractScheduleSms;
+import com.vinsol.sms_scheduler.activities.ScheduleSms.EditScheduledSms;
+import com.vinsol.sms_scheduler.activities.ScheduleSms.ScheduleNewSms;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
-import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class SelectContacts extends Activity {
 	
