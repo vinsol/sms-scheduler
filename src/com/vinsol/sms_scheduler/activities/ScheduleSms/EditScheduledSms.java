@@ -32,7 +32,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 	Sms SMS;
 	
 	
-	
 	@Override
     protected void onStart() {
     	super.onStart();
@@ -58,7 +57,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		SMS = getIntent().getParcelableExtra("SMS DATA");
 		
-//		numbersText.setText(SMS.keyNumber);
 		messageText.setText(SMS.keyMessage);
 		originalMessage = SMS.keyMessage;
 		processDate = new Date(SMS.keyTimeMilis);
@@ -72,7 +70,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			String repeatHashString = SMS.keyRepeatString;
 			Log.d("Repeat Hash String : " + repeatHashString);
 			defaultRepeatHash = new MyGson().deserializeRepeatHash(repeatHashString);
-//			Log.d("Date in Repeat Hash : " + (Date)defaultRepeatHash.get(Constants.REPEAT_HASH_END_DATE));
 		}
 		
 		
@@ -184,8 +181,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 			
 			yesButton.setOnClickListener(new OnClickListener() {
-					
-				
+
 				public void onClick(View v) {
 					d.cancel();
 					EditScheduledSms.this.finish();
@@ -193,8 +189,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 			});
 			
 			noButton.setOnClickListener(new OnClickListener() {
-				
-				
+
 				public void onClick(View v) {
 					d.cancel();
 					numbersText.requestFocus();

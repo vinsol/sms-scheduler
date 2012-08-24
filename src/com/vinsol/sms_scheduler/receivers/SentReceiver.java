@@ -263,9 +263,9 @@ public class SentReceiver extends BroadcastReceiver{
 		}
 		
 		switch (endMode){
-			case 0:
+			case Constants.END_MODE_NEVER:
 				break;
-			case 1:
+			case Constants.END_MODE_AFTER:
 				int endFreq;
 				try{
 					endFreq = (Integer)repeatHash.get(Constants.REPEAT_HASH_END_FREQ);
@@ -277,7 +277,7 @@ public class SentReceiver extends BroadcastReceiver{
 					time = 0;
 				}
 				break;
-			case 2:
+			case Constants.END_MODE_ON:
 				Date d;
 				try{
 					d = (Date)repeatHash.get(Constants.REPEAT_HASH_END_DATE);
@@ -296,6 +296,4 @@ public class SentReceiver extends BroadcastReceiver{
 		Log.d("Time : " + time);
 		return time;
 	}
-	
-	
 }

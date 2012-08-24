@@ -80,8 +80,8 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.confirmation_dialog);
 			TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
-			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
-			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
+			Button 	 yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
+			Button   noButton		= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 			
 			questionText.setText("Schedule Message?");
 			
@@ -89,7 +89,6 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.no_dialog_states));
 			
 			yesButton.setOnClickListener(new OnClickListener() {
-				
 				
 				public void onClick(View v) {
 					d.cancel();
@@ -102,7 +101,6 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			});
 			
 			noButton.setOnClickListener(new OnClickListener() {
-				
 				
 				public void onClick(View v) {
 					d.cancel();
@@ -135,7 +133,6 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 			
 			noButton.setOnClickListener(new OnClickListener() {
 				
-				
 				public void onClick(View v) {
 					d.cancel();
 					ScheduleNewSms.this.finish();
@@ -149,7 +146,6 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 	}
 
 
-	
 	protected void scheduleButtonOnClickListener() {
 		onScheduleButtonPressTasks();
 	}

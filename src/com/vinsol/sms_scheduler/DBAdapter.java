@@ -25,7 +25,6 @@ import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
-import com.vinsol.sms_scheduler.utils.Log;
 
 public class DBAdapter {
 	
@@ -289,7 +288,6 @@ public class DBAdapter {
 						          + "(SELECT MIN(smsTable.time_millis) FROM smsTable, recipientTable WHERE (smsTable.status=1 OR smsTable.status=3))))";
 		
 		Cursor cur = db.rawQuery(sql, null);
-		Log.d("size of cur in db : " + cur.getCount());
 		return cur;
 	}
 	
@@ -542,7 +540,6 @@ public class DBAdapter {
 	//-------------------------functions for template table---------------------------
 	public Cursor fetchAllTemplates(){
 		Cursor cur = db.query(DATABASE_TEMPLATE_TABLE, new String[] {KEY_TEMP_CONTENT, KEY_TEMP_ID}, null, null, null, null, null);
-		Log.d(cur.getCount()+" ui");
 		return cur;
 	}
 	
@@ -1056,7 +1053,6 @@ public class DBAdapter {
 			//------------------fetching the Recipients in a cursor--------------------------
 			Cursor groupContactRelBack = db.query(DATABASE_GROUP_CONTACT_RELATION, null, null, null, null, null, null);
 			
-			Log.d("groupContactRelBack size : " + groupContactRelBack.getCount());
 			ArrayList<GroupContactsBack> back = new ArrayList<GroupContactsBack>();
 			
 			if(groupContactRelBack.moveToFirst()){
@@ -1068,16 +1064,10 @@ public class DBAdapter {
 				}while(groupContactRelBack.moveToNext());
 			}
 			
-			Log.d("into 2 To 3");
-			
 			String sql = "DROP TABLE groupContactRelation";
 			db.execSQL(sql);
 			
-			Log.d("table recreated");
-			
 			db.execSQL(DATABASE_CREATE_GROUP_CONTACT_RELATION);
-			
-			
 			
 			ContentValues cv = new ContentValues();
 			for(int m = 0; m< back.size(); m++){
@@ -1091,7 +1081,6 @@ public class DBAdapter {
 				cv.put(KEY_GROUP_REL_ID, back.get(m).groupRelId);
 				cv.put(KEY_CONTACTS_ID, back.get(m).contactId);
 				cv.put(KEY_CONTACTS_NUMBER, number);
-				Log.d("entry created : " + (db.insert(DATABASE_GROUP_CONTACT_RELATION, null, cv)));
 			}
 		}
 		
@@ -1116,8 +1105,6 @@ public class DBAdapter {
 			
 			String sql = "DROP TABLE smsTable";
 			db.execSQL(sql);
-			
-			Log.d("table recreated");
 			
 			db.execSQL(DATABASE_CREATE_SMS_TABLE);
 			

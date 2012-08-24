@@ -43,7 +43,6 @@ import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
 public class ContactsList extends Activity {
 
-	
 	private ListView contactsList;
 	private Button doneButton;
 	private Button cancelButton;
@@ -59,8 +58,7 @@ public class ContactsList extends Activity {
 	
 	private String callingActivity;
 	
-	MyAdapter myAdapter;
-	
+	ContactListAdapter contactListAdapter;
 	
 	DisplayImage displayImage = new DisplayImage();
 	
@@ -78,7 +76,7 @@ public class ContactsList extends Activity {
 		SharedPreferences.Editor editor = contactData.edit();
 	    editor.putString("isChanged", "0");
 	    editor.commit();
-	    myAdapter.notifyDataSetChanged();
+	    contactListAdapter.notifyDataSetChanged();
     }
     
     @Override
@@ -133,8 +131,8 @@ public class ContactsList extends Activity {
 			}
 		}
 		
-		myAdapter = new MyAdapter();
-		contactsList.setAdapter(myAdapter);
+		contactListAdapter = new ContactListAdapter();
+		contactsList.setAdapter(contactListAdapter);
 		
 		doneButton.setOnClickListener(new OnClickListener() {
 			
@@ -271,9 +269,9 @@ public class ContactsList extends Activity {
 	
 	
 	@SuppressWarnings("rawtypes")
-	private class MyAdapter extends ArrayAdapter{
+	private class ContactListAdapter extends ArrayAdapter{
     	@SuppressWarnings("unchecked")
-		MyAdapter(){
+		ContactListAdapter(){
     		super(ContactsList.this, R.layout.contacts_list_row, contacts);
     	}
     	

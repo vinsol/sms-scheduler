@@ -52,7 +52,6 @@ import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
-import com.vinsol.sms_scheduler.utils.Log;
 
 public class SelectContacts extends Activity {
 	
@@ -315,38 +314,6 @@ public class SelectContacts extends Activity {
 			privateGroupDataTemp.add(group);
 			privateChildDataTemp.add(child);
 		}
-//		Log.d("Private Group 2 size : " + privateChildDataTemp.get(1).size());
-//		
-//		for(int i = 0; i< privateChildDataTemp.get(1).size(); i++){
-//			Log.d("###############################################################");
-//			Log.d("name : " + (String)privateChildDataTemp.get(1).get(i).get(Constants.CHILD_NAME));
-//			Log.d("Is checked : " + (Boolean)privateChildDataTemp.get(1).get(i).get(Constants.CHILD_CHECK));
-//			Log.d("###############################################################");
-//		}
-//		
-//		groupedPrivateChildDataTemp = organizeChildData(AbstractScheduleSms.privateGroupData, AbstractScheduleSms.privateChildData);
-//		
-//		Log.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-//		Log.d("Groups : " + groupedPrivateChildDataTemp.size());
-//		for(int groupCount = 0; groupCount< AbstractScheduleSms.privateGroupData.size(); groupCount++){
-//			Log.d("+++++++++++++++++++++++++++++++" + AbstractScheduleSms.privateGroupData.get(groupCount).get(Constants.GROUP_NAME) + "++++++++++++++++++++++++++++++++++++++++"); 
-//			
-//			for(int childCount = 0; childCount< groupedPrivateChildDataTemp.get(groupCount).size(); childCount++){
-//				Log.d("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-//				Log.d("Name : " + (String)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
-//				Log.d("Contact Id : " + (Long)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
-//				Log.d("Numbers-----------------------------------------");
-//				ArrayList<ContactNumber> numbers = new ArrayList<ContactNumber>();
-//				numbers = (ArrayList<ContactNumber>)groupedPrivateChildDataTemp.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER);
-//				for(int i = 0; i< numbers.size(); i++){
-//					Log.d(i + ". " + numbers.get(i).type + ": " + numbers.get(i).number);
-//				}
-//				Log.d("------------------------------------------------");
-//				Log.d("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-//			}
-//		}
-//		Log.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		
 		
         doneButton			= (Button) 		findViewById(R.id.contacts_tab_done_button);
         cancelButton		= (Button) 		findViewById(R.id.contacts_tab_cancel_button);
@@ -517,7 +484,6 @@ public class SelectContacts extends Activity {
 								numbers.add(number);
 						}
 					}
-					Log.d("Numbers : " + numbers.size());
 					child.put(Constants.CHILD_NUMBER, numbers);
 					groupMembers.add(child);
 				}
@@ -698,13 +664,8 @@ public class SelectContacts extends Activity {
     		
     		convertView.setTag(holder);
     		
-//    		holder.extraNumbersAdapter = new ExtraNumbersAdapter(SelectContacts.this, extraNumbers);
-//    		holder.extraContacts.setAdapter(holder.extraNumbersAdapter);
-    		
     		for(int i = 0; i< RecipientsTemp.size(); i++){
-//    			Log.d("Recipient detail : " + RecipientsTemp.get(i).contactId + " : " + RecipientsTemp.get(i).number);
-//    			Log.d("Contact detail : " + contacts.get(position).content_uri_id + " : " + contacts.get(position).numbers.get(0).);
-        		if(contacts.get(position).content_uri_id == RecipientsTemp.get(i).contactId && contacts.get(position).numbers.get(0).number.equals(RecipientsTemp.get(i).number)){
+    			if(contacts.get(position).content_uri_id == RecipientsTemp.get(i).contactId && contacts.get(position).numbers.get(0).number.equals(RecipientsTemp.get(i).number)){
         			holder.contactCheck.setChecked(true);
         			break;
         		}else{
@@ -908,11 +869,6 @@ public class SelectContacts extends Activity {
 		
 		tv.setText(contactNumber.type + ": " + contactNumber.number);
 		
-//		for(int i = 0; i< RecipientsTemp.size(); i++){
-//			Log.d(i + " : " + RecipientsTemp.get(i).contactId + ", " + RecipientsTemp.get(i).number);
-//		}
-//		Log.d("\nView Details : " + contactNumber.contactId + ", " + contactNumber.number);
-//		
 		for(int i = 0; i< RecipientsTemp.size(); i++){
 			
     		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
@@ -939,7 +895,6 @@ public class SelectContacts extends Activity {
 					if(!isPresent){
 						int k;
 						for(k = 0; k < SmsSchedulerApplication.contactsList.size(); k++){
-							Log.d(SmsSchedulerApplication.contactsList.get(k).content_uri_id + " and " + contactNumber.contactId);
 							if(SmsSchedulerApplication.contactsList.get(k).content_uri_id==contactNumber.contactId){
 								break;
 							}
@@ -988,7 +943,6 @@ public class SelectContacts extends Activity {
 					if(!isPresent){
 						int k;
 						for(k = 0; k < SmsSchedulerApplication.contactsList.size(); k++){
-							Log.d(SmsSchedulerApplication.contactsList.get(k).content_uri_id + " and " + contactNumber.contactId);
 							if(SmsSchedulerApplication.contactsList.get(k).content_uri_id==contactNumber.contactId){
 								break;
 							}
@@ -1022,83 +976,6 @@ public class SelectContacts extends Activity {
 		
 		return view;
 	}
-	
-	
-	
-//	private class ExtraNumbersAdapter extends ArrayAdapter<ContactNumber>{
-//		ArrayList<ContactNumber> extraNumbers;
-//		
-//		ExtraNumbersAdapter(Context context, ArrayList<ContactNumber> _extraNumbers){
-//    		super(SelectContacts.this, R.layout.contacts_list_row, _extraNumbers);
-//    		extraNumbers = _extraNumbers;
-//		}
-//		
-//		
-//		
-//		public View getView(final int position, View convertView, ViewGroup parent) {
-//			final ExtraNumbersListHolder holder;
-//			if(convertView==null){
-//				LayoutInflater inflater = getLayoutInflater();
-//	    		convertView = inflater.inflate(R.layout.extra_numbers_list_row, parent, false);
-//	    		holder = new ExtraNumbersListHolder();
-//	    		holder.extraNumber 			= (TextView) convertView.findViewById(R.id.extra_number);
-//	    		holder.extraNumberCheckbox  = (CheckBox) convertView.findViewById(R.id.extra_number_checkbox);
-//	    		convertView.setTag(holder);
-//			}else{
-//				holder = (ExtraNumbersListHolder) convertView.getTag();
-//			}
-//			
-//			holder.extraNumber.setText(extraNumbers.get(position).type + ": " + extraNumbers.get(position).number);
-//			
-//			for(int i = 0; i< RecipientsTemp.size(); i++){
-//    			
-//        		if(extraNumbers.get(position).contactId == RecipientsTemp.get(i).contactId && extraNumbers.get(position).number.equals(RecipientsTemp.get(i).number)){
-//        			holder.extraNumberCheckbox.setChecked(true);
-//        			break;
-//        		}else{
-//        			holder.extraNumberCheckbox.setChecked(false);
-//        		}
-//        	}
-//			
-//			
-//			holder.extraNumberCheckbox.setOnClickListener(new OnClickListener() {
-//				
-//				
-//				public void onClick(View v) {
-//					if(holder.extraNumberCheckbox.isChecked()){
-//						boolean isPresent = false;
-//						for(int i = 0; i< RecipientsTemp.size(); i++){
-//							if(RecipientsTemp.get(i).contactId == extraNumbers.get(position).contactId){
-//								isPresent = true;
-//								break;
-//							}
-//						}
-//						if(!isPresent){
-//							int k;
-//							for(k = 0; k < SmsSchedulerApplication.contactsList.size(); k++){
-//								Log.d(SmsSchedulerApplication.contactsList.get(k).content_uri_id + " and " + extraNumbers.get(position).contactId);
-//								if(SmsSchedulerApplication.contactsList.get(k).content_uri_id==extraNumbers.get(position).contactId){
-//									break;
-//								}
-//							}
-//							Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, extraNumbers.get(position).contactId, -1, -1, -1, contacts.get(position).numbers.get(0).number);
-//							recipient.groupIds.add((long) -1);
-//							recipient.groupTypes.add(-1);
-//							RecipientsTemp.add(recipient);
-//						}
-//					}else{
-//						for(int i = 0; i<RecipientsTemp.size(); i++){
-//				    		if(extraNumbers.get(position).contactId == RecipientsTemp.get(i).contactId){
-//				    			RecipientsTemp.remove(i);
-//				    		}
-//						}
-//					}
-//				}
-//			});
-//			return convertView;
-//		}
-//	}
-	
 	
 	
 	private void nativeGroupsAdapterSetup(){
@@ -1419,11 +1296,6 @@ public class SelectContacts extends Activity {
 		final CheckBox cb = (CheckBox) view.findViewById(R.id.extra_number_checkbox);
 		
 		tv.setText(contactNumber.type + ": " + contactNumber.number);
-		//TODO
-//		for(int i = 0; i< RecipientsTemp.size(); i++){
-//			Log.d(i + " : " + RecipientsTemp.get(i).contactId + ", " + RecipientsTemp.get(i).number);
-//		}
-//		Log.d("\nView Details : " + contactNumber.contactId + ", " + contactNumber.number);
 		
 		boolean gotChecked = false;
 		for(int i = 0; i< RecipientsTemp.size() && !gotChecked; i++){
@@ -1534,23 +1406,22 @@ public class SelectContacts extends Activity {
     		
     		
     		public int getChildrenCount(int groupPosition) {
-    			Log.d("group's children size : " + groupedPrivateChildDataTemp.get(groupPosition).size());
-    		   return groupedPrivateChildDataTemp.get(groupPosition).size();
+    			return groupedPrivateChildDataTemp.get(groupPosition).size();
     		}
     		 
     		
     		public Object getGroup(int groupPosition) {
-    		   return privateGroupDataTemp.get(groupPosition);
+    			return privateGroupDataTemp.get(groupPosition);
     		}
     		 
     		
     		public int getGroupCount() {
-    		   return privateGroupDataTemp.size();
+    			return privateGroupDataTemp.size();
     		}
     		 
     		
     		public long getGroupId(int groupPosition) {
-    		   return groupPosition;
+    			return groupPosition;
     		}
     		
     		
@@ -1579,7 +1450,6 @@ public class SelectContacts extends Activity {
 								if(!((Boolean)privateChildDataTemp.get(groupPosition).get(i).get(Constants.CHILD_CHECK))){
 									addCheck(groupPosition, i, privateChildDataTemp, privateGroupDataTemp);
 								}
-								Log.d("i : " + i);
 							}
 
 							//TODO
@@ -1969,7 +1839,6 @@ public class SelectContacts extends Activity {
 	
 	
 	private void addExtraCheck(int groupPosition, int childPosition, CheckBox cb, String contactName, long contactId, ContactNumber contactNumber, long groupId){
-		Log.d("Entering extra number add check");
 		cb.setChecked(true);
 		boolean recipientExist = false;
 		for(int i = 0; i< RecipientsTemp.size(); i++){
@@ -1993,10 +1862,8 @@ public class SelectContacts extends Activity {
 	
 	
 	private void addCheck(int groupPosition, int childPosition, ArrayList<ArrayList<HashMap<String, Object>>> ChildDataTemp, ArrayList<HashMap<String, Object>> GroupDataTemp){
-		Log.d("entering childcheck is checked true listner");
 		ChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
-		Log.d("Recipient getting checked : " + (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME));
 		for(int i = 0; i < RecipientsTemp.size(); i++){
 			if(RecipientsTemp.get(i).contactId == (Long) ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID) && RecipientsTemp.get(i).number.equals((String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NUMBER))){
 				spanExist = true;
@@ -2011,7 +1878,6 @@ public class SelectContacts extends Activity {
 		}
 		if(!spanExist){
 			Recipient recipient = new Recipient(-1, 2, (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NAME), (Long)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CONTACT_ID), -1, -1, -1, (String)ChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_NUMBER));
-			Log.d("childposition : " + childPosition);
 			try{
 				recipient.groupIds.add(((Long)GroupDataTemp.get(groupPosition).get(Constants.GROUP_ID)));
 			}catch (ClassCastException e) {
@@ -2126,11 +1992,9 @@ public class SelectContacts extends Activity {
     			for(int j = 0; j< RecipientsTemp.size(); j++){
 	        		if((recentContactIds.get(position) == RecipientsTemp.get(j).contactId) && (recentContactNumbers.get(position).equals(RecipientsTemp.get(j).number))){//TODO
 	        			holder.contactCheck.setChecked(true);
-	        			Log.d(">-1");
 	        			break;
 	        		}
 	        		else{
-	        			Log.d("not equal");
 	        			holder.contactCheck.setChecked(false);
 	        		}
 	        	}
@@ -2143,7 +2007,6 @@ public class SelectContacts extends Activity {
     			for(int j = 0; j< RecipientsTemp.size(); j++){
     				if(RecipientsTemp.get(j).displayName.equals(recentContactNumbers.get(position))){
     					holder.contactCheck.setChecked(true);
-    					Log.d("==-1");
     					break;
     				}else{
     					holder.contactCheck.setChecked(false);
@@ -2356,7 +2219,6 @@ public class SelectContacts extends Activity {
         					childParameters.put(Constants.CHILD_NAME, SmsSchedulerApplication.contactsList.get(j).name);
         					ArrayList<ContactNumber> numbers = SmsSchedulerApplication.contactsList.get(j).numbers;
         					String number = "";
-        					Log.d("Numbers size : " + numbers.size());
         					for(int m = 0; m< numbers.size(); m++){
         						if(numbers.get(m).number.equals(contactNumbers.get(i))){
         							number = numbers.get(m).number;
@@ -2366,7 +2228,6 @@ public class SelectContacts extends Activity {
         					childParameters.put(Constants.CHILD_NUMBER, number);//TODO
         					childParameters.put(Constants.CHILD_CONTACT_ID, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
         					displayImage.storeImage(SmsSchedulerApplication.contactsList.get(j).content_uri_id, childParameters, SelectContacts.this);
-//        					childParameters.put(Constants.CHILD_IMAGE, );
         					childParameters.put(Constants.CHILD_CHECK, false);
         					for(int k = 0; k< spanIdsForGroup.size(); k++){
        							for(int m = 0; m< RecipientsTemp.size(); m++){
@@ -2436,7 +2297,6 @@ public class SelectContacts extends Activity {
 					childParams.put(Constants.CHILD_CONTACT_ID, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CONTACT_ID));
 					childParams.put(Constants.CHILD_NAME, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NAME));
 					childParams.put(Constants.CHILD_NUMBER, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_NUMBER));
-//					childParams.put(Constants.CHILD_IMAGE, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_IMAGE));
 					displayImage.storeImage((Long)childParams.get(Constants.CHILD_CONTACT_ID), childParams, SelectContacts.this);
 					childParams.put(Constants.CHILD_CHECK, EditScheduledSms.privateChildData.get(groupCount).get(childCount).get(Constants.CHILD_CHECK));
 					child.add(childParams);

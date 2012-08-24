@@ -261,8 +261,6 @@ public class Home extends Activity {
     
     
     
-    
-    
     protected void onResume() {
     	super.onResume();
     	

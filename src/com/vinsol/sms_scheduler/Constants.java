@@ -30,4 +30,8 @@ public class Constants {
 	public static final String REPEAT_HASH_END_FREQ = "repeat_hash_end_frequency";
 	public static final String REPEAT_HASH_END_DATE = "repeat_hash_end_date";
 	public static final String REPEAT_HASH_LAST_SENT_TIME = "repeat_hash_last_sent_time";
+	
+	public static final int END_MODE_NEVER = 0;
+	public static final int END_MODE_AFTER = 1;
+	public static final int END_MODE_ON	   = 2;
 }
