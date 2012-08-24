@@ -54,8 +54,6 @@ import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.utils.LinearLayoutExtended;
-import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.utils.MyGson;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
@@ -160,13 +158,6 @@ public class Home extends Activity {
         
         this.getApplicationContext().getContentResolver().registerContentObserver (ContactsContract.Contacts.CONTENT_URI, true, contentObserver);
         
-        
-        
-//        if(!SmsSchedulerApplication.isDataLoaded){
-//        	ContactsAsync contactsAsync = new ContactsAsync();
-//    		contactsAsync.execute();
-//        }
-        
         if(!SmsSchedulerApplication.isDataLoaded || SmsSchedulerApplication.contactsList.size()==0 || isChanged.equals("1")){
         	ContactsAsync contactsAsync = new ContactsAsync();
     		contactsAsync.execute();
@@ -190,7 +181,6 @@ public class Home extends Activity {
         
         newSmsButton.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View arg0) {
 				FlurryAgent.logEvent("New SMS");
 				if(SmsSchedulerApplication.screenWidthInPixels==0){
@@ -203,7 +193,6 @@ public class Home extends Activity {
         
         
         blankListAddButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View arg0) {
 				FlurryAgent.logEvent("New SMS");
@@ -218,7 +207,6 @@ public class Home extends Activity {
         
         explList.setOnChildClickListener(new OnChildClickListener() {
 			
-			
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
 				if(groupPosition == 1){
 					FlurryAgent.logEvent("Edit Scheduled Message");
@@ -231,7 +219,6 @@ public class Home extends Activity {
 				}else if(groupPosition == 2){
 					FlurryAgent.logEvent("Details of Sent Message Viewed");
 					openContextMenu(view);
-//					showSentInfoDialog(childPosition);
 				}else if(groupPosition == 0){
 					FlurryAgent.logEvent("Edit Draft");
 					if(SmsSchedulerApplication.screenWidthInPixels==0){
@@ -248,7 +235,6 @@ public class Home extends Activity {
         
         
         optionsImageButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				FlurryAgent.logEvent("Options Menu Button Clicked");
@@ -488,7 +474,6 @@ public class Home extends Activity {
 				if(convertView==null){
 					convertView = layoutInflater.inflate(R.layout.home_expandable_list_child, null, false);
 					holder = new ChildRowHolder();
-					holder.containerLayout			= (LinearLayoutExtended) convertView.findViewById(R.id.container_layout);
 					holder.messageTextView  		= (TextView)  convertView.findViewById(R.id.main_row_message_area);
 	    			holder.statusImageView 			= (com.vinsol.sms_scheduler.utils.ExtendedImageView) convertView.findViewById(R.id.main_row_image_area);
 	    			holder.dateTextView				= (TextView)  convertView.findViewById(R.id.main_row_date_area);
@@ -959,7 +944,6 @@ public class Home extends Activity {
     		groupCursor = cr.query(groupsUri, projection, null, null, null);
     		while(groupCursor.moveToNext()){
     			groups.add(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
-//    			Log.i("MSG", "Group : " + groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
     		}
     		
     		Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null,null, null);
@@ -990,59 +974,39 @@ public class Home extends Activity {
 		    	  contact.name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
 		    	  contact.numbers.add(cn);
 		    	  
-		    	  
-//		    	  Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contact.content_uri_id);
-//		    	  InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-//		    	  try{
-//		    		  BitmapFactory.Options o = new BitmapFactory.Options();
-//		    	      o.inPurgeable = true;
-//		    	      o.inInputShareable = true;
-//		    	      contact.image = BitmapFactory.decodeStream(input, null, o);
-//		    	      contact.image.getHeight();
-//		    	  } catch (NullPointerException e){
-//		    	      contact.image = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail);
-//		    	  }
-//		    	  String[] projection1 = new String[]{ContactsContract.Contacts.TIMES_CONTACTED};
-//		    	  Cursor cur = cr.query(uri, projection1, null, null, null);
-//		    	  if(cur.moveToFirst()){
-//		    		  Log.d("&&&&&&&&&&&&&&&&&&&&&&&&" + contact.content_uri_id + " : " + cur.getString(cur.getColumnIndex(ContactsContract.Contacts.TIMES_CONTACTED)));
-//		    	  }
-		    	  
 		    	  SmsSchedulerApplication.contactsList.add(contact);
-		    	  
         	  }
         	}
         	phones.close();
 		    	  
-		    	  String[] contactIdsArray = new String[contactIds.size()];
-		    	  for(int i = 0; i< contactIds.size(); i++){
-		    		  contactIdsArray[i] = contactIds.get(i);
-		    	  }
+		    String[] contactIdsArray = new String[contactIds.size()];
+		    for(int i = 0; i< contactIds.size(); i++){
+		    	contactIdsArray[i] = contactIds.get(i);
+		    }
 		    	  
-		    	  Cursor cur = cr.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID}, null, null, null);
+		    Cursor cur = cr.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID}, null, null, null);
 		    	  
-		    	  if(cur.moveToFirst()){
-		    		  do{
-		    			  Long groupId = cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID));
-		    			  Long contactIdOfGroup = cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID));
-		    			  boolean isValid = false;
-  	    				  for(int m = 0; m< groups.size(); m++){
-  	    				    	if(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)) == groups.get(m)){
-  	    							isValid = true;
-  	    							break;
-  	    						}
-  	    				  }
-		    			  if(!(groupId==0) && isValid){
-		    				  for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
-		    					  if(contactIdOfGroup==SmsSchedulerApplication.contactsList.get(i).content_uri_id){
-		    						  SmsSchedulerApplication.contactsList.get(i).groupRowId.add(groupId);
-//		    						  groups.remove(groupId);
-		    					  }
-		    				  }
-		    			  }
+		    if(cur.moveToFirst()){
+		    	do{
+		    		Long groupId = cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID));
+		    		Long contactIdOfGroup = cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID));
+		    		boolean isValid = false;
+  	    			for(int m = 0; m< groups.size(); m++){
+  	    			   	if(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)) == groups.get(m)){
+  	    					isValid = true;
+  	    					break;
+  	    				}
+  	    			}
+  	    			if(!(groupId==0) && isValid){
+  	    				for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
+  	    					if(contactIdOfGroup==SmsSchedulerApplication.contactsList.get(i).content_uri_id){
+  	    						SmsSchedulerApplication.contactsList.get(i).groupRowId.add(groupId);
+		    				}
+		    			}
+		    		}
 		    				  
-		    		  }while(cur.moveToNext());
-		    	  }
+		    	}while(cur.moveToNext());
+		    }
 		    	  
 		    	  
 		    //To set primary number for contacts...	  
@@ -1067,31 +1031,9 @@ public class Home extends Activity {
 		    		}
 		    	}
 		    }
-        	
-//        	for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
-//        		Log.d("=====================================================");
-//        		Log.d(SmsSchedulerApplication.contactsList.get(i).name + " ; " + 
-//        				SmsSchedulerApplication.contactsList.get(i).content_uri_id);
-//        		
-//        		for(int j = 0 ; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
-//        			if(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).isPrimary){
-//        				Log.d(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type + " : " +
-//            					SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number + " PRIMARY");
-//        			}else{
-//        				Log.d(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).type + " : " +
-//            					SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number);
-//        			}
-//        		}
-//        		for(int j = 0 ; j< SmsSchedulerApplication.contactsList.get(i).groupRowId.size(); j++){
-//        			Log.d("Group : " + SmsSchedulerApplication.contactsList.get(i).groupRowId.get(j));
-//        		}
-//        	}
     	}
     	
-    	
-    	
     	Long endTime = System.currentTimeMillis();
-//		Log.d("===================================\nTime taken : " + (endTime-startTime));
 		
 		HashMap<String, Long> param = new HashMap<String, Long>();
 		param.put("Time Taken", (endTime-startTime));
@@ -1116,13 +1058,12 @@ public class Home extends Activity {
 				i--;
 			}
 		}
-		//if(number.matches("[0-9]{10}")){
-			number = new String();
-			for(int i = 0; i< chars.size(); i++){
-				number = number + chars.get(i);
-			}
-			return number;
-		//}
+		
+		number = new String();
+		for(int i = 0; i< chars.size(); i++){
+			number = number + chars.get(i);
+		}
+		return number;
 	}
 	
 	
@@ -1291,7 +1232,6 @@ public class Home extends Activity {
 	
 	
 	private class ChildRowHolder{
-		com.vinsol.sms_scheduler.utils.LinearLayoutExtended containerLayout;
 		TextView messageTextView;
 		com.vinsol.sms_scheduler.utils.ExtendedImageView statusImageView;
 		TextView dateTextView;
@@ -1371,13 +1311,12 @@ public class Home extends Activity {
 
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            reloadSP(_context);
+            reloadSharedPreference(_context);
         }
     }
 
    
-	public void reloadSP(Context context){
-//		ArrayList<Contact> contactsList = new ArrayList<Contact>();
+	private void reloadSharedPreference(Context context){
 		SharedPreferences contactData = getSharedPreferences(PREFS_NAME, 0);
 		System.currentTimeMillis();
 		SmsSchedulerApplication.contactsList.clear();
@@ -1392,8 +1331,7 @@ public class Home extends Activity {
 	
 	
 	
-	private void showMessagePreference(){
-		Log.d("getting into showprefs");
+	private void showMessagePreference() {
 		if(showMessage){
 			final Dialog d = new Dialog(Home.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1401,19 +1339,21 @@ public class Home extends Activity {
 			d.setContentView(R.layout.show_message_dialog);
 			
 			final CheckBox checkBox = (CheckBox) d.findViewById(R.id.show_again_check);
-			Button okButton = (Button) d.findViewById(R.id.ok_button);
-			TextView tv = (TextView) d.findViewById(R.id.dont_show_msg_text);
-			TextView headerText = (TextView) d.findViewById(R.id.header_text);
-			TextView messageText = (TextView) d.findViewById(R.id.message_text);
 			
-			headerText.setText("New Features");
+			((TextView) d.findViewById(R.id.header_text)).setText("New Features");
+			((TextView) d.findViewById(R.id.message_text)).setText(getString(R.string.new_feature_message));
 			
-			messageText.setText(getString(R.string.new_feature_message));
-			
-			
-			
-			okButton.setOnClickListener(new OnClickListener() {
+			((TextView) d.findViewById(R.id.dont_show_msg_text)).setOnClickListener(new OnClickListener() {
 				
+				public void onClick(View v) {
+					if(checkBox.isChecked())
+						checkBox.setChecked(false);
+					else
+						checkBox.setChecked(true);
+				}
+			});
+			
+			((Button) d.findViewById(R.id.ok_button)).setOnClickListener(new OnClickListener() {
 				
 				public void onClick(View v) {
 					if(checkBox.isChecked()){
@@ -1425,22 +1365,8 @@ public class Home extends Activity {
 					d.cancel();
 				}
 			});
-			
-			
-			
-			tv.setOnClickListener(new OnClickListener() {
-				
-				
-				public void onClick(View v) {
-					if(checkBox.isChecked())
-						checkBox.setChecked(false);
-					else
-						checkBox.setChecked(true);
-				}
-			});
-			
+
 			d.show();
 		}
 	}
-	
 }

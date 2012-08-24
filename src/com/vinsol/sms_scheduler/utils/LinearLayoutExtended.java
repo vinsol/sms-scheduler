@@ -10,13 +10,13 @@ public class LinearLayoutExtended extends LinearLayout{
 	public LinearLayoutExtended(Context context) {
 		super(context);
 	}
-	
-	
+
+
 	public LinearLayoutExtended(Context context, AttributeSet attrs) { 
         super(context, attrs);
 	}
-	
-	
+
+
 	@Override
 	public void setPressed(boolean pressed) {
 		if (pressed && ((View) getParent()).isPressed()) {
@@ -28,9 +28,6 @@ public class LinearLayoutExtended extends LinearLayout{
 					LinearLayoutExtended.this.getChildAt(0).setPressed(true);
 				}
 			});
-//        	getChildAt(0).setPressed(true);
         }
-//		super.setPressed(pressed);
 	}
-
 }

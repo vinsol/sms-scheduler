@@ -38,9 +38,7 @@ public class Recipient implements Parcelable{
 		this.sent = sent;
 		this.delivered = delivered;
 		this.number = number;
-		
 	}
-	
 	
 	public static final Parcelable.Creator<Recipient> CREATOR = new Parcelable.Creator<Recipient>() {
     	public Recipient createFromParcel(Parcel in) {
@@ -52,7 +50,6 @@ public class Recipient implements Parcelable{
         }
     };
     
-    
     public Recipient(Parcel in) {
     	this.recipientId = in.readLong();
     	this.type = in.readInt();
@@ -62,8 +59,6 @@ public class Recipient implements Parcelable{
     	this.number = in.readString();
     };
     
-
-	
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(this.recipientId);
 		dest.writeInt(this.type);
@@ -73,12 +68,9 @@ public class Recipient implements Parcelable{
 		dest.writeString(this.number);
 	}
 	
-	
-	
 	public int describeContents() {
 		return 0;
 	}
-	
 	
 	public void print(){
 		Log.d("------------------------------------------------");

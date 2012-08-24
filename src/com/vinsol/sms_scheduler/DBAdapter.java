@@ -373,14 +373,11 @@ public class DBAdapter {
 	public boolean increaseSent(long smsId, long recipientId){
 		int sent = getSent(recipientId);
 		ContentValues sentValue = new ContentValues();
-		sentValue.put(KEY_SENT, sent + 1);
+		sentValue.put(KEY_SENT, ++sent);
 		try{
 			db.update(DATABASE_RECIPIENT_TABLE, sentValue, KEY_RECIPIENT_ID + "=" + recipientId, null);
-			Cursor cur = db.query(DATABASE_RECIPIENT_TABLE, new String[] {KEY_SENT, KEY_SMS_ID}, KEY_RECIPIENT_ID + "=" + recipientId, null, null, null, null);
-			
-			sent  = sent + 1;
-			
-			cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_MSG_PARTS}, KEY_ID + "=" + smsId, null, null, null, null);
+
+			Cursor cur = db.query(DATABASE_SMS_TABLE, new String[] {KEY_MSG_PARTS}, KEY_ID + "=" + smsId, null, null, null, null);
 			cur.moveToFirst();
 			int parts = cur.getInt(cur.getColumnIndex(KEY_MSG_PARTS));
 			if (sent == parts){
@@ -616,7 +613,7 @@ public class DBAdapter {
 	}
 	
 	
-	public long createGroup(String name, ArrayList<Long> contactIds, ArrayList<String> contactNumbers){
+	public long createGroup(String name, ArrayList<Long> contactIds, ArrayList<String> contactNumbers) {
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_GROUP_NAME, name);
 		long grpid = db.insert(DATABASE_GROUP_TABLE, null, cv);
@@ -627,7 +624,7 @@ public class DBAdapter {
 	}
 	
 	
-	public void addContactToGroup(long contactId, long groupId, String contactNumber){
+	public void addContactToGroup(long contactId, long groupId, String contactNumber) {
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_GROUP_REL_ID, groupId);
 		cv.put(KEY_CONTACTS_ID, contactId);
@@ -762,7 +759,7 @@ public class DBAdapter {
 	
 	
 	
-	public static String refineNumber(String number) {
+	private String refineNumber(String number) {
 		if(number.matches("[0-9]+")){
 			return number;
 		}
@@ -777,13 +774,11 @@ public class DBAdapter {
 				i--;
 			}
 		}
-		//if(number.matches("[0-9]{10}")){
-			number = new String();
-			for(int i = 0; i< chars.size(); i++){
-				number = number + chars.get(i);
-			}
-			return number;
-		//}
+		number = new String();
+		for(int i = 0; i< chars.size(); i++){
+			number = number + chars.get(i);
+		}
+		return number;
 	}
 	
 	

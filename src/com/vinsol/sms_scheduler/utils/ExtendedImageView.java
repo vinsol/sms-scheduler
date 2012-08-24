@@ -10,21 +10,20 @@ public class ExtendedImageView extends ImageView{
 	public ExtendedImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
-	
+
 	public ExtendedImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
-	
+
 	public ExtendedImageView(Context context) {
 		super(context);
 	}
-	
+
 	@Override
     public void setPressed(boolean pressed) {
         if (pressed && ((View) getParent()).isPressed()) {
             return;
         }
         super.setPressed(pressed);
-    } 
-
+    }
 }

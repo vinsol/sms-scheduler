@@ -2978,18 +2978,13 @@ abstract class AbstractScheduleSms extends Activity{
 									setDateText(c);
 									break;
 							}
-							
 						}
 						isInitialSetup = false;
 					}
-					
 					updateSummary();
-					
 				}
 
-				public void onNothingSelected(AdapterView<?> parent) {
-					
-				}
+				public void onNothingSelected(AdapterView<?> parent) {}
 			});
 			
 			

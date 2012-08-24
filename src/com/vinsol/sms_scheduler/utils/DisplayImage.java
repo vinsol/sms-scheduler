@@ -22,20 +22,20 @@ import android.widget.ImageView;
 public class DisplayImage {
 
 	ExecutorService executor = Executors.newFixedThreadPool(5);
-	
+
 	public void shutDownExecutor(){
     	executor.shutdownNow();
     	Log.d("MSG", "Executor Shutdown.....");
     }
-	
-	
+
+
 	public void submitImage(final ImageView iv, long contactId, final Context context){
 		iv.setImageBitmap(BitmapFactory.decodeResource(context.getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
 		MyRunnable runnable = new MyRunnable(iv, contactId, context);
 		executor.execute(runnable);
 	}
-	
-	
+
+
 	public void storeImage(final long contactId, final HashMap<String, Object> childParameters, final Context context){
 		Runnable action = new Runnable(){
 			public void run(){
@@ -48,8 +48,8 @@ public class DisplayImage {
 		};
 		executor.execute(action);
 	}
-	
-	
+
+
 	class MyRunnable implements Runnable{
 
     	ImageView iv;
@@ -60,7 +60,7 @@ public class DisplayImage {
     		this.contactId = contactId;
     		this.context = context;
     	}
-    	
+
 		public void run() {
 			final Bitmap b = addImage(contactId, context.getContentResolver(), context);
     		
@@ -74,8 +74,8 @@ public class DisplayImage {
     		activity.runOnUiThread(action);
 		}
     }
-	
-	
+
+
 	public Bitmap addImage(long contactId, ContentResolver cr, Context context){
 		Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
   	  	InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
