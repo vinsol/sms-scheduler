@@ -195,12 +195,23 @@ public class DBAdapter {
 	// functions-----------------------------------------------------------------------------------------
 	
 	//------------------------functions for SMS and Recipient tables------------------------------
+	
+	/***
+	 * @detail gets the detail of a particular SMS that corresponds to the smsId passed
+	 * @param smsId
+	 * @return cursor containing detail of one SMS
+	 */
 	public Cursor fetchSmsDetails(long smsId){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, null, KEY_ID + "=" + smsId, null, null, null, null);
 		return cur;
 	}
 	
 	
+	
+	/***
+	 * @detail Tells apart if any SMS exist in database or not
+	 * @return Boolean: true if SMS count>0, else false
+	 */
 	public boolean ifSmsExist(){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, null, null, null, null, null, null);
 		boolean ifSmsExist = (cur.getCount()>0);
@@ -209,24 +220,41 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail Tells if all parts of all recipients of an SMS is sent or not
+	 * @param smsId
+	 * @return Boolean: true if all sent, else false
+	 */
 	public boolean isSmsSent(long smsId){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_STATUS}, KEY_ID + "=" + smsId, null, null, null, null);
 		cur.moveToFirst();
-		boolean isSmsSent = (cur.getInt(cur.getColumnIndex(KEY_STATUS))>1);
+		boolean isSmsSent = (cur.getInt(cur.getColumnIndex(KEY_STATUS)) > Constants.SMS_STATUS_SCHEDULED);
 		cur.close();
 		return isSmsSent;
 	}
 	
 	
+	
+	/***
+	 * @detail for a given smsId, it tells if the SMS is a draft or not
+	 * @param smsId
+	 * @return true if draft, else false;
+	 */
 	public boolean isDraft(long smsId){
 		Cursor cur = db.query(DATABASE_SMS_TABLE, new String[]{KEY_STATUS}, KEY_ID + "=" + smsId, null, null, null, null);
 		cur.moveToFirst();
-		boolean isDraft = (cur.getInt(cur.getColumnIndex(KEY_STATUS))==0); 
+		boolean isDraft = (cur.getInt(cur.getColumnIndex(KEY_STATUS))== Constants.SMS_STATUS_DRAFT); 
 		cur.close();
 		return isDraft;
 	}
 	
 	
+	
+	/***
+	 * @detail Fetches details of all the recipients, including the detail of SMS that the recipient belongs to
+	 * @return Cursor containing detail of recipients
+	 */
 	public Cursor fetchAllRecipientDetails(){
 		String sql = "SELECT * FROM smsTable, recipientTable "
 			+ "WHERE smsTable._id=recipientTable.sms_id "
@@ -237,6 +265,12 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail For a given recipientId, it returns the corresponding recipient's detail
+	 * @param recipientId
+	 * @return Cursor containing detail of the recipient
+	 */
 	public Cursor fetchRecipientDetails(long recipientId){
 		String sql = "SELECT * FROM smsTable, recipientTable "
 			+ "WHERE smsTable._id=recipientTable.sms_id AND recipientTable.recipient_id =" + recipientId;
@@ -246,6 +280,12 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail For a given smsId, returns the details of the recipients that belong to it.
+	 * @param smsId
+	 * @return cursor containing recipients detail
+	 */
 	public Cursor fetchRecipientsForSms(long smsId){
 		String sql = "SELECT * FROM smsTable, recipientTable "
 			+ "WHERE smsTable._id=recipientTable.sms_id AND smsTable._id=" + smsId;
@@ -255,7 +295,13 @@ public class DBAdapter {
 	}
 	
 	
-	public ArrayList<Long> fetchRecipientIdsForSms(long smsId){
+	
+	/***
+	 * @detail For a given smsId, fetches recipientIds for all the recipient that belongs to it
+	 * @param smsId
+	 * @return ArrayList<Long> recipientIds
+	 */
+	private ArrayList<Long> fetchRecipientIdsForSms(long smsId){
 		String sql = "SELECT * FROM smsTable, recipientTable "
 			+ "WHERE smsTable._id=recipientTable.sms_id AND smsTable._id=" + smsId;
 		
@@ -272,6 +318,11 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail Deletes a recipient from database
+	 * @param recipientId
+	 */
 	public void deleteRecipient(long recipientId){
 		db.delete(DATABASE_RECIPIENT_TABLE, KEY_RECIPIENT_ID + "=" + recipientId, null);
 		deleteRecipientGroupRelsForRecipient(recipientId);
@@ -279,7 +330,10 @@ public class DBAdapter {
 	
 	
 	
-	
+	/***
+	 * @detail Fetches details of the SMS that is to be scheduled the next.  
+	 * @return Cursor containing the SMS detail. An empty cursor will mean "No more scheduled SMS"
+	 */
 	public Cursor fetchNextScheduled(){
 		String sql = "SELECT * FROM smsTable, recipientTable WHERE recipientTable.sms_id=smsTable._id AND recipientTable.recipient_id="
 			 + "(SELECT recipientTable.recipient_id FROM recipientTable, smsTable " 
@@ -293,6 +347,16 @@ public class DBAdapter {
 	
 
 	
+	/***
+	 * @detail Schedules a new SMS using the details passed as parameters
+	 * @param message
+	 * @param date
+	 * @param parts
+	 * @param timeInMilis
+	 * @param repeatMode
+	 * @param repeatString
+	 * @return smsId for the newly scheduled SMS
+	 */
 	public long scheduleSms(String message, String date, int parts, long timeInMilis, int repeatMode, String repeatString){
 		ContentValues addValues = new ContentValues();
 		
@@ -307,6 +371,16 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail Adds a recipient for the SMS corresponding to the smsId passed 
+	 * @param smsId
+	 * @param number
+	 * @param displayName
+	 * @param type
+	 * @param contactId
+	 * @return recipientId of the newly created recipient
+	 */
 	public long addRecipient(long smsId, String number, String displayName, int type, long contactId){
 		ContentValues addValues = new ContentValues();
 		
@@ -324,14 +398,22 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail Sets an SMS as Draft
+	 * @param smsId
+	 */
 	public void setAsDraft(long smsId){
-		ContentValues cv = new ContentValues();
-		cv.put(KEY_STATUS, 0);
-		
-		db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + smsId, null);
+		setStatus(smsId, Constants.SMS_STATUS_DRAFT);
 	}
 	
 	
+	
+	/***
+	 * @detail Sets a particular status for an SMS. Status is passed as parameter
+	 * @param smsId
+	 * @param status
+	 */
 	public void setStatus(long smsId, int status){
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_STATUS, status);
@@ -340,22 +422,38 @@ public class DBAdapter {
 	}
 	
 		
+	
+	/***
+	 * @detail Set the Operated Flag for a Recipient, which denotes that the app has tried to send it.
+	 * @param recipientId
+	 */
 	public void makeOperated(long recipientId){
 		ContentValues cv = new ContentValues();
-		cv.put(KEY_OPERATED, 1);
+		cv.put(KEY_OPERATED, Constants.RECIPIENT_OPERATED_FLAG_SET);
 		db.update(DATABASE_RECIPIENT_TABLE, cv, KEY_RECIPIENT_ID + "=" + recipientId, null);
 	}
 	
 	
+	
+	/***
+	 * @detail For a given smsId, removes sets repitition mode to "No Repeat"
+	 * @param smsId
+	 */
 	public void removeRepitition(long smsId){
 		ContentValues cv = new ContentValues();
-		cv.put(KEY_REPEAT_MODE, 0);
+		cv.put(KEY_REPEAT_MODE, Constants.REPEAT_MODE_NO_REPEAT);
 		cv.put(KEY_REPEAT_STRING, "");
 		db.update(DATABASE_SMS_TABLE, cv, KEY_ID + "=" + smsId, null);
 	}
 	
 	
-	public int getSent(long recipientId){
+	
+	/***
+	 * @detail For a given recipientId, fetches how many parts of the message have been sent
+	 * @param recipientId
+	 * @return Number of msg parts sent
+	 */
+	private int getSent(long recipientId){
 		Cursor cur = db.query(DATABASE_RECIPIENT_TABLE, new String[] {KEY_SENT}, KEY_RECIPIENT_ID + "=" + recipientId, null, null, null, null);
 		if(cur.moveToFirst()){
 			int sent = cur.getInt(cur.getColumnIndex(KEY_SENT));
@@ -368,6 +466,14 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail Corresponding to a particular pair of smsId and recipientId increases the "no. of sent parts" by one.
+	 * 		   Also checks if all the Msg parts have been sent or not, if so, then saves the sent time.
+	 * @param smsId
+	 * @param recipientId
+	 * @return Boolean: true if increased sent properly, else false
+	 */
 	public boolean increaseSent(long smsId, long recipientId){
 		int sent = getSent(recipientId);
 		ContentValues sentValue = new ContentValues();
@@ -394,7 +500,13 @@ public class DBAdapter {
 	}
 	
 	
-	public int getDelivers(long recipientId){
+	
+	/***
+	 * @detail For a given recipientId, fetches how many parts of the message have been delivered
+	 * @param recipientId
+	 * @return No. of Msg parts delivered
+	 */
+	private int getDelivers(long recipientId){
 		Cursor cur = db.query(DATABASE_RECIPIENT_TABLE, new String[] {KEY_DELIVER}, KEY_RECIPIENT_ID + "=" + recipientId, null, null, null, null);
 		if(cur.moveToFirst()){
 			int delivers = cur.getInt(cur.getColumnIndex(KEY_DELIVER));
@@ -407,6 +519,13 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail Corresponding to a particular pair of smsId and recipientId increases the "no. of delivered parts" by one.
+	 * 		   Also checks if all the Msg parts have been sent or not, if so, then saves the delivery time.
+	 * @param recipientId
+	 * @return Boolean: true if delivered parts properly increased by one, false if some issue cropped up
+	 */
 	public boolean increaseDeliver(long recipientId){
 		int deliver = getDelivers(recipientId);
 		ContentValues deliverValue = new ContentValues();
@@ -430,6 +549,12 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail to check if all parts for a recipient have been sent and delivered or not
+	 * @param recipientId
+	 * @return true if all parts delivered, false otherwise.
+	 */
 	public boolean checkDelivery(long recipientId){
 		Cursor cur = fetchRecipientDetails(recipientId);
 		boolean bool = false;
@@ -440,10 +565,19 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail Deletes a particular SMS and all its recipients. Also, if a particular recipient is set as the next scheduled,
+	 * 		   this function will refresh the next Scheduled.
+	 * @param smsId
+	 * @param context
+	 */
 	public void deleteSms(long smsId,Context context){
+		boolean isNextScheduledDeleted = false;
 		ArrayList<Long> recipientIds = fetchRecipientIdsForSms(smsId);
 		for(int i = 0; i< recipientIds.size(); i++){
 			if(getCurrentPiId()==recipientIds.get(i)){
+				isNextScheduledDeleted = true;
 				Cursor cur = getPiDetails();
 				cur.moveToFirst();
 				
@@ -457,26 +591,28 @@ public class DBAdapter {
 		}
 		db.delete(DATABASE_SMS_TABLE, KEY_ID + "=" + smsId, null);
 		
-		Cursor cur = fetchNextScheduled();
-		if(cur.moveToFirst()){
-			Intent intent = new Intent(context, SMSHandleReceiver.class);
-			intent.setAction(Constants.PRIVATE_SMS_ACTION);
-			intent.putExtra("SMS_ID", cur.getLong(cur.getColumnIndex(KEY_ID)));
-			intent.putExtra("RECIPIENT_ID", cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)));
-			intent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(KEY_NUMBER)));
-			intent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(KEY_MESSAGE)));
-			
-			Random rand = new Random();
-			int piNumber = rand.nextInt();
-			PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			updatePi(piNumber, cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)), cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)));
-			
-			AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-	    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)), pi);
-		}else{
-			updatePi(0, -1, -1);
+		if(isNextScheduledDeleted) {
+			Cursor cur = fetchNextScheduled();
+			if(cur.moveToFirst()){
+				Intent intent = new Intent(context, SMSHandleReceiver.class);
+				intent.setAction(Constants.PRIVATE_SMS_ACTION);
+				intent.putExtra("SMS_ID", cur.getLong(cur.getColumnIndex(KEY_ID)));
+				intent.putExtra("RECIPIENT_ID", cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)));
+				intent.putExtra("NUMBER", cur.getString(cur.getColumnIndex(KEY_NUMBER)));
+				intent.putExtra("MESSAGE", cur.getString(cur.getColumnIndex(KEY_MESSAGE)));
+				
+				Random rand = new Random();
+				int piNumber = rand.nextInt();
+				PendingIntent pi = PendingIntent.getBroadcast(context, piNumber, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+				updatePi(piNumber, cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_ID)), cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)));
+				
+				AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)), pi);
+			}else{
+				updatePi(0, -1, -1);
+			}
+			cur.close();
 		}
-		cur.close();
 	}
 	//--------------------------------------------------------end of functions for SMS and Recipient tables---------------
 	
@@ -485,22 +621,43 @@ public class DBAdapter {
 	
 	
 	//--------------------------------------functions for Pending Intent Table -----------------------------------------
+	
+	//Pending Intent table is used to store the detail of Pending Intent that is used to hold the next scheduled recipient
+	//that is to be operated.
+	
+	/***
+	 * @detail get the detail of Pending Intent (Pi).
+	 * @return Cursor
+	 */
 	public Cursor getPiDetails(){
 		return db.query(DATABASE_PI_TABLE, null, KEY_PI_ID + "= 1", null, null, null, null);
 	}
 	
 	
+	
+	/***
+	 * @detail fetches the Id of the recipient that is set as the next scheduled
+	 * @return id of currently next scheduled recipient
+	 */
 	public long getCurrentPiId(){
 		Cursor cur = db.query(DATABASE_PI_TABLE, new String[] {KEY_SMS_ID}, KEY_PI_ID + "=1", null, null, null, null);
+		//********* "KEY_SMS_ID" in "Pi table" is denoting the next recipient. Shall not be ***********
+		//********** confused with SMS as evident from the name ***************************************
 		cur.moveToFirst();
-		long currentSmsId = cur.getLong(cur.getColumnIndex(KEY_SMS_ID));
+		long currentNextRecipientId = cur.getLong(cur.getColumnIndex(KEY_SMS_ID));
 		cur.close();
-		return currentSmsId;
+		return currentNextRecipientId;
 	}
 	
 	
+	
+	/***
+	 * @detail Sets Pending Intent data to point to another recipient as the next scheduled
+	 * @param pi_number
+	 * @param recipientId
+	 * @param time
+	 */
 	public void updatePi(long pi_number, long recipientId, long time){
-		
 		ContentValues cv = new ContentValues();
 		
 		if(getCurrentPiId()!=-1){
@@ -524,6 +681,11 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/***
+	 * @detail gets the currently set next scheduled recipient's fire time
+	 * @return time in milliseconds
+	 */
 	public long getCurrentPiFiretime(){
 		Cursor cur = db.query(DATABASE_PI_TABLE, new String[] {KEY_TIME}, KEY_PI_ID + "= 1", null, null, null, null);
 		cur.moveToFirst();
@@ -538,11 +700,23 @@ public class DBAdapter {
 	
 	
 	//-------------------------functions for template table---------------------------
+	
+	/**
+	 * @detail Fetches all the templates.
+	 * @return Cursor containing the templates
+	 */
 	public Cursor fetchAllTemplates(){
 		Cursor cur = db.query(DATABASE_TEMPLATE_TABLE, new String[] {KEY_TEMP_CONTENT, KEY_TEMP_ID}, null, null, null, null, null);
 		return cur;
 	}
 	
+	
+	
+	/**
+	 * @detail adds a new template
+	 * @param template
+	 * @return if successfully saved, then returns the id of newly created template, otherwise 0
+	 */
 	public long addTemplate(String template){
 		ContentValues addTemplateValues = new ContentValues();
 		addTemplateValues.put(KEY_TEMP_CONTENT, template);
@@ -555,13 +729,25 @@ public class DBAdapter {
 	}
 	
 	
-	public void editTemplate(long rowId, String template){
+	
+	/**
+	 * @detail edits an existing template 
+	 * @param templateId
+	 * @param template
+	 */
+	public void editTemplate(long templateId, String template){
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_TEMP_CONTENT, template);
-		db.update(DATABASE_TEMPLATE_TABLE, cv, KEY_TEMP_ID + "=" + rowId, null);
+		db.update(DATABASE_TEMPLATE_TABLE, cv, KEY_TEMP_ID + "=" + templateId, null);
 	}
 	
 	
+	
+	/**
+	 * @detail removes a template
+	 * @param id
+	 * @return returns true if removed successfully else false;
+	 */
 	public boolean removeTemplate(long id){
 		try{
 			db.delete(DATABASE_TEMPLATE_TABLE, KEY_TEMP_ID + "=" + id, null);
@@ -577,12 +763,25 @@ public class DBAdapter {
 	
 	
 	//-----------------------------------functions for group table--------------------------------------
+	
+	//"Group" in this table denotes the groups that are private to Sms Scheduler application, not the native ones.
+	
+	/***
+	 * @detail Fetch the detail of all the Groups
+	 * @return Cursor containing the detail
+	 */
 	public Cursor fetchAllGroups(){
 		Cursor cur = db.query(DATABASE_GROUP_TABLE, null, null, null, null, null, null);
 		return cur;
 	}
 	
 	
+	
+	/**
+	 * @detail For a given groupId, fetches and array of ContactIds that are there in that group
+	 * @param groupId
+	 * @return ArrayList of contactIds.
+	 */
 	public ArrayList<Long> fetchIdsForGroups(long groupId){
 		ArrayList<Long> ids = new ArrayList<Long>();
 		Cursor cur = db.query(DATABASE_GROUP_CONTACT_RELATION, new String[]{KEY_CONTACTS_ID}, KEY_GROUP_REL_ID + "=" + groupId, null, null, null, null);
@@ -597,6 +796,11 @@ public class DBAdapter {
 	
 	
 	
+	/**
+	 * @detail for a give groupId, fetches all the contact numbers of all the group members
+	 * @param groupId
+	 * @return Arraylist of contact numbers
+	 */
 	public ArrayList<String> fetchNumbersForGroup(long groupId){
 		ArrayList<String> numbers = new ArrayList<String>();
 		Cursor cur = db.query(DATABASE_GROUP_CONTACT_RELATION, new String[]{KEY_CONTACTS_NUMBER}, KEY_GROUP_REL_ID + "=" + groupId, null, null, null, null);
@@ -610,6 +814,14 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/**
+	 * @detail creates a new Contact Group
+	 * @param name
+	 * @param contactIds
+	 * @param contactNumbers
+	 * @return groupId of the newly created group.
+	 */
 	public long createGroup(String name, ArrayList<Long> contactIds, ArrayList<String> contactNumbers) {
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_GROUP_NAME, name);
@@ -621,6 +833,13 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/**
+	 * @detail adds a contact(using params: contactId and contactNumber) to a group (param: groupId)
+	 * @param contactId
+	 * @param groupId
+	 * @param contactNumber
+	 */
 	public void addContactToGroup(long contactId, long groupId, String contactNumber) {
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_GROUP_REL_ID, groupId);
@@ -630,17 +849,34 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/**
+	 * @detail removes a contact (param: contactId) from a group (param: groupId)
+	 * @param contactId
+	 * @param groupId
+	 */
 	public void removeContactFromGroup(long contactId, long groupId){
 		db.delete(DATABASE_GROUP_CONTACT_RELATION, KEY_GROUP_REL_ID + "=" + groupId + " AND " + KEY_CONTACTS_ID + "=" + contactId, null);
 	}
 	
 	
+	
+	/**
+	 * @detail removes the group for the groupId passed as parameter 
+	 * @param groupId
+	 */
 	public void removeGroup(long groupId){
 		db.delete(DATABASE_GROUP_CONTACT_RELATION, KEY_GROUP_REL_ID + "=" + groupId, null);
 		db.delete(DATABASE_GROUP_TABLE, KEY_GROUP_ID + "=" + groupId, null);
 	}
 	
 	
+	
+	/**
+	 * @detail renames a group (param: groupId) with the string passed (param: name)
+	 * @param name
+	 * @param groupId
+	 */
 	public void setGroupName(String name, long groupId){
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_GROUP_NAME, name);
@@ -651,34 +887,17 @@ public class DBAdapter {
 	
 	
 	
-	//--------------------------------functions for span-group-relation table--------------------------------
-	//*** Table to log the relation between added spans and groups ***
-	public ArrayList<Long> fetchGroupsForRecipient(long recipientId){
-		Cursor cur = db.query(DATABASE_RECIPIENT_GROUP_REL_TABLE, new String[]{KEY_RECIPIENT_GRP_REL_GRP_ID}, KEY_RECIPIENT_GRP_REL_RECIPIENT_ID + "=" + recipientId, null, null, null, null);
-		ArrayList<Long> groupIds = new ArrayList<Long>();
-		if(cur.moveToFirst()){
-			do{
-				groupIds.add(cur.getLong(cur.getColumnIndex(KEY_RECIPIENT_GRP_REL_GRP_ID)));
-			}while(cur.moveToNext());
-		}
-		cur.close();
-		return groupIds;
-	}
+	//--------------------------------functions for recipient-group-relation table--------------------------------
+	//Table to log the relation between recipients and groups
+	//It is in the context of SelectContacts Activity, for seclecting/deselecting a particular contact in a native or private group. 
+	//A selection denotes that the recipient has been added through the group
 	
-	
-	public ArrayList<Integer> fetchGroupTypesForSpan(long recipientId){
-		Cursor cur = db.query(DATABASE_RECIPIENT_GROUP_REL_TABLE, new String[]{KEY_RECIPIENT_GRP_REL_GRP_TYPE}, KEY_RECIPIENT_GRP_REL_RECIPIENT_ID + "=" + recipientId, null, null, null, null);
-		ArrayList<Integer> groupTypes = new ArrayList<Integer>();
-		if(cur.moveToFirst()){
-			do{
-				groupTypes.add(cur.getInt(cur.getColumnIndex(KEY_RECIPIENT_GRP_REL_GRP_TYPE)));
-			}while(cur.moveToNext());
-		}
-		cur.close();
-		return groupTypes;
-	}
-	
-	
+	/**
+	 * @detail fetches all the recipient-ids for a contact-group
+	 * @param groupId
+	 * @param type
+	 * @return ArrayList of the recipientIds.
+	 */
 	public ArrayList<Long> fetchRecipientsForGroup(long groupId, int type){
 		Cursor cur = db.query(DATABASE_RECIPIENT_GROUP_REL_TABLE, new String[]{KEY_RECIPIENT_GRP_REL_RECIPIENT_ID}, KEY_RECIPIENT_GRP_REL_GRP_ID + "=" + groupId + " AND " + KEY_RECIPIENT_GRP_REL_GRP_TYPE + "=" + type, null, null, null, null);
 		ArrayList<Long> recipientIds = new ArrayList<Long>();
@@ -692,6 +911,13 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/**
+	 * @detail to add a recipient to a cotact-group, when a user selects a recipient using the Groups tab of SelectContacts Activity
+	 * @param recipientId
+	 * @param groupId
+	 * @param type
+	 */
 	public void addRecipientGroupRel(long recipientId, long groupId, int type){
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_RECIPIENT_GRP_REL_RECIPIENT_ID, recipientId);
@@ -702,11 +928,23 @@ public class DBAdapter {
 	}
 	
 	
+	
+	/**
+	 * @detail deletes all recipient-group-relations associated with a particular recipientId
+	 * @param recipientId
+	 */
 	public void deleteRecipientGroupRelsForRecipient(long recipientId){
 		db.delete(DATABASE_RECIPIENT_GROUP_REL_TABLE, KEY_RECIPIENT_GRP_REL_RECIPIENT_ID + "=" + recipientId, null);
 	}
 	
 	
+	
+	/**
+	 * @detail deletes a particular recipient-group-relation for a group (param: groupId), recipient (param: recipientId) and type (native or sms_scheduler group)
+	 * @param recipientId
+	 * @param groupId
+	 * @param type
+	 */
 	public void deleteRecipientGroupRel(long recipientId, long groupId, int type){
 		db.delete(DATABASE_RECIPIENT_GROUP_REL_TABLE, KEY_RECIPIENT_GRP_REL_RECIPIENT_ID + "=" + recipientId + " AND " + KEY_RECIPIENT_GRP_REL_GRP_ID + "=" + groupId + " AND " + KEY_RECIPIENT_GRP_REL_GRP_TYPE + "=" + type, null);
 	}
@@ -715,6 +953,19 @@ public class DBAdapter {
 	
 	
 	//----------------------------functions for recents table----------------------------------
+	//This table holds 20 most recently used contacts in descending order i.e., the most recent on the top followed by contacts previously used
+	//'contactId = -1' denotes that the recent entry is an independent number
+	
+	/**
+	 * @detail when a contact (specific to a contactNumber, as a contact can have multiple contact numbers) is used to create an SMS,
+	 * 		   an entry is made on the top of the stack in recents table and deletes the contact at bottom (deletes only if there are 
+	 * 		   20 contacts already in recents table). Before making this entry, this function checks if this contact is already having
+	 * 		   an entry in the recents table. If present, then instead of creating a new entry and deleting the last, it simply swaps 
+	 * 		   the contact to the top of the recents table. 
+	 * 
+	 * @param contactId
+	 * @param contactNumber
+	 */
 	public void addRecentContact(long contactId, String contactNumber){
 		contactNumber = refineNumber(contactNumber);
 		Cursor cur = db.query(DATABASE_RECENTS_TABLE, new String[]{KEY_RECENT_CONTACT_ID, KEY_RECENT_CONTACT_CONTACT_ID, KEY_RECENT_CONTACT_NUMBER}, null, null, null, null, KEY_RECENT_CONTACT_ID);
@@ -725,11 +976,13 @@ public class DBAdapter {
 		if(cur.moveToFirst()){
 			do{
 				if(contactId!=-1 && (cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID)) == contactId) && (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
-					db.delete(DATABASE_RECENTS_TABLE, /*KEY_RECENT_CONTACT_CONTACT_ID + "=" + contactId + " AND " + KEY_RECENT_CONTACT_NUMBER + "=" + contactNumber*/ KEY_RECENT_CONTACT_ID + " = " + cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_ID)), null);
+					//match found for a recent entry that is not an independent numer. It is to be deleted in order to swap it to the top 
+					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + " = " + cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_ID)), null);
 					contactExist = true;
 					break;
 				}
 				if(((cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_CONTACT_ID))) == -1) && (cur.getString(cur.getColumnIndex(KEY_RECENT_CONTACT_NUMBER)).equals(contactNumber))){
+					//match found for a recent entry that is an independent number. It is to be deleted in order to swap it to the top
 					db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_CONTACT_ID + "=-1 AND " + KEY_RECENT_CONTACT_NUMBER + "=" + contactNumber, null);
 					contactExist = true;
 					break;
@@ -738,16 +991,23 @@ public class DBAdapter {
 		}
 		if(!contactExist){
 			if(cur.getCount()>=20 && cur.moveToFirst()){
+				//if contact doesn't already exist and recents table is full, delete the last entry
 				long idToDelete = cur.getLong(cur.getColumnIndex(KEY_RECENT_CONTACT_ID));
 				db.delete(DATABASE_RECENTS_TABLE, KEY_RECENT_CONTACT_ID + "=" + idToDelete, null);
 			}
 		}
 		cur.close();
 		
+		//make entry for the new contact
 		db.insert(DATABASE_RECENTS_TABLE, null, cv);
 	}
 	
 	
+	
+	/**
+	 * @detail fetches all the recent contacts
+	 * @return cursor containing recent contacts
+	 */
 	public Cursor fetchAllRecents(){
 		Cursor cur = db.query(DATABASE_RECENTS_TABLE, null, null, null, null, null, KEY_RECENT_CONTACT_ID + " DESC");
 		return cur;
@@ -756,6 +1016,11 @@ public class DBAdapter {
 	
 	
 	
+	/**
+	 * @removes all the invalid characters from the phone number (only 0-9 allowed)
+	 * @param number
+	 * @return refined number
+	 */
 	private String refineNumber(String number) {
 		if(number.matches("[0-9]+")){
 			return number;
@@ -781,8 +1046,14 @@ public class DBAdapter {
 	
 	//----------------------------------------------------------end of functions--------------------------------
 	
-	
-	
+	/**
+	 * @detail This class is extended from SQLiteOpenHelper class to perform DDL commands on our SQLite database 
+	 * implements the overridden functions: onCreate and onUpgrade
+	 * 
+	 * onCreate is called once when the app is first installed and database is created.
+	 * onUpgrade is called whenever the app is updated and a new database version is made available. This corresponds to the version
+	 * 			changes made in the Database structure.
+	 */
 	public class MyOpenHelper extends SQLiteOpenHelper{
 		
 		MyOpenHelper(Context context){
@@ -835,6 +1106,9 @@ public class DBAdapter {
 		
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			//All the previous database versions are to be upgraded to the latest version. So the switch-case structure makes it go
+			//through all the upper versions step-by-step until its upgraded to the latest one.
+			//Example: database at v1 will go through v2, v3, v4, ..... latest version; database at v2 will go through v3, v4, v5, .... latest version;
 			
 			switch (oldVersion) {
 			case 1:
@@ -851,6 +1125,10 @@ public class DBAdapter {
 		}
 		
 		
+		/**
+		 * @detail upgrades the database from version 1 to version 2
+		 * @param db
+		 */
 		private void From1To2(SQLiteDatabase db){
 			ArrayList<Sms> SMSs = new ArrayList<Sms>();
 			ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
@@ -974,7 +1252,7 @@ public class DBAdapter {
 						
 						long receivedRecipientId = db.insert(DATABASE_RECIPIENT_TABLE, null, cv);
 						
-						if(r.operated == 0){
+						if(r.operated == Constants.RECIPIENT_OPERATED_FLAG_UNSET){
 							areAllOperated = false;
 						}
 						
@@ -988,9 +1266,9 @@ public class DBAdapter {
 							db.insert(DATABASE_RECIPIENT_GROUP_REL_TABLE, null, cv);
 						}
 						if(areAllOperated){
-							status = 2;
+							status = Constants.SMS_STATUS_SENT;
 						}else{
-							status = 1;
+							status = Constants.SMS_STATUS_SCHEDULED;
 						}
 					}
 				}
@@ -1049,6 +1327,10 @@ public class DBAdapter {
 		
 		
 		
+		/**
+		 * @detail upgrades the database from version 2 to version 3
+		 * @param db
+		 */
 		private void From2To3(SQLiteDatabase db){
 			//------------------fetching the Recipients in a cursor--------------------------
 			Cursor groupContactRelBack = db.query(DATABASE_GROUP_CONTACT_RELATION, null, null, null, null, null, null);
@@ -1086,6 +1368,10 @@ public class DBAdapter {
 		
 		
 		
+		/**
+		 * @detail upgrades the database from version 3 to version 4
+		 * @param db
+		 */
 		private void From3To4(SQLiteDatabase db){
 			Cursor cur = db.query(DATABASE_SMS_TABLE, null, null, null, null, null, null);
 			ArrayList<Sms> SMSs = new ArrayList<Sms>();

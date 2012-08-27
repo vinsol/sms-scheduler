@@ -40,13 +40,11 @@ import com.vinsol.sms_scheduler.utils.Log;
 
 public class EditGroup extends Activity {
 
-	
 	private Button addContactsButton;
 	private TextView groupNameLabel;
 	private ListView groupContactsList;
 	private Button saveGroupButton;
 	private Button deleteGroupButton;
-	
 	
 	private DBAdapter mdba = new DBAdapter(EditGroup.this);
 	
@@ -62,7 +60,7 @@ public class EditGroup extends Activity {
 	private ArrayList<Contact> newGroupContacts = new ArrayList<Contact>();
 	private ArrayList<GroupMember> groupMembers = new ArrayList<GroupMember>();
 	
-	DisplayImage displayImage = new DisplayImage();
+	private DisplayImage displayImage = new DisplayImage();
 	
 	@Override
     protected void onStart() {
@@ -76,8 +74,6 @@ public class EditGroup extends Activity {
     	FlurryAgent.onEndSession(this);
     }
 	
-	
-	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.edit_group);
@@ -90,7 +86,6 @@ public class EditGroup extends Activity {
 		groupContactsList 	= (ListView) 	findViewById(R.id.group_members_listing);
 		saveGroupButton 	= (Button) findViewById(R.id.save_group_button);
 		deleteGroupButton   = (Button) findViewById(R.id.delete_group_button);
-		
 	
 		groupId = intent.getLongExtra("GROUPID", 0);
 		groupName = intent.getStringExtra("GROUPNAME");
@@ -106,7 +101,6 @@ public class EditGroup extends Activity {
 			
 		deleteGroupButton.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View v) {
 				final Dialog d = new Dialog(EditGroup.this);
 				d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -118,8 +112,7 @@ public class EditGroup extends Activity {
 				questionText.setText("Delete this Group?");
 				
 				yesButton.setOnClickListener(new OnClickListener() {
-						
-					
+
 						public void onClick(View v) {
 						mdba.open();
 						mdba.removeGroup(groupId);
@@ -131,8 +124,7 @@ public class EditGroup extends Activity {
 				});
 					
 				noButton.setOnClickListener(new OnClickListener() {
-				
-					
+
 					public void onClick(View v) {
 						d.cancel();
 					}
@@ -143,11 +135,8 @@ public class EditGroup extends Activity {
 		});
 		
 		
-		
-		
 		groupNameLabel.setOnClickListener(new OnClickListener() {
-			
-			
+
 			public void onClick(View v) {
 				FlurryAgent.logEvent("Group Name Change Label Clicked");
 				
@@ -162,13 +151,10 @@ public class EditGroup extends Activity {
 				
 				groupNameOkButton.setOnClickListener(new OnClickListener() {
 					
-					
 					public void onClick(View v) {
 						if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
 							Toast.makeText(EditGroup.this, "Group name can't be blank", Toast.LENGTH_SHORT).show();
 							groupNameEdit.setText(groupName);
-						
-							
 						}else{
 							boolean groupNameExists = false;
 							mdba.open();
@@ -188,14 +174,12 @@ public class EditGroup extends Activity {
 								groupNameLabel.setText(groupName);
 								d.cancel();
 							}
-							
 						}
 					}
 				});
 				
 				groupNameCancelButton.setOnClickListener(new OnClickListener() {
-					
-					
+
 					public void onClick(View v) {
 						d.cancel();
 					}
@@ -208,8 +192,7 @@ public class EditGroup extends Activity {
 		
 		
 		addContactsButton.setOnClickListener(new OnClickListener() {
-			
-			
+
 			public void onClick(View v) {
 				FlurryAgent.logEvent("Add Contacts");
 				Intent intent = new Intent(EditGroup.this, ContactsList.class);
@@ -224,14 +207,10 @@ public class EditGroup extends Activity {
 				startActivityForResult(intent, 1);
 			}
 		});
-		
-		
+
 		saveGroupButton.setOnClickListener(new OnClickListener() {
 			
-		  
-			
 			public void onClick(View v) {
-				
 				mdba.open();
 				if(ids.size()>0){
 					idsTemp = mdba.fetchIdsForGroups(groupId);
@@ -254,13 +233,10 @@ public class EditGroup extends Activity {
 			}
 		});
 		
-		
 		loadContactsForGroups();
 		myAdapter = new MyAdapter();
 		groupContactsList.setAdapter(myAdapter);
 	}
-	
-	
 	
 	
 	private ArrayList<GroupMember> organizeIds(ArrayList<Long> ids, ArrayList<String> numbers) {
@@ -291,8 +267,6 @@ public class EditGroup extends Activity {
 	}
 	
 	
-	
-	
 	private String getType(long id, String number){
 		for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
 			if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == id){
@@ -307,9 +281,6 @@ public class EditGroup extends Activity {
 	}
 
 
-
-
-	
 	public void onBackPressed() {
 		boolean isChanged = false;
 		if(ids.size() != idsTemp.size()){
@@ -335,8 +306,7 @@ public class EditGroup extends Activity {
 			yesButton.setText("");
 			noButton.setText("");
 			yesButton.setOnClickListener(new OnClickListener() {
-				
-				
+
 				public void onClick(View v) {
 					mdba.open();
 					ids = mdba.fetchIdsForGroups(groupId);
@@ -353,8 +323,7 @@ public class EditGroup extends Activity {
 			});
 			
 			noButton.setOnClickListener(new OnClickListener() {
-				
-				
+
 				public void onClick(View v) {
 					d.cancel();
 				}
@@ -365,8 +334,6 @@ public class EditGroup extends Activity {
 			EditGroup.this.finish();
 		}
 	}
-	
-	
 	
 	
 	protected void onResume() {
@@ -383,8 +350,6 @@ public class EditGroup extends Activity {
 					Contact.content_uri_id = SmsSchedulerApplication.contactsList.get(i).content_uri_id;
 					Contact.name = SmsSchedulerApplication.contactsList.get(i).name;
 					Contact.numbers.add(new ContactNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(0).contactId, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number, SmsSchedulerApplication.contactsList.get(i).numbers.get(0).type));//TODO
-					
-//					Contact.image = SmsSchedulerApplication.contactsList.get(i).image;
 					newGroupContacts.add(Contact);
 				}
 			}
@@ -392,26 +357,18 @@ public class EditGroup extends Activity {
 	}
 	
 	
-	
-	
-	
-	
 	private class MyAdapter extends ArrayAdapter<GroupMember>{
 		MyAdapter(){
     		super(EditGroup.this, R.layout.edit_group_list_row, groupMembers);
     	}
 		
-		
-		
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return groupMembers.size();
 		}
 		
 		
 		
 		public View getView(int position, View convertView, ViewGroup parent) {
-			Log.d("position : " + position + "; groupmember size : " + groupMembers.size());
 			if(position > groupMembers.size()-1){
 				return null;
 			}
@@ -433,10 +390,8 @@ public class EditGroup extends Activity {
     		final int _position = position;
     		
     		displayImage.submitImage(holder.contactImage, groupMembers.get(position).contactId, EditGroup.this);
-//    		holder.contactImage.setImageBitmap(groupMembers.get(position).image);
     		holder.contactName.setText(groupMembers.get(position).displayName);
     		holder.contactNumber.setText(groupMembers.get(position).numbers.get(0).type + ": " + groupMembers.get(position).numbers.get(0).number);//TODO
-    		
     		
     		if(groupMembers.get(position).numbers.size()>1){
     			holder.extraNumbersLayout.setVisibility(View.VISIBLE);
@@ -458,15 +413,11 @@ public class EditGroup extends Activity {
     		}
     		
     		holder.contactRemoveButton.setOnClickListener(new OnClickListener() {
-				
-				
+
 				public void onClick(View v) {
 					FlurryAgent.logEvent("Contact Removed From Group");
 					
-					Log.d("List position :" + _position);
-					
 					if(ids.size()==1){
-						
 						final Dialog d = new Dialog(EditGroup.this);
 						d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 						d.setContentView(R.layout.confirmation_dialog);
@@ -479,10 +430,8 @@ public class EditGroup extends Activity {
 						yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.delete_dialog_states));
 						noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cancel_dialog_states));
 						yesButton.setOnClickListener(new OnClickListener() {
-							
-							
+
 							public void onClick(View v) {
-								
 								newGroupContacts.remove(_position);
 								ids.remove(_position);
 								MyAdapter.this.notifyDataSetChanged();
@@ -498,8 +447,7 @@ public class EditGroup extends Activity {
 						});
 						
 						noButton.setOnClickListener(new OnClickListener() {
-							
-							
+
 							public void onClick(View v) {
 								d.cancel();
 							}
@@ -538,7 +486,6 @@ public class EditGroup extends Activity {
 		tv.setText(contactNumber.type +": "+contactNumber.number);
 		
 		delButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				FlurryAgent.logEvent("Contact Removed From Group");
@@ -600,13 +547,11 @@ public class EditGroup extends Activity {
 		long contactId;
 		ArrayList<ContactNumber> numbers = new ArrayList<ContactNumber>();
 		String displayName;
-//		Bitmap image;
 		
 		GroupMember(long id){
 			for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
 				if(id == SmsSchedulerApplication.contactsList.get(i).content_uri_id){
 					this.displayName = SmsSchedulerApplication.contactsList.get(i).name;
-//					this.image = SmsSchedulerApplication.contactsList.get(i).image;
 					this.contactId = SmsSchedulerApplication.contactsList.get(i).content_uri_id;
 					break;
 				}

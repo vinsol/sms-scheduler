@@ -37,7 +37,6 @@ import com.vinsol.sms_scheduler.activities.Home;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
-import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.utils.MyGson;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
 
@@ -58,9 +57,9 @@ public class ContactsList extends Activity {
 	
 	private String callingActivity;
 	
-	ContactListAdapter contactListAdapter;
+	private ContactListAdapter contactListAdapter;
 	
-	DisplayImage displayImage = new DisplayImage();
+	private DisplayImage displayImage = new DisplayImage();
 	
 	
 	@Override
@@ -136,7 +135,6 @@ public class ContactsList extends Activity {
 		
 		doneButton.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View v) {
 				
 				final Intent intent = new Intent();
@@ -160,9 +158,7 @@ public class ContactsList extends Activity {
 							
 							groupNameOkButton.setOnClickListener(new OnClickListener() {
 								
-								
 								public void onClick(View v) {
-									Log.d("GroupName : " + groupName);
 									if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
 										Toast.makeText(ContactsList.this, "Please enter a valid name for group", Toast.LENGTH_SHORT).show();
 										groupNameEdit.setText("");
@@ -195,7 +191,6 @@ public class ContactsList extends Activity {
 							});
 							
 							groupNameCancelButton.setOnClickListener(new OnClickListener() {
-								
 								
 								public void onClick(View v) {
 									d.cancel();
@@ -232,8 +227,7 @@ public class ContactsList extends Activity {
 		
 		
 		cancelButton.setOnClickListener(new OnClickListener() {
-			
-			
+
 			public void onClick(View v) {
 				if(callingActivity.equals("Group Edit Activity")){
 					handleBackForEdit();
@@ -248,16 +242,12 @@ public class ContactsList extends Activity {
 	
 	
 	
-	
-	
 	public void onBackPressed() {
 		if(callingActivity.equals("Group Edit Activity")){
 			handleBackForEdit();
 		}
 		ContactsList.this.finish();
 	}
-	
-	
 	
 	public void handleBackForEdit(){
 		Intent intent = new Intent();
@@ -328,7 +318,6 @@ public class ContactsList extends Activity {
     		
     		holder.contactCheck.setOnClickListener(new OnClickListener() {
 				
-				
 				public void onClick(View v) {
 					
 					if(holder.contactCheck.isChecked()){
@@ -349,7 +338,6 @@ public class ContactsList extends Activity {
     		
     		
     		holder.primaryNumberLayout.setOnClickListener(new OnClickListener() {
-				
 				
 				public void onClick(View v) {
 					if(!holder.contactCheck.isChecked()){
@@ -376,30 +364,13 @@ public class ContactsList extends Activity {
 	
 	
 	
-	
 	public View createView(final ContactNumber contactNumber, final Contact contact, LayoutInflater inflater){
-		
 		View view = inflater.inflate(R.layout.extra_numbers_list_row, null);
 		
 		TextView tv = (TextView) view.findViewById(R.id.extra_number);
 		final CheckBox cb = (CheckBox) view.findViewById(R.id.extra_number_checkbox);
 		
 		tv.setText(contactNumber.type + ": " + contactNumber.number);
-		
-//		for(int i = 0; i< RecipientsTemp.size(); i++){
-//			Log.d(i + " : " + RecipientsTemp.get(i).contactId + ", " + RecipientsTemp.get(i).number);
-//		}
-		Log.d("\nView Details : " + contactNumber.contactId + ", " + contactNumber.number);
-		
-//		for(int i = 0; i< RecipientsTemp.size(); i++){
-//			
-//    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
-//    			cb.setChecked(true);
-//    			break;
-//    		}else{
-//    			cb.setChecked(false);
-//    		}
-//    	}
 		
 		boolean hasEntry = false;
 		for(int i = 0; i< ids.size(); i++){
@@ -413,7 +384,6 @@ public class ContactsList extends Activity {
 		}
 		
 		view.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				if(!cb.isChecked()){
@@ -448,43 +418,6 @@ public class ContactsList extends Activity {
 				}
 			}
 		});
-		
-		
-//		cb.setOnClickListener(new OnClickListener() {
-//			
-//			
-//			public void onClick(View v) {
-//				
-//				if(cb.isChecked()){
-//					boolean isPresent = false;
-//					for(int i = 0; i< RecipientsTemp.size(); i++){
-//						if(RecipientsTemp.get(i).contactId == contactNumber.contactId && RecipientsTemp.get(i).number.equals(contactNumber.number)){
-//							isPresent = true;
-//							break;
-//						}
-//					}
-//					if(!isPresent){
-//						int k;
-//						for(k = 0; k < SmsSchedulerApplication.contactsList.size(); k++){
-//							Log.d(SmsSchedulerApplication.contactsList.get(k).content_uri_id + " and " + contactNumber.contactId);
-//							if(SmsSchedulerApplication.contactsList.get(k).content_uri_id==contactNumber.contactId){
-//								break;
-//							}
-//						}
-//						Recipient recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, contactNumber.contactId, -1, -1, -1, contactNumber.number);
-//						recipient.groupIds.add((long) -1);
-//						recipient.groupTypes.add(-1);
-//						RecipientsTemp.add(recipient);
-//					}
-//				}else{
-//					for(int i = 0; i<RecipientsTemp.size(); i++){
-//			    		if(contactNumber.contactId == RecipientsTemp.get(i).contactId && contactNumber.number.equals(RecipientsTemp.get(i).number)){
-//			    			RecipientsTemp.remove(i);
-//			    		}
-//					}
-//				}
-//			}
-//		});
 		
 		return view;
 	}

@@ -42,9 +42,7 @@ import android.provider.ContactsContract.Groups;
 import android.speech.RecognizerIntent;
 import android.telephony.SmsManager;
 import android.text.Editable;
-import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
-import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -132,15 +130,16 @@ public abstract class AbstractScheduleSms extends Activity{
 	//---------------------------------------------------------------
 	public static ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
 	protected static ArrayList<Recipient> originalRecipients = new ArrayList<Recipient>();
-	protected SpannableStringBuilder ssb = new SpannableStringBuilder();
-	protected int spanStartPosition = 0;
 	protected static String originalMessage;
-	protected ArrayList<ClickableSpan> clickableSpanArrayList = new ArrayList<ClickableSpan>();
 	//--------------------------------------------------------------------
 	
 	
+	private static int TO_OPEN_YES_AUTOCOMPLETE = 2;
+	private static int TO_OPEN_YES_CONTACTS = 1;
+	private static int TO_OPEN_NO = 0;
 	
-	//-------------------Variables related to new autocomplete implementation------------------------
+	
+	//-------------------Variables related to autocomplete implementation------------------------
 	LinearLayout hostlayout;
 	RelativeLayout ac_wrapper;
 	
@@ -173,11 +172,12 @@ public abstract class AbstractScheduleSms extends Activity{
 	int defaultRepeatMode;
 	//-----------------------------------------------------------------------------------------------
 	
-	
+	//---------------For the list in Recipient detail Dialog----------------------------
 	ImageView undoButton;
 	RecipientStack recipientStack = new RecipientStack();
 	ArrayList<Recipient> prunedRecipients = new ArrayList<Recipient>();
 	MyAdapter detailsRecipientsAdapter;
+	//----------------------------------------------------------------------------------
 	
 	public static final String PREFS_NAME = "MyPrefsFile";
 	boolean showMessage;
@@ -207,7 +207,7 @@ public abstract class AbstractScheduleSms extends Activity{
 			":-X"
 	};
 	
-	protected int toOpen = 0;
+	protected int toOpen = TO_OPEN_NO;
 	protected Dialog dataLoadWaitDialog;
 	protected IntentFilter dataloadIntentFilter;
 	
@@ -251,13 +251,13 @@ public abstract class AbstractScheduleSms extends Activity{
 		public void onReceive(Context context, Intent intent2) {
 			if(dataLoadWaitDialog.isShowing()){
 				dataLoadWaitDialog.cancel();
-				if(toOpen == 1) {
-					toOpen = 0;
+				if(toOpen == TO_OPEN_YES_CONTACTS) {
+					toOpen = TO_OPEN_NO;
 					Intent intent = new Intent(AbstractScheduleSms.this, SelectContacts.class);
 					intent.putExtra("ORIGIN", "edit");
 					startActivityForResult(intent, 2);
-				} else if(toOpen==2) {
-					toOpen = 0;
+				} else if(toOpen==TO_OPEN_YES_AUTOCOMPLETE) {
+					toOpen = TO_OPEN_NO;
 					numbersText.requestFocus();
 					if(Recipients.size()>0) {
 						if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) {
@@ -328,7 +328,7 @@ public abstract class AbstractScheduleSms extends Activity{
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 					dataLoadWaitDialog.show();
-					toOpen = 2;
+					toOpen = TO_OPEN_YES_AUTOCOMPLETE;
 				}else{
 					numbersText.requestFocus();
 					if(Recipients.size()>0){
@@ -337,11 +337,9 @@ public abstract class AbstractScheduleSms extends Activity{
 						}else{
 							numbersText.setHint(" ");
 						}
-						
 					}
 					inputMethodManager.showSoftInput(numbersText, 0);
 				}
-				
 			}
 		});
         
@@ -355,7 +353,6 @@ public abstract class AbstractScheduleSms extends Activity{
         
         hostlayout.setOnLongClickListener(new OnLongClickListener() {
 			
-			
 			public boolean onLongClick(View v) {
 				numbersText.showContextMenu();
 				return true;
@@ -364,7 +361,6 @@ public abstract class AbstractScheduleSms extends Activity{
         
         firstRow.ll.setOnLongClickListener(new OnLongClickListener() {
 			
-			
 			public boolean onLongClick(View v) {
 				numbersText.showContextMenu();
 				return true;
@@ -372,7 +368,6 @@ public abstract class AbstractScheduleSms extends Activity{
 		});
         
         recipientDetailsButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				FlurryAgent.logEvent("Recipients Details Checked");
@@ -399,7 +394,6 @@ public abstract class AbstractScheduleSms extends Activity{
 					
 					confirmButton.setOnClickListener(new OnClickListener() {
 						
-						
 						public void onClick(View v) {
 							Recipients.clear();
 							for(int i = 0; i< prunedRecipients.size(); i++){
@@ -418,14 +412,12 @@ public abstract class AbstractScheduleSms extends Activity{
 					
 					cancelButton.setOnClickListener(new OnClickListener() {
 						
-						
 						public void onClick(View v) {
 							d.cancel();
 						}
 					});
 					
 					undoButton.setOnClickListener(new OnClickListener() {
-						
 						
 						public void onClick(View v) {
 							FlurryAgent.logEvent("Recipient Details: Undo");
@@ -438,8 +430,6 @@ public abstract class AbstractScheduleSms extends Activity{
 									undoButton.setEnabled(false);
 									undoButton.setBackgroundResource(R.drawable.undo_button_pressed);
 								}
-									
-									
 							}
 						}
 					});
@@ -452,8 +442,8 @@ public abstract class AbstractScheduleSms extends Activity{
 					TextView infoText = (TextView)d.findViewById(R.id.info_dialog_text);
 					Button okButton = (Button)d.findViewById(R.id.ok_button);
 					infoText.setText("Please select some recipients to show details of.");
+					
 					okButton.setOnClickListener(new OnClickListener() {
-						
 						
 						public void onClick(View v) {
 							d.cancel();
@@ -462,7 +452,6 @@ public abstract class AbstractScheduleSms extends Activity{
 					
 					d.show();
 				}
-				
 			}
 		});
         
@@ -489,7 +478,6 @@ public abstract class AbstractScheduleSms extends Activity{
 		
 		ac_wrapper.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View v) {
 				numbersText.requestFocus();
 				inputMethodManager.showSoftInput(numbersText, 0);
@@ -498,7 +486,6 @@ public abstract class AbstractScheduleSms extends Activity{
 		
 		
 		hostlayout.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				
@@ -517,12 +504,11 @@ public abstract class AbstractScheduleSms extends Activity{
 					}
 					inputMethodManager.showSoftInput(numbersText, 0);
 				}else{
-					toOpen = 2;
+					toOpen = TO_OPEN_YES_AUTOCOMPLETE;
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 					dataLoadWaitDialog.show();
 				}
-				
 			}
 		});
 		
@@ -807,7 +793,7 @@ public abstract class AbstractScheduleSms extends Activity{
 					intent.putExtra("ORIGIN", "new");
 					startActivityForResult(intent, 2);
 				}else{
-					toOpen = 1;
+					toOpen = TO_OPEN_YES_CONTACTS;
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 					dataLoadWaitDialog.show();
@@ -827,7 +813,7 @@ public abstract class AbstractScheduleSms extends Activity{
 				if(SmsSchedulerApplication.isDataLoaded) {
 					inputMethodManager.restartInput(numbersText);
 				} else {
-					toOpen = 2;
+					toOpen = TO_OPEN_YES_AUTOCOMPLETE;
 					dataLoadWaitDialog.setContentView(R.layout.wait_dialog);
 					dataLoadWaitDialog.setCancelable(false);
 					dataLoadWaitDialog.show();
@@ -1164,6 +1150,9 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	//=======================setting up voice recognition functionality============================
+	/**
+	 * Starts a voice recognition activity that might be present in the device.
+	 */
 	protected void startVoiceRecognitionActivity() {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
@@ -1352,10 +1341,10 @@ public abstract class AbstractScheduleSms extends Activity{
 
 				
 				protected void publishResults(CharSequence constraints, FilterResults results) {
+					//if there are matches, show the autocomplete dropdown or else don't.
 					if(results != null && results.count > 0) {
 						final Activity activity = (Activity) AbstractScheduleSms.this;
 						activity.runOnUiThread(new Runnable() {
-							
 							
 							public void run() {
 								((AutoCompleteAdapter)numbersText.getAdapter()).notifyDataSetChanged();
