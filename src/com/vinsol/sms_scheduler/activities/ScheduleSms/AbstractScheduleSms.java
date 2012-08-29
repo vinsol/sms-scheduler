@@ -98,6 +98,10 @@ import com.vinsol.sms_scheduler.activities.Contact.SelectContacts;
 import com.vinsol.sms_scheduler.activities.Template.TemplateAdapter;
 
 
+/**
+ * @details its an Abstract class that is common to both the Edit SMS and New SMS functionalities, thus, is extended by both
+ * 			EditScheduledSms.java and ScheduleNewSms.java. Covers up all the common functionalities.
+ */
 public abstract class AbstractScheduleSms extends Activity{
 
 	//---------References to the widgets-----------------
@@ -117,17 +121,17 @@ public abstract class AbstractScheduleSms extends Activity{
 	//---------------------------------------------------------
 	
 	
-	//-----------For expanded list data of contactsTabActivity------------------------
+	//-----------For expanded list data of contactsTabActivity's Groups tab------------------------
 	public static ArrayList<ArrayList<HashMap<String, Object>>> nativeChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
 	public static ArrayList<HashMap<String, Object>> nativeGroupData = new ArrayList<HashMap<String, Object>>();
 	
 	public static ArrayList<ArrayList<HashMap<String, Object>>> privateChildData = new ArrayList<ArrayList<HashMap<String, Object>>>();
 	public static ArrayList<HashMap<String, Object>> privateGroupData = new ArrayList<HashMap<String, Object>>();
-	//--------------------------------------------------------------------------------------
+	//---------------------------------------------------------------------------------------------
 	
 	
 	
-	//---------------------------------------------------------------
+	//--------------------------------------------------------------------
 	public static ArrayList<Recipient> Recipients = new ArrayList<Recipient>();
 	protected static ArrayList<Recipient> originalRecipients = new ArrayList<Recipient>();
 	protected static String originalMessage;
@@ -138,6 +142,8 @@ public abstract class AbstractScheduleSms extends Activity{
 	private static int TO_OPEN_YES_CONTACTS = 1;
 	private static int TO_OPEN_NO = 0;
 	
+	protected static int MODE_NEW = 1;
+	protected static int MODE_EDIT = 2;
 	
 	//-------------------Variables related to autocomplete implementation------------------------
 	LinearLayout hostlayout;
@@ -246,6 +252,9 @@ public abstract class AbstractScheduleSms extends Activity{
 	//--------------------------------------------------------------------------------
 	
 	
+	/**
+	 * @details this broadcastreceiver fires when loading of Contact's data completes.
+	 */
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
 		
 		public void onReceive(Context context, Intent intent2) {
@@ -781,7 +790,7 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	protected void setSuperFunctionalities(){
-		numbersText.setThreshold(1);
+		numbersText.setThreshold(1); //Threshold of an Autocomplete decides that after the type of how many characters the dropdown is to be produced.
 		
 		addFromContactsImgButton.setOnClickListener(new OnClickListener() {
 			
@@ -1085,9 +1094,9 @@ public abstract class AbstractScheduleSms extends Activity{
 					Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 					Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 					
-					if(mode==2){
+					if(mode==MODE_EDIT){
 						questionText.setText("Delete this message?");
-					}else if(mode==1){
+					}else if(mode==MODE_NEW){
 						questionText.setText("Discard this message?");
 					}
 					
@@ -1097,7 +1106,7 @@ public abstract class AbstractScheduleSms extends Activity{
 					yesButton.setOnClickListener(new OnClickListener() {
 						
 						public void onClick(View v) {
-							if(mode==2){
+							if(mode==MODE_EDIT){
 								mdba.open();
 								mdba.deleteSms(editedSms, AbstractScheduleSms.this);
 								mdba.close();
@@ -1165,6 +1174,10 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
+	/**
+	 * @details shows up a dialog with a list of matches for the voice inputs. On selecting an item on the list, the dialog will close
+	 * 			and the text of the item will be added to the message-textbox.
+	 */
 	protected void showMatchesDialog(){
 		final Dialog d = new Dialog(AbstractScheduleSms.this);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1192,6 +1205,14 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	//=======================function to handle update of Pending Intent===================================
+	/**
+	 * @details Cancels the currently set PendingIntent. Updates it with details of a new Recipient with lesser fire-time. Updates the
+	 * 			PI details in database as well.
+	 * @param number
+	 * @param smsId
+	 * @param recipientid
+	 * @param time
+	 */
 	private void handlePiUpdate(String number, long smsId, long recipientid, long time){
 		//Cancel the pi conditionally----------------------
 		Cursor cur = mdba.getPiDetails();
@@ -1210,6 +1231,9 @@ public abstract class AbstractScheduleSms extends Activity{
 			pi = PendingIntent.getBroadcast(AbstractScheduleSms.this, (int)cur.getLong(cur.getColumnIndex(DBAdapter.KEY_PI_NUMBER)), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 			pi.cancel();
 		}
+		//------------------------------------------------------------------------
+		
+		//Setting the Pending Intent with details of new Recipient
 		intent.putExtra("SMS_ID", smsId);
 		intent.putExtra("RECIPIENT_ID", recipientid);
 		intent.putExtra("NUMBER", number);
@@ -1228,9 +1252,10 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	//------------------------------------------
-	//Adapter for smileys Grid
-	//------------------------------------------
+	
+	/**
+	 * @details Adapter for smileys Grid
+	 */
 	private class SmileysAdapter extends BaseAdapter {
 	    private Context mContext;
 
@@ -1269,9 +1294,11 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	//-----------------------------------
-	//Adapter for Auto-complete text
-	//-----------------------------------
+	
+	/**
+	 * @details Adapter for Auto-complete text
+	 */
+	
 	protected class AutoCompleteAdapter extends ArrayAdapter<Contact> implements Filterable {
     	
     	private ArrayList<Contact> mData;
@@ -1295,6 +1322,9 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @overridden method to get filtered contents. This gets fired whenever text in autocomplete is changed.
+		 */
 		public Filter getFilter() {
 			Filter myFilter = new Filter() {
 					
@@ -1305,7 +1335,6 @@ public abstract class AbstractScheduleSms extends Activity{
 					final FilterResults filterResults = new FilterResults();
 					final Activity activity = (Activity) AbstractScheduleSms.this;
 					activity.runOnUiThread(new Runnable() {
-						
 						
 						public void run() {
 							String text= constraint == null ? " " : constraint.toString();
@@ -1339,7 +1368,10 @@ public abstract class AbstractScheduleSms extends Activity{
 					return filterResults;
 				}
 
-				
+				/**
+				 * @details publishes the results the auto-complete's dropdown each time the content of auto-complete text is altered.
+				 * 			Refreshes the dropdown's content.
+				 */
 				protected void publishResults(CharSequence constraints, FilterResults results) {
 					//if there are matches, show the autocomplete dropdown or else don't.
 					if(results != null && results.count > 0) {
@@ -1481,6 +1513,12 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
+	/**
+	 * @details Shortlists the Contacts array down to a sub-list with only those contacts which has a portion matching the provided
+	 * 			'constraint' char-sequence. Matching is done using the Contact's display name as well as all the contact numbers.
+	 * @param constraint: char-sequence to match with. Search string.
+	 * @return shortlisted arraylist of contacts.
+	 */
 	private ArrayList<Contact> shortlistContacts(CharSequence constraint) {
 		
 		String text1 = (String) constraint;
@@ -1495,16 +1533,19 @@ public abstract class AbstractScheduleSms extends Activity{
 		if(text2.length() > 0) {
 	
 			Pattern p = Pattern.compile(text2, Pattern.CASE_INSENSITIVE);
+			//Loop through all the Contacts.
 			for(int i = 0; i < SmsSchedulerApplication.contactsList.size(); i++) {
 				SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number = refineNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(0).number);
 				Matcher m = p.matcher(SmsSchedulerApplication.contactsList.get(i).name);
 				if(m.find()) {
+					//add into shortlist if display name matches with the search string.
 					shortlist.add(SmsSchedulerApplication.contactsList.get(i));
 				} else {
 					for(int j = 0; j< SmsSchedulerApplication.contactsList.get(i).numbers.size(); j++){
 						SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number = AbstractScheduleSms.refineNumber(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number);
 						m = p.matcher(SmsSchedulerApplication.contactsList.get(i).numbers.get(j).number);
 						if(m.find()) {
+							//add if a number matches with the search string.
 							shortlist.add(SmsSchedulerApplication.contactsList.get(i));
 							break;
 						}
@@ -1513,6 +1554,7 @@ public abstract class AbstractScheduleSms extends Activity{
 			}
 		}
 		
+		//Sorting the list based on times-contacted field of contacts.
 		ContentResolver cr = getContentResolver();
 		for(int i = 0; i< shortlist.size(); i++){
 			Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, shortlist.get(i).content_uri_id);
@@ -1536,10 +1578,18 @@ public abstract class AbstractScheduleSms extends Activity{
   	  			}
   	  		}
   	  	}
+  	  	//------------------------------------------------------------------------
   	  	
 		return shortlist;
 	}
 	
+	
+	
+	/**
+	 * @details Refines a given number string. 0-9 are the only valid characters.
+	 * @param number: to refine
+	 * @return refined number string
+	 */
 	public static String refineNumber(String number) {
 		if(number.matches("[0-9]+")){
 			return number;
@@ -1564,9 +1614,10 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	//-----------------------------------
-	//Holder for Auto-complete text
-	//-----------------------------------	
+	
+	/**
+	 * @details Holder for Auto-complete text
+	 */
 	private class AutoCompleteListHolder {
 		TextView nameText;
 		TextView numberText;
@@ -1578,7 +1629,9 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 		
 
-	//------------------function to fetch template data from database----------------------------
+	/**
+	 * @details fetches templates from the database and store it in an ArrayList (templatesArray)
+	 */
 	private void loadTemplates(){
 		mdba.open();
 		Cursor cur = mdba.fetchAllTemplates();
@@ -1593,11 +1646,14 @@ public abstract class AbstractScheduleSms extends Activity{
 			}while(cur.moveToNext());
 		}
 	}
-	//----------------------------------------------------------------end of template data fetch-----
 	
 	
 	
-	//--------------------function to check date validity-------------------------------
+	/**
+	 * @details checks the validity of a date. A date greater than the current system date is valid, else invalid.
+	 * @param date: to validate
+	 * @return boolean: true if valid, false if invalid.
+	 */
 	protected boolean checkDateValidity(Date date){
 		Calendar cal = new GregorianCalendar(date.getYear() + 1900, date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
 		if((cal.getTimeInMillis()-System.currentTimeMillis()) <= 0){
@@ -1609,7 +1665,10 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	
+	/**
+	 *@details Fires a new thread to execute the Actual Scheduling task in background, while showing a wait dialog. On Finish of this
+	 *		   task, this class takes back to the Home Activity.
+	 */
 	protected class AsyncScheduling extends AsyncTask<Void, Void, Void>{
 
 		Dialog dialog;
@@ -1642,6 +1701,10 @@ public abstract class AbstractScheduleSms extends Activity{
 	}
 	
 	
+	
+	/**
+	 * @details Loads the native and private group data into HashMaps.
+	 */
 	protected void loadGroupsData(){
 		
 		DisplayImage displayImage = new DisplayImage();
@@ -1662,6 +1725,8 @@ public abstract class AbstractScheduleSms extends Activity{
         Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
         ContentResolver cr = this.getContentResolver();
         Cursor groupCursor = cr.query(groupsUri, projection, null, null, null);
+        
+        
         if(groupCursor.moveToFirst()){
         	mdba.open();
         	do{
@@ -1670,7 +1735,9 @@ public abstract class AbstractScheduleSms extends Activity{
         		group.put(Constants.GROUP_NAME, groupCursor.getString(groupCursor.getColumnIndex(Groups.TITLE)));
         		new BitmapFactory();
 				group.put(Constants.GROUP_IMAGE, BitmapFactory.decodeResource(getResources(), R.drawable.expander_ic_maximized));
-       			if(recipientIdsForGroup.size()==0){
+       			
+				//if all contacts of the group aren't there in the recipient, set GROUP_CHECK to false, else true.
+				if(recipientIdsForGroup.size()==0){
        				group.put(Constants.GROUP_CHECK, false);
        			}else{
        				for(int i = 0; i< Recipients.size(); i++){
@@ -1683,13 +1750,16 @@ public abstract class AbstractScheduleSms extends Activity{
        				}
        			}
        			
-        		group.put(Constants.GROUP_TYPE, 1);
+        		group.put(Constants.GROUP_TYPE, Constants.GROUP_TYPE_NATIVE);
         		group.put(Constants.GROUP_ID, groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)));
         		
         		ArrayList<HashMap<String, Object>> child = new ArrayList<HashMap<String, Object>>();
         	
         		nativeGroupData.add(group);
+        		
         		boolean hasChild = false;
+        		
+        		//Filling up Child data
         		for(int i = 0; i < SmsSchedulerApplication.contactsList.size(); i++){
         			for(int j = 0; j< SmsSchedulerApplication.contactsList.get(i).groupRowId.size(); j++){
         				if(groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID)) == SmsSchedulerApplication.contactsList.get(i).groupRowId.get(j)){
@@ -1750,7 +1820,7 @@ public abstract class AbstractScheduleSms extends Activity{
        					}
        				}
        			}
-        		group.put(Constants.GROUP_TYPE, 2);
+        		group.put(Constants.GROUP_TYPE, Constants.GROUP_TYPE_PRIVATE);
         		group.put(Constants.GROUP_ID, groupsCursor.getString(groupsCursor.getColumnIndex(DBAdapter.KEY_GROUP_ID)));
         		
         		privateGroupData.add(group);
@@ -1761,6 +1831,7 @@ public abstract class AbstractScheduleSms extends Activity{
         		
         		boolean hasChild = false;
         		
+        		//filling up child data.
         		for(int i = 0; i< contactIds.size(); i++){
         			for(int j = 0; j< SmsSchedulerApplication.contactsList.size(); j++){
         				if(contactIds.get(i)==SmsSchedulerApplication.contactsList.get(j).content_uri_id){
@@ -1802,30 +1873,42 @@ public abstract class AbstractScheduleSms extends Activity{
 
 
 
-
+	
+	/**
+	 * @details Carries out the Actual task of Scheduling. It is executed in a separate thread using a AsyncTask as its a heavy task.
+	 * 			
+	 */
 	protected void doSmsSchedulingTask(){
+		//create display date out of the date selection, using a proper format
 		Calendar cal = new GregorianCalendar(processDate.getYear() + 1900, processDate.getMonth(), processDate.getDate(), processDate.getHours(), processDate.getMinutes());
 		String dateString = sdf.format(cal.getTime());
+		//---------------------------------------------------------------------
 
 		ArrayList<String> numbers = new ArrayList<String>();
 		parts = smsManager.divideMessage(messageText.getText().toString());
 
+		//create serialized string for the selected Repeat Scheme in order to store it in database. 
 		String repeatHashString = new MyGson().serializeRepeatHash(defaultRepeatHash);
 
+		
 		mdba.open();
+		//Create an SMS in database.
 		long smsId = mdba.scheduleSms(messageText.getText().toString(), dateString, parts.size(), cal.getTimeInMillis(), defaultRepeatMode, repeatHashString);
 
 		boolean isDraft = false;
 
+		//if the SMS is a Draft, set the Draft Flag in Database.
 		if(Recipients.size()==0 || messageText.getText().toString().matches("(''|[' ']*)")){
 			mdba.setAsDraft(smsId);
 			isDraft = true;
 		}
+		
+		//Flurry--------------------------------------------------------
 		HashMap<String, String> params = new HashMap<String, String>();
 		if(isDraft){
 			params.put("Type", "Draft");
 		}else{
-			if(mode==2){
+			if(mode==MODE_EDIT){
 				params.put("Type", "Edited");
 			}else{
 				params.put("Type", "New");
@@ -1834,25 +1917,41 @@ public abstract class AbstractScheduleSms extends Activity{
 		params.put("Recipients", String.valueOf(Recipients.size()));
 		params.put("Message Size", String.valueOf(parts));
 		FlurryAgent.logEvent("Message Scheduled", params);
+		//--------------------------------------------------------------
 		
-		if(mode==2){
+		//if "Editing an SMS", delete it in order to create a new one to replace it thus, replicating an EDIT process.
+		if(mode==MODE_EDIT){
 			mdba.deleteSms(editedSms, AbstractScheduleSms.this);
 		}
+		
 		if(Recipients.size()==0){
-			Recipient recipient = new Recipient(-1, 1, " ", -1, -1, -1, -1, null);  // for adding as a fake span to create a draft
+			// for adding as a fake recipient to create a draft
+			Recipient recipient = new Recipient(Constants.DEFAULT_RECIPIENT_ID,
+												Constants.RECIPIENT_TYPE_NUMBER, " ",
+												Constants.RECIPIENT_CONTACT_ID_FOR_NUMBER,
+												Constants.GENERIC_DEFAULT_INT_VALUE,
+												Constants.GENERIC_DEFAULT_INT_VALUE,
+												Constants.GENERIC_DEFAULT_INT_VALUE, null);  
+			 
 			Recipients.add(recipient);
 		}
 		
+		//Storing the Recipients in the Database.
 		for(int i = 0; i< Recipients.size(); i++){
-			if(Recipients.get(i).type == 2){
+			if(Recipients.get(i).type == Constants.RECIPIENT_TYPE_CONTACT){
+				//case: Recipient is a Contact.
 				for(int j = 0; j< SmsSchedulerApplication.contactsList.size(); j++){
 					if(Recipients.get(i).contactId == SmsSchedulerApplication.contactsList.get(j).content_uri_id){
 						numbers.add(SmsSchedulerApplication.contactsList.get(j).numbers.get(0).number);
 						long receivedRecipientId = mdba.addRecipient(smsId, Recipients.get(i).number, SmsSchedulerApplication.contactsList.get(j).name, 2, SmsSchedulerApplication.contactsList.get(j).content_uri_id);
+						
+						//if recipient isn't fake (for draft), add it as a Recent contact
 						if(!Recipients.get(i).displayName.equals(" ")){
 							mdba.addRecentContact(Recipients.get(i).contactId, Recipients.get(i).number);
 						}
 						
+						//If SMS is not a Draft and its firetime is less than the current fire of in Pending Intent, update the Pending
+						//intent with the details of the current Recipient.
 						if(!(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) && !(messageText.getText().toString().matches("(''|[' ']*)"))){
 							if(mdba.getCurrentPiFiretime() == -1){
 								handlePiUpdate(Recipients.get(i).number, smsId, receivedRecipientId, cal.getTimeInMillis());
@@ -1862,17 +1961,24 @@ public abstract class AbstractScheduleSms extends Activity{
 						}
 						
 						Recipients.get(i).recipientId = receivedRecipientId;
+						
+						//Adding Recipient-Group-relationship for all the groups the recipients is included from.
 						for(int k = 0; k< Recipients.get(i).groupIds.size(); k++){
 							mdba.addRecipientGroupRel(Recipients.get(i).recipientId, Recipients.get(i).groupIds.get(k), Recipients.get(i).groupTypes.get(k));
 						}
 					}
 				}
-			}else if(Recipients.get(i).type == 1){
+			}else if(Recipients.get(i).type == Constants.RECIPIENT_TYPE_NUMBER){
+				//case: Recipient is a Number.
 				long receivedRecipientId = mdba.addRecipient(smsId, Recipients.get(i).displayName, Recipients.get(i).displayName, 1, -1);
+				
+				//if recipient isn't fake (for draft), add it as a Recent contact
 				if(!Recipients.get(i).displayName.equals(" ")){
-					mdba.addRecentContact(-1, Recipients.get(i).displayName);
+					mdba.addRecentContact(Constants.GENERIC_DEFAULT_INT_VALUE, Recipients.get(i).displayName);
 				}
 				
+				//If SMS is not a Draft and its firetime is less than the current fire of in Pending Intent, update the Pending
+				//intent with the details of the current Recipient.
 				if(!((Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)"))){
 					if(mdba.getCurrentPiFiretime() == -1){
 						handlePiUpdate(Recipients.get(i).displayName, smsId, receivedRecipientId, cal.getTimeInMillis());
@@ -1882,7 +1988,8 @@ public abstract class AbstractScheduleSms extends Activity{
 				}
 				
 				Recipients.get(i).recipientId = receivedRecipientId;
-				
+
+				//Adding Recipient-Group-relationship for all the groups the recipients is included from.
 				for(int k = 0; k< Recipients.get(i).groupIds.size(); k++){
 					mdba.addRecipientGroupRel(Recipients.get(i).recipientId, Recipients.get(i).groupIds.get(k), Recipients.get(i).groupTypes.get(k));
 				}
@@ -1893,9 +2000,14 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
+	/**
+	 * @details When "Schedule" button is clicked, this function is fired. It first checks if both 'Message text' and 'Recipients' are
+	 * 			provided. If so, it fires an AsyncTask called 'AsyncScheduling'. Otherwise, shows up an appropriate dialog.
+	 */
 	protected void onScheduleButtonPressTasks(){
 		
 		if(Recipients.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
+			//case: neither message nor recipients is provided.
 			final Dialog d = new Dialog(AbstractScheduleSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.confirmation_dialog);
@@ -1927,6 +2039,7 @@ public abstract class AbstractScheduleSms extends Activity{
 			d.show();
 		}else
 		if(Recipients.size()==0){
+			//case: no recipients provided. The Dialog gives options to either save as Draft or to add recipients.
 			final Dialog d = new Dialog(AbstractScheduleSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.confirmation_dialog);
@@ -1957,6 +2070,7 @@ public abstract class AbstractScheduleSms extends Activity{
 			d.show();
 			
 		}else if(messageText.getText().toString().matches("(''|[' ']*)")){
+			//case: if the message text is left empty. Dialog gives options to either save as Draft or to write a message.
 			final Dialog d = new Dialog(AbstractScheduleSms.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setContentView(R.layout.confirmation_dialog);
@@ -1995,6 +2109,14 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	//------------------Functions and classes related to new autocomple implementation--------------------
+	/**
+	 *@details Corresponds to a Row of Capsule-Views. This is a wrapper over a LinearLayout (ll) to let track the views it holds and
+	 *		   their physical width.
+	 *
+	 *			ll: (Horizontal LinearLayout) The actual representation of a row to hold Capsule-Views.
+	 *			views: (ArrayList<View>) List of Views that the Row contains.
+	 *			elementsWidth: (float) Sum of Physical width of elements the Row holds. Includes the intermediate spaces.
+	 */
 	class Row{
 		LinearLayout ll;
 		ArrayList<View> views = new ArrayList<View>();
@@ -2039,7 +2161,10 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	
+	/**
+	 * @detail creates and displays Views for each Recipient in the Recipients array. Then point the reference "firstRow" to the row at
+	 * 		   position '0' in Rows ArrayList
+	 */
 	public void displayViews(){
 		for(Recipient r : Recipients){
 			if(!r.displayName.equals(" ")){
@@ -2051,6 +2176,11 @@ public abstract class AbstractScheduleSms extends Activity{
 	}
 	
 	
+	/**
+	 * @detail Inflates a Tablet shaped View for the recipient passed as parameter. Sets onClickListerners 
+	 * @param recipient
+	 * @return a Capsule-View for the recipient.
+	 */
 	public View createElement(final Recipient recipient){
 		final View view = inflater.inflate(R.layout.element, null);
 		
@@ -2075,7 +2205,6 @@ public abstract class AbstractScheduleSms extends Activity{
 		
 		containerLayout.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View v) {
 				HashMap<String, String> params = new HashMap<String, String>();
 				params.put("From", "Autocomplete Element Click");
@@ -2087,12 +2216,18 @@ public abstract class AbstractScheduleSms extends Activity{
 			}
 		});
 		
-		
 		return view;
 	}
 	
 	
 	
+	/**
+	 * @detail ellipsizes the DisplayName after a particular length which depends on the Device details. This limited sized display
+	 * 		   name lets us assemble the Tablet-Views conveniently inside the container layout.
+	 * @param displayName
+	 * @param contactId
+	 * @return ellipsized displayName
+	 */
 	private String ellipsizeName(String displayName, long contactId) {
 		if(contactId!=-2 && paint.measureText(displayName)>70){
 			int i;
@@ -2108,8 +2243,17 @@ public abstract class AbstractScheduleSms extends Activity{
 
 	
 
+	/**
+	 * @detail Removes a Capsule-View from its row and rearranges the new set of views. If the container row is the current (or last) row, it 
+	 *         handles if the numberText field is the only element in the row. If so, it moves the numberText to the previous Row and
+	 *         makes this row the last row after deleting the former last row.
+	 *         If the concerned Capsule-View is the only view there, the hint is shown in the numberText after deleting the 
+	 *         Capsule-View.
+	 * @param view: Capsule-View to remove.
+	 */
 	public void removeElement(View view){
 		if(((LinearLayout)(view.getParent()))!=currentRow.ll){
+			//case: parent row isn't the current (last) row.
 			LinearLayout ll = ((LinearLayout)(view.getParent()));
 			Row row = null;
 			View fromView = null;
@@ -2132,17 +2276,20 @@ public abstract class AbstractScheduleSms extends Activity{
 				}
 			}
 		}else{
+			//case: parent row is the last row
 			currentRow.elementsWidth = currentRow.elementsWidth - view.getWidth()/dpi;
 			((LinearLayout)(view.getParent())).removeView(view);
 			currentRow.views.remove(view);
 			if(currentRow.views.size()==0){
 				currentRow.elementsWidth = 0;
 				if(rows.size()==1){
+					//case: parent row is first and last at the same time and has no Tablet-Views. Set Hint.
 					numbersText.setHint("Recipients");
 				}
 			}
 			
 			if(numbersTextHolder!=null){
+				//case: if numbersTextHolder Row is present and there is space available in the 'currentRow', move numbersText to currentRow and remove numbersTextHolder
 				if((currentRow.elementsWidth + numbersText.getWidth())<widthOfContainerInDp){
 					numbersTextHolder.ll.removeView(numbersText);
 					hostlayout.removeView(numbersTextHolder.ll);
@@ -2151,13 +2298,16 @@ public abstract class AbstractScheduleSms extends Activity{
 				}
 			}
 			if(currentRow.views.size()==0 && rows.size()>1){
+				//case: if currentRow is not the first row and is empty, then move numbersText to previous row, remove the currentRow, make previous row the the 'currentRow'.  
 				currentRow.ll.removeView(numbersText);
 				hostlayout.removeView(currentRow.ll);
 				rows.remove(currentRow);
 				currentRow = rows.get(rows.size()-1);
 				if((rows.get(rows.size()-1).elementsWidth + numbersText.getWidth())<widthOfContainerInDp){
+					//case: if numberText can be adjusted inside the currentRow
 					currentRow.ll.addView(numbersText);
 				}else{
+					//case: if numberText can't be adjusted inside the currentRow, recreate numbersTextHolder and put numbersText in it.
 					Row newRow = new Row(false);
 					newRow.ll.addView(numbersText);
 					numbersTextHolder = newRow;
@@ -2172,11 +2322,15 @@ public abstract class AbstractScheduleSms extends Activity{
 			numbersText.requestFocus();
 			numbersText.bringToFront();
 		}
-			
 	}
 	
 	
 	
+	/**
+	 * @detail removes a recipient from groups when the recipient is removed. It is removed from both the native and sms-scheduler groups.
+	 * @param id: of the contact to remove.
+	 * @param name: display name of contact to remove.
+	 */
 	public void removeRecipientFromGroups(long id, String name){
 		for(int j = 0; j< nativeGroupData.size(); j++){
 			for(int k = 0; k< nativeChildData.get(j).size(); k++){
@@ -2195,7 +2349,13 @@ public abstract class AbstractScheduleSms extends Activity{
 	}
 	
 	
+	
+	/**
+	 * @details Adds a Capsule-View to the currentRow if it can accommodate. Otherwise, creates a newRow, makes it currentRow and add the Capsule-View to it.
+	 * @param view: view to add.
+	 */
 	public void addView(View view){
+		
 		if(widthOfContainerInDp==0){
 			widthOfContainerInDp = (int)(currentRow.ll.getWidth()/dpi);
 		}
@@ -2238,7 +2398,15 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
+	/**
+	 * @details rearranges all the Capsule-views that are there after the Capsule-View that is removed. It first backs-up all the 
+	 * 			Capsule-views that are there after the removed Capsule-view. Removes them. Then adds them back properly into Rows.
+	 * @param i: ith row, from which the Capsule-View is removed.
+	 * @param j: jth view is Capsule-view following the removed Capsule-View in the ith row.
+	 */
 	public void rearrange(int i, int j){
+		
+		//Backing up all the Views, starting from jth View of ith Row to the last View.
 		views.clear();
 		for(int k = j; k< rows.get(i).views.size(); k++){
 			views.add(rows.get(i).views.get(k));
@@ -2248,7 +2416,10 @@ public abstract class AbstractScheduleSms extends Activity{
 				views.add(rows.get(k).views.get(l));
 			}
 		}
+		//-------------------------------------------------------------------------------
 		
+		
+		//Removing the Views-------------------------------------------------------------
 		for(int k = j; k< rows.get(i).views.size();){
 			rows.get(i).ll.removeView(rows.get(i).views.get(k));
 			rows.get(i).elementsWidth = rows.get(i).elementsWidth - rows.get(i).views.get(k).getWidth();
@@ -2273,6 +2444,10 @@ public abstract class AbstractScheduleSms extends Activity{
 			numbersTextHolder.ll.removeView(numbersText);
 			numbersTextHolder = null;
 		}
+		//--------------------------------------------------------------------------------
+		
+		
+		//Adding the backed up Capsule-Views----------------------------------------------
 		rows.get(i).ll.addView(numbersText);
 		currentRow = rows.get(i);
 		currentRow.elementsWidth = 0;
@@ -2290,10 +2465,14 @@ public abstract class AbstractScheduleSms extends Activity{
 			hostlayout.addView(numbersTextHolder.ll);
 			numbersText.requestFocus();
 		}
+		//---------------------------------------------------------------------------------
 	}
 	
 	
 	
+	/**
+	 * @detail Refreshes the Recipient Views in the Autocomplete TextBox. Creates the views from the scratch.
+	 */
 	public void refreshRecipientViews(){
 		if(numbersTextHolder!=null){
     		numbersTextHolder.ll.removeView(numbersText);
@@ -2345,8 +2524,6 @@ public abstract class AbstractScheduleSms extends Activity{
 		MyAdapter(){
     		super(AbstractScheduleSms.this, R.layout.manage_groups_list_row, prunedRecipients);
     	}
-    	
-    	
     	
     	public View getView(final int position, View convertView, ViewGroup parent) {
     		final TemplateViewHolder holder;
@@ -2542,15 +2719,26 @@ public abstract class AbstractScheduleSms extends Activity{
 			doInitialSetup();
 		}
 		
+		
+		/**
+		 * @detail Initializes all the UI elements for Repeat Dialog
+		 */
 		private void initializeViews() {
-			summaryText 			= (TextView) 	d.findViewById(R.id.summary_text);
-
+			//Spinner that holds the value of the mode of Repeat: No Repeat, Daily, Weekly, Monthly or Yearly
 			repeatModeSpinner 		= (Spinner) 	d.findViewById(R.id.repeat_mode_spinner);
+			//------------------------------------------------------------------------------------------------
 			
+			//repeatFrequencyLayout: Layout that contains the Elements for Repeat Frequency.
+			//A Label
+			//repeatFrequencySpinner: spinner to holds the frequency, range depends on selected repeatMode.
+			//repeatUnit: Unit for repeat frequency : Days, Weeks, Months, etc
 			repeatFrequencyLayout	= (LinearLayout)d.findViewById(R.id.repeat_freq_layout);
 			repeatFrequencySpinner 	= (Spinner) 	d.findViewById(R.id.repeat_freq_spinner);
 			repeatUnitText 			= (TextView) 	d.findViewById(R.id.repeat_unit_text);
+			//----------------------------------------------------------------------------------------
 			
+			//weekdaysLayout: Layout to hold the checkboxes for days of the week. Shows only when selected repeatMode is Weekly
+			//7 checkboxes: one for each weekday
 			weekdaysLayout 			= (LinearLayout)d.findViewById(R.id.weekdays_layout);
 			cbSunday 				= (CheckBox) 	d.findViewById(R.id.cb_sunday);
 			cbMonday 				= (CheckBox) 	d.findViewById(R.id.cb_monday);
@@ -2559,29 +2747,45 @@ public abstract class AbstractScheduleSms extends Activity{
 			cbThursday 				= (CheckBox) 	d.findViewById(R.id.cb_thursday);
 			cbFriday 				= (CheckBox) 	d.findViewById(R.id.cb_friday);
 			cbSaturday 				= (CheckBox) 	d.findViewById(R.id.cb_saturday);
+			//-------------------------------------------------------------------------------------------
 			
+			//End Mode UI ---------------------------------------------------------------------------------
+			//Radios to choose between End Modes: Never, After(few occurances) and On (a date)---
 			endNeverRadio			= (RadioButton) d.findViewById(R.id.end_never_radio);
 			endAfterRadio			= (RadioButton) d.findViewById(R.id.end_after_radio);
 			endOnRadio				= (RadioButton) d.findViewById(R.id.end_on_radio);
+			//-----------------------------------------------------------------------------------
 			
-			repeatOccurSpinner		= (Spinner) 	d.findViewById(R.id.repeat_occr_spinner);
-			dateText				= (TextView) 	d.findViewById(R.id.date_text);
+			repeatOccurSpinner		= (Spinner) 	d.findViewById(R.id.repeat_occr_spinner); //Spinner for frequency if endAfter Mode is selected
+			dateText				= (TextView) 	d.findViewById(R.id.date_text); //To select date when endOn Mode is selected
+			//----------------------------------------------------------------------------------------------
+			
+			summaryText 			= (TextView) 	d.findViewById(R.id.summary_text); //To hold the summary of Selected Repeat scheme
 			
 			doneButton				= (Button) 		d.findViewById(R.id.repeat_ok_button);
 			cancelButton			= (Button) 		d.findViewById(R.id.repeat_cancel_button);
 		}
 		
+		
+		/**
+		 * @detail runs only one time when repeat dialog is opened up for a Message (New, Edit or Draft).
+		 * 		   takes care of the initial scene to be set up. Sets up the listeners for all the UI elements.
+		 */
 		private void doInitialSetup() {
+			//Compile the modes in an arraylist
 			modes.add("No Repeat");
 			modes.add("Daily");
 			modes.add("Weekly");
 			modes.add("Monthly");
 			modes.add("Yearly");
 			
+			//Setting adapter for repeatModeSpinner ------------------------------------
 			ArrayAdapter<String> modesAdapter = new ArrayAdapter<String>(AbstractScheduleSms.this, android.R.layout.simple_spinner_item, modes);
 			modesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			repeatModeSpinner.setAdapter(modesAdapter);
+			//--------------------------------------------------------------------------
 			
+			//Setting adapter for repeatOccurSpinner------------------------------------
 			for(int i = 1; i<= 60; i++){
 				repeatOccurValues.add(i);
 			}
@@ -2592,6 +2796,7 @@ public abstract class AbstractScheduleSms extends Activity{
 			ArrayAdapter<Integer> repeatOccurAdapter = new ArrayAdapter<Integer>(AbstractScheduleSms.this, android.R.layout.simple_spinner_item, repeatOccurValues);
 			repeatOccurAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			repeatOccurSpinner.setAdapter(repeatOccurAdapter);
+			//--------------------------------------------------------------------------
 			
 			
 			cancelButton.setOnClickListener(new OnClickListener() {
@@ -2642,12 +2847,14 @@ public abstract class AbstractScheduleSms extends Activity{
 			
 			
 			
+			
 			dateText.setOnClickListener(new OnClickListener() {
 				
 				public void onClick(View v) {
 					showDatePickerDialog(Calendar.getInstance());
 				}
 			});
+			
 			
 			dateText.setOnKeyListener(new OnKeyListener() {
 				
@@ -2665,12 +2872,12 @@ public abstract class AbstractScheduleSms extends Activity{
 
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					modeTemp = position;
-					switch (position){
-						case 0:
+					switch (modeTemp){
+						case Constants.REPEAT_MODE_NO_REPEAT:
 							setupNoRepeatMode(); 
 							repeatOccurSpinner.setSelection(0);
 							break;
-						case 1:
+						case Constants.REPEAT_MODE_DAILY:
 							setupDailyRepeatMode();
 							
 							if(isInitialSetup){
@@ -2684,7 +2891,7 @@ public abstract class AbstractScheduleSms extends Activity{
 								repeatOccurSpinner.setSelection(0);
 							
 							break;
-						case 2:
+						case Constants.REPEAT_MODE_WEEKLY:
 							setupWeeklyRepeatMode();
 							
 							if(isInitialSetup){
@@ -2716,7 +2923,7 @@ public abstract class AbstractScheduleSms extends Activity{
 								repeatOccurSpinner.setSelection(0);
 							}
 							break;
-						case 3:
+						case Constants.REPEAT_MODE_MONTHLY:
 							setupMonthlyRepeatMode();
 							
 							if(isInitialSetup) {
@@ -2729,7 +2936,7 @@ public abstract class AbstractScheduleSms extends Activity{
 								repeatOccurSpinner.setSelection(0);
 							
 							break;
-						case 4:
+						case Constants.REPEAT_MODE_YEARLY:
 							setupYearlyRepeatMode();
 							break;
 						default:
@@ -2807,6 +3014,9 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @detail sets up the repeat dialog for NO REPEAT mode
+		 */
 		private void setupNoRepeatMode() {
 			weekdaysLayout.setVisibility(View.GONE);
 			repeatFrequencySpinner.setSelection(0);
@@ -2824,7 +3034,9 @@ public abstract class AbstractScheduleSms extends Activity{
 			updateSummary();
 		}
 		
-		
+		/**
+		 * @detail sets up the repeat dialog for DAILY mode
+		 */
 		private void setupDailyRepeatMode() {
 			weekdaysLayout.setVisibility(View.GONE);
 			
@@ -2861,6 +3073,9 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @detail sets up the repeat dialog for WEEKLY mode
+		 */
 		private void setupWeeklyRepeatMode() {
 			ArrayList<Integer> items = new ArrayList<Integer>();
 			for(int i = 1; i<= 5; i++){
@@ -2894,6 +3109,9 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @detail sets up the repeat dialog for MONTHLY mode
+		 */
 		private void setupMonthlyRepeatMode() {
 			weekdaysLayout.setVisibility(View.GONE);
 			
@@ -2930,6 +3148,9 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @detail sets up the repeat dialog for YEARLY mode
+		 */
 		private void setupYearlyRepeatMode(){
 			weekdaysLayout.setVisibility(View.GONE);
 			repeatFrequencySpinner.setSelection(0);
@@ -2946,6 +3167,11 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @detail shows up a DatePicker Dialog to select date for EndOn mode, when user touches the EditText that activates when
+		 *         EndOnRadio is selected
+		 * @param c
+		 */
 		private void showDatePickerDialog(final Calendar c){
 			
 			final Date date = c.getTime();
@@ -2966,6 +3192,10 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @detail sets formatted date into the EditText against EndOnRadio. 
+		 * @param c
+		 */
 		private void setDateText(Calendar c){
 			Date date = c.getTime();
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
@@ -2975,6 +3205,9 @@ public abstract class AbstractScheduleSms extends Activity{
 		
 		
 		
+		/**
+		 * @detail sets up the repeat dialog for NEVER END mode
+		 */
 		private void selectEndNeverRadio(){
 			endMode = Constants.END_MODE_NEVER;
 			endNeverRadio.setChecked(true);
@@ -2986,6 +3219,9 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @detail sets up the repeat dialog for END AFTER mode
+		 */
 		private void selectEndAfterRadio(){
 			endMode = Constants.END_MODE_AFTER;
 			endAfterRadio.setChecked(true);
@@ -2997,6 +3233,9 @@ public abstract class AbstractScheduleSms extends Activity{
 		}
 		
 		
+		/**
+		 * @detail sets up the repeat dialog for END ON mode
+		 */
 		private void selectEndOnRadio(){
 			endMode = Constants.END_MODE_ON;
 			endOnRadio.setChecked(true);
@@ -3009,40 +3248,47 @@ public abstract class AbstractScheduleSms extends Activity{
 
 
 
+		/**
+		 * @detail Whenever the user alters the repeat criteria in the Repeat Dialog, the summaryString in the summaryText modifies to
+		 *         reflect the changes. It reads the current selection and through a series of switch statements, creates a summary
+		 *         string and updates it.
+		 */
 		private void updateSummary(){
 
 			String summaryString = "";
 
+			//Switch for repeatMode. Decides upon the first half of the summary text.
 			switch (repeatModeSpinner.getSelectedItemPosition()){
-				case 0:
+				case Constants.REPEAT_MODE_NO_REPEAT:
 					summaryString += "No Repeat";
 					break;
-				case 1:
+				case Constants.REPEAT_MODE_DAILY:
 					if((Integer)repeatFrequencySpinner.getSelectedItem() > 1)
 						summaryString += "Repeats Daily, after every " + repeatFrequencySpinner.getSelectedItem() + " days, ";
 					else
 						summaryString += "Repeats Daily, ";
 					break;
-				case 2:
+				case Constants.REPEAT_MODE_WEEKLY:
 					if((Integer)repeatFrequencySpinner.getSelectedItem() > 1)
 						summaryString += "Repeats Weekly, after every " + repeatFrequencySpinner.getSelectedItem() + " weeks, ";
 					else
 						summaryString += "Repeats Weekly, ";
 					break;
-				case 3:
+				case Constants.REPEAT_MODE_MONTHLY:
 					if((Integer)repeatFrequencySpinner.getSelectedItem() > 1)
 						summaryString += "Repeats Monthly, after every " + repeatFrequencySpinner.getSelectedItem() + " months, ";
 					else
 						summaryString += "Repeats Monthly, ";
 					break;
-				case 4:
+				case Constants.REPEAT_MODE_YEARLY:
 					summaryString += "Repeats Yearly, ";
 					break;
 				default:
 					break;
 			}
 
-			if(repeatModeSpinner.getSelectedItemPosition()>0){
+			//Switch for EndMode. Decides upon later half of the summary text
+			if(repeatModeSpinner.getSelectedItemPosition() != Constants.REPEAT_MODE_NO_REPEAT){
 				switch (endMode){
 				case Constants.END_MODE_NEVER:
 					summaryString += "never Ends.";
@@ -3058,6 +3304,7 @@ public abstract class AbstractScheduleSms extends Activity{
 				}
 			}
 
+			//Update the new summaryString in the UI
 			summaryText.setText(summaryString);
 		}
 
@@ -3067,17 +3314,22 @@ public abstract class AbstractScheduleSms extends Activity{
 			defaultRepeatHash = constructHash();
 		}
 
+		/**
+		 * @detail creates hash for the current repeat scheme. This hash is later serialized and stored in the database. Which later,
+		 * 		   in turn, deserializes to get the saved repeat scheme.
+		 * @return repeatHash: contains detail of repeat scheme
+		 */
 		private HashMap<String, Object> constructHash(){
 			ArrayList<Boolean> weekBools = new ArrayList<Boolean>();
 			
 			int newEndMode;
 			
 			if(endNeverRadio.isChecked()){
-				newEndMode = 0;
+				newEndMode = Constants.END_MODE_NEVER;
 			}else if(endAfterRadio.isChecked()){
-				newEndMode = 1;
+				newEndMode = Constants.END_MODE_AFTER;
 			}else{
-				newEndMode = 2;
+				newEndMode = Constants.END_MODE_ON;
 			}
 			
 			weekBools.add(cbSunday.isChecked()); weekBools.add(cbMonday.isChecked());

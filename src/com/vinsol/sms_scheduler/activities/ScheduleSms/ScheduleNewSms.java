@@ -31,7 +31,7 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		
 		FlurryAgent.logEvent("Schedule New Sms Activity Started");
 		
-		mode = 1;
+		mode = MODE_NEW;
 		
 		ArrayList<Boolean> weekBools = new ArrayList<Boolean>();
 		

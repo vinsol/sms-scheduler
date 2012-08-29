@@ -51,7 +51,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		FlurryAgent.logEvent("Edit Scheduled Sms Activity started");
 		
-		mode = 2;
+		mode = MODE_EDIT;
 		
 		headerText	= (TextView)findViewById(R.id.header);
 		
@@ -97,7 +97,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		}
 		
 		if(isReschedule && !isDraft){
-			mode = 1;
+			mode = MODE_NEW;
 			headerText.setText("Reschedule SMS");
 			processDate = new Date(System.currentTimeMillis());
 		}

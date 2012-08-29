@@ -7,6 +7,8 @@ package com.vinsol.sms_scheduler;
 
 public class Constants {
 
+	public static final int GENERIC_DEFAULT_INT_VALUE = -1;
+	
 	//------------ Statics for HashMap to store detail of Contact Groups to show in Expandable list --------------
 	public static final String GROUP_NAME = "group_name";
 	public static final String GROUP_CHECK = "group_check";
@@ -59,4 +61,15 @@ public class Constants {
 	public static final int RECIPIENT_OPERATED_FLAG_SET = 1;
 	public static final int RECIPIENT_OPERATED_FLAG_UNSET = 0;
 	//-----------------------------------------------------------
+	
+	//-----------------Statics for Recipient Defaults -----------------------------
+	public static final int DEFAULT_RECIPIENT_ID = -1;
+	public static final int RECIPIENT_TYPE_NUMBER = 1;
+	public static final int RECIPIENT_TYPE_CONTACT = 2;
+	public static final int RECIPIENT_CONTACT_ID_FOR_NUMBER = -1;
+	//-----------------------------------------------------------------------------
+	
+	//-----------------Statics for group types --------------------------
+	public static final int GROUP_TYPE_NATIVE = 1;
+	public static final int GROUP_TYPE_PRIVATE = 2;
 }

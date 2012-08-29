@@ -75,9 +75,10 @@ public class Home extends Activity {
 	private ImageView				newSmsButton;
 	private ImageView				optionsImageButton;
 	
+	//For the UI when there's no item in the list
 	private LinearLayout blankListLayout;
-	
 	private Button blankListAddButton;
+	//-------------------------------------------
 	
 	private SimpleExpandableListAdapter mAdapter;
 	private ArrayList<HashMap<String, String>> headerData;
@@ -113,6 +114,8 @@ public class Home extends Activity {
 	
 	private boolean showMessage;
 	
+	SharedPreferences contactData;
+    
 	
 	//--------new contactload implementation vars---------//
 	public static String PREFS_NAME = "MyPrefsFile";
@@ -122,6 +125,9 @@ public class Home extends Activity {
 	//-------------------------------------------------------
 	
 	
+	/**
+	 * @details This broadcast fires up at any change in status of a recipient (one single message).
+	 */
 	private BroadcastReceiver mUpdateReceiver = new BroadcastReceiver() {
 		
 		public void onReceive(Context context, Intent intent) {
@@ -132,8 +138,10 @@ public class Home extends Activity {
 	
 	
 	
+	/**
+	 * @details This broadcast fires up when The data to be displayed in the expandable list completes loading up.
+	 */
 	private BroadcastReceiver mDataLoadedReceiver = new BroadcastReceiver() {
-		
 		
 		public void onReceive(Context context, Intent intent) {
 			if(dataLoadWaitDialog.isShowing()){
@@ -148,15 +156,11 @@ public class Home extends Activity {
 	};
 	
 	
-	SharedPreferences contactData;
-    
-	
-	
-    
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
         
+        //if the native Contact list has been modified, the "isChanged" field returns "1" and the data in Contacts data structure reloads -------
         contactData = getSharedPreferences(PREFS_NAME, 0);
         String isChanged = contactData.getString("isChanged", "1");
         
@@ -166,6 +170,7 @@ public class Home extends Activity {
         	ContactsAsync contactsAsync = new ContactsAsync();
     		contactsAsync.execute();
         }
+        //---------------------------------------------------------------------------------------------------------------------------------------
         
         newSmsButton 		= (ImageView) findViewById(R.id.main_new_sms_imgbutton);
         explList 	 		= (ExpandableListView) findViewById(R.id.main_expandable_list);
@@ -187,9 +192,7 @@ public class Home extends Activity {
 			
 			public void onClick(View arg0) {
 				FlurryAgent.logEvent("New SMS");
-				if(SmsSchedulerApplication.screenWidthInPixels==0){
-					SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
-				}
+				
 				Intent intent = new Intent(Home.this, ScheduleNewSms.class);
 				startActivity(intent);
 			}
@@ -200,9 +203,7 @@ public class Home extends Activity {
 			
 			public void onClick(View arg0) {
 				FlurryAgent.logEvent("New SMS");
-				if(SmsSchedulerApplication.screenWidthInPixels==0){
-					SmsSchedulerApplication.screenWidthInPixels = blankListLayout.getWidth();
-				}
+				
 				Intent intent = new Intent(Home.this, ScheduleNewSms.class);
 				startActivity(intent);
 			}
@@ -214,9 +215,7 @@ public class Home extends Activity {
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
 				if(groupPosition == 1){
 					FlurryAgent.logEvent("Edit Scheduled Message");
-					if(SmsSchedulerApplication.screenWidthInPixels==0){
-						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
-					}
+					
 					Intent intent = new Intent(Home.this, EditScheduledSms.class);
 					intent.putExtra("SMS DATA", scheduledSMSs.get(childPosition));
 					startActivity(intent);
@@ -225,9 +224,7 @@ public class Home extends Activity {
 					openContextMenu(view);
 				}else if(groupPosition == 0){
 					FlurryAgent.logEvent("Edit Draft");
-					if(SmsSchedulerApplication.screenWidthInPixels==0){
-						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
-					}
+					
 					Intent intent = new Intent(Home.this, EditScheduledSms.class);
 					intent.putExtra("SMS DATA", drafts.get(childPosition));
 					startActivity(intent);
@@ -358,10 +355,6 @@ public class Home extends Activity {
 			        break;
 			     
 				case MENU_RESCHEDULE:
-					if(SmsSchedulerApplication.screenWidthInPixels==0){
-						SmsSchedulerApplication.screenWidthInPixels = explList.getWidth();
-					}
-					
 					FlurryAgent.logEvent("Home: ContextMenu: Rescheduling SMS");
 					Intent intent = new Intent(Home.this, EditScheduledSms.class);
 					intent.putExtra("SMS DATA", sentSMSs.get(childPos));
