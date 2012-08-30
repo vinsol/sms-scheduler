@@ -8,6 +8,7 @@ package com.vinsol.sms_scheduler;
 public class Constants {
 
 	public static final int GENERIC_DEFAULT_INT_VALUE = -1;
+	public static final String BLANK_OR_ONLY_SPACES_PATTERN = "^(''|[' ']*)$";
 	
 	//------------ Statics for HashMap to store detail of Contact Groups to show in Expandable list --------------
 	public static final String GROUP_NAME = "group_name";

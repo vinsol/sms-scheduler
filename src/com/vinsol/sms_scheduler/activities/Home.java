@@ -100,6 +100,10 @@ public class Home extends Activity {
 	private final int MENU_RESCHEDULE = R.id.home_options_reschedule;
 	private final int MENU_ADD_TO_TEMPLATE = R.id.home_options_add_to_template;
 	
+	private final int GROUP_DRAFT = 0;
+	private final int GROUP_SCHEDULED = 1;
+	private final int GROUP_SENT = 2;
+	
 	private Dialog sentInfoDialog;
 	
 	private Dialog dataLoadWaitDialog;
@@ -160,7 +164,7 @@ public class Home extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
         
-        //if the native Contact list has been modified, the "isChanged" field returns "1" and the data in Contacts data structure reloads -------
+        //if the native Contact list has been modified, the "isChanged" field has a value "1" and the data in Contacts data structure reloads -------
         contactData = getSharedPreferences(PREFS_NAME, 0);
         String isChanged = contactData.getString("isChanged", "1");
         
@@ -210,19 +214,25 @@ public class Home extends Activity {
 		});
         
         
+        /**
+         * @details Overridden method of ExpandableList for OnClick behaviour. It first checks the child of which group is clicked.
+         * 			groupPosition 0 (Draft section) 	: opens up EditScheduledSms activity with data of the draft.
+         * 			groupPosition 1 (Scheduled Section) : opens up EditScheduledSms activity with data of the Scheduled SMS.
+         * 			groupPosition 2 (Send Section) 		: opens up Sent Message Details Dialog.
+         */
         explList.setOnChildClickListener(new OnChildClickListener() {
 			
 			public boolean onChildClick(ExpandableListView arg0, View view, int groupPosition, int childPosition, long id) {
-				if(groupPosition == 1){
+				if(groupPosition == GROUP_SCHEDULED){
 					FlurryAgent.logEvent("Edit Scheduled Message");
 					
 					Intent intent = new Intent(Home.this, EditScheduledSms.class);
 					intent.putExtra("SMS DATA", scheduledSMSs.get(childPosition));
 					startActivity(intent);
-				}else if(groupPosition == 2){
+				}else if(groupPosition == GROUP_SENT){
 					FlurryAgent.logEvent("Details of Sent Message Viewed");
 					openContextMenu(view);
-				}else if(groupPosition == 0){
+				}else if(groupPosition == GROUP_DRAFT){
 					FlurryAgent.logEvent("Edit Draft");
 					
 					Intent intent = new Intent(Home.this, EditScheduledSms.class);
@@ -234,7 +244,7 @@ public class Home extends Activity {
 		});
 	    
         
-        
+        //Manually implemented Options Menu (Button on the left of "New SMS" button).
         optionsImageButton.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
@@ -247,7 +257,6 @@ public class Home extends Activity {
         mIntentFilter.addAction(getResources().getString(R.string.update_action));
         
         dataloadIntentFilter = new IntentFilter();
-
         dataloadIntentFilter.addAction(Constants.DIALOG_CONTROL_ACTION);
 
         setExplData();
@@ -264,9 +273,9 @@ public class Home extends Activity {
     	doScreenUpdate();
     	setExplData();
     	explList.setAdapter(mAdapter);
-    	explList.expandGroup(0);
-    	explList.expandGroup(1);
-    	explList.expandGroup(2);
+    	explList.expandGroup(GROUP_DRAFT);
+    	explList.expandGroup(GROUP_SCHEDULED);
+    	explList.expandGroup(GROUP_SENT);
     	
     	registerReceiver(mUpdateReceiver, mIntentFilter);
     	registerReceiver(mDataLoadedReceiver, dataloadIntentFilter);
@@ -301,7 +310,8 @@ public class Home extends Activity {
 		
 		CharSequence menu_title;
 		
-		if(group == 2){
+		if(group == GROUP_SENT){
+			//If selected SMS is from Sent group, its context menu will have three options - 'Reschedule', 'Add to Templates' and 'Delete'.
 			final String MENU_TITLE_RESCHEDULE = "Reschedule";
 			menu_title = MENU_TITLE_RESCHEDULE.subSequence(0, MENU_TITLE_RESCHEDULE.length());
 			menu.add(0, MENU_RESCHEDULE, 1, menu_title);
@@ -314,6 +324,7 @@ public class Home extends Activity {
 			menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
 			menu.add(0, MENU_DELETE, 3, menu_title);
 		}else{
+			//For Drafts and Scheduled SMSs, there will be only one option - 'Delete'.
 			final String MENU_TITLE_DELETE = "Delete";
 			menu_title = MENU_TITLE_DELETE.subSequence(0, MENU_TITLE_DELETE.length());
 			menu.add(0, MENU_DELETE, 1, menu_title);
@@ -323,7 +334,11 @@ public class Home extends Activity {
     
     
     
-    
+    /**
+     * @details Overridden method of Activity class. Fires up when any item from the context menu for child elements of expandable 
+     * 			list is selected.
+     * @param item: Packages information abou the selected item, like group postion, child position, etc.
+     */
 	public boolean onContextItemSelected(MenuItem item) {
 		ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) item.getMenuInfo();
 		int groupPos = 0, childPos = 0;
@@ -336,15 +351,15 @@ public class Home extends Activity {
 				case MENU_DELETE:
 					mdba.open();
 					HashMap<String, String> deletedGroup = new HashMap<String, String>();
-					if(groupPos == 1){
+					if(groupPos == GROUP_SCHEDULED){
 						selectedSms = scheduledSMSs.get(childPos).keyId;
 						deletedGroup.put("deleted SMS", "Scheduled SMS");
 
-					}else if(groupPos == 2){
+					}else if(groupPos == GROUP_SENT){
 						selectedSms = sentSMSs.get(childPos).keyId;
 						deletedGroup.put("deleted SMS", "Edited SMS");
 						
-					}else if(groupPos == 0){
+					}else if(groupPos == GROUP_DRAFT){
 						selectedSms = drafts.get(childPos).keyId;
 						deletedGroup.put("deleted SMS", "Draft");
 						
@@ -372,10 +387,12 @@ public class Home extends Activity {
     
     
     
-    
+    /**
+     * @details shows up a dialog to make an entry into the Templates table. The "message" from the SMS is provided in an EditText, to be edited and saved.
+     * @param keyMessage message from the SMS.
+     */
     private void showAddToTemplateDialog(String keyMessage) {
 		final Dialog dialog = new Dialog(Home.this);
-//		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.setContentView(R.layout.add_to_templates_dialog);
 		dialog.setTitle("Add to Templates");
 		
@@ -386,7 +403,6 @@ public class Home extends Activity {
 		templateText.setText(keyMessage);
 		addTemplateButton.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View v) {
 				if(templateText.getText().toString().equals("")){
 					Toast.makeText(Home.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
@@ -394,16 +410,16 @@ public class Home extends Activity {
 					mdba.open();
 					Cursor cur = mdba.fetchAllTemplates();
 					mdba.close();
-					boolean z = true;
+					boolean templateExists = false;
 					if(cur.moveToFirst()){
 						do{
 							if(cur.getString(cur.getColumnIndex(DBAdapter.KEY_TEMP_CONTENT)).equals(templateText.getText().toString())){
-								z = false;
+								templateExists = true;
 								break;
 							}
 						}while(cur.moveToNext());
 					}
-					if(!z){
+					if(templateExists){
 						Toast.makeText(Home.this, "Template already exists", Toast.LENGTH_SHORT).show();
 					}else{
 						mdba.open();
@@ -415,8 +431,8 @@ public class Home extends Activity {
 			}
 		});
 		
+		
 		cancelTemplateButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				dialog.cancel();
@@ -429,6 +445,9 @@ public class Home extends Activity {
 
 
 
+    /**
+     * @details Sets the data into the Expandable List. 
+     */
 	private void setExplData(){
     	loadData();
     	
@@ -463,7 +482,7 @@ public class Home extends Activity {
     		}
 
 
-			
+
     		public android.view.View getChildView(int groupPosition, final int childPosition, boolean isLastChild, android.view.View convertView, android.view.ViewGroup parent) {
 				ChildRowHolder holder;
 				if(convertView==null){
@@ -480,7 +499,8 @@ public class Home extends Activity {
 					holder = (ChildRowHolder) convertView.getTag();
 				}
 				
-    			if(groupPosition == 1) {
+    			if(groupPosition == GROUP_SCHEDULED) {
+    				//case: child is a scheduled message.
     				holder.messageTextView.setText(scheduledSMSs.get(childPosition).keyMessage);
     				holder.statusImageView.setImageResource(scheduledSMSs.get(childPosition).keyImageRes);
     				holder.dateTextView.setText(scheduledSMSs.get(childPosition).keyDate);
@@ -488,12 +508,13 @@ public class Home extends Activity {
     				holder.extraReceiversTextView.setText(extraReceiversCal(scheduledSMSs.get(childPosition).keyNumber));
     				holder.messageTextView.setTextColor(getResources().getColor(R.color.black));
     				holder.receiverTextView.setTextColor(getResources().getColor(R.color.black));
-    				if(scheduledSMSs.get(childPosition).keyRepeatMode==0){
+    				if(scheduledSMSs.get(childPosition).keyRepeatMode==Constants.REPEAT_MODE_NO_REPEAT){
     					holder.repeatModeIcon.setVisibility(View.GONE);
     				}else{
     					holder.repeatModeIcon.setVisibility(View.VISIBLE);
     				}
-    			} else if(groupPosition == 2) {
+    			} else if(groupPosition == GROUP_SENT) {
+    				//case: child is a sent message.
     				holder.messageTextView.setText(sentSMSs.get(childPosition).keyMessage);
     				holder.statusImageView.setImageResource(sentSMSs.get(childPosition).keyImageRes);
     				holder.dateTextView.setText(sentSMSs.get(childPosition).keyDate);
@@ -502,8 +523,9 @@ public class Home extends Activity {
     				holder.messageTextView.setTextColor(getResources().getColor(R.color.black));
     				holder.receiverTextView.setTextColor(getResources().getColor(R.color.black));
     				holder.repeatModeIcon.setVisibility(View.GONE);
-    			} else if(groupPosition == 0){
-    				if(!drafts.get(childPosition).keyMessage.matches("^(''|[' ']*)$")){
+    			} else if(groupPosition == GROUP_DRAFT){
+    				//case: child is a draft.
+    				if(!drafts.get(childPosition).keyMessage.matches(Constants.BLANK_OR_ONLY_SPACES_PATTERN)){
     					holder.messageTextView.setText(drafts.get(childPosition).keyMessage);
     				}else{
     					holder.messageTextView.setText("[No Message Written]");
@@ -511,7 +533,7 @@ public class Home extends Activity {
     				}
     				holder.statusImageView.setImageResource(drafts.get(childPosition).keyImageRes);
     				holder.dateTextView.setText(drafts.get(childPosition).keyDate);
-    				if(!drafts.get(childPosition).keyNumber.matches("^(''|[' ']*)$")){
+    				if(!drafts.get(childPosition).keyNumber.matches(Constants.BLANK_OR_ONLY_SPACES_PATTERN)){
     					holder.receiverTextView.setText(numbersLengthRectify(drafts.get(childPosition).keyNumber));
         				holder.extraReceiversTextView.setText(extraReceiversCal(drafts.get(childPosition).keyNumber));
     				}else{
@@ -519,17 +541,17 @@ public class Home extends Activity {
     					holder.receiverTextView.setTextColor(getResources().getColor(R.color.grey));
     					holder.extraReceiversTextView.setText("");
     				}
-    				if(drafts.get(childPosition).keyRepeatMode==0){
+    				if(drafts.get(childPosition).keyRepeatMode==Constants.REPEAT_MODE_NO_REPEAT){
     					holder.repeatModeIcon.setVisibility(View.GONE);
     				}else{
     					holder.repeatModeIcon.setVisibility(View.VISIBLE);
     				}
     			}
     			
-    			
+    			//For flurry
     			final HashMap<String, String> deletedGroup = new HashMap<String, String>();
     			
-    			if(groupPosition == 1){
+    			if(groupPosition == GROUP_SCHEDULED){
     				holder.statusImageView.setOnClickListener(new OnClickListener() {
 						
 						public void onClick(View v) {
@@ -538,25 +560,23 @@ public class Home extends Activity {
 						}
 					});
     				
-    			}else if(groupPosition == 0){
+    			}else if(groupPosition == GROUP_DRAFT){
     				holder.statusImageView.setOnClickListener(new OnClickListener() {
-						
 						
 						public void onClick(View v) {
 							showDeleteDialog(drafts, childPosition, "Delete this Draft?");
 							deletedGroup.put("deleted SMS", "Draft");
 						}
     				});
-    			}else if(groupPosition == 2){
+    			}else if(groupPosition == GROUP_SENT){
     				holder.statusImageView.setOnClickListener(new OnClickListener() {
-						
 						
 						public void onClick(View v) {
 							showSentInfoDialog(childPosition);
 						}
 					});
-						
     			}
+    			
     			FlurryAgent.logEvent("Home: Delete Button: Message Deleted", deletedGroup);
     			return convertView;
 			}
@@ -564,6 +584,9 @@ public class Home extends Activity {
     }
     
     
+	/**
+	 * @define loads actual data from database to the data structures in order to feed into the ExpandableList.
+	 */
     private void loadData(){
     	
     	childData.clear();
@@ -800,6 +823,10 @@ public class Home extends Activity {
 	
 	
 	
+	/**
+	 * @details opens up a dialog to show the details of a sent SMS.
+	 * @param childPos: to get the child to show the detail of.
+	 */
 	private void showSentInfoDialog(int childPos){
 		sentInfoDialog = new Dialog(Home.this);
 		sentInfoDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -881,7 +908,12 @@ public class Home extends Activity {
 	
 	
 	//------------------- For displaying appropriate number of recipients in sms listing---------------------
-	
+	/**
+	 * @details creates a fixed lenght string to display in the recipients section of each child in the ExpandableList. It rounds off the
+	 * 			string to contain only an exact number of recipients.
+	 * @param number: String to rectify the length of.
+	 * @return validLengthNumber.
+	 */
 	private String numbersLengthRectify(String number){
 		if(number.length()<= 30){
 			return number;
@@ -900,7 +932,13 @@ public class Home extends Activity {
 	}
 	
 	
-	
+	/**
+	 * @details after pruning the number string upto certain number of recipients depending upon the length, this function calculates
+	 * 			how many recipients have been excluded from the string. A string is made up like "+2" in case 2 recipients hadn't been
+	 * 			included in the number's string.
+	 * @param number: String to calculate extra recipients string.
+	 * @return extraRecipientsString. "", "+2", "+6", etc
+	 */
 	private String extraReceiversCal(String number){
 		if(number.length()<= 30){
 			return "";
@@ -925,6 +963,12 @@ public class Home extends Activity {
 	
 	
 	//------------------------Contacts Data Load functions---------------------------------------------
+	/**
+	 * @details loads contacts into data structures based upon the Phone numbers (ContactsContract.CommonDataKinds.Phone.CONTENT_URI) 
+	 * 			using ContactsContract database so that only those contacts which have at least one phone number is stored in data 
+	 * 			structure. By iterating over the Phone Numbers, we save the time consumed in looking through contacts without phone
+	 * 			numbers.
+	 */
 	public void loadContactsByPhone(){
     	Long startTime = System.currentTimeMillis();
     	
@@ -999,11 +1043,10 @@ public class Home extends Activity {
 		    				}
 		    			}
 		    		}
-		    				  
 		    	}while(cur.moveToNext());
 		    }
-		    	  
-		    	  
+
+
 		    //To set primary number for contacts...	  
 		    for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
 		    	boolean primaryPresent = false;
@@ -1013,9 +1056,9 @@ public class Home extends Activity {
 		    			primaryPresent = true;
 		    		}
 		    	}
-		    	if(!primaryPresent)
+		    	if(!primaryPresent)   //If no primary number is present, set first number to be Primary
 		    		SmsSchedulerApplication.contactsList.get(i).numbers.get(0).isPrimary=true;
-		    }	  
+		    }
 		    
 		    
 		    
@@ -1027,17 +1070,21 @@ public class Home extends Activity {
 		    	}
 		    }
     	}
-    	
+
     	Long endTime = System.currentTimeMillis();
-		
+
 		HashMap<String, Long> param = new HashMap<String, Long>();
 		param.put("Time Taken", (endTime-startTime));
 		FlurryAgent.logEvent("Contacts Loaded", param);
-		
     }
 	
 	
 	
+	/**
+	 * @details refines a number string. Only allows the characters 0-9.
+	 * @param number: string to refine
+	 * @return refined number.
+	 */
 	public static String refineNumber(String number) {
 		if(number.matches("[0-9]+")){
 			return number;
@@ -1063,67 +1110,69 @@ public class Home extends Activity {
 	
 	
 	
+	/**
+	 * @details this function loads contacts by looping through Contacts array rather than through PhoneNumbers. This is not being
+	 * 			used currently in the app but may find some use in updates to come.
+	 */
 	public void loadContactsData(){
 		if(SmsSchedulerApplication.contactsList.size()==0){
 			System.currentTimeMillis();
-			
+
 			String[] projection = new String[] {Groups._ID};
 			Uri groupsUri =  ContactsContract.Groups.CONTENT_URI;
-			
-			
+
 			ContentResolver cr = getContentResolver();
 			groupCursor = cr.query(groupsUri, projection, null, null, null);
 		    Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 		    if(cursor.moveToFirst()){
 		    	do{
-		    	  if(!(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("0"))){
-		    		String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-		    		Cursor phones = cr.query(Phone.CONTENT_URI, null, Phone.CONTACT_ID + " = " + id, null, null);
-		    	    if(phones.moveToFirst()){
-		    	    	Contact contact = new Contact();
-			    		contact.content_uri_id = Long.parseLong(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID)));
-			    		contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-			    		do{
-			    			contact.numbers.add(new ContactNumber(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID), phones.getString(phones.getColumnIndex(Phone.NUMBER)), resolveType(Integer.parseInt(phones.getString(phones.getColumnIndex(Phone.TYPE))))));
-			    		}while(phones.moveToNext());
-		    	    	Cursor cur = cr.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID}, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID + "=" + contact.content_uri_id, null, null);
-		    	    	if(cur.moveToFirst()){
-		    	    		do{
-		    	    			// SAZWQA: Should we add a rule that if GROUP_ROW_ID == 0 or it's equal to phone no. don't ADD it?
-		    	    			boolean equalsNumber = false;
-		    	    			for(int i=0; i< contact.numbers.size(); i++){
-		    	    				if(String.valueOf(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))).equals(contact.numbers.get(i))){
-		    	    					equalsNumber = true;
-		    	    					break;
-		    	    				}
-		    	    			}
-		    	    			if(!equalsNumber && cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))!=0){
-		    	    				boolean isValid = false;
-		    	    				if(groupCursor.moveToFirst()){
-		    	    					do{
-		    	    						if(!cur.isClosed() && !groupCursor.isClosed() && cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)) == groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID))){
-		    	    							isValid = true;
-		    	    							break;
-		    	    						}
-		    	    					}while(groupCursor.moveToNext());
-		    	    				}
-		    	    				if(isValid){
-		    	    					contact.groupRowId.add(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
-			    	    			}
-		    	    			}
-		    	    		}while(cur.moveToNext());
-		    	    	}
-		    	    	cur.close();
-		    	    	
-			    	    SmsSchedulerApplication.contactsList.add(contact);
-		    	    }
-		    	    phones.close();
-		    	  }
+		    		if(!(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("0"))){
+		    			String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+		    			Cursor phones = cr.query(Phone.CONTENT_URI, null, Phone.CONTACT_ID + " = " + id, null, null);
+		    			if(phones.moveToFirst()){
+		    				Contact contact = new Contact();
+		    				contact.content_uri_id = Long.parseLong(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID)));
+		    				contact.name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+		    				do{
+		    					contact.numbers.add(new ContactNumber(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID), phones.getString(phones.getColumnIndex(Phone.NUMBER)), resolveType(Integer.parseInt(phones.getString(phones.getColumnIndex(Phone.TYPE))))));
+		    				}while(phones.moveToNext());
+		    				Cursor cur = cr.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID}, ContactsContract.CommonDataKinds.GroupMembership.CONTACT_ID + "=" + contact.content_uri_id, null, null);
+		    				if(cur.moveToFirst()){
+		    					do{
+		    						// SAZWQA: Should we add a rule that if GROUP_ROW_ID == 0 or it's equal to phone no. don't ADD it?
+		    						boolean equalsNumber = false;
+		    						for(int i=0; i< contact.numbers.size(); i++){
+		    							if(String.valueOf(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))).equals(contact.numbers.get(i))){
+		    								equalsNumber = true;
+		    								break;
+		    							}
+		    						}
+		    						if(!equalsNumber && cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID))!=0){
+		    							boolean isValid = false;
+		    							if(groupCursor.moveToFirst()){
+		    								do{
+		    									if(!cur.isClosed() && !groupCursor.isClosed() && cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)) == groupCursor.getLong(groupCursor.getColumnIndex(Groups._ID))){
+		    										isValid = true;
+		    										break;
+		    									}
+		    								}while(groupCursor.moveToNext());
+		    							}
+		    							if(isValid){
+		    								contact.groupRowId.add(cur.getLong(cur.getColumnIndex(ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID)));
+		    							}
+		    						}
+		    					}while(cur.moveToNext());
+		    				}
+		    				cur.close();
+		    				SmsSchedulerApplication.contactsList.add(contact);
+		    			}
+		    			phones.close();
+		    		}
 		    	}while(cursor.moveToNext());
 		    }
 		    cursor.close();
 		    groupCursor.close();
-		    
+
 		    for(int i = 0; i< SmsSchedulerApplication.contactsList.size()-1; i++){
 		    	for(int j = i+1; j< SmsSchedulerApplication.contactsList.size(); j++){
 		    		if(SmsSchedulerApplication.contactsList.get(i).name.toUpperCase().compareTo(SmsSchedulerApplication.contactsList.get(j).name.toUpperCase())>0){
@@ -1133,9 +1182,14 @@ public class Home extends Activity {
 		    }
 		}
 	}
-	
-	
-	
+
+
+
+	/**
+	 * @details Resolves phone number type. The integer parameter 'type' is resolved into the string it is meant for.
+	 * @param type
+	 * @return corresponding phone-number type String.
+	 */
 	public String resolveType(int type){
 		switch(type){
 			case Phone.TYPE_ASSISTANT:
@@ -1185,7 +1239,10 @@ public class Home extends Activity {
 		}
 	}
 	
-	
+	/**
+	 * @details makes loading of contacts, deserialization and serialization happen in the background on a separate thread. In Post
+	 * 			Execute, fires up a broadcast intent that closes the "loading Contacts" wait dialog.
+	 */
 	private class ContactsAsync extends AsyncTask<Void, Void, Void>{
 		
 		protected Void doInBackground(Void... params) {
@@ -1242,6 +1299,9 @@ public class Home extends Activity {
 	}
 	
 	
+	/**
+	 * @details deletes a selected SMS, reloads the data and notifies the Expandable list to refresh.
+	 */
 	private void deleteSms(){
 		mdba.open();
 		mdba.deleteSms(selectedSms, Home.this);
@@ -1252,6 +1312,10 @@ public class Home extends Activity {
 	}
 	
 	
+	/**
+	 * @details after an SMS is deleted, this function checks if any other SMS exist or not. If exists then, ExpandableList is visible
+	 * 			and blankListLayout is invisible. Otherwise, vice-versa.
+	 */
 	private void doScreenUpdate(){
 		mdba.open();
 		boolean ifSmsExist = mdba.ifSmsExist();
@@ -1266,6 +1330,13 @@ public class Home extends Activity {
 	}
 	
 	
+	
+	/**
+	 * @details Confirmation dialog for deleting an SMS. 
+	 * @param SMSList
+	 * @param childPosition
+	 * @param questionString
+	 */
 	public void showDeleteDialog(final ArrayList<Sms> SMSList, final int childPosition, String questionString){
 		final Dialog d = new Dialog(Home.this);
 		d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1273,7 +1344,7 @@ public class Home extends Activity {
 		TextView questionText 	= (TextView) 	d.findViewById(R.id.confirmation_dialog_text);
 		Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 		Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
-		
+
 		questionText.setText(questionString);
 		
 		yesButton.setOnClickListener(new OnClickListener() {
@@ -1284,19 +1355,22 @@ public class Home extends Activity {
 		        d.cancel();
 			}
 		});
-		
+
 		noButton.setOnClickListener(new OnClickListener() {
-			
-			
+
 			public void onClick(View v) {
 				d.cancel();
 			}
 		});
 		d.show();
 	}
-	
-	
+
+
 	//-----------functions for new Contacts load--------------------
+	/**
+	 * @details Observes if any change is made to the native Contacts database. Upon occurance, the 'onChange' method of this class
+	 * 			reloads the Contacts.
+	 */
 	private class MyContentObserver extends ContentObserver {
 		Context _context;
         public MyContentObserver(Handler h, Context context) {
@@ -1310,7 +1384,12 @@ public class Home extends Activity {
         }
     }
 
-   
+
+	/**
+	 * @details this function clears the current serialized string for Contacts. Reloads the Contacts, serializes it and saves it in 
+	 * 			SharedPreferences.
+	 * @param context
+	 */
 	private void reloadSharedPreference(Context context){
 		SharedPreferences contactData = getSharedPreferences(PREFS_NAME, 0);
 		System.currentTimeMillis();
@@ -1323,23 +1402,27 @@ public class Home extends Activity {
 	    editor.commit();
 	}
 	//--------------------------------------------------------------
-	
-	
-	
+
+
+	/**
+	 * @details shows a Dialog that lists the newly added features, when the application starts up. A shared pref value toggles the 
+	 * 			show/not-show of this dialog. This value can be set to false by user only once by checking the "Don't show this
+	 * 			message again" option in the Dialog.
+	 */
 	private void showMessagePreference() {
 		if(showMessage){
 			final Dialog d = new Dialog(Home.this);
 			d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			d.setCancelable(false);
 			d.setContentView(R.layout.show_message_dialog);
-			
+
 			final CheckBox checkBox = (CheckBox) d.findViewById(R.id.show_again_check);
-			
+
 			((TextView) d.findViewById(R.id.header_text)).setText("New Features");
 			((TextView) d.findViewById(R.id.message_text)).setText(getString(R.string.new_feature_message));
-			
+
 			((TextView) d.findViewById(R.id.dont_show_msg_text)).setOnClickListener(new OnClickListener() {
-				
+
 				public void onClick(View v) {
 					if(checkBox.isChecked())
 						checkBox.setChecked(false);
@@ -1347,11 +1430,12 @@ public class Home extends Activity {
 						checkBox.setChecked(true);
 				}
 			});
-			
+
 			((Button) d.findViewById(R.id.ok_button)).setOnClickListener(new OnClickListener() {
-				
+
 				public void onClick(View v) {
 					if(checkBox.isChecked()){
+						//case: user has checked "Don't show this message again" checkbox. "SHOW_NEW_FEATURES" pref is set to false.
 						SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 					    SharedPreferences.Editor editor = settings.edit();
 					    editor.putBoolean("SHOW_NEW_FEATURES", false);
