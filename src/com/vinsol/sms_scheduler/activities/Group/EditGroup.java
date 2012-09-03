@@ -36,6 +36,7 @@ import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
+import com.vinsol.sms_scheduler.Constants;
 
 
 public class EditGroup extends Activity {
@@ -135,6 +136,9 @@ public class EditGroup extends Activity {
 		});
 		
 		
+		/**
+		 * @details Clicking on this label, pops up a Dialog which lets you modify the name of the Group.
+		 */
 		groupNameLabel.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -152,7 +156,7 @@ public class EditGroup extends Activity {
 				groupNameOkButton.setOnClickListener(new OnClickListener() {
 					
 					public void onClick(View v) {
-						if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
+						if(groupNameEdit.getText().toString().matches(Constants.BLANK_OR_ONLY_SPACES_PATTERN)){
 							Toast.makeText(EditGroup.this, "Group name can't be blank", Toast.LENGTH_SHORT).show();
 							groupNameEdit.setText(groupName);
 						}else{
@@ -191,6 +195,10 @@ public class EditGroup extends Activity {
 		
 		
 		
+		/**
+		 * @details to add new contacts to the current group, on the click of this button screen navigates to ContactsList Activity
+		 * 			in Edit mode. List of current Ids and groupId are passed.
+		 */
 		addContactsButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -208,6 +216,7 @@ public class EditGroup extends Activity {
 			}
 		});
 
+		
 		saveGroupButton.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
@@ -239,6 +248,12 @@ public class EditGroup extends Activity {
 	}
 	
 	
+	/**
+	 * @details Organizes the ids of members into a more convenient structure, an ArrayList of GroupMember class.
+	 * @param ids
+	 * @param numbers
+	 * @return Organized ids into a ArrayList<GroupMember>
+	 */
 	private ArrayList<GroupMember> organizeIds(ArrayList<Long> ids, ArrayList<String> numbers) {
 		ArrayList<GroupMember> groupMembers = new ArrayList<EditGroup.GroupMember>();
 		for(int i = 0; i< ids.size(); i++){

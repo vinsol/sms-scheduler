@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.utils.Log;
 
 public class DeliveryReceiver extends BroadcastReceiver{
 
@@ -22,10 +21,8 @@ public class DeliveryReceiver extends BroadcastReceiver{
 	public void onReceive(Context context, Intent intent) {
 		int msgSize = intent.getIntExtra("SIZE", 0);
 		int part = (int)intent.getIntExtra("PART", 0);
-		long smsId = intent.getLongExtra("SMS_ID", 0);
+//		long smsId = intent.getLongExtra("SMS_ID", 0);
 		long recipientId = intent.getLongExtra("RECIPIENT_ID", 0);
-		Log.d("Recipient ID in DeliverReceiver : " + recipientId);
-		Log.d("Sms ID in DeliverReceiver : " + smsId);
 		mdba = new DBAdapter(context);
 		
 		switch (getResultCode())

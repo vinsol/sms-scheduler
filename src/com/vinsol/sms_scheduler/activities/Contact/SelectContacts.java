@@ -77,7 +77,7 @@ public class SelectContacts extends Activity {
 	
 	private ContactsAdapter contactsAdapter;
 	private String origin;
-	private ArrayList<Contact> sortedContacts = new ArrayList<Contact>(); 
+	private ArrayList<Contact> sortedContacts = new ArrayList<Contact>();  //This is the actual Contact ArrayList used to display contacts in ContactsTab.
 	
 	private ArrayList<Recipient> RecipientsTemp 	= new ArrayList<Recipient>();
 	//---------------------------------------------------------------------------
@@ -138,9 +138,9 @@ public class SelectContacts extends Activity {
 			sortedContacts.add(SmsSchedulerApplication.contactsList.get(i));
 		}
 		
-		filterField = (EditText) findViewById(R.id.filter_text);
-		clearFilterButton = (ImageView) findViewById(R.id.clear_filter_button);
-		recentsList = (ListView) findViewById(R.id.contacts_tabs_recents_list);
+		filterField 		= (EditText)  findViewById(R.id.filter_text);
+		clearFilterButton 	= (ImageView) findViewById(R.id.clear_filter_button);
+		recentsList 		= (ListView)  findViewById(R.id.contacts_tabs_recents_list);
 		
 		//----------------------Setting up the Tabs--------------------------------
 		final TabHost tabHost=(TabHost)findViewById(R.id.tabHost);
@@ -171,6 +171,11 @@ public class SelectContacts extends Activity {
         
         
         
+        /**
+         * @details watches the text in the Filter field. Loops through the Contacts ArrayList, finds the matches for the text
+         * 			entered in Filter field, populates the 'sortedContacts' ArrayList with these matches and then notifies the
+         * 			Contacts list.
+         */
         filterField.addTextChangedListener(new TextWatcher() {
         	
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -219,6 +224,9 @@ public class SelectContacts extends Activity {
 		});
         
         
+        /**
+         * @details clears the filter field and refreshes the Contacts list showing all the Contacts unfiltered.
+         */
         clearFilterButton.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
@@ -237,6 +245,7 @@ public class SelectContacts extends Activity {
 		Intent intent = getIntent();
 		origin = intent.getStringExtra("ORIGIN");
 		
+		//Loading the Native Groups data into data-structures in order to show them in expandable list in Groups Tab.
 		for(int i = 0; i < AbstractScheduleSms.Recipients.size(); i++){
 			RecipientsTemp.add(AbstractScheduleSms.Recipients.get(i));
 		}
@@ -270,6 +279,9 @@ public class SelectContacts extends Activity {
 			nativeChildDataTemp.add(child);
 		}
 			
+		
+		
+		//Loading the Private Groups data into data-structures in order to show them in expandable list in Groups Tab.
 		for(int groupCount = 0; groupCount< AbstractScheduleSms.privateGroupData.size(); groupCount++){
 			boolean hasAChild = false;
 			HashMap<String, Object> group = new HashMap<String, Object>();
@@ -437,6 +449,14 @@ public class SelectContacts extends Activity {
 	}
 	
 	
+	
+	/**
+	 * @details Organizes the Group Data into a convenient structure that fits the Expandable List which has extra views for each 
+	 * 			number.
+	 * @param privateGroupData
+	 * @param privateChildData
+	 * @return new DataStructure.
+	 */
 	public ArrayList<ArrayList<HashMap<String, Object>>> organizeChildData(ArrayList<HashMap<String, Object>> privateGroupData, ArrayList<ArrayList<HashMap<String, Object>>> privateChildData){
 		ArrayList<ArrayList<HashMap<String, Object>>> data = new ArrayList<ArrayList<HashMap<String,Object>>>();
 		
@@ -476,6 +496,12 @@ public class SelectContacts extends Activity {
 	
 	
 	
+	/**
+	 * @details finds the phone-number type of a particular number of a particular contact
+	 * @param id
+	 * @param number
+	 * @return phone-number type string.
+	 */
 	private String getType(long id, String number){
 		for(int i = 0; i< SmsSchedulerApplication.contactsList.size(); i++){
 			if(SmsSchedulerApplication.contactsList.get(i).content_uri_id == id){
@@ -491,6 +517,11 @@ public class SelectContacts extends Activity {
 	
 	
 
+	/**
+	 * @details creates and sets up tabs for the nested tab-widget (Phone Groups | My Groups)
+	 * @param view
+	 * @param tag
+	 */
 	private void setupTab(final View view, final String tag) {
 		View tabview = createTabView(mtabHost.getContext(), tag);
 		TabSpec setContent = null;
@@ -503,7 +534,12 @@ public class SelectContacts extends Activity {
 	}
 
 	
-	
+	/**
+	 * @details creates a Tab View using a custom layout.
+	 * @param context
+	 * @param text
+	 * @return Tab View.
+	 */
 	private View createTabView(final Context context, final String text) {
 		View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
 		TextView tv = (TextView) view.findViewById(R.id.tabsText);
@@ -515,6 +551,8 @@ public class SelectContacts extends Activity {
 	
 	protected void onPause() {
 		super.onPause();
+		//case: when there's no Private Group and screen is navigated to Create New Group module, a bit has to be set in order to
+		//		refresh the "My Groups" body when the screen returns back.
 		if(privateGroupDataTemp.size() == 0){
 			hasToRefresh = true;
 		}else{
@@ -527,6 +565,7 @@ public class SelectContacts extends Activity {
 	protected void onResume() {
 		super.onResume();
 		if(hasToRefresh){
+			//case: when the screen needs a refresh after addition of a private group.
 			mdba.open();
 			cur = mdba.fetchAllGroups();
 			if(cur.getCount()==0){
@@ -568,6 +607,7 @@ public class SelectContacts extends Activity {
 		ContactsAdapter(Context context, ArrayList<Contact> _contacts){
     		super(SelectContacts.this, R.layout.contacts_list_row, _contacts);
     		
+    		//For the implementation of SectionIndexer.
     		contacts = _contacts;
     		
     		alphaIndexer = new HashMap<String, Integer>();
@@ -588,6 +628,7 @@ public class SelectContacts extends Activity {
             sections = new String[sectionList.size()];
  
             sectionList.toArray(sections);
+            //-------------------------------------------
     	}
 		
 		
@@ -616,17 +657,25 @@ public class SelectContacts extends Activity {
     		holder.extraContactsViews = new ArrayList<View>();
     		
     		if(contacts.get(position).numbers.size()>1){
+    			//case: when a contact has multiple numbers, an extra view is created for each extra number and is shown below the
+    			//		Contacts view in the list.
     			holder.extraContactsLayout.setVisibility(View.VISIBLE);
     			holder.extraContactsLayout.removeAllViews();
     			holder.extraContactsViews.clear();
     			ArrayList<ContactNumber> extraNumbers = new ArrayList<ContactNumber>();
+    			
+    			//Load extra numbers into a data structure.
         		for(int i=1; i< contacts.get(position).numbers.size(); i++){
         			extraNumbers.add(contacts.get(position).numbers.get(i));
         		}
+        		
+        		//For each extra number, create a View. Store these views in a data structure.
         		for(int i = 0; i< extraNumbers.size(); i++){
         			View view = createView(extraNumbers.get(i), contacts.get(position), getLayoutInflater());
         			holder.extraContactsViews.add(view);
         		}
+        		
+        		//Add all the extra views to the extraContactsLayout for that Contact.
         		for(int i = 0; i< holder.extraContactsViews.size(); i++){
         			holder.extraContactsLayout.addView(holder.extraContactsViews.get(i));
         		}
@@ -824,7 +873,13 @@ public class SelectContacts extends Activity {
 	//************************************************************** end of ContactsAdapter******************
 	
 
-	
+	/**
+	 * @details Creates an Extra Number View based on the contactNumber and Contact. Also sets the click listeners for the Views.
+	 * @param contactNumber
+	 * @param contact
+	 * @param inflater
+	 * @return Fully functional View that shows a contact number, number-type and a checkBox.
+	 */
 	public View createView(final ContactNumber contactNumber, final Contact contact, LayoutInflater inflater){
 		
 		View view = inflater.inflate(R.layout.extra_numbers_list_row, null);
@@ -940,6 +995,10 @@ public class SelectContacts extends Activity {
 	}
 	
 	
+	
+	/**
+	 * @details Adapter for List of Native Groups.
+	 */
 	private void nativeGroupsAdapterSetup(){
 		
 		final LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -1080,17 +1139,19 @@ public class SelectContacts extends Activity {
     			holder.childContactImage.setImageBitmap((Bitmap)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_IMAGE));
     			holder.childCheck.setChecked((Boolean)nativeChildDataTemp.get(groupPosition).get(childPosition).get(Constants.CHILD_CHECK));
     			
-    			holder.extraNumbersLayout	= (LinearLayout)convertView.findViewById(R.id.extra_numbers_layout);
+    			holder.extraNumbersLayout = (LinearLayout)convertView.findViewById(R.id.extra_numbers_layout);
     			
     			nativeExtraNumbers.get(groupPosition).add(new ArrayList<ContactNumber>());
     			
-    			ArrayList<ContactNumber> prunedList = new ArrayList<ContactNumber>();
+    			ArrayList<ContactNumber> prunedList = new ArrayList<ContactNumber>(); //to store the numbers from 1 to last.
     			for(int i = 1; i< contact.numbers.size(); i++){
     				prunedList.add(contact.numbers.get(i));
     			}
     			if(prunedList.size()>0){
     				holder.extraNumbersLayout.setVisibility(View.VISIBLE);
         			holder.extraNumbersLayout.removeAllViews();
+        			
+        			//Create a view for each extra number and add it to the extraNumbersLayout.
         			for(int i = 0; i< prunedList.size(); i++){
         				View view = createNativeExtraNumberView(groupPosition, childPosition, prunedList.get(i), contact, getLayoutInflater(), (Long)nativeGroupDataTemp.get(groupPosition).get(Constants.GROUP_ID));
         				holder.extraNumbersLayout.addView(view);
@@ -1221,6 +1282,16 @@ public class SelectContacts extends Activity {
 	
 	
 	
+	/**
+	 * @details creates an ExtraNumberView for a Number based on the details of the Contact in the Group's Data.
+	 * @param groupPosition
+	 * @param childPosition
+	 * @param contactNumber
+	 * @param contact
+	 * @param inflater
+	 * @param groupId
+	 * @return fully functional View with Number, Number-Type and a CheckBox.
+	 */
 	public View createNativeExtraNumberView(final int groupPosition, final int childPosition, final ContactNumber contactNumber, final Contact contact, LayoutInflater inflater, final long groupId){
 		
 		View view = inflater.inflate(R.layout.extra_numbers_list_row, null);
@@ -1384,8 +1455,8 @@ public class SelectContacts extends Activity {
 						}
 					}
 				});
-    			
-    			
+
+
     			convertView.setOnClickListener(new OnClickListener() {
     				
 					public void onClick(View v) {
@@ -1451,9 +1522,13 @@ public class SelectContacts extends Activity {
     			nativeExtraNumbers.get(groupPosition).add(new ArrayList<ContactNumber>());
     			
     			ArrayList<ContactNumber> prunedList = new ArrayList<ContactNumber>();
+    			
+    			//Store the extra numbers (2nd to last) in prunedList. 
     			for(i = 1; i< numbers.size(); i++){
     				prunedList.add(numbers.get(i));
     			}
+    			
+    			//if prunedList has any element, then create an Extra Number View for each element and add it into the Extra Numbers Layout.
     			if(prunedList.size()>0){
     				holder.extraNumbersLayout.setVisibility(View.VISIBLE);
         			holder.extraNumbersLayout.removeAllViews();
@@ -1470,7 +1545,6 @@ public class SelectContacts extends Activity {
 
 					public void onClick(View v) {
 						if(holder.childCheck.isChecked()){
-							
 							HashMap<String, String> params = new HashMap<String, String>();
 							params.put("From", "Private Group");
 							params.put("Is Primary Number", "yes");
@@ -1574,6 +1648,17 @@ public class SelectContacts extends Activity {
     		}
 			
 			
+    		/**
+    		 * @detail creates an Extra Number's View for a ContactNumber object using the details like groupPosition, childPosition, etc
+    		 * @param groupPosition
+    		 * @param childPosition
+    		 * @param contactNumber
+    		 * @param contactName
+    		 * @param contactId
+    		 * @param inflater
+    		 * @param groupId
+    		 * @return Fully functional Extra Number's View with Listeners.
+    		 */
 			private View createPrivateExtraNumberView(final int groupPosition, final int childPosition, final ContactNumber contactNumber, final String contactName, final long contactId, LayoutInflater inflater, final Long groupId) {
 				View view = inflater.inflate(R.layout.extra_numbers_list_row, null);
 				
@@ -1730,6 +1815,16 @@ public class SelectContacts extends Activity {
     }
 	
 	
+	/**
+	 * @detail Checks an ExtraNumber's Checkbox. First it checks if the recipient already exists. If so, it just checks the checkbox, Otherwise it also creates a new Recipient. 
+	 * @param groupPosition
+	 * @param childPosition
+	 * @param cb
+	 * @param contactName
+	 * @param contactId
+	 * @param contactNumber
+	 * @param groupId
+	 */
 	private void addExtraCheck(int groupPosition, int childPosition, CheckBox cb, String contactName, long contactId, ContactNumber contactNumber, long groupId){
 		cb.setChecked(true);
 		boolean recipientExist = false;
@@ -1752,6 +1847,13 @@ public class SelectContacts extends Activity {
 	
 	
 	
+	/**
+	 * @details checks the Primary Number's checkbox. Also, if the recipient doesn't exist, creates it.
+	 * @param groupPosition
+	 * @param childPosition
+	 * @param ChildDataTemp
+	 * @param GroupDataTemp
+	 */
 	private void addCheck(int groupPosition, int childPosition, ArrayList<ArrayList<HashMap<String, Object>>> ChildDataTemp, ArrayList<HashMap<String, Object>> GroupDataTemp){
 		ChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, true);
 		boolean spanExist = false;
@@ -1782,6 +1884,14 @@ public class SelectContacts extends Activity {
 		
 	
 	
+	/**
+	 * @details removes check from an Extra Number's checkbox. If the concerned recipient isn't there in any other group, removes it from the Recipients ArrayList.
+	 * @param groupPosition
+	 * @param childPosition
+	 * @param cb
+	 * @param contactNumber
+	 * @param groupId
+	 */
 	private void removeExtraCheck(int groupPosition, int childPosition, CheckBox cb, ContactNumber contactNumber, long groupId){
 		cb.setChecked(false);
 		for(int i = 0; i< RecipientsTemp.size(); i++){
@@ -1804,6 +1914,13 @@ public class SelectContacts extends Activity {
 	
 	
 	
+	/**
+	 * @details Unchecks a Primany Number's checkbox. If the concerned recipient doesn't exist in any other selected group, it is removed from the Recipient's ArrayList.
+	 * @param groupPosition
+	 * @param childPosition
+	 * @param ChildDataTemp
+	 * @param GroupDataTemp
+	 */
 	private void removeCheck(int groupPosition, int childPosition, ArrayList<ArrayList<HashMap<String, Object>>> ChildDataTemp, ArrayList<HashMap<String, Object>> GroupDataTemp){
 		ChildDataTemp.get(groupPosition).get(childPosition).put(Constants.CHILD_CHECK, false);
 		for(int i = 0; i < RecipientsTemp.size(); i++){
@@ -1883,7 +2000,7 @@ public class SelectContacts extends Activity {
 	        			holder.contactCheck.setChecked(false);
 	        		}
 	        	}
-    			
+
     		}else if(recentContactIds.get(position) == -1){
     			holder.contactImage.setImageBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
     			holder.nameText.setText(recentContactNumbers.get(position));
@@ -1916,10 +2033,10 @@ public class SelectContacts extends Activity {
 							params.put("Is Primary Number", "no");
 							FlurryAgent.logEvent("Recipient Added", params);
 							
-							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1, -1, -1, null); //TODO
+							recipient = new Recipient(Constants.GENERIC_DEFAULT_INT_VALUE, Constants.RECIPIENT_TYPE_NUMBER, recentContactNumbers.get(_position), Constants.GENERIC_DEFAULT_INT_VALUE, Constants.GENERIC_DEFAULT_INT_VALUE, Constants.GENERIC_DEFAULT_INT_VALUE, Constants.GENERIC_DEFAULT_INT_VALUE, null); //TODO
 						}
-						recipient.groupIds.add((long) -1);
-						recipient.groupTypes.add(-1);
+						recipient.groupIds.add((long) Constants.GENERIC_DEFAULT_INT_VALUE);
+						recipient.groupTypes.add(Constants.GENERIC_DEFAULT_INT_VALUE);
 						RecipientsTemp.add(recipient);
 						nativeContactsList.setAdapter(new ContactsAdapter(SelectContacts.this, sortedContacts));
 					}else{
@@ -1957,15 +2074,15 @@ public class SelectContacts extends Activity {
 						if(recentContactIds.get(_position)> -1){
 							for(int k = 0; k< SmsSchedulerApplication.contactsList.size(); k++){
 								if(SmsSchedulerApplication.contactsList.get(k).content_uri_id == recentContactIds.get(_position)){
-									recipient = new Recipient(-1, 2, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1, -1, -1, recentContactNumbers.get(_position));
+									recipient = new Recipient(Constants.GENERIC_DEFAULT_INT_VALUE, Constants.RECIPIENT_TYPE_CONTACT, SmsSchedulerApplication.contactsList.get(k).name, SmsSchedulerApplication.contactsList.get(k).content_uri_id, -1, -1, -1, recentContactNumbers.get(_position));
 									break;
 								}
 							}
 						}else{
-							recipient = new Recipient(-1, 1, recentContactNumbers.get(_position), -1, -1, -1, -1, null);
+							recipient = new Recipient(Constants.GENERIC_DEFAULT_INT_VALUE, Constants.RECIPIENT_TYPE_NUMBER, recentContactNumbers.get(_position), Constants.GENERIC_DEFAULT_INT_VALUE, Constants.GENERIC_DEFAULT_INT_VALUE, Constants.GENERIC_DEFAULT_INT_VALUE, Constants.GENERIC_DEFAULT_INT_VALUE, null);
 						}
-						recipient.groupIds.add((long) -1);
-						recipient.groupTypes.add(-1);
+						recipient.groupIds.add((long) Constants.GENERIC_DEFAULT_INT_VALUE);
+						recipient.groupTypes.add(Constants.GENERIC_DEFAULT_INT_VALUE);
 						
 						HashMap<String, String> params = new HashMap<String, String>();
 						params.put("From", "Recents");
@@ -1998,7 +2115,7 @@ public class SelectContacts extends Activity {
 					}
 				}
 			});
-    		
+
     		return convertView;
 		}
 	}
@@ -2012,36 +2129,42 @@ public class SelectContacts extends Activity {
 		CheckBox 			contactCheck;
 		LinearLayout		extraContactsLayout;
 		RelativeLayout		primaryContactLayout;
-		ArrayList<View> extraContactsViews;
+		ArrayList<View> 	extraContactsViews;
 	}
-	
-	
+
+
 	private class GroupListHolder{
 		TextView groupHeading;
 		CheckBox groupCheck;
 	}
-	
-	
+
+
 	private class ChildListHolder{
-		TextView childNameText;
-		ImageView childContactImage;
-		TextView childNumberText;
-		CheckBox childCheck;
-		LinearLayout extraNumbersLayout;
-		RelativeLayout primaryNumberLayout;
+		TextView 		childNameText;
+		ImageView 		childContactImage;
+		TextView 		childNumberText;
+		CheckBox 		childCheck;
+		LinearLayout 	extraNumbersLayout;
+		RelativeLayout 	primaryNumberLayout;
 	}
-	
-	
+
+
 	private class RecentsListHolder{
-		ImageView 	contactImage;
-		TextView 	nameText;
-		TextView 	numberText;
-		CheckBox 	contactCheck;
-		RelativeLayout primaryNumberLayout;
+		ImageView 		contactImage;
+		TextView 		nameText;
+		TextView 		numberText;
+		CheckBox 		contactCheck;
+		RelativeLayout 	primaryNumberLayout;
 	}
+	
+	
 	
 	
 	@SuppressWarnings("static-access")
+	/**
+	 * @details Reloads the data of private groups into the data structure. This is called from the onResume() method when the screen
+	 * 			returns to this Activity after going to the Add New Group module when the Private Groups list would have been empty.
+	 */
 	private void reloadPrivateGroupData(){
 		mdba.open();
 		

@@ -43,7 +43,7 @@ public class ManageTemplates extends Activity{
 	private LinearLayout	blankLayout;
 	private Button			addATemplateButton;
 	
-	private MyAdapter mAdapter;
+	private TemplatesAdapter templatesAdapter;
 	private DBAdapter mdba = new DBAdapter(ManageTemplates.this);
 	private ArrayList<String> 	templatesArray = new ArrayList<String>();
 	private ArrayList<Long>		templatesIdArray = new ArrayList<Long>();
@@ -52,7 +52,6 @@ public class ManageTemplates extends Activity{
 	private int editRowId = 0;
 	
 	private InputMethodManager inputMethodManager;
-	
 	
 	
 	@Override
@@ -89,11 +88,10 @@ public class ManageTemplates extends Activity{
 		
 		inputMethodManager =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 		
-		mAdapter = new MyAdapter();
-		templatesList.setAdapter(mAdapter);
+		templatesAdapter = new TemplatesAdapter();
+		templatesList.setAdapter(templatesAdapter);
 		
 		addATemplateButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				listLayout.setVisibility(LinearLayout.VISIBLE);
@@ -104,7 +102,6 @@ public class ManageTemplates extends Activity{
 		
 		
 		newTemplateButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				if(templatesArray.size()==0){
@@ -118,9 +115,7 @@ public class ManageTemplates extends Activity{
 		
 		newTemplateAddButton.setOnClickListener(new OnClickListener() {
 			
-			
 			public void onClick(View v) {
-				
 				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
 				if(newTemplateBody.getText().toString().equals("")){
 					Toast.makeText(ManageTemplates.this, "Cannot add blank template", Toast.LENGTH_SHORT).show();
@@ -151,7 +146,7 @@ public class ManageTemplates extends Activity{
 						}
 						mdba.close();
 						loadData();
-						mAdapter.notifyDataSetChanged();
+						templatesAdapter.notifyDataSetChanged();
 						newTemplateSpaceLayout.setVisibility(LinearLayout.GONE);
 						
 						if(isEditing){
@@ -167,7 +162,6 @@ public class ManageTemplates extends Activity{
 		
 		
 		newTemplateCancelButton.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				inputMethodManager.hideSoftInputFromWindow(newTemplateBody.getWindowToken(), 0);
@@ -205,9 +199,9 @@ public class ManageTemplates extends Activity{
 	
 	
 	@SuppressWarnings("rawtypes")
-	private class MyAdapter extends ArrayAdapter{
+	private class TemplatesAdapter extends ArrayAdapter{
     	@SuppressWarnings("unchecked")
-		MyAdapter(){
+		TemplatesAdapter(){
     		super(ManageTemplates.this, R.layout.manage_groups_list_row, templatesIdArray);
     	}
     	
@@ -231,7 +225,6 @@ public class ManageTemplates extends Activity{
     		
     		holder.deleteTemplateButton.setOnClickListener(new OnClickListener() {
 				
-				
 				public void onClick(View v) {
 					final Dialog d = new Dialog(ManageTemplates.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -250,15 +243,14 @@ public class ManageTemplates extends Activity{
 							mdba.removeTemplate(templatesIdArray.get(_position));
 							mdba.close();
 							loadData();
-							mAdapter = new MyAdapter();
-							templatesList.setAdapter(mAdapter);
+							templatesAdapter = new TemplatesAdapter();
+							templatesList.setAdapter(templatesAdapter);
 							
 							d.cancel();
 						}
 					});
 					
 					noButton.setOnClickListener(new OnClickListener() {
-						
 						
 						public void onClick(View v) {
 							d.cancel();
@@ -270,7 +262,6 @@ public class ManageTemplates extends Activity{
     		
     		
     		convertView.setOnClickListener(new OnClickListener() {
-				
 				
 				public void onClick(View v) {
 					if(newTemplateSpaceLayout.getVisibility()==LinearLayout.GONE){

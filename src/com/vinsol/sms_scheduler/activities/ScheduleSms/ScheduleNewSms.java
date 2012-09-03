@@ -31,19 +31,21 @@ public class ScheduleNewSms extends AbstractScheduleSms {
 		
 		FlurryAgent.logEvent("Schedule New Sms Activity Started");
 		
+		//Set mode variable from super class AbstractScheduleSms.java to let the flow follow for New SMS functionality.
 		mode = MODE_NEW;
 		
 		ArrayList<Boolean> weekBools = new ArrayList<Boolean>();
 		
-		defaultRepeatMode = 0;
+		defaultRepeatMode = Constants.REPEAT_MODE_NO_REPEAT;
 		for(int i = 0; i< 7; i++)
 			weekBools.add(false);
 		
 		
 		//setting RepeatHash
+		//This time it is filled with default values.
 		defaultRepeatHash.put(Constants.REPEAT_HASH_FREQ, 1);
 		defaultRepeatHash.put(Constants.REPEAT_HASH_WEEK_BOOL, weekBools);
-		defaultRepeatHash.put(Constants.REPEAT_HASH_END_MODE, 1);
+		defaultRepeatHash.put(Constants.REPEAT_HASH_END_MODE, Constants.END_MODE_NEVER);
 		defaultRepeatHash.put(Constants.REPEAT_HASH_END_FREQ, 1);
 		defaultRepeatHash.put(Constants.REPEAT_HASH_END_DATE, new Date());
 		defaultRepeatHash.put(Constants.REPEAT_HASH_LAST_SENT_TIME, 0);

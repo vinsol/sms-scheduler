@@ -16,17 +16,17 @@ import android.database.Cursor;
 
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
-import com.vinsol.sms_scheduler.utils.Log;
 
 
-
+/**
+ * @details Fires up when the Devices completes booting up. It sets the pending intent at that time.
+ */
 public class BootCompleteReceiver extends BroadcastReceiver{
 
 	DBAdapter mdba;
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.d("boot receiver triggered");
 		mdba = new DBAdapter(context);
 		mdba.open();
 		Cursor cur = mdba.fetchNextScheduled();
@@ -48,10 +48,12 @@ public class BootCompleteReceiver extends BroadcastReceiver{
 			if(cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)) > System.currentTimeMillis()){
 				alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)), pi);
 			}else{
+				//When a devices boots up and this broadcast receiver fires up, there's a delay for the device to get functional as in
+				//network and services. So we set the Pending Intent with a delay of 3 minutes ~ 180000 milliseconds.
 				alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 180000, pi);
 			}
 		}else{
-			mdba.updatePi(0, -1, -1);
+			mdba.updatePiForNoSmsValue();
 		}
 		mdba.close();
 	}

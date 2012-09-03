@@ -15,6 +15,11 @@ public class ContactNumber {
 		this.type=type;
 	}
 	
+	/**
+	 * @details resolves phone-number-type of a particular number.
+	 * @param type
+	 * @return String of phone number type.
+	 */
 	public static String resolveType(int type){
 		switch(type){
 			case Phone.TYPE_ASSISTANT:

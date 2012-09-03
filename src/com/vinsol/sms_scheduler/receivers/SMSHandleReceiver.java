@@ -24,7 +24,6 @@ import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
-import com.vinsol.sms_scheduler.utils.Log;
 
 
 
@@ -45,7 +44,6 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		smsId = intent.getLongExtra("SMS_ID", 0);
 		recipientId = intent.getLongExtra("RECIPIENT_ID", 0);
 		DBAdapter mdba = new DBAdapter(context);
-		
 		
 		
 		mdba.open();
@@ -106,7 +104,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		Cursor cur = mdba.fetchNextScheduled();
 		mdba.close();
 		if(cur.moveToFirst()){
-			Log.d("more records");
+			//more records
 			intent = new Intent(context, SMSHandleReceiver.class);
 			intent.setAction(Constants.PRIVATE_SMS_ACTION);
 			intent.putExtra("SMS_ID", cur.getLong(cur.getColumnIndex(DBAdapter.KEY_ID)));
@@ -123,9 +121,9 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 			AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 	    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS)), pi);
 		}else{
-			Log.d("no more records retrieved");
+			//no more records retrieved
 			mdba.open();
-			mdba.updatePi(0, -1, -1);
+			mdba.updatePiForNoSmsValue();
 			try{
 				mdba.close();
 			}catch (SQLiteException e) {

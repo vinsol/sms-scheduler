@@ -40,7 +40,7 @@ public class ManageGroups extends Activity {
 	
 	private DBAdapter mdba = new DBAdapter(this);
 	private Cursor cur;
-	private MyAdapter myAdapter;
+	private GroupListAdapter groupListAdapter;
 	
 	private ArrayList<Long> grpIdsArray = new ArrayList<Long>();
 	private ArrayList<String> grpNamesArray = new ArrayList<String>();
@@ -75,8 +75,8 @@ public class ManageGroups extends Activity {
 		
 		loadGroupsData();
 		
-		myAdapter = new MyAdapter();
-		groupsList.setAdapter(myAdapter);
+		groupListAdapter = new GroupListAdapter();
+		groupsList.setAdapter(groupListAdapter);
 		
 
 		blankListAddButton.setOnClickListener(new OnClickListener() {
@@ -119,10 +119,11 @@ public class ManageGroups extends Activity {
 			listLayout.setVisibility(LinearLayout.VISIBLE);
 			blankLayout.setVisibility(LinearLayout.GONE);
 			loadGroupsData();
-			myAdapter.notifyDataSetChanged();
+			groupListAdapter.notifyDataSetChanged();
 		}
 		mdba.close();
 	}
+	
 	
 	
 	private void loadGroupsData(){
@@ -144,9 +145,9 @@ public class ManageGroups extends Activity {
 	
 	
 	@SuppressWarnings("rawtypes")
-	private class MyAdapter extends ArrayAdapter{
+	private class GroupListAdapter extends ArrayAdapter{
     	@SuppressWarnings("unchecked")
-		MyAdapter(){
+		GroupListAdapter(){
     		super(ManageGroups.this, R.layout.manage_groups_list_row, grpIdsArray);
     	}
     	
@@ -168,7 +169,6 @@ public class ManageGroups extends Activity {
     		
     		holder.groupDeleteButton.setOnClickListener(new OnClickListener() {
 				
-				
 				public void onClick(View v) {
 					final Dialog d = new Dialog(ManageGroups.this);
 					d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -180,8 +180,7 @@ public class ManageGroups extends Activity {
 					questionText.setText("Delete this Group?");
 					
 					yesButton.setOnClickListener(new OnClickListener() {
-						
-						
+
 						public void onClick(View v) {
 							mdba.open();
 							mdba.removeGroup(grpIdsArray.get(position));

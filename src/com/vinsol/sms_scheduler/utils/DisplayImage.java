@@ -25,10 +25,17 @@ public class DisplayImage {
 
 	public void shutDownExecutor(){
     	executor.shutdownNow();
-    	Log.d("MSG", "Executor Shutdown.....");
+    	Log.d("MSG", "Display Image: Executor Shutdown.....");
     }
 
 
+	
+	/**
+	 * @details starts off assigning of an image to an ImageView on a background thread.
+	 * @param iv
+	 * @param contactId
+	 * @param context
+	 */
 	public void submitImage(final ImageView iv, long contactId, final Context context){
 		iv.setImageBitmap(BitmapFactory.decodeResource(context.getApplicationContext().getResources(), R.drawable.no_image_thumbnail));
 		MyRunnable runnable = new MyRunnable(iv, contactId, context);
@@ -36,6 +43,14 @@ public class DisplayImage {
 	}
 
 
+
+	/**
+	 * @details stores image for a particular contactId into a HashMap that is shown in the list. If no image is available for the
+	 * 			contact, it is assigned a default thumbnail for "No Image".
+	 * @param contactId
+	 * @param childParameters
+	 * @param context
+	 */
 	public void storeImage(final long contactId, final HashMap<String, Object> childParameters, final Context context){
 		Runnable action = new Runnable(){
 			public void run(){
@@ -50,6 +65,10 @@ public class DisplayImage {
 	}
 
 
+	/**
+	 * @details runs on another thread and adds an image to an ImageView. First it gets the bitmap against a particular contactId, 
+	 * 			then puts it into an ImageView.
+	 */
 	class MyRunnable implements Runnable{
 
     	ImageView iv;
@@ -76,7 +95,14 @@ public class DisplayImage {
     }
 
 
-	public Bitmap addImage(long contactId, ContentResolver cr, Context context){
+	/**
+	 * @details to get image against a particular contactId that is stored in ContactsContract database.
+	 * @param contactId
+	 * @param cr
+	 * @param context
+	 * @return a bitmap image.
+	 */
+	private Bitmap addImage(long contactId, ContentResolver cr, Context context){
 		Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
   	  	InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
   		BitmapFactory.Options o = new BitmapFactory.Options();

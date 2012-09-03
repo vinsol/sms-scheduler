@@ -87,6 +87,11 @@ public class SentReceiver extends BroadcastReceiver{
 
 	
 	@SuppressWarnings("unchecked")
+	/**
+	 * @details checks whether the message to which the current message part belongs has a repeat mode set or not. If so, it replicates the
+	 * 			SMS and saves it in the database as a new one. 
+	 * @param smsId
+	 */
 	private void handleRepitition(long smsId){
 		mdba.open();
 		Cursor smsDetailsCur = mdba.fetchSmsDetails(smsId);
@@ -172,6 +177,13 @@ public class SentReceiver extends BroadcastReceiver{
 	
 	
 	
+	/**
+	 * @details calculates the Next schedule time based upon the supplied repeatHash, repeadMode and timeInMillis of previous sent.
+	 * @param repeatHash
+	 * @param repeatMode
+	 * @param previousTimeInMillis
+	 * @return time in millis for the next scheduling. A '0' value means end of repetition scheme, no more repeats required.
+	 */
 	private long calculateNextScheduleTime(HashMap<String, Object> repeatHash, int repeatMode, long previousTimeInMillis){
 		long time = 0;
 		

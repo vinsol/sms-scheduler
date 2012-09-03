@@ -72,6 +72,9 @@ public class Recipient implements Parcelable{
 		return 0;
 	}
 	
+	/**
+	 * @details prints the details of a recipient for testing purposes.
+	 */
 	public void print(){
 		Log.d("------------------------------------------------");
 		Log.d("Sms Id 		: " + this.smsId);

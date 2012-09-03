@@ -25,6 +25,7 @@ import com.flurry.android.FlurryAgent;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.models.Sms;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
+import com.vinsol.sms_scheduler.utils.Log;
 
 public class DBAdapter {
 	
@@ -609,7 +610,7 @@ public class DBAdapter {
 				AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		    	alarmManager.set(AlarmManager.RTC_WAKEUP, cur.getLong(cur.getColumnIndex(KEY_TIME_MILLIS)), pi);
 			}else{
-				updatePi(0, -1, -1);
+				updatePiForNoSmsValue();
 			}
 			cur.close();
 		}
@@ -682,6 +683,15 @@ public class DBAdapter {
 	
 	
 	
+	/**
+	 * @detail Update Pending Intent details to default, denoting that no more SMS is available to schedule.
+	 */
+	public void updatePiForNoSmsValue(){
+		updatePi(0, -1, -1);
+	}
+	
+	
+	
 	/***
 	 * @detail gets the currently set next scheduled recipient's fire time
 	 * @return time in milliseconds
@@ -707,11 +717,12 @@ public class DBAdapter {
 	 */
 	public Cursor fetchAllTemplates(){
 		Cursor cur = db.query(DATABASE_TEMPLATE_TABLE, new String[] {KEY_TEMP_CONTENT, KEY_TEMP_ID}, null, null, null, null, null);
+		Log.d("Size of Templates in DB : " + cur.getCount());
 		return cur;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * @detail adds a new template
 	 * @param template
@@ -727,9 +738,9 @@ public class DBAdapter {
 			return 0;
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * @detail edits an existing template 
 	 * @param templateId
@@ -740,9 +751,9 @@ public class DBAdapter {
 		cv.put(KEY_TEMP_CONTENT, template);
 		db.update(DATABASE_TEMPLATE_TABLE, cv, KEY_TEMP_ID + "=" + templateId, null);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * @detail removes a template
 	 * @param id
@@ -763,7 +774,6 @@ public class DBAdapter {
 	
 	
 	//-----------------------------------functions for group table--------------------------------------
-	
 	//"Group" in this table denotes the groups that are private to Sms Scheduler application, not the native ones.
 	
 	/***
@@ -778,7 +788,7 @@ public class DBAdapter {
 	
 	
 	/**
-	 * @detail For a given groupId, fetches and array of ContactIds that are there in that group
+	 * @detail For a given groupId, fetches an array of ContactIds that are there in that group
 	 * @param groupId
 	 * @return ArrayList of contactIds.
 	 */

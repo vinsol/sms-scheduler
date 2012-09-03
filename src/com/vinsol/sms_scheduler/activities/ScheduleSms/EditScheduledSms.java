@@ -51,6 +51,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		FlurryAgent.logEvent("Edit Scheduled Sms Activity started");
 		
+		//Set mode variable from super class AbstractScheduleSms.java to let the flow follow for Edit functionality.
 		mode = MODE_EDIT;
 		
 		headerText	= (TextView)findViewById(R.id.header);
@@ -65,6 +66,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		
 		//loading defaultRepeatHash...
+		//this repeatHash is stored in database as a serialized string. We deserialize and store it in a data structure.
 		defaultRepeatMode = SMS.keyRepeatMode;
 		if(defaultRepeatMode>0){
 			String repeatHashString = SMS.keyRepeatString;
@@ -83,6 +85,8 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		
 		mdba.open();
+		
+		//If fire time for an SMS, that is sent for Edit, is less than the current System Time, this means it is a case of rescheduling.
 		if(SMS.keyTimeMilis < System.currentTimeMillis())
 			isReschedule = true;
 			
@@ -111,10 +115,11 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		mdba.close();
 		DisplayMetrics metrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		widthOfContainerInDp = (int)(metrics.widthPixels/dpi - 128);
+		widthOfContainerInDp = (int)(metrics.widthPixels/dpi - 128);  //scaling is done on the basis of 160dp screen. Where 160px = 160 dp. 128dp is the width of extras for Autocomplete's container.
 		displayViews();
 		
 		if(Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")){
+			//This is typically case of a Draft, where a fake recipient is there to hold a space.
 			numbersText.setHint("Recipients");
 			Recipients.remove(0);
 		}else{
@@ -129,6 +134,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		boolean isChanged = false;
 		
+		// check if the message has been changed..
 		if(isDraft){
 			if(originalRecipients.size()==1 && originalRecipients.get(0).displayName.equals(" ")){
 				if(Recipients.size()>0){
@@ -147,8 +153,6 @@ public class EditScheduledSms extends AbstractScheduleSms {
 				}
 			}
 		}else{
-			Log.d("Recipeints size : " + Recipients.size());
-			Log.d("originalRecipeints size : " + originalRecipients.size());
 			if(originalRecipients.size() != Recipients.size()){
 				isChanged = true;
 			}else if(!messageText.getText().toString().equals(originalMessage)){
@@ -165,6 +169,7 @@ public class EditScheduledSms extends AbstractScheduleSms {
 		
 		
 		
+		//if there is no change, go back to the previous Activity. Otherwise, show a dialog to confirm Discarding of changes.
 		if(!isChanged){
 			EditScheduledSms.this.finish();
 		}else{
@@ -202,7 +207,10 @@ public class EditScheduledSms extends AbstractScheduleSms {
 
 
 
-	
+	/**
+	 * @details When the SCHEDULE button is clicked, If the SMS wasn't case of a Reschedule and is marked as SENT in database, we
+	 * 			aren't supposed to Edit it. Show a proper Toast. Otherwise, Save the changes.
+	 */
 	protected void scheduleButtonOnClickListener() {
 		mdba.open();
 		if(mdba.isSmsSent(editedSms) && !isReschedule){

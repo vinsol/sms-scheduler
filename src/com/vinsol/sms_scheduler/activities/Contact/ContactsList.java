@@ -39,6 +39,7 @@ import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.MyGson;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
+import com.vinsol.sms_scheduler.Constants;
 
 public class ContactsList extends Activity {
 
@@ -68,6 +69,8 @@ public class ContactsList extends Activity {
     	FlurryAgent.onStartSession(this, getString(R.string.flurry_key));
     	MyGson myGson = new MyGson();
     	SharedPreferences contactData = getSharedPreferences(Home.PREFS_NAME, 0);
+    	
+    	//if Contacts have been modified from the Native Contact app, the Contacts List is to be reloaded, serialized and saved in the shared prefs.
 		if(contactData.getString("isChanged", "1").equals("1") || SmsSchedulerApplication.contactsList.size()==0){
 			String data = contactData.getString("Data", "default");
 			contacts = SmsSchedulerApplication.contactsList = myGson.deserializer(data);
@@ -91,15 +94,18 @@ public class ContactsList extends Activity {
 		setContentView(R.layout.contacts_list);
 		
 		final DBAdapter mdba = new DBAdapter(this);
-		contactsList = (ListView) findViewById(R.id.contacts_list_main_list);
-		doneButton = (Button) findViewById(R.id.contacts_list_layout_done_button);
-		cancelButton = (Button) findViewById(R.id.contacts_list_layout_cancel_button);
+		contactsList = (ListView)	findViewById(R.id.contacts_list_main_list);
+		doneButton 	 = (Button) 	findViewById(R.id.contacts_list_layout_done_button);
+		cancelButton = (Button) 	findViewById(R.id.contacts_list_layout_cancel_button);
 
+		//This Activity can be called for two purposes, to create a Group or edit a Group. We have to treat these two situations differently. For that purpose, we are supplied with an Intent Extra called "ORIGINATOR".
 		Intent intent = getIntent();
 		contacts = SmsSchedulerApplication.contactsList;
 		callingActivity = intent.getStringExtra("ORIGINATOR");
 		
+		
 		if(callingActivity.equals("Group Edit Activity")){
+			//case: called for Edit, we must back up the original values. So, we make a clone of values and use them to prepare the initial state of the list.
 			idsString.clear();
 			idsString = intent.getStringArrayListExtra("IDARRAY");
 			numbers = intent.getStringArrayListExtra("NUMBERARRAY");
@@ -124,6 +130,7 @@ public class ContactsList extends Activity {
 			intent.getLongExtra("GROUPID", 0);
 			
 		}else if(callingActivity.equals("Group Add Activity")){
+			//case: called for creating New Group.
 			intent.getBooleanExtra("NEWCALL", true);
 			for(int i = 0; i< contacts.size(); i++){
 				contacts.get(i).checked = false;
@@ -147,6 +154,7 @@ public class ContactsList extends Activity {
 						Toast.makeText(ContactsList.this, "Cannot create Group with no Contacts. Add few..", Toast.LENGTH_LONG).show();
 					}else{
 						if(groupName.equals("")){
+							//cannot create group with a blank name.
 							final Dialog d = new Dialog(ContactsList.this);
 							d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 							d.setContentView(R.layout.group_name_input_dialog);
@@ -159,7 +167,7 @@ public class ContactsList extends Activity {
 							groupNameOkButton.setOnClickListener(new OnClickListener() {
 								
 								public void onClick(View v) {
-									if(groupNameEdit.getText().toString().matches("(''|[' ']*)")){
+									if(groupNameEdit.getText().toString().matches(Constants.BLANK_OR_ONLY_SPACES_PATTERN)){
 										Toast.makeText(ContactsList.this, "Please enter a valid name for group", Toast.LENGTH_SHORT).show();
 										groupNameEdit.setText("");
 									}else{
@@ -200,6 +208,7 @@ public class ContactsList extends Activity {
 							d.show();
 						}else{
 							if(ids.size() == 0){
+								//case: if no Contact have been selected to include in the Group, can't create the Group.
 								Toast.makeText(ContactsList.this, "No contacts selected, Please select some contacts", Toast.LENGTH_LONG).show();
 							}else{
 								mdba.open();
@@ -301,14 +310,20 @@ public class ContactsList extends Activity {
     			holder.extraNumbersLayout.removeAllViews();
     			holder.extraNumbersViews.clear();
     			ArrayList<ContactNumber> extraNumbers = new ArrayList<ContactNumber>();
+    			
+    			//Load all the Extra Numbers into a data structure.
         		for(int i=1; i< contacts.get(position).numbers.size(); i++){
         			extraNumbers.add(contacts.get(position).numbers.get(i));
         		}
+        		
+        		//Create an Extra Number View for each extra number and store them in an ArrayList<View>
         		for(int i = 0; i< extraNumbers.size(); i++){
         			View view = createView(extraNumbers.get(i), contacts.get(position), getLayoutInflater());
         			holder.extraNumbersViews.add(view);
         			
         		}
+        		
+        		//Add each View into the Extra Numbers List
         		for(int i = 0; i< holder.extraNumbersViews.size(); i++){
         			holder.extraNumbersLayout.addView(holder.extraNumbersViews.get(i));
         		}
@@ -364,6 +379,13 @@ public class ContactsList extends Activity {
 	
 	
 	
+	/**
+	 * @details Creates an Extra Number View for a given ContactNumber object.
+	 * @param contactNumber
+	 * @param contact
+	 * @param inflater
+	 * @return a fully functional Extra Number View with listeners.
+	 */
 	public View createView(final ContactNumber contactNumber, final Contact contact, LayoutInflater inflater){
 		View view = inflater.inflate(R.layout.extra_numbers_list_row, null);
 		

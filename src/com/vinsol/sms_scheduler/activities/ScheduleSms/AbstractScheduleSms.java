@@ -93,6 +93,7 @@ import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
 import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
+import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.utils.MyGson;
 import com.vinsol.sms_scheduler.activities.Contact.SelectContacts;
 import com.vinsol.sms_scheduler.activities.Template.TemplateAdapter;
@@ -789,7 +790,10 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	protected void setSuperFunctionalities(){
+    /**
+     * @details sets functionalities for UI elements whose behaviour are constant for the flow of both Edit and New.
+     */
+    protected void setSuperFunctionalities(){
 		numbersText.setThreshold(1); //Threshold of an Autocomplete decides that after the type of how many characters the dropdown is to be produced.
 		
 		addFromContactsImgButton.setOnClickListener(new OnClickListener() {
@@ -1638,6 +1642,8 @@ public abstract class AbstractScheduleSms extends Activity{
 		startManagingCursor(cur);
 		mdba.close();
 		
+		Log.d("Templates size : " + cur.getCount());
+		
 		templatesArray.clear();
 		
 		if(cur.moveToFirst()){
@@ -1876,7 +1882,6 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	/**
 	 * @details Carries out the Actual task of Scheduling. It is executed in a separate thread using a AsyncTask as its a heavy task.
-	 * 			
 	 */
 	protected void doSmsSchedulingTask(){
 		//create display date out of the date selection, using a proper format
@@ -1897,7 +1902,7 @@ public abstract class AbstractScheduleSms extends Activity{
 
 		boolean isDraft = false;
 
-		//if the SMS is a Draft, set the Draft Flag in Database.
+		//if the SMS is a Draft (i.e., No recipients), set the Draft Flag in Database.
 		if(Recipients.size()==0 || messageText.getText().toString().matches("(''|[' ']*)")){
 			mdba.setAsDraft(smsId);
 			isDraft = true;
@@ -2108,7 +2113,7 @@ public abstract class AbstractScheduleSms extends Activity{
 	
 	
 	
-	//------------------Functions and classes related to new autocomple implementation--------------------
+	//------------------Functions and classes related to new autocomplete implementation--------------------
 	/**
 	 *@details Corresponds to a Row of Capsule-Views. This is a wrapper over a LinearLayout (ll) to let track the views it holds and
 	 *		   their physical width.
@@ -2189,7 +2194,6 @@ public abstract class AbstractScheduleSms extends Activity{
 		String text = ellipsizeName(recipient.displayName, recipient.contactId);
 		tv.setText(text);
 		view.setOnClickListener(new OnClickListener() {
-			
 			
 			public void onClick(View v) {
 				HashMap<String, String> params = new HashMap<String, String>();
