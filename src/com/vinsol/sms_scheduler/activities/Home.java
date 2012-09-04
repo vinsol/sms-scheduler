@@ -423,6 +423,7 @@ public class Home extends Activity {
 						Toast.makeText(Home.this, "Template already exists", Toast.LENGTH_SHORT).show();
 					}else{
 						mdba.open();
+						mdba.addTemplate(templateText.getText().toString());
 						mdba.close();
 						Toast.makeText(Home.this, "Template added", Toast.LENGTH_SHORT).show();
 						dialog.cancel();

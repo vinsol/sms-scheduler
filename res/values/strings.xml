@@ -32,8 +32,9 @@
     
      
     <string name="new_feature_message">
-                * Minor changes.\n
-                \n* Performance Enhancement.<!-- \n
+        		* Performance enhancement.\n
+        		\n* Minor changes.<!-- \n
+                
                 \nLess time for loading contacts -->
     </string>
     
