@@ -102,7 +102,7 @@ public class SMSHandleReceiver extends BroadcastReceiver{
 		
 		mdba.open();
 		Cursor cur = mdba.fetchNextScheduled();
-		mdba.close();
+
 		if(cur.moveToFirst()){
 			//more records
 			intent = new Intent(context, SMSHandleReceiver.class);

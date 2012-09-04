@@ -70,6 +70,7 @@ public class SentReceiver extends BroadcastReceiver{
    	 	boolean allSent = true;
    	 	if(cur.moveToFirst()){
    	 		do{
+   	 			Log.d("Key Operated Value : " + cur.getInt(cur.getColumnIndex(DBAdapter.KEY_OPERATED)));
    	 			if(cur.getInt(cur.getColumnIndex(DBAdapter.KEY_OPERATED))==0){
    	 				allSent = false;
    	 				break;

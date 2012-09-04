@@ -32,9 +32,9 @@
     
      
     <string name="new_feature_message">
-                Repeat mode\n
-                \nContacts sorted according to use frequency in suggestion dropdown\n
-                \nLess time for loading contacts
+                * Minor changes.\n
+                \n* Performance Enhancement.<!-- \n
+                \nLess time for loading contacts -->
     </string>
     
 </resources>
