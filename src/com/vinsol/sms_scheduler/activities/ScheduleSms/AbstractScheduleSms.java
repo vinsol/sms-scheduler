@@ -1284,9 +1284,11 @@ public abstract class AbstractScheduleSms extends Activity{
 			ImageView imageView;
 			if(convertView==null) {
 				imageView = new ImageView(mContext);
-	            imageView.setLayoutParams(new GridView.LayoutParams(50, 50));
+				int smileySize = (int) getResources().getDimension(R.dimen.smiley_size);
+				int smileyPadding = (int) getResources().getDimension(R.dimen.smiley_padding);
+	            imageView.setLayoutParams(new GridView.LayoutParams(smileySize, smileySize));
 	            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-	            imageView.setPadding(8, 8, 8, 8);
+	            imageView.setPadding(smileyPadding, smileyPadding, smileyPadding, smileyPadding);
 			}else {
 				imageView = (ImageView) convertView;
 			}

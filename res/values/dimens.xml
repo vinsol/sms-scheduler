@@ -1,0 +1,6 @@
+<resources>
+
+    <dimen name="smiley_size">50dp</dimen>
+    <dimen name="smiley_padding">8dp</dimen>
+    
+</resources>
