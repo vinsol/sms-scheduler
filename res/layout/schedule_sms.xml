@@ -315,7 +315,8 @@
     		    android:layout_height="wrap_content"
     		    android:layout_width = "fill_parent"
     		    android:background="@drawable/message_bg"
-    		    >
+    		    android:layout_below="@id/message_top_layout"
+	   			>
 				<!-- message edit text -->
    		    	<EditText
 					android:id = "@+id/new_message_space" 
@@ -326,7 +327,6 @@
 		   			android:hint="Type your Message here"
 		   			android:padding="5dp"
 		   			android:capitalize="sentences"
-		   			android:layout_below="@id/message_top_layout"
 		   			android:minLines="4"
 		   			android:background="@drawable/message_bg"
 		   			>
