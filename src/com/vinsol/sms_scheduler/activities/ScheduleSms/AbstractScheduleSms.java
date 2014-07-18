@@ -1138,24 +1138,6 @@ public abstract class AbstractScheduleSms extends Activity{
 				}
 			}
 		});
-		
-		
-		//-------------------------functionality of speech input button------------------------------
-		speechImageButton.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				FlurryAgent.logEvent("Voice Input");
-				Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-				
-		        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
-		        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
-		        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-		        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
-		        
-		        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
-			}
-		});
-		
 	}
 	
 	
@@ -1169,7 +1151,7 @@ public abstract class AbstractScheduleSms extends Activity{
 	protected void startVoiceRecognitionActivity() {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
-		intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speech recognition demo");
+		intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak Now");
 		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 		intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
 
