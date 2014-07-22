@@ -5,6 +5,7 @@
 
 package com.vinsol.sms_scheduler.activities;
 
+import com.crashlytics.android.Crashlytics;
 import java.util.ArrayList;
 import java.util.HashMap;
 import android.app.Activity;
@@ -162,7 +163,8 @@ public class Home extends Activity {
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home);
+        Crashlytics.start(this);
+		setContentView(R.layout.home);
         
         //if the native Contact list has been modified, the "isChanged" field has a value "1" and the data in Contacts data structure reloads -------
         contactData = getSharedPreferences(PREFS_NAME, 0);

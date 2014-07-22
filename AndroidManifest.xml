@@ -54,5 +54,6 @@
 				<category android:name="android.intent.category.HOME" />
         	</intent-filter> 
 		</receiver>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="66664219563e9b197048377fde4d12ff73053719"/>
     </application>
 </manifest>
