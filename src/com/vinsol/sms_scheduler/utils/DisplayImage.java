@@ -83,14 +83,16 @@ public class DisplayImage {
 		public void run() {
 			final Bitmap b = addImage(contactId, context.getContentResolver(), context);
     		
-    		Runnable action = new Runnable() {	
-				public void run() {
-					if(b!=null)
-						iv.setImageBitmap(b);
-				}
-			};
-    		Activity activity = (Activity) context;
-    		activity.runOnUiThread(action);
+			if(b!=null) {
+				Runnable action = new Runnable() {	
+					public void run() {
+							iv.setImageBitmap(b);
+					}
+				};
+				
+				Activity activity = (Activity) context;
+	    		activity.runOnUiThread(action);
+			}
 		}
     }
 
@@ -102,14 +104,22 @@ public class DisplayImage {
 	 * @param context
 	 * @return a bitmap image.
 	 */
-	private Bitmap addImage(long contactId, ContentResolver cr, Context context){
-		Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
-  	  	InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-  		BitmapFactory.Options o = new BitmapFactory.Options();
-  		o.inPurgeable = true;
-  		o.inInputShareable = true;
-  		Bitmap b = BitmapFactory.decodeStream(input, null, o);
+	private Bitmap addImage(long contactId, ContentResolver cr, Context context) {
+		try {
+			Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+	  	  	InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+	  		BitmapFactory.Options o = new BitmapFactory.Options();
+	  		o.inPurgeable = true;
+	  		o.inInputShareable = true;
+	  		Bitmap b = BitmapFactory.decodeStream(input, null, o);
 
-  		return b;
+	  		return b;
+		} catch(OutOfMemoryError oome) {
+			oome.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
