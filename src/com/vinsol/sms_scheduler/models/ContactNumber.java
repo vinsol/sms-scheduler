@@ -9,6 +9,8 @@ public class ContactNumber {
 	public long contactId;
 	public boolean isPrimary = false;
 	
+	public ContactNumber() {}
+	
 	public ContactNumber(long contactId, String number, String type){
 		this.contactId = contactId;
 		this.number=number;

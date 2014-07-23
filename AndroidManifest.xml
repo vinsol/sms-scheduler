@@ -25,7 +25,9 @@
         android:name=".SmsSchedulerApplication" 
         android:icon="@drawable/icon" 
         android:label="SMS Scheduler" 
-        android:theme="@android:style/Theme.NoTitleBar">
+        android:theme="@android:style/Theme.NoTitleBar"
+        android:largeHeap="true"
+        >
 
         <!--  activities -->
 
