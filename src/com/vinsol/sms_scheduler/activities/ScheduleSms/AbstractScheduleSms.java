@@ -48,6 +48,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
@@ -522,6 +523,14 @@ public abstract class AbstractScheduleSms extends Activity{
 			}
 		});
 		
+		numbersText.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(!hasFocus && numbersText.getText().toString().trim().length() > 0) {
+					addRecipientIfNumber();
+				}
+			}
+		});
 		
 		numbersText.addTextChangedListener(new TextWatcher() {
 			
@@ -543,49 +552,7 @@ public abstract class AbstractScheduleSms extends Activity{
 					widthOfContainerInDp = (int)(firstRow.ll.getWidth()*dpi);
 				}
 				
-				String str = numbersText.getText().toString();
-				int sizeOfS = str.length();
-				if(sizeOfS>0 && (str.charAt(sizeOfS - 1))==' '){
-					boolean isNumber = true;
-					for(int i=0; i<sizeOfS-1; i++){
-						if(!((i==0 && str.charAt(i)=='+') || 
-								str.charAt(i)== '0' ||
-								str.charAt(i)== '1' ||
-								str.charAt(i)== '2' ||
-								str.charAt(i)== '3' ||
-								str.charAt(i)== '4' ||
-								str.charAt(i)== '5' ||
-								str.charAt(i)== '6' ||
-								str.charAt(i)== '7' ||
-								str.charAt(i)== '8' ||
-								str.charAt(i)== '9')){
-							isNumber = false;
-						}
-					}
-					if(!(numbersText.getText().toString().matches("(''|[' ']*)")))
-					if(isNumber){
-						boolean isPresent = false;
-						for(int i = 0; i< Recipients.size(); i++) {
-							if(Recipients.get(i).displayName.equals(numbersText.getText().toString().trim())){
-								isPresent = true;
-								break;
-							}
-						}
-						if(!isPresent){
-							Recipient recipient = new Recipient(-1, 1, numbersText.getText().toString().trim(), -1, -1, -1, -1, numbersText.getText().toString().trim());
-							Recipients.add(recipient);
-							FlurryAgent.logEvent("Number added");
-							
-							
-							View view = createElement(recipient);
-							addView(view);
-						}else{
-							Toast.makeText(AbstractScheduleSms.this, "'" + numbersText.getText().toString().trim() + "'  is already added", Toast.LENGTH_SHORT).show();
-						}
-						numbersText.setText("");
-						numbersText.setHint(" ");
-					}
-				}
+				addRecipientIfNumber();
 				
 				if(numbersText.getText().toString().equals("")){
 					if(rows.get(0).views.size()==0){
@@ -786,6 +753,69 @@ public abstract class AbstractScheduleSms extends Activity{
         	refreshRecipientViews();
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    
+    
+    
+    /**
+     * Checks if numbersText has only decimal numbers.
+	 * If so, adds it as a new Recipient
+     */
+    private void addRecipientIfNumber() {
+    	String str = numbersText.getText().toString();
+		int sizeOfS = str.length();
+		if(sizeOfS>0 && ((str.charAt(sizeOfS - 1))==' ') || !numbersText.hasFocus()){
+			boolean isNumber = true;
+			for(int i=0; i<sizeOfS-1; i++){
+				if(!((i==0 && str.charAt(i)=='+') || 
+						str.charAt(i)== '0' ||
+						str.charAt(i)== '1' ||
+						str.charAt(i)== '2' ||
+						str.charAt(i)== '3' ||
+						str.charAt(i)== '4' ||
+						str.charAt(i)== '5' ||
+						str.charAt(i)== '6' ||
+						str.charAt(i)== '7' ||
+						str.charAt(i)== '8' ||
+						str.charAt(i)== '9')){
+					isNumber = false;
+				}
+			}
+			if(!(numbersText.getText().toString().matches("(''|[' ']*)")))
+			if(isNumber){
+				boolean isPresent = false;
+				for(int i = 0; i< Recipients.size(); i++) {
+					if(Recipients.get(i).displayName.equals(numbersText.getText().toString().trim())){
+						isPresent = true;
+						break;
+					}
+				}
+				if(!isPresent){
+					Recipient recipient = new Recipient(-1, 1, numbersText.getText().toString().trim(), -1, -1, -1, -1, numbersText.getText().toString().trim());
+					Recipients.add(recipient);
+					FlurryAgent.logEvent("Number added");
+					
+					
+					View view = createElement(recipient);
+					addView(view);
+				}else{
+					Toast.makeText(AbstractScheduleSms.this, "'" + numbersText.getText().toString().trim() + "'  is already added", Toast.LENGTH_SHORT).show();
+				}
+				
+				if(!numbersText.hasFocus()) {
+					numbersText.setFocusable(false);
+					numbersText.setFocusableInTouchMode(false);
+				}
+				
+				numbersText.setText("");
+				numbersText.setHint(" ");
+				
+				if(!numbersText.hasFocus()) {
+					numbersText.setFocusable(true);
+					numbersText.setFocusableInTouchMode(true);
+				}
+			}
+		}
     }
 	
 	
@@ -2343,7 +2373,7 @@ public abstract class AbstractScheduleSms extends Activity{
 	 * @param view: view to add.
 	 */
 	public void addView(View view){
-		
+		boolean isFocusedOnNumbersText = numbersText.hasFocus();
 		if(widthOfContainerInDp==0){
 			widthOfContainerInDp = (int)(currentRow.ll.getWidth()/dpi);
 		}
@@ -2380,7 +2410,7 @@ public abstract class AbstractScheduleSms extends Activity{
 			currentRow.ll.addView(view, 0);
 		}
 		currentRow.views.add(view);
-		numbersText.requestFocus();
+		if(isFocusedOnNumbersText) numbersText.requestFocus();
 		currentRow.elementsWidth = currentRow.elementsWidth + widthOfViewInDp;
 	}
 	
