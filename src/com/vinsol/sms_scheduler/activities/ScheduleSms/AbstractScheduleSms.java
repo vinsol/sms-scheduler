@@ -2869,7 +2869,8 @@ public abstract class AbstractScheduleSms extends Activity{
 			dateText.setOnClickListener(new OnClickListener() {
 				
 				public void onClick(View v) {
-					showDatePickerDialog(Calendar.getInstance());
+					GregorianCalendar cal = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
+					showDatePickerDialog(cal);
 				}
 			});
 			
@@ -2877,7 +2878,8 @@ public abstract class AbstractScheduleSms extends Activity{
 			dateText.setOnKeyListener(new OnKeyListener() {
 				
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					showDatePickerDialog(Calendar.getInstance());
+					GregorianCalendar cal = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
+					showDatePickerDialog(cal);
 					return false;
 				}
 			});
@@ -2992,9 +2994,8 @@ public abstract class AbstractScheduleSms extends Activity{
 										date = new Date((String)values.get(Constants.REPEAT_HASH_END_DATE));
 									}
 									
-									Calendar c = Calendar.getInstance();
-									c.set(date.getYear()+1900, date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
-									setDateText(c);
+									GregorianCalendar cal = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
+									setDateText(cal);
 									break;
 							}
 						}
