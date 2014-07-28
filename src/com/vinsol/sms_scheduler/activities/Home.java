@@ -712,6 +712,16 @@ public class Home extends Activity {
     	//--------------------------loading sent messages------------------------------------------
     	ArrayList<HashMap<String, Object>> groupChildSent = new ArrayList<HashMap<String, Object>>();
 
+    	for(int i = 0; i < sentSMSs.size() - 1 ; i++) {
+    		for(int j = i+1 ; j < sentSMSs.size() ; j++) {
+    			if(sentSMSs.get(i).keyTimeMilis < sentSMSs.get(j).keyTimeMilis) {
+    				Sms temp = sentSMSs.get(i);
+    				sentSMSs.set(i, drafts.get(j));
+    				sentSMSs.set(j, temp);
+    			}
+    		}
+    	}
+    	
     	for(int i = sentSMSs.size()-1; i > -1; i--){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, sentSMSs.get(i).keyMessage);
@@ -751,7 +761,17 @@ public class Home extends Activity {
     	
     	//------------------------Loading Drafts----------------------------------------------------
     	ArrayList<HashMap<String, Object>> groupChildDraft = new ArrayList<HashMap<String, Object>>();
-
+    	
+    	for(int i = 0; i < drafts.size() - 1 ; i++) {
+    		for(int j = i+1 ; j < drafts.size() ; j++) {
+    			if(drafts.get(i).keyTimeMilis < drafts.get(j).keyTimeMilis) {
+    				Sms temp = drafts.get(i);
+    				drafts.set(i, drafts.get(j));
+    				drafts.set(j, temp);
+    			}
+    		}
+    	}
+    	
     	for(int i = 0; i< drafts.size(); i++){
     		HashMap<String, Object> child = new HashMap<String, Object>();
     		child.put(NAME, drafts.get(i).keyMessage);
