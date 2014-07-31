@@ -48,7 +48,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
@@ -64,10 +63,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -89,6 +88,8 @@ import com.vinsol.sms_scheduler.Constants;
 import com.vinsol.sms_scheduler.DBAdapter;
 import com.vinsol.sms_scheduler.R;
 import com.vinsol.sms_scheduler.SmsSchedulerApplication;
+import com.vinsol.sms_scheduler.activities.Contact.SelectContacts;
+import com.vinsol.sms_scheduler.activities.Template.TemplateAdapter;
 import com.vinsol.sms_scheduler.models.Contact;
 import com.vinsol.sms_scheduler.models.ContactNumber;
 import com.vinsol.sms_scheduler.models.Recipient;
@@ -96,8 +97,6 @@ import com.vinsol.sms_scheduler.receivers.SMSHandleReceiver;
 import com.vinsol.sms_scheduler.utils.DisplayImage;
 import com.vinsol.sms_scheduler.utils.Log;
 import com.vinsol.sms_scheduler.utils.MyGson;
-import com.vinsol.sms_scheduler.activities.Contact.SelectContacts;
-import com.vinsol.sms_scheduler.activities.Template.TemplateAdapter;
 
 
 /**
@@ -523,15 +522,6 @@ public abstract class AbstractScheduleSms extends Activity{
 			}
 		});
 		
-		numbersText.setOnFocusChangeListener(new OnFocusChangeListener() {
-			
-			public void onFocusChange(View v, boolean hasFocus) {
-				if(!hasFocus && numbersText.getText().toString().trim().length() > 0) {
-					addRecipientIfNumber();
-				}
-			}
-		});
-		
 		numbersText.addTextChangedListener(new TextWatcher() {
 			
 			public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -552,7 +542,11 @@ public abstract class AbstractScheduleSms extends Activity{
 					widthOfContainerInDp = (int)(firstRow.ll.getWidth()*dpi);
 				}
 				
-				addRecipientIfNumber();
+				String str = numbersText.getText().toString();
+				int sizeOfS = str.length();
+				if(sizeOfS>0 && ((str.charAt(sizeOfS - 1))==' ')) {
+					addRecipientIfNumber();
+				}
 				
 				if(numbersText.getText().toString().equals("")){
 					if(rows.get(0).views.size()==0){
@@ -756,15 +750,14 @@ public abstract class AbstractScheduleSms extends Activity{
     }
     
     
-    
     /**
      * Checks if numbersText has only decimal numbers.
 	 * If so, adds it as a new Recipient
      */
     private void addRecipientIfNumber() {
-    	String str = numbersText.getText().toString();
-		int sizeOfS = str.length();
-		if(sizeOfS>0 && ((str.charAt(sizeOfS - 1))==' ') || !numbersText.hasFocus()){
+	    	String str = numbersText.getText().toString();
+	    	int sizeOfS = str.length();
+	    	
 			boolean isNumber = true;
 			for(int i=0; i<sizeOfS-1; i++){
 				if(!((i==0 && str.charAt(i)=='+') || 
@@ -815,7 +808,6 @@ public abstract class AbstractScheduleSms extends Activity{
 					numbersText.setFocusableInTouchMode(true);
 				}
 			}
-		}
     }
 	
 	
@@ -2024,6 +2016,9 @@ public abstract class AbstractScheduleSms extends Activity{
 	 * 			provided. If so, it fires an AsyncTask called 'AsyncScheduling'. Otherwise, shows up an appropriate dialog.
 	 */
 	protected void onScheduleButtonPressTasks(){
+		if(numbersText.getText().toString().trim().length() > 0) {
+			addRecipientIfNumber();
+		}
 		
 		if(Recipients.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
 			//case: neither message nor recipients is provided.
