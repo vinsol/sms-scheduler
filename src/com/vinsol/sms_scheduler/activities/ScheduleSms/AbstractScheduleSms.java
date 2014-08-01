@@ -1985,6 +1985,7 @@ public abstract class AbstractScheduleSms extends Activity{
 				}
 			}else if(Recipients.get(i).type == Constants.RECIPIENT_TYPE_NUMBER){
 				//case: Recipient is a Number.
+				Log.d("Case type number");
 				long receivedRecipientId = mdba.addRecipient(smsId, Recipients.get(i).displayName, Recipients.get(i).displayName, 1, -1);
 				
 				//if recipient isn't fake (for draft), add it as a Recent contact
@@ -1994,7 +1995,9 @@ public abstract class AbstractScheduleSms extends Activity{
 				
 				//If SMS is not a Draft and its firetime is less than the current fire of in Pending Intent, update the Pending
 				//intent with the details of the current Recipient.
-				if(!((Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)"))){
+//				if(!((Recipients.size()==1 && Recipients.get(0).displayName.equals(" ")) || messageText.toString().matches("(''|[' ']*)"))){
+				if(!isDraft) {
+					Log.d("Case going ahead to change pi firetime");
 					if(mdba.getCurrentPiFiretime() == -1){
 						handlePiUpdate(Recipients.get(i).displayName, smsId, receivedRecipientId, cal.getTimeInMillis());
 					}else if(cal.getTimeInMillis() < mdba.getCurrentPiFiretime()){
@@ -2063,7 +2066,7 @@ public abstract class AbstractScheduleSms extends Activity{
 			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 			
-			questionText.setText("No recipients added! Press space key after entering a plain number");
+			questionText.setText("No recipients added!");
 			
 			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.save_as_draft_dialog_states));
 			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_recipients_dialog_states));
