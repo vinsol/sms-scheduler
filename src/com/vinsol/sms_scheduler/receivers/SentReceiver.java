@@ -94,11 +94,14 @@ public class SentReceiver extends BroadcastReceiver{
 	 * @param smsId
 	 */
 	private void handleRepitition(long smsId){
+		Log.d("Repetition% Inside handleRepetition");
 		mdba.open();
 		Cursor smsDetailsCur = mdba.fetchSmsDetails(smsId);
 		if(smsDetailsCur.moveToFirst()){
+			Log.d("Repetition% moveToFirst");
 			int repeatMode = smsDetailsCur.getInt(smsDetailsCur.getColumnIndex(DBAdapter.KEY_REPEAT_MODE));
 			if(repeatMode>0){
+				Log.d("Repetition% repeatMode > 0");
 				long previousTimeInMillis = smsDetailsCur.getLong(smsDetailsCur.getColumnIndex(DBAdapter.KEY_TIME_MILLIS));
 				String hashString = smsDetailsCur.getString(smsDetailsCur.getColumnIndex(DBAdapter.KEY_REPEAT_STRING));
 				
@@ -106,9 +109,10 @@ public class SentReceiver extends BroadcastReceiver{
 				HashMap<String, Object> repeatHash = myGson.deserializeRepeatHash(hashString);
 				long newTimeInMillis = calculateNextScheduleTime(repeatHash, repeatMode, previousTimeInMillis);
 				
-				
+				Log.d("Repetition% NewTimeInMillis: " + newTimeInMillis);
 				//if more repeats possible, schedule new sms
 				if(newTimeInMillis>0){
+					Log.d("Repetition% newTimeInMillis > 0");
 					HashMap<String, Object> newRepeatHash = new HashMap<String, Object>();
 					try{
 						if(repeatMode == 4){
@@ -125,7 +129,10 @@ public class SentReceiver extends BroadcastReceiver{
 						}
 						newRepeatHash.put(Constants.REPEAT_HASH_END_DATE, (Date)repeatHash.get(Constants.REPEAT_HASH_END_DATE));
 						newRepeatHash.put(Constants.REPEAT_HASH_LAST_SENT_TIME, newTimeInMillis);
+						Log.d("Repetition% Scheduling new sms 1");
 					}catch (ClassCastException e) {
+						e.printStackTrace();
+						
 						if(repeatMode == 4){
 							newRepeatHash.put(Constants.REPEAT_HASH_FREQ, 0);
 						}else{
@@ -140,6 +147,7 @@ public class SentReceiver extends BroadcastReceiver{
 						}
 						newRepeatHash.put(Constants.REPEAT_HASH_END_DATE, new Date((String)repeatHash.get(Constants.REPEAT_HASH_END_DATE)));
 						newRepeatHash.put(Constants.REPEAT_HASH_LAST_SENT_TIME, newTimeInMillis);
+						Log.d("Repetition% Scheduling new sms 2");
 					}
 					
 					

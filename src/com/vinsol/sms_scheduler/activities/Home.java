@@ -716,7 +716,7 @@ public class Home extends Activity {
     		for(int j = i+1 ; j < sentSMSs.size() ; j++) {
     			if(sentSMSs.get(i).keyTimeMilis < sentSMSs.get(j).keyTimeMilis) {
     				Sms temp = sentSMSs.get(i);
-    				sentSMSs.set(i, drafts.get(j));
+    				sentSMSs.set(i, sentSMSs.get(j));
     				sentSMSs.set(j, temp);
     			}
     		}

@@ -1908,8 +1908,12 @@ public abstract class AbstractScheduleSms extends Activity{
 
 		boolean isDraft = false;
 
+		Log.d("Recipients.size(): " + Recipients.size());
+		Log.d("messageText.length(): " + messageText.getText().toString().trim().equals(""));
+		
 		//if the SMS is a Draft (i.e., No recipients), set the Draft Flag in Database.
-		if(Recipients.size()==0 || messageText.getText().toString().matches("(''|[' ']*)")){
+		if(Recipients.size()==0 || messageText.getText().toString().trim().equals("")) {
+			Log.d("Setting As Draft");
 			mdba.setAsDraft(smsId);
 			isDraft = true;
 		}
@@ -2016,9 +2020,7 @@ public abstract class AbstractScheduleSms extends Activity{
 	 * 			provided. If so, it fires an AsyncTask called 'AsyncScheduling'. Otherwise, shows up an appropriate dialog.
 	 */
 	protected void onScheduleButtonPressTasks(){
-		if(numbersText.getText().toString().trim().length() > 0) {
-			addRecipientIfNumber();
-		}
+		addRecipientIfNumber();
 		
 		if(Recipients.size()==0 && messageText.getText().toString().matches("(''|[' ']*)")){
 			//case: neither message nor recipients is provided.
@@ -2061,7 +2063,7 @@ public abstract class AbstractScheduleSms extends Activity{
 			Button yesButton 		= (Button) 		d.findViewById(R.id.confirmation_dialog_yes_button);
 			Button noButton			= (Button) 		d.findViewById(R.id.confirmation_dialog_no_button);
 			
-			questionText.setText("No recipients added!");
+			questionText.setText("No recipients added! Press space key after entering a plain number");
 			
 			yesButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.save_as_draft_dialog_states));
 			noButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.add_recipients_dialog_states));
@@ -2101,6 +2103,7 @@ public abstract class AbstractScheduleSms extends Activity{
 				
 				public void onClick(View v) {
 					d.cancel();
+					Log.d("Scheduling case 1");
 					new AsyncScheduling().execute();
 				}
 			});
@@ -2717,7 +2720,9 @@ public abstract class AbstractScheduleSms extends Activity{
 			this.mode = this.modeTemp = mode;
 			this.values = values;
 			if(mode==0){
-				this.dateTemp = new Date(System.currentTimeMillis());
+//				this.dateTemp = new Date(System.currentTimeMillis() + 86400000); // 864000000 = (((23 * 60) + 59) * 60 * 1000)
+				Date dateNow = new Date(System.currentTimeMillis());
+				this.dateTemp = new Date(dateNow.getYear(), dateNow.getMonth(), dateNow.getDate(), 23, 59, 59);
 			}else{
 				try{
 					this.dateTemp = (Date) values.get(Constants.REPEAT_HASH_END_DATE); //TODO
@@ -2864,8 +2869,8 @@ public abstract class AbstractScheduleSms extends Activity{
 			dateText.setOnClickListener(new OnClickListener() {
 				
 				public void onClick(View v) {
-					GregorianCalendar cal = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
-					showDatePickerDialog(cal);
+//					GregorianCalendar cal = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
+					showDatePickerDialog(dateTemp);
 				}
 			});
 			
@@ -2873,8 +2878,8 @@ public abstract class AbstractScheduleSms extends Activity{
 			dateText.setOnKeyListener(new OnKeyListener() {
 				
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					GregorianCalendar cal = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
-					showDatePickerDialog(cal);
+//					GregorianCalendar cal = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
+					showDatePickerDialog(dateTemp);
 					return false;
 				}
 			});
@@ -2982,12 +2987,6 @@ public abstract class AbstractScheduleSms extends Activity{
 									break;
 								case 2:
 									selectEndOnRadio();
-									Date date;
-									try{
-										date = (Date)values.get(Constants.REPEAT_HASH_END_DATE);
-									}catch (ClassCastException e) {
-										date = new Date((String)values.get(Constants.REPEAT_HASH_END_DATE));
-									}
 									
 									GregorianCalendar cal = new GregorianCalendar(dateTemp.getYear() + 1900, dateTemp.getMonth(), dateTemp.getDate(), dateTemp.getHours(), dateTemp.getMinutes(), dateTemp.getSeconds());
 									setDateText(cal);
@@ -3186,18 +3185,22 @@ public abstract class AbstractScheduleSms extends Activity{
 		 *         EndOnRadio is selected
 		 * @param c
 		 */
-		private void showDatePickerDialog(final Calendar c){
+		private void showDatePickerDialog(final Date date){
 			
-			final Date date = c.getTime();
+//			final Date date = c.getTime();
 			
 			DatePickerDialog datePickerDialog = new DatePickerDialog(AbstractScheduleSms.this, new OnDateSetListener() {
 				
 				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 					Calendar cNew = Calendar.getInstance();
+					Calendar cNow = Calendar.getInstance();
 					cNew.set(year, monthOfYear, dayOfMonth);
-					if(cNew.after(c)){
+					if(cNew.after(cNow)){
 						setDateText(cNew);
 						dateTemp = cNew.getTime();
+						dateTemp.setHours(23);
+						dateTemp.setMinutes(59);
+						dateTemp.setSeconds(59);
 					}
 				}
 			}, 1900+date.getYear(), date.getMonth(), date.getDate());
